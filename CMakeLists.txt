@@ -1,26 +1,50 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-SET(CMAKE_LEGACY_CYGWIN_WIN32 0)
+cmake_minimum_required (VERSION 3.1)
+set (CMAKE_LEGACY_CYGWIN_WIN32 0)
 
-PROJECT(g2o)
+project (g2o)
+
+# Set search directory for looking for our custom CMake scripts to
+# look for SuiteSparse, QGLViewer, and Eigen3.
+list (APPEND CMAKE_MODULE_PATH ${g2o_SOURCE_DIR}/cmake_modules)
+
+include(CMakeDependentOption)
+
+find_package (CSparse)
+
+if (CSPARSE_FOUND)
+  option (BUILD_CSPARSE "Build local CSparse library" OFF)
+else (CSPARSE_FOUND)
+  option (BUILD_CSPARSE "Build local CSparse library" ON)
+
+  if (BUILD_CSPARSE)
+    set (CSPARSE_FOUND TRUE)
+  endif (BUILD_CSPARSE)
+endif (CSPARSE_FOUND)
+
+option (BUILD_APPS "Build g2o apps" ON)
+option (BUILD_EXAMPLES "Build g2o examples" ON)
+option (BUILD_LGPL_SHARED_LIBS "Build LGPL Code as Shared Libraries (LGPL Code)" ON)
+option (BUILD_SHARED_LIBS "Build Shared Libraries (preferred and required for the g2o plugin system)" ON)
+option (BUILD_WITH_MARCH_NATIVE "Build with \"-march native\"" ON)
+option (USE_OPENGL "Build g2o with OpenGL support for visualization" OFF)
+option (USE_OPENMP "Build g2o with OpenMP support (EXPERIMENTAL)" OFF)
+cmake_dependent_option (BUILD_LINKED_APPS "Build apps linked with the libraries (no plugin system)" OFF
+  "BUILD_APPS" OFF)
+
+set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # The library prefix
-SET(LIB_PREFIX g2o_)
+set(LIB_PREFIX g2o_)
 
-SET(g2o_C_FLAGS)
-SET(g2o_CXX_FLAGS)
-
-# default built type
-IF(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE Release CACHE STRING
-      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-      FORCE)
-ENDIF(NOT CMAKE_BUILD_TYPE)
+set(g2o_C_FLAGS)
+set(g2o_CXX_FLAGS)
 
 # postfix, based on type
-SET(CMAKE_DEBUG_POSTFIX "_d" CACHE STRING "postfix applied to debug build of libraries")
-SET(CMAKE_RELEASE_POSTFIX "" CACHE STRING "postfix applied to release build of libraries")
-SET(CMAKE_RELWITHDEBINFO_POSTFIX "_rd" CACHE STRING "postfix applied to release-with-debug-information libraries")
-SET(CMAKE_MINSIZEREL_POSTFIX "_s" CACHE STRING "postfix applied to minimium-size-build libraries")
+set (CMAKE_DEBUG_POSTFIX "_d")
+set (CMAKE_RELEASE_POSTFIX "")
+set (CMAKE_RELWITHDEBINFO_POSTFIX "_rd")
+set (CMAKE_MINSIZEREL_POSTFIX "_s")
 
 # work out the postfix; required where we use OUTPUT_NAME
 IF(CMAKE_BUILD_TYPE MATCHES Release)
@@ -34,11 +58,14 @@ ELSEIF(CMAKE_BUILD_TYPE MATCHES MinSizeRel)
 ENDIF(CMAKE_BUILD_TYPE MATCHES Release)
 
 # Allow the developer to select if Dynamic or Static libraries are built
-OPTION (BUILD_SHARED_LIBS "Build Shared Libraries (preferred and required for the g2o plugin system)" ON)
 SET (G2O_LIB_TYPE STATIC)
 IF (BUILD_SHARED_LIBS)
   SET (G2O_LIB_TYPE SHARED)
 ENDIF()
+
+if (MSVC)
+  add_definitions (-D_CRT_SECURE_NO_WARNINGS)
+endif (MSVC)
 
 # There seems to be an issue with MSVC8
 # see http://eigen.tuxfamily.org/bz/show_bug.cgi?id=83
@@ -51,7 +78,7 @@ endif(MSVC90)
 # avoid the problem of loading both the built and installed versions
 # of the shared targets
 IF(APPLE)
-  SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
+  SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
   SET(CMAKE_INSTALL_RPATH "")
 ENDIF(APPLE)
 
@@ -66,16 +93,11 @@ SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${g2o_LIBRARY_OUTPUT_DIRECTORY})
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${g2o_LIBRARY_OUTPUT_DIRECTORY})
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${g2o_RUNTIME_OUTPUT_DIRECTORY})
 
-# Set search directory for looking for our custom CMake scripts to
-# look for SuiteSparse, QGLViewer, and Eigen3.
-LIST(APPEND CMAKE_MODULE_PATH ${g2o_SOURCE_DIR}/cmake_modules)
 
 # Detect OS and define macros appropriately
 IF(WIN32)
   ADD_DEFINITIONS(-DWINDOWS)
-  MESSAGE(STATUS "Compiling on Windows")
   IF(MSVC)
-    MESSAGE(STATUS "Compiling with MSVC")
     ADD_DEFINITIONS(-DNOMINMAX)
     ADD_DEFINITIONS(-D_USE_MATH_DEFINES)
     # SSE2 optimizations
@@ -86,96 +108,52 @@ IF(WIN32)
     ENDIF()
   ENDIF(MSVC)
 ELSEIF(CYGWIN)
-  MESSAGE(STATUS "Compiling on Cygwin")
   ADD_DEFINITIONS(-DCYGWIN)
 ELSEIF(APPLE)
   ADD_DEFINITIONS(-DUNIX)
-  MESSAGE(STATUS "Compiling on OSX")
 ELSEIF(UNIX)
   ADD_DEFINITIONS(-DUNIX)
-  MESSAGE(STATUS "Compiling on Unix")
 ENDIF(WIN32)
 
 # detect Android Cross Compiler
 # based on android-cmake which sets the variable ANDROID for us
 IF(ANDROID)
   ADD_DEFINITIONS(-DANDROID)
-  MESSAGE(STATUS "Cross compiling for Android")
 ENDIF()
 
 # For building the CHOLMOD / CSPARSE solvers
-FIND_PACKAGE(Cholmod)
-FIND_PACKAGE(BLAS)
-FIND_PACKAGE(LAPACK)
-IF(CHOLMOD_FOUND AND BLAS_FOUND AND LAPACK_FOUND)
-  MESSAGE(STATUS "Found CHOLMOD and its dependencies")
-  SET(CHOLMOD_FOUND TRUE)
-ELSE()
-  SET(CHOLMOD_FOUND FALSE)
-ENDIF()
+FIND_PACKAGE (SuiteSparse 4.4.5 CONFIG REQUIRED)
 
-FIND_PACKAGE(CSparse)
-IF(CSPARSE_FOUND)
-  SET(BUILD_CSPARSE OFF CACHE BOOL "Build local CSparse library")
-ELSE(CSPARSE_FOUND)
-  SET(BUILD_CSPARSE ON CACHE BOOL "Build local CSparse library")
-  IF(BUILD_CSPARSE)
-    SET(CSPARSE_FOUND TRUE)
-  ENDIF()
-ENDIF(CSPARSE_FOUND)
-OPTION(BUILD_LGPL_SHARED_LIBS "Build LGPL Code as Shared Libraries (LGPL Code)" ON)
 SET (G2O_LGPL_LIB_TYPE STATIC)
 IF (BUILD_LGPL_SHARED_LIBS)
   SET (G2O_LGPL_LIB_TYPE SHARED)
-ELSE()
-  MESSAGE(STATUS "Building LGPL code as static library (affects license of the binary)")
 ENDIF()
 
 # Eigen library parallelise itself, though, presumably due to performance issues
 # OPENMP is experimental. We experienced some slowdown with it
 FIND_PACKAGE(OpenMP)
-SET(G2O_USE_OPENMP OFF CACHE BOOL "Build g2o with OpenMP support (EXPERIMENTAL)")
-IF(OPENMP_FOUND AND G2O_USE_OPENMP)
+
+IF(OPENMP_FOUND AND USE_OPENMP)
   SET (G2O_OPENMP 1)
   SET(g2o_C_FLAGS "${g2o_C_FLAGS} ${OpenMP_C_FLAGS}")
   SET(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -DEIGEN_DONT_PARALLELIZE ${OpenMP_CXX_FLAGS}")
-  MESSAGE(STATUS "Compiling with OpenMP support")
-ENDIF(OPENMP_FOUND AND G2O_USE_OPENMP)
+ENDIF(OPENMP_FOUND AND USE_OPENMP)
 
 # OpenGL is used in the draw actions for the different types, as well
 # as for creating the GUI itself
 FIND_PACKAGE(OpenGL)
-SET(G2O_USE_OPENGL ON CACHE BOOL "Build g2o with OpenGL support for visualization")
-IF (OPENGL_FOUND AND G2O_USE_OPENGL)
+IF (OPENGL_FOUND AND USE_OPENGL)
   SET (G2O_HAVE_OPENGL 1)
   INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
-  MESSAGE(STATUS "Compiling with OpenGL support")
 ENDIF()
 
 # For building the GUI
 FIND_PACKAGE(QGLViewer)
 
 # shall we build the core apps using the library
-SET(G2O_BUILD_APPS ON CACHE BOOL "Build g2o apps")
-IF(G2O_BUILD_APPS)
-  MESSAGE(STATUS "Compiling g2o apps")
-ENDIF(G2O_BUILD_APPS)
-
-include(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(G2O_BUILD_LINKED_APPS "Build apps linked with the libraries (no plugin system)" OFF
-  "G2O_BUILD_APPS" OFF)
-
-# shall we build the examples
-SET(G2O_BUILD_EXAMPLES ON CACHE BOOL "Build g2o examples")
-IF(G2O_BUILD_EXAMPLES)
-  MESSAGE(STATUS "Compiling g2o examples")
-ENDIF(G2O_BUILD_EXAMPLES)
 
 # Compiler specific options for gcc
 IF(CMAKE_COMPILER_IS_GNUCXX)
-  OPTION (BUILD_WITH_MARCH_NATIVE "Build with \"-march native\"" ON)
-  MESSAGE(STATUS "Compiling with GCC")
-  
   IF(NOT ${ARCH} MATCHES arm)
     # Generic settings for optimisation
     SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -msse4.2")
@@ -187,8 +165,8 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 
   # OS X
   #IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}") 
-    #SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}") 
+    #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+    #SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
   #ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Linux
   IF(BUILD_WITH_MARCH_NATIVE AND NOT ${ARCH} MATCHES arm AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -201,8 +179,6 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 IF(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  MESSAGE(STATUS "Compiling with Clang")
-
   # activate all warnings
   #SET(g2o_C_FLAGS "${g2o_C_FLAGS} -Weverything")
   #SET(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Weverything")
@@ -211,35 +187,15 @@ IF(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   #SET(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Wall -stdlib=libc++")
 ENDIF()
 
-# C++11 support
-IF(NOT MSVC)
-  include(CheckCXXCompilerFlag)
-  CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-  CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-  if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  elseif(COMPILER_SUPPORTS_CXX0X)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-  else()
-    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-  endif()
-endif()
-
 # specifying compiler flags
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${g2o_CXX_FLAGS}")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${g2o_C_FLAGS}")
 
 # Find Eigen3
-SET(EIGEN3_INCLUDE_DIR ${G2O_EIGEN3_INCLUDE})
-FIND_PACKAGE(Eigen3)
-IF(EIGEN3_FOUND)
-  SET(G2O_EIGEN3_INCLUDE ${EIGEN3_INCLUDE_DIR} CACHE PATH "Directory of Eigen3")
-ELSE(EIGEN3_FOUND)
-  SET(G2O_EIGEN3_INCLUDE "" CACHE PATH "Directory of Eigen3")
-ENDIF(EIGEN3_FOUND)
+FIND_PACKAGE(Eigen3 REQUIRED)
 
 # Set up the top-level include directories
-INCLUDE_DIRECTORIES(${g2o_SOURCE_DIR} ${G2O_EIGEN3_INCLUDE})
+INCLUDE_DIRECTORIES(${g2o_SOURCE_DIR} ${EIGEN3_INCLUDE_DIR})
 
 # Generate config.h
 SET(G2O_OPENGL_FOUND ${OPENGL_FOUND})
