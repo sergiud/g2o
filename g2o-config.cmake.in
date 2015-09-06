@@ -4,3 +4,5 @@ include (CMakeFindDependencyMacro)
 include ("${CMAKE_CURRENT_LIST_DIR}/g2o-targets.cmake")
 
 @SuiteSparse_DEPENDENCY@
+
+check_required_components (g2o)

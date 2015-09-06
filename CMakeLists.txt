@@ -162,10 +162,6 @@ configure_package_config_file (g2o-config.cmake.in
 write_basic_package_version_file (g2o-config-version.cmake
   VERSION ${VERSION} COMPATIBILITY SameMajorVersion)
 
-configure_package_config_file (g2o-config.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/g2o-config-install.cmake
-  INSTALL_DESTINATION lib/cmake/g2o)
-
 set (g2o_NAMESPACE g2o::)
 
 export (TARGETS ${g2o_TARGETS} NAMESPACE ${g2o_NAMESPACE} FILE
@@ -174,8 +170,7 @@ export (PACKAGE g2o)
 
 install (EXPORT g2o-targets NAMESPACE ${g2o_NAMESPACE}
   DESTINATION lib/cmake/g2o)
-install (FILES ${CMAKE_CURRENT_BINARY_DIR}/g2o-config-install.cmake
-  DESTINATION lib/cmake/g2o RENAME g2o-config.cmake)
-install (FILES ${CMAKE_CURRENT_BINARY_DIR}/g2o-config-version.cmake
-  DESTINATION lib/cmake/g2o
-  COMPONENT Development)
+install (FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o-config.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o-config-version.cmake
+  DESTINATION lib/cmake/g2o)
