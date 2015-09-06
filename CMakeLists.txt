@@ -125,7 +125,8 @@ FIND_PACKAGE(QGLViewer)
 FIND_PACKAGE(Eigen3 REQUIRED)
 
 # Set up the top-level include directories
-include_directories(${g2o_SOURCE_DIR} ${EIGEN3_INCLUDE_DIR})
+include_directories(${g2o_SOURCE_DIR})
+include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 
 # Generate config.h
 SET(G2O_OPENGL_FOUND ${OPENGL_FOUND})
@@ -150,11 +151,15 @@ if (SuiteSparse_FOUND)
     "find_dependency (SuiteSparse ${SuiteSparse_VERSION})")
 endif (SuiteSparse_FOUND)
 
-set (g2o_TARGETS core csparse csparse_extension solver_cholmod solver_csparse
+set (g2o_TARGETS core csparse_extension solver_cholmod solver_csparse
   solver_dense solver_eigen solver_pcg solver_slam2d_linear
   solver_structure_only stuff types_data types_icp types_sba types_sclam2d
   types_sim3 types_slam2d types_slam2d_addons types_slam3d types_slam3d_addons
   g2o_cli_library g2o_hierarchical_library)
+
+if (BUILD_CSPARSE)
+  list (APPEND g2o_TARGETS csparse)
+endif (BUILD_CSPARSE)
 
 configure_package_config_file (g2o-config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/g2o-config.cmake
