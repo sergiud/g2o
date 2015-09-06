@@ -7,9 +7,9 @@ IF(CSPARSE_FOUND)
   ADD_SUBDIRECTORY(slam2d_linear)
 ENDIF()
 
-IF(CHOLMOD_FOUND)
+IF(SuiteSparse_FOUND)
   ADD_SUBDIRECTORY(cholmod)
-ENDIF(CHOLMOD_FOUND)
+ENDIF(SuiteSparse_FOUND)
 
 # Sparse Module of Eigen is stable starting from 3.1
 IF (DEFINED EIGEN3_VERSION)

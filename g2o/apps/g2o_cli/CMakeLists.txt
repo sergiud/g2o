@@ -1,9 +1,20 @@
-ADD_LIBRARY(g2o_cli_library ${G2O_LIB_TYPE}
+ADD_LIBRARY(g2o_cli_library
   dl_wrapper.cpp dl_wrapper.h
   output_helper.cpp output_helper.h
   g2o_common.cpp g2o_common.h
-  g2o_cli_api.h
 )
+
+generate_export_header (g2o_cli_library EXPORT_FILE_NAME 
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o_cli_api.h
+  EXPORT_MACRO_NAME G2O_CLI_API)
+
+target_include_directories (g2o_cli_library PUBLIC
+  $<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
+
+set_target_properties (g2o_cli_library PROPERTIES EXPORT_NAME cli)
 
 SET_TARGET_PROPERTIES(g2o_cli_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}cli)
 
@@ -29,11 +40,12 @@ SET_PROPERTY(TARGET g2o_cli_library APPEND PROPERTY COMPILE_DEFINITIONS_MINSIZER
 SET_TARGET_PROPERTIES(g2o_cli_application PROPERTIES OUTPUT_NAME g2o${EXE_POSTFIX})
 
 
-INSTALL(TARGETS g2o_cli_library g2o_cli_application
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+INSTALL(TARGETS g2o_cli_library g2o_cli_application EXPORT g2o-targets
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/apps/g2o_cli)
+INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_cli_api.h
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/apps/g2o_cli)

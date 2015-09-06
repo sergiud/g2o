@@ -11,21 +11,34 @@ IF (MSVC)
     ${interface_library_src}
   )
 ELSE()
-  ADD_LIBRARY(interface_library ${G2O_LIB_TYPE}
+  ADD_LIBRARY(interface_library
     ${interface_library_src}
   )
 ENDIF()
+
+generate_export_header (interface_library EXPORT_FILE_NAME 
+  ${CMAKE_CURRENT_BINARY_DIR}/slam_parser_interface_api.h
+  EXPORT_MACRO_NAME SLAM_PARSER_INTERFACE_API)
+
+target_include_directories (interface_library PUBLIC
+  $<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
+
+set_target_properties (interface_library PROPERTIES EXPORT_NAME interface)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../../)
 
 SET_TARGET_PROPERTIES(interface_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}interface)
 TARGET_LINK_LIBRARIES(interface_library parser_library)
 
-INSTALL(TARGETS interface_library
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+INSTALL(TARGETS interface_library EXPORT g2o-targets
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
-INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/slam_parser/interface)
+INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/slam_parser_interface_api.h
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/slam_parser/interface)

@@ -1,7 +1,16 @@
-ADD_LIBRARY(solver_slam2d_linear ${G2O_LIB_TYPE}
+ADD_LIBRARY(solver_slam2d_linear
   slam2d_linear.cpp
   solver_slam2d_linear.h solver_slam2d_linear.cpp
-  g2o_slam2d_linear_api.h
+)
+
+generate_export_header (solver_slam2d_linear EXPORT_FILE_NAME 
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o_slam2d_linear_api.h
+  EXPORT_MACRO_NAME G2O_SLAM2D_LINEAR_API)
+
+target_include_directories (solver_slam2d_linear PUBLIC
+  $<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
 INCLUDE_DIRECTORIES(${CSPARSE_INCLUDE_DIR})
@@ -9,11 +18,12 @@ INCLUDE_DIRECTORIES(${CSPARSE_INCLUDE_DIR})
 SET_TARGET_PROPERTIES(solver_slam2d_linear PROPERTIES OUTPUT_NAME ${LIB_PREFIX}solver_slam2d_linear)
 TARGET_LINK_LIBRARIES(solver_slam2d_linear solver_csparse types_slam2d)
 
-INSTALL(TARGETS solver_slam2d_linear
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+INSTALL(TARGETS solver_slam2d_linear EXPORT g2o-targets
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/solvers/slam2d_linear)
+INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_slam2d_linear_api.h
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/solvers/slam2d_linear)

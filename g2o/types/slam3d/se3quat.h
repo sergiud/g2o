@@ -27,6 +27,7 @@
 #ifndef G2O_SE3QUAT_H_
 #define G2O_SE3QUAT_H_
 
+#include <g2o/core/eigen_types.h>
 #include "se3_ops.h"
 
 #include <Eigen/Core>

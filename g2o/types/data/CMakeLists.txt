@@ -1,4 +1,4 @@
-ADD_LIBRARY(types_data ${G2O_LIB_TYPE}
+ADD_LIBRARY(types_data
   types_data.cpp
   robot_data.cpp robot_data.h
   vertex_tag.cpp vertex_tag.h
@@ -10,6 +10,16 @@ ADD_LIBRARY(types_data ${G2O_LIB_TYPE}
   g2o_types_data_api.h
 )
 
+generate_export_header (types_data EXPORT_FILE_NAME 
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_data_api.h
+  EXPORT_MACRO_NAME G2O_TYPES_DATA_API)
+
+target_include_directories (types_data PUBLIC
+  $<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
+
 SET_TARGET_PROPERTIES(types_data PROPERTIES OUTPUT_NAME ${LIB_PREFIX}types_data)
 
 TARGET_LINK_LIBRARIES(types_data core types_slam2d)
@@ -17,11 +27,12 @@ IF(G2O_HAVE_OPENGL)
   TARGET_LINK_LIBRARIES(types_data freeglut_minimal opengl_helper)
 ENDIF()
 
-INSTALL(TARGETS types_data
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+INSTALL(TARGETS types_data EXPORT g2o-targets
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/types/data)
+INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_data_api.h
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/types/data)

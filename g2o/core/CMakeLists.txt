@@ -1,4 +1,4 @@
-ADD_LIBRARY(core ${G2O_LIB_TYPE}
+ADD_LIBRARY(core
 base_edge.h
 base_binary_edge.h          hyper_graph_action.cpp
 base_binary_edge.hpp        hyper_graph_action.h
@@ -34,19 +34,30 @@ jacobian_workspace.cpp jacobian_workspace.h
 robust_kernel.cpp robust_kernel.h
 robust_kernel_impl.cpp robust_kernel_impl.h
 robust_kernel_factory.cpp robust_kernel_factory.h
-g2o_core_api.h
 )
+
+generate_export_header (core EXPORT_FILE_NAME 
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o_core_api.h
+  EXPORT_MACRO_NAME G2O_CORE_API)
 
 SET_TARGET_PROPERTIES(core PROPERTIES OUTPUT_NAME ${LIB_PREFIX}core)
 
 TARGET_LINK_LIBRARIES(core stuff)
 
-INSTALL(TARGETS core
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+target_include_directories (core PUBLIC
+  $<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${g2o_BINARY_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
+
+INSTALL(TARGETS core EXPORT g2o-targets
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
-INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/core)
+INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_core_api.h
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/core)

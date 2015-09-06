@@ -1,4 +1,4 @@
-ADD_LIBRARY(types_slam3d_addons ${G2O_LIB_TYPE}
+ADD_LIBRARY(types_slam3d_addons
   vertex_se3_euler.cpp
   vertex_se3_euler.h
   edge_se3_euler.cpp
@@ -17,6 +17,15 @@ ADD_LIBRARY(types_slam3d_addons ${G2O_LIB_TYPE}
   types_slam3d_addons.h
 )
 
+generate_export_header (types_slam3d_addons EXPORT_FILE_NAME 
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_slam3d_addons_api.h
+  EXPORT_MACRO_NAME G2O_TYPES_SLAM3D_ADDONS_API)
+
+target_include_directories (types_slam3d_addons PUBLIC
+  $<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
 
 SET_TARGET_PROPERTIES(types_slam3d_addons PROPERTIES OUTPUT_NAME ${LIB_PREFIX}types_slam3d_addons)
 
@@ -28,11 +37,12 @@ ENDIF()
 ADD_EXECUTABLE(test_line3d line3d_test.cpp)
 TARGET_LINK_LIBRARIES(test_line3d types_slam3d_addons types_slam3d)
 
-INSTALL(TARGETS types_slam3d_addons
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+INSTALL(TARGETS types_slam3d_addons EXPORT g2o-targets
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/types/slam3d_addons)
+INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_slam3d_addons_api.h
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/types/slam3d_addons)

@@ -1,4 +1,4 @@
-ADD_LIBRARY(types_slam3d ${G2O_LIB_TYPE}
+ADD_LIBRARY(types_slam3d
   dquat2mat.cpp dquat2mat.h
   isometry3d_mappings.h
   isometry3d_mappings.cpp
@@ -35,6 +35,15 @@ ADD_LIBRARY(types_slam3d ${G2O_LIB_TYPE}
   types_slam3d.h
 )
 
+generate_export_header (types_slam3d EXPORT_FILE_NAME 
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_slam3d_api.h
+  EXPORT_MACRO_NAME G2O_TYPES_SLAM3D_API)
+
+target_include_directories (types_slam3d PUBLIC
+  $<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
 
 SET_TARGET_PROPERTIES(types_slam3d PROPERTIES OUTPUT_NAME ${LIB_PREFIX}types_slam3d)
 TARGET_LINK_LIBRARIES(types_slam3d core)
@@ -51,11 +60,12 @@ TARGET_LINK_LIBRARIES(test_mat2quat_jacobian types_slam3d)
 ADD_EXECUTABLE(test_slam3d_jacobian test_slam3d_jacobian.cpp)
 TARGET_LINK_LIBRARIES(test_slam3d_jacobian types_slam3d)
 
-INSTALL(TARGETS types_slam3d
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+INSTALL(TARGETS types_slam3d EXPORT g2o-targets
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/types/slam3d)
+INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_slam3d_api.h
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/types/slam3d)
