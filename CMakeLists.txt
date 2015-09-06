@@ -151,15 +151,36 @@ if (SuiteSparse_FOUND)
     "find_dependency (SuiteSparse ${SuiteSparse_VERSION})")
 endif (SuiteSparse_FOUND)
 
-set (g2o_TARGETS core csparse_extension solver_cholmod solver_csparse
-  solver_dense solver_eigen solver_pcg solver_slam2d_linear
-  solver_structure_only stuff types_data types_icp types_sba types_sclam2d
-  types_sim3 types_slam2d types_slam2d_addons types_slam3d types_slam3d_addons
-  g2o_cli_library g2o_hierarchical_library)
+# g2o export targets
+set (g2o_TARGETS
+  core
+  csparse_extension
+  g2o_cli_library
+  g2o_hierarchical_library
+  solver_cholmod
+  solver_csparse
+  solver_dense
+  solver_eigen
+  solver_pcg
+  solver_slam2d_linear
+  solver_structure_only
+  stuff
+  types_data
+  types_icp
+  types_sba
+  types_sclam2d
+  types_sim3
+  types_slam2d
+  types_slam2d_addons
+  types_slam3d
+  types_slam3d_addons
+)
 
 if (BUILD_CSPARSE)
   list (APPEND g2o_TARGETS csparse)
 endif (BUILD_CSPARSE)
+
+set_target_properties (${g2o_TARGETS} PROPERTIES DEBUG_POSTFIX _d)
 
 configure_package_config_file (g2o-config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/g2o-config.cmake
