@@ -43,7 +43,7 @@ endif (CSPARSE_FOUND)
 
 option (BUILD_APPS "Build g2o apps" ON)
 option (BUILD_EXAMPLES "Build g2o examples" ON)
-option (BUILD_LGPL_SHARED_LIBS "Build LGPL Code as Shared Libraries (LGPL Code)" ON)
+option (BUILD_LGPL_SHARED_LIBS "Build LGPL code as shared libraries (LGPL code)" ON)
 option (BUILD_SHARED_LIBS "Build Shared Libraries (preferred and required for the g2o plugin system)" ON)
 option (USE_OPENGL "Build g2o with OpenGL support for visualization" OFF)
 option (USE_OPENMP "Build g2o with OpenMP support (EXPERIMENTAL)" OFF)
@@ -80,7 +80,7 @@ IF(WIN32)
     ENDIF()
     # Fix issue: https://github.com/RainerKuemmerle/g2o/issues/66
     #            Link error LNK2005 due to duplicated symbols
-    add_definitions("/Ob2")	
+    add_definitions("/Ob2")
 	# Fix other stupid warnings:
     add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)  # Avoid deprecated fprintf(), etc.
     add_definitions("/nologo")
