@@ -78,6 +78,15 @@ IF(WIN32)
       # disable warning on missing DLL interfaces
       ADD_DEFINITIONS("/wd4251")
     ENDIF()
+    # Fix issue: https://github.com/RainerKuemmerle/g2o/issues/66
+    #            Link error LNK2005 due to duplicated symbols
+    add_definitions("/Ob2")	
+	# Fix other stupid warnings:
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)  # Avoid deprecated fprintf(), etc.
+    add_definitions("/nologo")
+    add_definitions("/wd4244") # Conversion from double -> int
+    add_definitions("/wd4267") # Conversion during return
+    add_definitions("/wd4522") # Duplicated operator=() in Eigen headers
   ENDIF(MSVC)
 ELSEIF(CYGWIN)
   ADD_DEFINITIONS(-DCYGWIN)
