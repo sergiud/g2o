@@ -43,8 +43,8 @@
 namespace g2o {
 
   // forward decl
-  class G2O_CORE_API OptimizationAlgorithm;
-  class G2O_CORE_API SparseOptimizer;
+  class OptimizationAlgorithm;
+  class SparseOptimizer;
 
   /**
    * \brief base for allocating an optimization algorithm
@@ -64,7 +64,7 @@ namespace g2o {
     protected:
       OptimizationAlgorithmProperty _property;
   };
-  
+
   /**
    * \brief create solvers based on their short name
    *
@@ -92,7 +92,7 @@ namespace g2o {
        * unregister a specific creator for allocating a solver
        */
       void unregisterSolver(AbstractOptimizationAlgorithmCreator* c);
-      
+
       /**
        * construct a solver based on its name, e.g., var, fix3_2_cholmod
        */
