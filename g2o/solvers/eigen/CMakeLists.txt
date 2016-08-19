@@ -1,5 +1,3 @@
-INCLUDE_DIRECTORIES(${G2O_EIGEN3_INCLUDE})
-
 ADD_LIBRARY(solver_eigen
   solver_eigen.cpp
   linear_solver_eigen.h
