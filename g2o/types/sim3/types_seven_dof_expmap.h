@@ -32,6 +32,8 @@
 #include "g2o/types/sba/types_six_dof_expmap.h"
 #include "sim3.h"
 
+#include <g2o/types/sim3/g2o_types_sim3_api.h>
+
 namespace g2o {
 
 
@@ -40,7 +42,7 @@ namespace g2o {
  * the parameterization for the increments constructed is a 7d vector
  * (x,y,z,qx,qy,qz) (note that we leave out the w part of the quaternion.
  */
-  class VertexSim3Expmap : public BaseVertex<7, Sim3>
+  class G2O_TYPES_SIM3_API VertexSim3Expmap : public BaseVertex<7, Sim3>
   {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
@@ -83,7 +85,7 @@ namespace g2o {
   /**
  * \brief 7D edge between two Vertex7
  */
-  class EdgeSim3 : public BaseBinaryEdge<7, Sim3, VertexSim3Expmap, VertexSim3Expmap>
+  class G2O_TYPES_SIM3_API EdgeSim3 : public BaseBinaryEdge<7, Sim3, VertexSim3Expmap, VertexSim3Expmap>
   {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -114,7 +116,7 @@ namespace g2o {
 
 
 /**/
-class EdgeSim3ProjectXYZ : public  BaseBinaryEdge<2, Vector2D,  VertexSBAPointXYZ, VertexSim3Expmap>
+class G2O_TYPES_SIM3_API EdgeSim3ProjectXYZ : public  BaseBinaryEdge<2, Vector2D,  VertexSBAPointXYZ, VertexSim3Expmap>
 {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
