@@ -27,7 +27,9 @@
 #include "edge_se3_calib.h"
 
 namespace g2o {
-
+#ifdef _MSC_VER
+  extern template const BaseEdge<6, Isometry3D>::InformationType& BaseEdge<6, Isometry3D>::information() const;
+#endif // defined(_MSC_VER)
   EdgeSE3Calib::EdgeSE3Calib() :
     BaseMultiEdge<6, Isometry3D>()
   {

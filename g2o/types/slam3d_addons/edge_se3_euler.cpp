@@ -32,7 +32,9 @@ using namespace Eigen;
 
 namespace g2o
 {
-
+#ifdef _MSC_VER
+extern template const BaseEdge<6, Isometry3D>::InformationType& BaseEdge<6, Isometry3D>::information() const;
+#endif // defined(_MSC_VER)
   /** conversion code from Euler angles */
 static void jac_quat3_euler3(Eigen::Matrix<double, 6, 6, Eigen::ColMajor>& J, const Isometry3D& t)
 {

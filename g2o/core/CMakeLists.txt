@@ -44,12 +44,6 @@ SET_TARGET_PROPERTIES(core PROPERTIES OUTPUT_NAME ${LIB_PREFIX}core)
 
 TARGET_LINK_LIBRARIES(core stuff)
 
-if (MSVC)
-  # Fixes link error LNK2005 due to duplicated symbols
-  set_source_files_properties (base_edge.cpp PROPERTIES COMPILE_OPTIONS_DEBUG
-    /Ob1)
-endif (MSVC)
-
 target_include_directories (core SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
 
 target_include_directories (core PUBLIC
