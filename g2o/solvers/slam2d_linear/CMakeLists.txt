@@ -13,8 +13,6 @@ target_include_directories (solver_slam2d_linear PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
-INCLUDE_DIRECTORIES(${CSPARSE_INCLUDE_DIR})
-
 SET_TARGET_PROPERTIES(solver_slam2d_linear PROPERTIES OUTPUT_NAME ${LIB_PREFIX}solver_slam2d_linear)
 TARGET_LINK_LIBRARIES(solver_slam2d_linear solver_csparse types_slam2d)
 

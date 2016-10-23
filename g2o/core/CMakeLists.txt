@@ -10,14 +10,14 @@ base_vertex.h               marginal_covariance_cholesky.h
 base_vertex.hpp             matrix_structure.cpp
 batch_stats.cpp             matrix_structure.h
 batch_stats.h               openmp_mutex.h
-block_solver.h              block_solver.hpp            
-parameter.cpp               parameter.h                 
+block_solver.h              block_solver.hpp
+parameter.cpp               parameter.h
 cache.cpp                   cache.h
-optimizable_graph.cpp       optimizable_graph.h         
+optimizable_graph.cpp       optimizable_graph.h
 solver.cpp                  solver.h
 creators.h                  optimization_algorithm_factory.cpp
 estimate_propagator.cpp     optimization_algorithm_factory.h
-estimate_propagator.h       
+estimate_propagator.h
 factory.cpp                 optimization_algorithm_property.h
 factory.h                   sparse_block_matrix.h
 sparse_optimizer.cpp  sparse_block_matrix.hpp
@@ -36,13 +36,21 @@ robust_kernel_impl.cpp robust_kernel_impl.h
 robust_kernel_factory.cpp robust_kernel_factory.h
 )
 
-generate_export_header (core EXPORT_FILE_NAME 
+generate_export_header (core EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_core_api.h
   EXPORT_MACRO_NAME G2O_CORE_API)
 
 SET_TARGET_PROPERTIES(core PROPERTIES OUTPUT_NAME ${LIB_PREFIX}core)
 
 TARGET_LINK_LIBRARIES(core stuff)
+
+if (MSVC)
+  # Fixes link error LNK2005 due to duplicated symbols
+  set_source_files_properties (base_edge.cpp PROPERTIES COMPILE_OPTIONS_DEBUG
+    /Ob1)
+endif (MSVC)
+
+target_include_directories (core SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
 
 target_include_directories (core PUBLIC
   $<INSTALL_INTERFACE:include>

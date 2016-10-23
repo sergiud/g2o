@@ -10,7 +10,6 @@ target_include_directories (solver_cholmod PUBLIC
 
 SET_TARGET_PROPERTIES(solver_cholmod PROPERTIES OUTPUT_NAME ${LIB_PREFIX}solver_cholmod)
 
-ADD_DEFINITIONS(${BLAS_DEFINITIONS} ${LAPACK_DEFINITIONS})
 TARGET_LINK_LIBRARIES(solver_cholmod SuiteSparse::CHOLMOD core)
 
 INSTALL(TARGETS solver_cholmod EXPORT g2o-targets

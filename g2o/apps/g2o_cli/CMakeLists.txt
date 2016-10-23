@@ -22,6 +22,7 @@ SET_PROPERTY(TARGET g2o_cli_library APPEND PROPERTY COMPILE_DEFINITIONS G2O_DEFA
 
 TARGET_LINK_LIBRARIES(g2o_cli_library core)
 IF(UNIX)
+  # TODO check dl existance
   TARGET_LINK_LIBRARIES(g2o_cli_library dl)
 ENDIF(UNIX)
 

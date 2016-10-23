@@ -4,13 +4,15 @@ ADD_LIBRARY(stuff
   command_args.cpp   misc.h           sparse_helper.cpp  timeutil.h
   command_args.h     os_specific.c    sparse_helper.h
   filesys_tools.cpp  os_specific.h    string_tools.cpp
-  property.cpp       property.h       
+  property.cpp       property.h
   sampler.cpp        sampler.h        unscented.h
   tictoc.cpp tictoc.h
   g2o_stuff_api.h
 )
 
-generate_export_header (stuff EXPORT_FILE_NAME 
+target_include_directories (stuff SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
+
+generate_export_header (stuff EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_stuff_api.h
   EXPORT_MACRO_NAME G2O_STUFF_API)
 

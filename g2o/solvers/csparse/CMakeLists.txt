@@ -1,10 +1,8 @@
-INCLUDE_DIRECTORIES(${CSPARSE_INCLUDE_DIR})
-
 ADD_LIBRARY(csparse_extension ${G2O_LGPL_LIB_TYPE}
   csparse_helper.cpp csparse_helper.h
 )
 
-generate_export_header (csparse_extension EXPORT_FILE_NAME 
+generate_export_header (csparse_extension EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_csparse_extension_api.h
   EXPORT_MACRO_NAME G2O_CSPARSE_EXTENSION_API)
 
@@ -17,9 +15,9 @@ target_include_directories (csparse_extension PUBLIC
 SET_TARGET_PROPERTIES(csparse_extension PROPERTIES OUTPUT_NAME ${LIB_PREFIX}csparse_extension)
 
 IF(BUILD_CSPARSE)
-  TARGET_LINK_LIBRARIES(csparse_extension csparse)
+  TARGET_LINK_LIBRARIES(csparse_extension PUBLIC csparse)
 ELSE()
-  TARGET_LINK_LIBRARIES(csparse_extension ${CSPARSE_LIBRARY})
+  TARGET_LINK_LIBRARIES(csparse_extension PUBLIC CXSparse::CXSparse)
 ENDIF()
 
 ADD_LIBRARY(solver_csparse
@@ -27,7 +25,7 @@ ADD_LIBRARY(solver_csparse
   linear_solver_csparse.h
 )
 
-generate_export_header (solver_csparse EXPORT_FILE_NAME 
+generate_export_header (solver_csparse EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_solver_csparse_api.h
   EXPORT_MACRO_NAME G2O_SOLVER_CSPARSE_API)
 
@@ -47,7 +45,7 @@ INSTALL(TARGETS solver_csparse csparse_extension EXPORT g2o-targets
   ARCHIVE DESTINATION lib
 )
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-INSTALL(FILES ${headers} 
+INSTALL(FILES ${headers}
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_csparse_extension_api.h
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_solver_csparse_api.h
   DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/solvers/csparse)

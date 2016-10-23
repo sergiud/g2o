@@ -29,17 +29,17 @@ include (CMakePackageConfigHelpers)
 include (CPack)
 include (GenerateExportHeader)
 
-find_package (CSparse)
+find_package (CXSparse 3.1)
 
-if (CSPARSE_FOUND)
+if (TARGET CXSparse::CXSparse)
   option (BUILD_CSPARSE "Build local CSparse library" OFF)
-else (CSPARSE_FOUND)
+else (TARGET CXSparse::CXSparse)
   option (BUILD_CSPARSE "Build local CSparse library" ON)
 
   if (BUILD_CSPARSE)
     set (CSPARSE_FOUND TRUE)
   endif (BUILD_CSPARSE)
-endif (CSPARSE_FOUND)
+endif (TARGET CXSparse::CXSparse)
 
 option (BUILD_APPS "Build g2o apps" ON)
 option (BUILD_EXAMPLES "Build g2o examples" ON)
@@ -78,12 +78,6 @@ IF(WIN32)
       # disable warning on missing DLL interfaces
       ADD_DEFINITIONS("/wd4251")
     ENDIF()
-    # Fix issue: https://github.com/RainerKuemmerle/g2o/issues/66
-    #            Link error LNK2005 due to duplicated symbols
-    add_definitions("/Ob2")
-	# Fix other stupid warnings:
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)  # Avoid deprecated fprintf(), etc.
-    add_definitions("/nologo")
     add_definitions("/wd4244") # Conversion from double -> int
     add_definitions("/wd4267") # Conversion during return
     add_definitions("/wd4522") # Duplicated operator=() in Eigen headers
@@ -134,8 +128,8 @@ FIND_PACKAGE(QGLViewer)
 FIND_PACKAGE(Eigen3 REQUIRED)
 
 # Set up the top-level include directories
-include_directories(${g2o_SOURCE_DIR})
-include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
+#include_directories(${g2o_SOURCE_DIR})
+#include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 
 # Generate config.h
 SET(G2O_OPENGL_FOUND ${OPENGL_FOUND})
@@ -146,8 +140,6 @@ SET(G2O_LGPL_SHARED_LIBS ${BUILD_LGPL_SHARED_LIBS})
 SET(G2O_CXX_COMPILER "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}")
 
 configure_file(config.h.in ${PROJECT_BINARY_DIR}/g2o/config.h)
-
-include_directories(${PROJECT_BINARY_DIR})
 
 install(FILES ${PROJECT_BINARY_DIR}/g2o/config.h DESTINATION include/g2o)
 
@@ -160,18 +152,18 @@ if (SuiteSparse_FOUND)
     "find_dependency (SuiteSparse ${SuiteSparse_VERSION})")
 endif (SuiteSparse_FOUND)
 
+if (CXSparse_FOUND)
+  set (CXSparse_DEPENDENCY
+    "find_dependency (CXSparse ${CXSparse_VERSION})")
+endif (CXSparse_FOUND)
+
 # g2o export targets
 set (g2o_TARGETS
   core
-  csparse_extension
   g2o_cli_library
   g2o_hierarchical_library
-  solver_cholmod
-  solver_csparse
   solver_dense
-  solver_eigen
   solver_pcg
-  solver_slam2d_linear
   solver_structure_only
   stuff
   types_data
@@ -185,9 +177,29 @@ set (g2o_TARGETS
   types_slam3d_addons
 )
 
-if (BUILD_CSPARSE)
+if (TARGET csparse)
   list (APPEND g2o_TARGETS csparse)
-endif (BUILD_CSPARSE)
+endif (TARGET csparse)
+
+if (TARGET csparse_extension)
+  list (APPEND g2o_TARGETS csparse_extension)
+endif (TARGET csparse_extension)
+
+if (TARGET solver_slam2d_linear)
+  list (APPEND g2o_TARGETS solver_slam2d_linear)
+endif (TARGET solver_slam2d_linear)
+
+if (TARGET solver_csparse)
+  list (APPEND g2o_TARGETS solver_csparse)
+endif (TARGET solver_csparse)
+
+if (TARGET solver_cholmod)
+  list (APPEND g2o_TARGETS solver_cholmod)
+endif (TARGET solver_cholmod)
+
+if (TARGET solver_eigen)
+  list (APPEND g2o_TARGETS solver_eigen)
+endif (TARGET solver_eigen)
 
 set_target_properties (${g2o_TARGETS} PROPERTIES DEBUG_POSTFIX _d)
 
