@@ -45,8 +45,8 @@ option (BUILD_APPS "Build g2o apps" ON)
 option (BUILD_EXAMPLES "Build g2o examples" ON)
 option (BUILD_LGPL_SHARED_LIBS "Build LGPL code as shared libraries (LGPL code)" ON)
 option (BUILD_SHARED_LIBS "Build Shared Libraries (preferred and required for the g2o plugin system)" ON)
-option (USE_OPENGL "Build g2o with OpenGL support for visualization" OFF)
-option (USE_OPENMP "Build g2o with OpenMP support (EXPERIMENTAL)" OFF)
+option (WITH_OPENGL "Build g2o with OpenGL support for visualization" OFF)
+option (WITH_OPENMP "Build g2o with OpenMP support (EXPERIMENTAL)" OFF)
 cmake_dependent_option (BUILD_LINKED_APPS "Build apps linked with the libraries (no plugin system)" OFF
   "BUILD_APPS" OFF)
 
@@ -108,15 +108,15 @@ ENDIF()
 # OPENMP is experimental. We experienced some slowdown with it
 FIND_PACKAGE(OpenMP)
 
-IF(OPENMP_FOUND AND USE_OPENMP)
+IF(OPENMP_FOUND AND WITH_OPENMP)
   SET (G2O_OPENMP 1)
   add_compile_options (-DEIGEN_DONT_PARALLELIZE ${OpenMP_CXX_FLAGS})
-ENDIF(OPENMP_FOUND AND USE_OPENMP)
+ENDIF(OPENMP_FOUND AND WITH_OPENMP)
 
 # OpenGL is used in the draw actions for the different types, as well
 # as for creating the GUI itself
 FIND_PACKAGE(OpenGL)
-IF (OPENGL_FOUND AND USE_OPENGL)
+IF (OPENGL_FOUND AND WITH_OPENGL)
   SET (G2O_HAVE_OPENGL 1)
   INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
 ENDIF()
