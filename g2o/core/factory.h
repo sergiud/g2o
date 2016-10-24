@@ -36,6 +36,8 @@
 #include <map>
 #include <iostream>
 
+#include <g2o/core/g2o_core_api.h>
+
 // define to get some verbose output
 //#define G2O_DEBUG_FACTORY
 

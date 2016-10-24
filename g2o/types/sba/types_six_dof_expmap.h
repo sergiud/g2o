@@ -33,6 +33,8 @@
 #include "types_sba.h"
 #include <Eigen/Geometry>
 
+#include <g2o/types/sba/g2o_types_sba_api.h>
+
 namespace g2o {
 namespace types_six_dof_expmap {
 void init();
