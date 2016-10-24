@@ -1,4 +1,9 @@
 cmake_minimum_required (VERSION 3.1)
+
+if (POLICY CMP0063)
+  cmake_policy (SET CMP0063 NEW)
+endif (POLICY CMP0063)
+
 project (g2o)
 
 # Set search directory for looking for our custom CMake scripts to
@@ -52,6 +57,9 @@ cmake_dependent_option (BUILD_LINKED_APPS "Build apps linked with the libraries 
 
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set (CMAKE_CXX_VISIBILITY_PRESET hidden)
+set (CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 # The library prefix
 set(LIB_PREFIX g2o_)
