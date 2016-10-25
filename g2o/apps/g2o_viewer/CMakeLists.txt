@@ -25,7 +25,6 @@ endif()
 INCLUDE_DIRECTORIES(${QGLVIEWER_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 ADD_LIBRARY(viewer_library ${G2O_LIB_TYPE}
-  g2o_viewer_api.h
   g2o_qglviewer.cpp g2o_qglviewer.h
   main_window.cpp main_window.h
   stream_redirect.cpp stream_redirect.h
@@ -35,6 +34,11 @@ ADD_LIBRARY(viewer_library ${G2O_LIB_TYPE}
   run_g2o_viewer.cpp run_g2o_viewer.h
   ${UI_HEADERS} ${UI_SOURCES}
 )
+
+generate_export_header (viewer_library EXPORT_FILE_NAME
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o_viewer_api.h
+  EXPORT_MACRO_NAME G2O_VIEWER_API)
+
 SET_TARGET_PROPERTIES(viewer_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}viewer)
 
 ADD_EXECUTABLE(g2o_viewer
@@ -44,7 +48,7 @@ ADD_EXECUTABLE(g2o_viewer
 SET_TARGET_PROPERTIES(g2o_viewer PROPERTIES OUTPUT_NAME g2o_viewer${EXE_POSTFIX})
 
 TARGET_LINK_LIBRARIES(viewer_library core g2o_cli_library ${QGLVIEWER_LIBRARY} ${MY_QT_LIBRARIES} ${OPENGL_LIBRARY})
-TARGET_LINK_LIBRARIES(viewer_library core opengl_helper)
+#TARGET_LINK_LIBRARIES(viewer_library core opengl_helper)
 TARGET_LINK_LIBRARIES(g2o_viewer viewer_library)
 
 INSTALL(TARGETS g2o_viewer viewer_library
