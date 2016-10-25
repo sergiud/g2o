@@ -9,7 +9,8 @@ generate_export_header (csparse_extension EXPORT_FILE_NAME
 target_include_directories (csparse_extension PUBLIC
   $<INSTALL_INTERFACE:include>
   $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<BUILD_INTERFACE:${g2o_BINARY_DIR}>
+  PRIVATE ${g2o_BINARY_DIR}
 )
 
 SET_TARGET_PROPERTIES(csparse_extension PROPERTIES OUTPUT_NAME ${LIB_PREFIX}csparse_extension)
@@ -32,7 +33,8 @@ generate_export_header (solver_csparse EXPORT_FILE_NAME
 target_include_directories (solver_csparse PUBLIC
   $<INSTALL_INTERFACE:include>
   $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<BUILD_INTERFACE:${g2o_BINARY_DIR}>
+  PRIVATE ${g2o_BINARY_DIR}
 )
 
 SET_TARGET_PROPERTIES(solver_csparse PROPERTIES OUTPUT_NAME ${LIB_PREFIX}solver_csparse)
