@@ -1,7 +1,8 @@
 # Need to find both Qt{4,5} and QGLViewer if the QQL support is to be built
-FIND_PACKAGE(Qt4 QUIET COMPONENTS QtCore QtXml QtOpenGL QtGui)
-IF(NOT Qt4_FOUND)
-	FIND_PACKAGE(Qt5 QUIET COMPONENTS Core Xml OpenGL Gui Widgets)
+FIND_PACKAGE(Qt5 COMPONENTS Core Xml OpenGL Gui Widgets)
+
+IF(NOT Qt5_FOUND)
+	FIND_PACKAGE(Qt4 QUIET COMPONENTS Core Xml OpenGL Gui Widgets)
 	IF(NOT Qt4_FOUND AND NOT Qt5_FOUND)
 		MESSAGE("Qt{4,5} not found. Install it and set Qt{4,5}_DIR accordingly")
 		IF (WIN32)
@@ -20,27 +21,23 @@ FIND_PATH(QGLVIEWER_INCLUDE_DIR qglviewer.h
     ENV QGLVIEWERROOT
   )
 
+if (Qt5_FOUND)
+  set (_QGLVIEWER_SUFFIX qt5)
+elseif (Qt4_FOUND)
+  set (_QGLVIEWER_SUFFIX qt4)
+endif (Qt5_FOUND)
+
 find_library(QGLVIEWER_LIBRARY_RELEASE
-  NAMES qglviewer-qt4 qglviewer QGLViewer QGLViewer2
-  PATHS /usr/lib
-        /usr/local/lib
-        /opt/local/lib
-        /sw/lib
-        ENV QGLVIEWERROOT
-        ENV LD_LIBRARY_PATH
-        ENV LIBRARY_PATH
+  NAMES qglviewer-${_QGLVIEWER_SUFFIX} qglviewer QGLViewer QGLViewer2
+  QGLViewer-${_QGLVIEWER_SUFFIX}
+  ENV QGLVIEWERROOT
   PATH_SUFFIXES QGLViewer QGLViewer/release
 )
 find_library(QGLVIEWER_LIBRARY_DEBUG
-  NAMES dqglviewer dQGLViewer dQGLViewer2 QGLViewerd2
-  PATHS /usr/lib
-        /usr/local/lib
-        /opt/local/lib
-        /sw/lib
-        ENV QGLVIEWERROOT
-        ENV LD_LIBRARY_PATH
-        ENV LIBRARY_PATH
-  PATH_SUFFIXES QGLViewer QGLViewer/release
+  NAMES qglviewer-${_QGLVIEWER_SUFFIX} dqglviewer dQGLViewer dQGLViewer2
+  QGLViewerd2 QGLViewer-${_QGLVIEWER_SUFFIX}
+  PATHS ENV QGLVIEWERROOT
+  PATH_SUFFIXES QGLViewer QGLViewer/debug
 )
 
 if(QGLVIEWER_LIBRARY_RELEASE)
