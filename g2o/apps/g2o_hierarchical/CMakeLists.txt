@@ -47,4 +47,4 @@ INSTALL(TARGETS g2o_hierarchical_library g2o_hierarchical_application EXPORT g2o
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 INSTALL(FILES
   ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_hierarchical_api.h
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/apps/g2o_hierarchical)
+  DESTINATION include/g2o/apps/g2o_hierarchical)

@@ -81,7 +81,7 @@ INSTALL(TARGETS csparse EXPORT g2o-targets
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 INSTALL(FILES ${headers}  ${CMAKE_CURRENT_BINARY_DIR}/cs_api.h
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/EXTERNAL/csparse)
+  DESTINATION include/EXTERNAL/csparse)
 
 # Set up the variables
 if(POLICY CMP0026)

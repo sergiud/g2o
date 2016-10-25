@@ -49,4 +49,4 @@ INSTALL(TARGETS g2o_cli_library g2o_cli_application EXPORT g2o-targets
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_cli_api.h
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/apps/g2o_cli)
+  DESTINATION include/g2o/apps/g2o_cli)

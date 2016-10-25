@@ -17,4 +17,4 @@ INSTALL(TARGETS solver_eigen EXPORT g2o-targets
   ARCHIVE DESTINATION lib
 )
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/solvers/eigen)
+INSTALL(FILES ${headers} DESTINATION include/g2o/solvers/eigen)

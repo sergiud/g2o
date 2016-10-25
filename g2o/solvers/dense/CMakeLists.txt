@@ -19,4 +19,4 @@ INSTALL(TARGETS solver_dense EXPORT g2o-targets
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
-INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/solvers/dense)
+INSTALL(FILES ${headers} DESTINATION include/g2o/solvers/dense)
