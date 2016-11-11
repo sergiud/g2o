@@ -40,8 +40,6 @@ using namespace std;
 
 namespace g2o {
 
-Factory* Factory::factoryInstance = 0;
-
 Factory::Factory()
 {
 }
@@ -53,6 +51,7 @@ Factory::~Factory()
 # endif
   for (CreatorMap::iterator it = _creator.begin(); it != _creator.end(); ++it) {
     delete it->second->creator;
+    delete it->second;
   }
   _creator.clear();
   _tagLookup.clear();
@@ -60,14 +59,12 @@ Factory::~Factory()
 
 Factory* Factory::instance()
 {
-  if (factoryInstance == 0) {
-    factoryInstance = new Factory;
+  static Factory factory;
 #  ifdef G2O_DEBUG_FACTORY
     cerr << "# Factory allocated " << (void*)factoryInstance << endl;
 #  endif
-  }
 
-  return factoryInstance;
+  return &factory;
 }
 
 void Factory::registerType(const std::string& tag, AbstractHyperGraphElementCreator* c)
@@ -140,6 +137,7 @@ void Factory::registerType(const std::string& tag, AbstractHyperGraphElementCrea
         {
           _tagLookup.erase(classPosition);
         }
+      delete tagPosition->second;
       _creator.erase(tagPosition);
     }
   }
@@ -185,8 +183,6 @@ bool Factory::knowsTag(const std::string& tag, int* elementType) const
 
 void Factory::destroy()
 {
-  delete factoryInstance;
-  factoryInstance = 0;
 }
 
 void Factory::printRegisteredTypes(std::ostream& os, bool comment) const

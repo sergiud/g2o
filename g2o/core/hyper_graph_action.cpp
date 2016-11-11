@@ -35,8 +35,6 @@
 namespace g2o {
   using namespace std;
 
-  HyperGraphActionLibrary* HyperGraphActionLibrary::actionLibInstance = 0;
-
   HyperGraphAction::Parameters::~Parameters()
   {
   }
@@ -138,23 +136,19 @@ namespace g2o {
     }
     return false;
   }
-  
+
   HyperGraphActionLibrary::HyperGraphActionLibrary()
   {
   }
 
   HyperGraphActionLibrary* HyperGraphActionLibrary::instance()
   {
-    if (actionLibInstance == 0) {
-      actionLibInstance = new HyperGraphActionLibrary;
-    }
-    return actionLibInstance;
+    static HyperGraphActionLibrary lib;
+    return &lib;
   }
 
   void HyperGraphActionLibrary::destroy()
   {
-    delete actionLibInstance;
-    actionLibInstance = 0;
   }
 
   HyperGraphActionLibrary::~HyperGraphActionLibrary()
@@ -212,6 +206,7 @@ namespace g2o {
     for (list<HyperGraphElementActionCollection*>::iterator itc = collectionDeleteList.begin(); itc != collectionDeleteList.end(); ++itc) {
       //cout << "Deleting collection " << (*itc)->name() << endl;
       _actionMap.erase((*itc)->name());
+      delete *itc;
     }
 
     return true;
