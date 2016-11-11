@@ -111,8 +111,9 @@ namespace g2o {
 
           ~CreatorInformation()
           {
-            std::cout << "Deleting " << (void*) creator << std::endl;
-
+#ifdef G2O_DEBUG_FACTORY
+            std::cout << "Deleting " << static_cast<void*>(creator) << std::endl;
+#endif
             delete creator;
           }
       };
