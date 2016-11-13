@@ -153,6 +153,12 @@ configure_file(config.h.in ${PROJECT_BINARY_DIR}/g2o/config.h)
 
 install(FILES ${PROJECT_BINARY_DIR}/g2o/config.h DESTINATION include/g2o)
 
+# Put binaries in the top-level build directory
+set (OUTPUT_DIR ${CMAKE_BINARY_DIR})
+
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR})
+
 # Include the subdirectories
 add_subdirectory(EXTERNAL)
 add_subdirectory(g2o)
