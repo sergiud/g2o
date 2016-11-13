@@ -2,24 +2,19 @@
 FIND_PACKAGE(Qt5 COMPONENTS Core Xml OpenGL Gui Widgets)
 
 IF(NOT Qt5_FOUND)
-	FIND_PACKAGE(Qt4 QUIET COMPONENTS Core Xml OpenGL Gui Widgets)
-	IF(NOT Qt4_FOUND AND NOT Qt5_FOUND)
-		MESSAGE("Qt{4,5} not found. Install it and set Qt{4,5}_DIR accordingly")
-		IF (WIN32)
-			MESSAGE("  In Windows, Qt5_DIR should be something like C:/Qt/5.4/msvc2013_64_opengl/lib/cmake/Qt5")
-		ENDIF()
-
-		return ()
-	ENDIF()
+  FIND_PACKAGE(Qt4 COMPONENTS Core Xml OpenGL Gui Widgets)
+  IF(NOT Qt4_FOUND AND NOT Qt5_FOUND)
+    return ()
+  ENDIF()
 ENDIF()
 
 FIND_PATH(QGLVIEWER_INCLUDE_DIR qglviewer.h
-    /usr/include/QGLViewer
-    /opt/local/include/QGLViewer
-    /usr/local/include/QGLViewer
-    /sw/include/QGLViewer
-    ENV QGLVIEWERROOT
-  )
+  /usr/include/QGLViewer
+  /opt/local/include/QGLViewer
+  /usr/local/include/QGLViewer
+  /sw/include/QGLViewer
+  ENV QGLVIEWERROOT
+)
 
 if (Qt5_FOUND)
   set (_QGLVIEWER_SUFFIX qt5)
