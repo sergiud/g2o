@@ -56,7 +56,7 @@ namespace g2o {
       static Factory* instance();
 
       //! free the instance
-      static void destroy();
+      CORE_DEPRECATED static void destroy();
 
       /**
        * register a tag for a specific creator
@@ -124,9 +124,6 @@ namespace g2o {
 
       CreatorMap _creator;     ///< look-up map for the existing creators
       TagLookup _tagLookup;    ///< reverse look-up, class name to tag
-
-    private:
-      static Factory* factoryInstance;
   };
 
   template<typename T>
