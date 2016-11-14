@@ -156,8 +156,8 @@ install(FILES ${PROJECT_BINARY_DIR}/g2o/config.h DESTINATION include/g2o)
 # Put binaries in the top-level build directory
 set (OUTPUT_DIR ${CMAKE_BINARY_DIR})
 
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR})
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/bin)
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}/lib)
 
 # Include the subdirectories
 add_subdirectory(EXTERNAL)
