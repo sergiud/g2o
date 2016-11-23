@@ -32,6 +32,8 @@
 
 #include <iostream>
 
+#define G2O_MODULE_API G2O_TYPES_SLAM2D_ADDONS_API
+
 namespace g2o {
 
   G2O_REGISTER_TYPE_GROUP(slam2d_segment);

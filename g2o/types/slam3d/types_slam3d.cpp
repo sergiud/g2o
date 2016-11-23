@@ -14,11 +14,14 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "g2o_types_slam3d_api.h"
 #include "types_slam3d.h"
 #include "g2o/core/factory.h"
 #include "g2o/stuff/macros.h"
 
 #include <iostream>
+
+#define G2O_MODULE_API G2O_TYPES_SLAM3D_API
 
 namespace g2o {
 

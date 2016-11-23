@@ -31,6 +31,8 @@
 #include <typeinfo>
 #include <iostream>
 
+#define G2O_MODULE_API G2O_TYPES_SLAM3D_ADDONS_API
+
 namespace g2o {
 
   G2O_REGISTER_TYPE_GROUP(slam3d_addons);
@@ -47,7 +49,7 @@ namespace g2o {
 
 #ifdef G2O_HAVE_OPENGL
   G2O_REGISTER_ACTION(CacheCameraDrawAction);
-  G2O_REGISTER_ACTION(VertexPlaneDrawAction);  
+  G2O_REGISTER_ACTION(VertexPlaneDrawAction);
   G2O_REGISTER_ACTION(EdgeSE3PlaneSensorCalibDrawAction);
   G2O_REGISTER_ACTION(VertexLine3DDrawAction);
   G2O_REGISTER_ACTION(EdgeSE3Line3DDrawAction);

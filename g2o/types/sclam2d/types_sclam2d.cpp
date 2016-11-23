@@ -32,13 +32,14 @@
 #include "edge_se2_odom_differential_calib.h"
 
 #include "g2o/core/factory.h"
-
 #include "g2o/stuff/macros.h"
+
+#define G2O_MODULE_API G2O_TYPES_SCLAM2D_API
 
 namespace g2o {
 
   G2O_USE_TYPE_GROUP(slam2d);
-  
+
   G2O_REGISTER_TYPE_GROUP(sclam);
   G2O_REGISTER_TYPE(VERTEX_ODOM_DIFFERENTIAL, VertexOdomDifferentialParams);
   G2O_REGISTER_TYPE(EDGE_SE2_CALIB, EdgeSE2SensorCalib);

@@ -30,6 +30,8 @@
 #include "g2o/core/factory.h"
 #include "g2o/stuff/macros.h"
 
+#define G2O_MODULE_API G2O_TYPES_SBA_API
+
 namespace g2o {
 
   using namespace std;
@@ -48,7 +50,7 @@ namespace g2o {
   G2O_REGISTER_TYPE(EDGE_SCALE, EdgeSBAScale);
 
   // constructor
-  VertexIntrinsics::VertexIntrinsics() 
+  VertexIntrinsics::VertexIntrinsics()
   {
     _estimate << 1. , 1. , .5 , .5 , .1;
   }
@@ -68,7 +70,7 @@ namespace g2o {
   }
 
   // constructor
-  VertexCam::VertexCam() 
+  VertexCam::VertexCam()
   {
   }
 
@@ -525,7 +527,7 @@ namespace g2o {
     BaseBinaryEdge<1, double, VertexCam, VertexCam>()
   {
   }
-  
+
   bool EdgeSBAScale::read(std::istream& is)
   {
     double meas;

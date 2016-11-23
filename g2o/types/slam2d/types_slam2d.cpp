@@ -25,12 +25,15 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "types_slam2d.h"
+#include "g2o_types_slam2d_api.h"
 
 #include "g2o/core/factory.h"
 
 #include "g2o/stuff/macros.h"
 
 #include <iostream>
+
+#define G2O_MODULE_API G2O_TYPES_SLAM2D_API
 
 namespace g2o {
 
@@ -52,7 +55,7 @@ namespace g2o {
   G2O_REGISTER_TYPE(EDGE_SE2_TWOPOINTSXY, EdgeSE2TwoPointsXY);
   G2O_REGISTER_TYPE(EDGE_SE2_LOTSOFXY, EdgeSE2LotsOfXY);
 
- 
+
   G2O_REGISTER_ACTION(VertexSE2WriteGnuplotAction);
   G2O_REGISTER_ACTION(VertexPointXYWriteGnuplotAction);
   G2O_REGISTER_ACTION(EdgeSE2WriteGnuplotAction);

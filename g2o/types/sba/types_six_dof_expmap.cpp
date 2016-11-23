@@ -29,6 +29,8 @@
 #include "g2o/core/factory.h"
 #include "g2o/stuff/macros.h"
 
+#define G2O_MODULE_API G2O_TYPES_SBA_API
+
 namespace g2o {
 
 using namespace std;
