@@ -1,3 +1,4 @@
+*.orig
+bin
 build*
 lib
-bin

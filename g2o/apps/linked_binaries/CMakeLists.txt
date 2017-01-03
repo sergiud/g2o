@@ -16,9 +16,9 @@ ENDIF()
 TARGET_LINK_LIBRARIES(g2o_cli_application_linked types_slam2d types_slam3d types_sba types_sclam2d)
 
 INSTALL(TARGETS g2o_cli_application_linked
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION ${_g2o_CMake_BINDIR}
+  LIBRARY DESTINATION ${_g2o_CMake_LIBDIR}
+  ARCHIVE DESTINATION ${_g2o_CMake_LIBDIR}
 )
 
 
@@ -42,11 +42,11 @@ IF(QT4_FOUND AND QGLVIEWER_FOUND)
   TARGET_LINK_LIBRARIES(g2o_viewer_linked types_slam2d types_slam3d types_sba types_sclam2d)
 
   INSTALL(TARGETS g2o_viewer_linked
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION ${_g2o_CMake_BINDIR}
+    LIBRARY DESTINATION ${_g2o_CMake_LIBDIR}
+    ARCHIVE DESTINATION ${_g2o_CMake_LIBDIR}
   )
 ENDIF()
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-INSTALL(FILES ${headers} DESTINATION include/g2o/apps/linked_binaries)
+INSTALL(FILES ${headers} DESTINATION ${_g2o_CMake_INCLUDEDIR}/apps/linked_binaries)

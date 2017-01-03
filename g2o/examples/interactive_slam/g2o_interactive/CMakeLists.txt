@@ -19,10 +19,10 @@ SET_TARGET_PROPERTIES(g2o_online_application PROPERTIES OUTPUT_NAME g2o_online${
 #SET_TARGET_PROPERTIES(generate_commands_application PROPERTIES OUTPUT_NAME generate_commands)
 
 INSTALL(TARGETS g2o_interactive_library g2o_online_application
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION ${_g2o_CMake_BINDIR}
+  LIBRARY DESTINATION ${_g2o_CMake_LIBDIR}
+  ARCHIVE DESTINATION ${_g2o_CMake_LIBDIR}
 )
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-INSTALL(FILES ${headers} DESTINATION include/g2o/examples/interactive_slam/g2o_interactive)
+INSTALL(FILES ${headers} DESTINATION ${_g2o_CMake_INCLUDEDIR}/examples/interactive_slam/g2o_interactive)

@@ -44,22 +44,26 @@ SET_TARGET_PROPERTIES(core PROPERTIES OUTPUT_NAME ${LIB_PREFIX}core)
 
 TARGET_LINK_LIBRARIES(core stuff)
 
-target_include_directories (core SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
+if (TARGET Eigen3::Eigen)
+  target_link_libraries (core PUBLIC Eigen3::Eigen)
+else (TARGET Eigen3::Eigen)
+  target_include_directories (core SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
+endif (TARGET Eigen3::Eigen)
 
 target_include_directories (core PUBLIC
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
   $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
   $<BUILD_INTERFACE:${g2o_BINARY_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
 INSTALL(TARGETS core EXPORT g2o-targets
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION ${_g2o_CMake_BINDIR}
+  LIBRARY DESTINATION ${_g2o_CMake_LIBDIR}
+  ARCHIVE DESTINATION ${_g2o_CMake_LIBDIR}
 )
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
 INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_core_api.h
-  DESTINATION include/g2o/core)
+  DESTINATION ${_g2o_CMake_INCLUDEDIR}/core)
