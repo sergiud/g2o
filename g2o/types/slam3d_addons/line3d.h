@@ -65,29 +65,29 @@ namespace g2o {
       *this << 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
     }
 
-    G2O_TYPES_SLAM3D_ADDONS_API Line3D(const Vector6d& v) {
+    Line3D(const Vector6d& v) {
       (Vector6d&)*this = v;
     }
 
-    G2O_TYPES_SLAM3D_ADDONS_API Vector6d toCartesian() const;
+    Vector6d toCartesian() const;
 
-    G2O_TYPES_SLAM3D_ADDONS_API inline Eigen::Vector3d w() const {
+    inline Eigen::Vector3d w() const {
       return head<3>();
     }
 
-    G2O_TYPES_SLAM3D_ADDONS_API inline Eigen::Vector3d d() const {
+    inline Eigen::Vector3d d() const {
       return tail<3>();
     }
 
-    G2O_TYPES_SLAM3D_ADDONS_API inline void setW(const Eigen::Vector3d& w_) {
+    inline void setW(const Eigen::Vector3d& w_) {
       head<3>() = w_;
     }
 
-    G2O_TYPES_SLAM3D_ADDONS_API inline void setD(const Eigen::Vector3d& d_) {
+    inline void setD(const Eigen::Vector3d& d_) {
       tail<3>() = d_;
     }
 
-    G2O_TYPES_SLAM3D_ADDONS_API static inline Line3D fromCartesian(const Vector6d& cart) {
+    static inline Line3D fromCartesian(const Vector6d& cart) {
       Line3D l;
       Eigen::Vector3d _p = cart.head<3>();
       Eigen::Vector3d _d = cart.tail<3>() * 1.0/cart.tail<3>().norm();
@@ -97,7 +97,7 @@ namespace g2o {
       return l;
     }
 
-    G2O_TYPES_SLAM3D_ADDONS_API static inline Line3D fromOrthonormal(const OrthonormalLine3D& ortho) {
+    static inline Line3D fromOrthonormal(const OrthonormalLine3D& ortho) {
       Eigen::Vector3d w;
       w.x() = ortho.U(0, 0) * ortho.W(0, 0);
       w.y() = ortho.U(1, 0) * ortho.W(0, 0);
@@ -116,7 +116,7 @@ namespace g2o {
       return l;
     }
 
-    G2O_TYPES_SLAM3D_ADDONS_API static inline OrthonormalLine3D toOrthonormal(const Line3D& line) {
+    static inline OrthonormalLine3D toOrthonormal(const Line3D& line) {
       OrthonormalLine3D ortho;
 
       Eigen::Vector2d mags;
@@ -140,16 +140,16 @@ namespace g2o {
       return ortho;
     }
 
-    G2O_TYPES_SLAM3D_ADDONS_API inline void normalize() {
+    inline void normalize() {
       double n = 1.0/d().norm();
       (*this)*=n;
     }
 
-    G2O_TYPES_SLAM3D_ADDONS_API inline Line3D normalized() const {
+    inline Line3D normalized() const {
       return Line3D((Vector6d)(*this)*(1.0/d().norm()));
     }
 
-    G2O_TYPES_SLAM3D_ADDONS_API inline void oplus(const Eigen::Vector4d& v){
+    inline void oplus(const Eigen::Vector4d& v){
       OrthonormalLine3D ortho_estimate = toOrthonormal(*this);
       OrthonormalLine3D ortho_update;
       ortho_update.W <<
@@ -166,7 +166,7 @@ namespace g2o {
       this->normalize();
     }
 
-    G2O_TYPES_SLAM3D_ADDONS_API inline Eigen::Vector4d ominus(const Line3D& line) {
+    inline Eigen::Vector4d ominus(const Line3D& line) {
       OrthonormalLine3D ortho_estimate = toOrthonormal(*this);
       OrthonormalLine3D ortho_line = toOrthonormal(line);
 
@@ -186,7 +186,7 @@ namespace g2o {
 
   };
 
-  G2O_TYPES_SLAM3D_ADDONS_API Line3D operator*(const Eigen::Isometry3d& t, const Line3D& line);
+  Line3D operator*(const Eigen::Isometry3d& t, const Line3D& line);
   
   namespace internal {
 
