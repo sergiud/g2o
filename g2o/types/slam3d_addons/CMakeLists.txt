@@ -1,3 +1,7 @@
+if (MSVC)
+  add_compile_options (/bigobj)
+endif (MSVC)
+
 ADD_LIBRARY(types_slam3d_addons
   vertex_se3_euler.cpp
   vertex_se3_euler.h
