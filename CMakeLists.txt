@@ -48,7 +48,7 @@ endif (TARGET CXSparse::CXSparse)
 
 option (BUILD_APPS "Build g2o apps" ON)
 option (BUILD_EXAMPLES "Build g2o examples" ON)
-option (BUILD_LGPL_SHARED_LIBS "Build LGPL code as shared libraries (LGPL code)" ON)
+option (BUILD_LGPL_SHARED_LIBS "Build LGPL code as shared libraries (LGPL code)" OFF)
 option (BUILD_SHARED_LIBS "Build Shared Libraries (preferred and required for the g2o plugin system)" ON)
 option (WITH_OPENGL "Build g2o with OpenGL support for visualization" OFF)
 option (WITH_OPENMP "Build g2o with OpenMP support (EXPERIMENTAL)" OFF)
