@@ -62,7 +62,7 @@ generate_export_header (csparse EXPORT_FILE_NAME
 
 target_include_directories (csparse PUBLIC
   $<INSTALL_INTERFACE:include>
-  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
