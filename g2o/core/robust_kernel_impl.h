@@ -46,13 +46,13 @@ namespace g2o {
        * construct the scaled kernel ontop of another kernel which might be shared accross
        * several scaled kernels
        */
-      explicit RobustKernelScaleDelta(const RobustKernelPtr& kernel, double delta = 1.);
+      explicit RobustKernelScaleDelta(RobustKernelPtr&& kernel, double delta = 1.);
       explicit RobustKernelScaleDelta(double delta = 1.);
 
       //! return the underlying kernel
-      const RobustKernelPtr kernel() const { return _kernel;}
+      const RobustKernelPtr& kernel() const { return _kernel;}
       //! use another kernel for the underlying operation
-      void setKernel(const RobustKernelPtr& ptr);
+      void setKernel(RobustKernelPtr&& ptr);
 
       void robustify(double error, Vector3D& rho) const;
 

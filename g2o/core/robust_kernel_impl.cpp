@@ -31,9 +31,9 @@
 
 namespace g2o {
 
-RobustKernelScaleDelta::RobustKernelScaleDelta(const RobustKernelPtr& kernel, double delta) :
+RobustKernelScaleDelta::RobustKernelScaleDelta(RobustKernelPtr&& kernel, double delta) :
   RobustKernel(delta),
-  _kernel(kernel)
+  _kernel(std::move(kernel))
 {
 }
 
@@ -42,9 +42,9 @@ RobustKernelScaleDelta::RobustKernelScaleDelta(double delta) :
 {
 }
 
-void RobustKernelScaleDelta::setKernel(const RobustKernelPtr& ptr)
+void RobustKernelScaleDelta::setKernel(RobustKernelPtr&& ptr)
 {
-  _kernel = ptr;
+  _kernel = std::move(ptr);
 }
 
 void RobustKernelScaleDelta::robustify(double error, Vector3D& rho) const

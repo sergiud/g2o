@@ -53,6 +53,8 @@ target_include_directories (core PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
+target_compile_features (core PUBLIC cxx_rvalue_references)
+
 INSTALL(TARGETS core EXPORT g2o-targets
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
