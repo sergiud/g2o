@@ -1,5 +1,3 @@
-INCLUDE_DIRECTORIES(${CSPARSE_INCLUDE_DIR})
-
 ADD_LIBRARY(tutorial_slam2d_library
   edge_se2_pointxy.cpp  se2.h                vertex_point_xy.h
   edge_se2.cpp    edge_se2_pointxy.h    vertex_se2.cpp

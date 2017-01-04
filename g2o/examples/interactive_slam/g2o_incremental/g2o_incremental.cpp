@@ -17,6 +17,7 @@
 #include <iostream>
 #include <cassert>
 #include <csignal>
+#include <cstdlib>
 
 #include "g2o/stuff/macros.h"
 #include "g2o/stuff/command_args.h"
@@ -114,6 +115,8 @@ int main(int argc, char** argv)
     // HACK force tictoc statistics
 #ifdef _MSC_VER
     _putenv_s("G2O_ENABLE_TICTOC", "1");
+#elif defined(__MINGW32__)
+	putenv("G2O_ENABLE_TICTOC=1");
 #else
     setenv("G2O_ENABLE_TICTOC", "1", 1);
 #endif

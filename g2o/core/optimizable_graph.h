@@ -51,6 +51,16 @@ namespace g2o {
   class CacheContainer;
   class RobustKernel;
 
+  template <class T>
+  struct AlignmentFlags
+  {
+#if EIGEN_VERSION_AT_LEAST(3, 3, 0)
+	  static constexpr int value = T::Flags & Eigen::AlignedMask;
+#else
+	  static constexpr int value = T::Flags & Eigen::AlignedBit ? Eigen::Aligned : Eigen::Unaligned;
+#endif
+  };
+
   /**
      @addtogroup g2o
    */
