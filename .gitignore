@@ -1,3 +1,5 @@
+*.orig
+*.swp
+bin
 build*
 lib
-bin
