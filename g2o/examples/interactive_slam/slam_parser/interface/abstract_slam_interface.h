@@ -30,14 +30,16 @@
 #include <vector>
 #include <string>
 
+#include "g2o_slam_parser_interface_api.h"
+
 namespace SlamParser {
-  
+
   /**
    * \brief interface for communicating with the SLAM algorithm
    *
    * This interface allows the parser to communicate with the SLAM algorithm.
    */
-  class AbstractSlamInterface {
+  class G2O_SLAM_PARSER_INTERFACE_API AbstractSlamInterface {
     public:
       /**
        * adding a node to the SLAM engine.

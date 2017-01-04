@@ -27,9 +27,9 @@ set_target_properties (parser_library PROPERTIES EXPORT_NAME parser)
 
 SET_TARGET_PROPERTIES(parser_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}parser)
 
-#ADD_EXECUTABLE(test_slam_parser test_slam_parser.cpp)
-#TARGET_LINK_LIBRARIES(test_slam_parser parser_library)
-#SET_TARGET_PROPERTIES(test_slam_parser PROPERTIES OUTPUT_NAME test_slam_parser${EXE_POSTFIX})
+ADD_EXECUTABLE(test_slam_parser test_slam_parser.cpp)
+TARGET_LINK_LIBRARIES(test_slam_parser parser_library)
+SET_TARGET_PROPERTIES(test_slam_parser PROPERTIES OUTPUT_NAME test_slam_parser${EXE_POSTFIX})
 
 INSTALL(TARGETS parser_library EXPORT g2o-targets
   RUNTIME DESTINATION bin
