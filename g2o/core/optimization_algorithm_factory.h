@@ -142,7 +142,7 @@ namespace g2o {
 
 }
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && defined(G2O_SHARED_LIBS) && G2O_SHARED_LIBS
 #define G2O_OAF_EXPORT __declspec(dllexport)
 #define G2O_OAF_IMPORT __declspec(dllimport)
 #elif defined(__GNUC__)
