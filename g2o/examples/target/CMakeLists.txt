@@ -1,5 +1,3 @@
-INCLUDE_DIRECTORIES(${CHOLMOD_INCLUDE_DIR})
-
 ADD_EXECUTABLE(static_target
   static_target.cpp
 )
