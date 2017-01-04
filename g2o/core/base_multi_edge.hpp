@@ -83,26 +83,22 @@ void BaseMultiEdge<D, E>::linearizeOplus()
 
     const int vi_dim = vi->dimension();
     assert(vi_dim >= 0);
-#ifdef _MSC_VER
-    double* add_vi = new double[vi_dim];
-#else
-    double add_vi[vi_dim];
-#endif
-    std::fill(add_vi, add_vi + vi_dim, 0.0);
+
+    std::vector<double> add_vi(static_cast<std::size_t>(vi_dim), 0.0);
     assert(_dimension >= 0);
     assert(_jacobianOplus[i].rows() == _dimension && _jacobianOplus[i].cols() == vi_dim && "jacobian cache dimension does not match");
       _jacobianOplus[i].resize(_dimension, vi_dim);
     // add small step along the unit vector in each dimension
-    for (int d = 0; d < vi_dim; ++d) {
+    for (std::size_t d = 0; d < add_vi.size(); ++d) {
       vi->push();
       add_vi[d] = delta;
-      vi->oplus(add_vi);
+      vi->oplus(add_vi.data());
       computeError();
       errorBak = _error;
       vi->pop();
       vi->push();
       add_vi[d] = -delta;
-      vi->oplus(add_vi);
+      vi->oplus(add_vi.data());
       computeError();
       errorBak -= _error;
       vi->pop();
@@ -110,9 +106,6 @@ void BaseMultiEdge<D, E>::linearizeOplus()
 
       _jacobianOplus[i].col(d) = scalar * errorBak;
     } // end dimension
-#ifdef _MSC_VER
-    delete[] add_vi;
-#endif
   }
   _error = errorBeforeNumeric;
 
@@ -275,26 +268,22 @@ void BaseMultiEdge<-1, E>::linearizeOplus()
 
     const int vi_dim = vi->dimension();
     assert(vi_dim >= 0);
-#ifdef _MSC_VER
-    double* add_vi = new double[vi_dim];
-#else
-    double add_vi[vi_dim];
-#endif
-    std::fill(add_vi, add_vi + vi_dim, 0.0);
+
+    std::vector<double> add_vi(static_cast<std::size_t>(vi_dim), 0.0);
     assert(_dimension >= 0);
     assert(_jacobianOplus[i].rows() == _dimension && _jacobianOplus[i].cols() == vi_dim && "jacobian cache dimension does not match");
     _jacobianOplus[i].resize(_dimension, vi_dim);
     // add small step along the unit vector in each dimension
-    for (int d = 0; d < vi_dim; ++d) {
+    for (std::size_t d = 0; d < add_vi.size(); ++d) {
       vi->push();
       add_vi[d] = delta;
-      vi->oplus(add_vi);
+      vi->oplus(add_vi.data());
       computeError();
       errorBak = _error;
       vi->pop();
       vi->push();
       add_vi[d] = -delta;
-      vi->oplus(add_vi);
+      vi->oplus(add_vi.data());
       computeError();
       errorBak -= _error;
       vi->pop();
@@ -302,9 +291,6 @@ void BaseMultiEdge<-1, E>::linearizeOplus()
 
       _jacobianOplus[i].col(d) = scalar * errorBak;
     } // end dimension
-#ifdef _MSC_VER
-    delete[] add_vi;
-#endif
   }
   _error = errorBeforeNumeric;
 

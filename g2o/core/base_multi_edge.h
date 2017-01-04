@@ -27,9 +27,11 @@
 #ifndef G2O_BASE_MULTI_EDGE_H
 #define G2O_BASE_MULTI_EDGE_H
 
-#include <iostream>
+#include <cstddef>
 #include <iomanip>
+#include <iostream>
 #include <limits>
+#include <vector>
 
 #include <Eigen/StdVector>
 
@@ -69,7 +71,7 @@ namespace g2o {
       BaseMultiEdge() : BaseEdge<D,E>()
       {
       }
-      
+
       virtual void linearizeOplus(JacobianWorkspace& jacobianWorkspace);
 
       /**
@@ -77,7 +79,7 @@ namespace g2o {
        * the result in temporary variable vector _jacobianOplus
        */
       virtual void linearizeOplus();
-      
+
       virtual void resize(size_t size);
 
       virtual bool allVerticesFixed() const;
