@@ -30,6 +30,8 @@ target_include_directories (types_slam3d_addons PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
+target_compile_definitions (types_slam3d_addons PRIVATE EIGEN_NO_STATIC_ASSERT)
+
 SET_TARGET_PROPERTIES(types_slam3d_addons PROPERTIES OUTPUT_NAME ${LIB_PREFIX}types_slam3d_addons)
 
 TARGET_LINK_LIBRARIES(types_slam3d_addons types_slam3d core)
