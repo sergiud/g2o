@@ -2,6 +2,7 @@
 
 include (CMakeFindDependencyMacro)
 
+@Eigen3_DEPENDENCY@
 @SuiteSparse_DEPENDENCY@
 @CXSparse_DEPENDENCY@
 

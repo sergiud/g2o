@@ -40,7 +40,7 @@ generate_export_header (types_slam3d EXPORT_FILE_NAME
   EXPORT_MACRO_NAME G2O_TYPES_SLAM3D_API)
 
 target_include_directories (types_slam3d PUBLIC
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
   $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
@@ -61,11 +61,11 @@ ADD_EXECUTABLE(test_slam3d_jacobian test_slam3d_jacobian.cpp)
 TARGET_LINK_LIBRARIES(test_slam3d_jacobian types_slam3d)
 
 INSTALL(TARGETS types_slam3d EXPORT g2o-targets
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION ${_g2o_CMake_BINDIR}
+  LIBRARY DESTINATION ${_g2o_CMake_LIBDIR}
+  ARCHIVE DESTINATION ${_g2o_CMake_LIBDIR}
 )
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_slam3d_api.h
-  DESTINATION include/g2o/types/slam3d)
+  DESTINATION ${_g2o_CMake_INCLUDEDIR}/types/slam3d)

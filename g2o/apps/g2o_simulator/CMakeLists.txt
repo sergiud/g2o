@@ -54,10 +54,10 @@ TARGET_LINK_LIBRARIES(g2o_anonymize_observations_application types_slam3d types_
 SET_TARGET_PROPERTIES(g2o_anonymize_observations_application PROPERTIES OUTPUT_NAME g2o_anonymize_observations${EXE_POSTFIX})
 
 INSTALL(TARGETS g2o_simulator_library g2o_simulator2d_application g2o_simulator3d_application g2o_anonymize_observations_application
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION ${_g2o_CMake_BINDIR}
+  LIBRARY DESTINATION ${_g2o_CMake_LIBDIR}
+  ARCHIVE DESTINATION ${_g2o_CMake_LIBDIR}
 )
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-INSTALL(FILES ${headers} DESTINATION include/g2o/apps/g2o_simulator)
+INSTALL(FILES ${headers} DESTINATION ${_g2o_CMake_INCLUDEDIR}/apps/g2o_simulator)

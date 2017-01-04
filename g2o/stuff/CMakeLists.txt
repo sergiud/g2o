@@ -10,14 +10,18 @@ ADD_LIBRARY(stuff
   g2o_stuff_api.h
 )
 
-target_include_directories (stuff SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
+if (TARGET Eigen3::Eigen)
+  target_link_libraries (stuff PUBLIC Eigen3::Eigen)
+else (TARGET Eigen3::Eigen)
+  target_include_directories (stuff SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
+endif (TARGET Eigen3::Eigen)
 
 generate_export_header (stuff EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_stuff_api.h
   EXPORT_MACRO_NAME G2O_STUFF_API)
 
 target_include_directories (stuff PUBLIC
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
   $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
@@ -25,9 +29,9 @@ target_include_directories (stuff PUBLIC
 SET_TARGET_PROPERTIES(stuff PROPERTIES OUTPUT_NAME ${LIB_PREFIX}stuff)
 
 INSTALL(TARGETS stuff EXPORT g2o-targets
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION ${_g2o_CMake_BINDIR}
+  LIBRARY DESTINATION ${_g2o_CMake_LIBDIR}
+  ARCHIVE DESTINATION ${_g2o_CMake_LIBDIR}
 )
 
 # build our OpenGL helper library
@@ -36,9 +40,9 @@ IF(OPENGL_FOUND AND G2O_HAVE_OPENGL)
     opengl_primitives.cpp opengl_primitives.h
   )
   INSTALL(TARGETS opengl_helper EXPORT g2o-targets
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION ${_g2o_CMake_BINDIR}
+    LIBRARY DESTINATION ${_g2o_CMake_LIBDIR}
+    ARCHIVE DESTINATION ${_g2o_CMake_LIBDIR}
   )
   TARGET_LINK_LIBRARIES(opengl_helper ${OPENGL_LIBRARIES})
   SET_TARGET_PROPERTIES(opengl_helper PROPERTIES OUTPUT_NAME ${LIB_PREFIX}opengl_helper)
@@ -51,4 +55,4 @@ ENDIF()
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
 INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_stuff_api.h
-  DESTINATION include/g2o/stuff)
+  DESTINATION ${_g2o_CMake_INCLUDEDIR}/stuff)

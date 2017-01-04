@@ -33,6 +33,13 @@ include (CMakeDependentOption)
 include (CMakePackageConfigHelpers)
 include (CPack)
 include (GenerateExportHeader)
+include (GNUInstallDirs)
+
+set (_g2o_CMake_Base_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR})
+set (_g2o_CMake_BINDIR ${CMAKE_INSTALL_BINDIR})
+set (_g2o_CMake_INCLUDEDIR ${_g2o_CMake_Base_INCLUDEDIR}/g2o)
+set (_g2o_CMake_LIBDIR ${CMAKE_INSTALL_LIBDIR}/g2o)
+set (_g2o_CMake_INSTALLDIR ${_g2o_CMake_LIBDIR}/cmake)
 
 find_package (CXSparse 3.1)
 
@@ -135,11 +142,7 @@ ENDIF()
 FIND_PACKAGE(QGLViewer)
 
 # Find Eigen3
-FIND_PACKAGE(Eigen3 REQUIRED)
-
-# Set up the top-level include directories
-#include_directories(${g2o_SOURCE_DIR})
-#include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
+FIND_PACKAGE (Eigen3 REQUIRED)
 
 # Generate config.h
 SET(G2O_OPENGL_FOUND ${OPENGL_FOUND})
@@ -151,7 +154,7 @@ SET(G2O_CXX_COMPILER "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}")
 
 configure_file(config.h.in ${PROJECT_BINARY_DIR}/g2o/config.h)
 
-install(FILES ${PROJECT_BINARY_DIR}/g2o/config.h DESTINATION include/g2o)
+install(FILES ${PROJECT_BINARY_DIR}/g2o/config.h DESTINATION ${_g2o_CMake_INCLUDEDIR})
 
 # Put binaries in the top-level build directory
 set (OUTPUT_DIR ${CMAKE_BINARY_DIR})
@@ -168,10 +171,15 @@ if (SuiteSparse_FOUND)
     "find_dependency (SuiteSparse ${SuiteSparse_VERSION})")
 endif (SuiteSparse_FOUND)
 
-if (CXSparse_FOUND)
+if (TARGET CXSparse::CXSparse)
   set (CXSparse_DEPENDENCY
     "find_dependency (CXSparse ${CXSparse_VERSION})")
-endif (CXSparse_FOUND)
+endif (TARGET CXSparse::CXSparse)
+
+if (TARGET Eigen3::Eigen)
+  set (Eigen3_DEPENDENCY
+    "find_dependency (Eigen3 ${Eigen3_VERSION})")
+endif (TARGET Eigen3::Eigen)
 
 # g2o export targets
 set (g2o_TARGETS
@@ -221,7 +229,7 @@ set_target_properties (${g2o_TARGETS} PROPERTIES DEBUG_POSTFIX _d)
 
 configure_package_config_file (g2o-config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/g2o-config.cmake
-  INSTALL_DESTINATION lib/cmake/g2o)
+  INSTALL_DESTINATION ${_g2o_CMake_INSTALLDIR})
 write_basic_package_version_file (g2o-config-version.cmake
   VERSION ${VERSION} COMPATIBILITY SameMajorVersion)
 
@@ -232,8 +240,8 @@ export (TARGETS ${g2o_TARGETS} NAMESPACE ${g2o_NAMESPACE} FILE
 export (PACKAGE g2o)
 
 install (EXPORT g2o-targets NAMESPACE ${g2o_NAMESPACE}
-  DESTINATION lib/cmake/g2o)
+  DESTINATION ${_g2o_CMake_INSTALLDIR})
 install (FILES
   ${CMAKE_CURRENT_BINARY_DIR}/g2o-config.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/g2o-config-version.cmake
-  DESTINATION lib/cmake/g2o)
+  DESTINATION ${_g2o_CMake_INSTALLDIR})
