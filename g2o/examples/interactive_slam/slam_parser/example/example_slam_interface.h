@@ -28,7 +28,7 @@
 #define EXAMPLE_SLAM_INTERFACE_H
 
 #include "slam_parser/interface/abstract_slam_interface.h"
-#include "g2o_slam_parser_interface_api.h"
+#include "g2o_example_api.h"
 
 #include <map>
 #include <vector>
@@ -41,7 +41,7 @@
  * and outputs the same values if asked. See the documentation of SlamParser::AbstractSlamInterface
  * for details.
  */
-class G2O_SLAM_PARSER_INTERFACE_API ExampleSlamInterface : public SlamParser::AbstractSlamInterface
+class G2O_EXAMPLE_API ExampleSlamInterface : public SlamParser::AbstractSlamInterface
 {
   public:
     ExampleSlamInterface();
