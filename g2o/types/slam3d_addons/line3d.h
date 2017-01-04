@@ -58,8 +58,7 @@ namespace g2o {
     public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-    G2O_TYPES_SLAM3D_ADDONS_API friend Line3D operator*(const Eigen::Isometry3d& t,
-    							const Line3D& line);
+    friend G2O_TYPES_SLAM3D_ADDONS_API Line3D operator*(const Eigen::Isometry3d& t, const Line3D& line);
 
     Line3D() {
       *this << 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
@@ -186,8 +185,6 @@ namespace g2o {
 
   };
 
-  Line3D operator*(const Eigen::Isometry3d& t, const Line3D& line);
-  
   namespace internal {
 
     G2O_TYPES_SLAM3D_ADDONS_API Vector6d transformCartesianLine(const Eigen::Isometry3d& t, const Vector6d& line);
