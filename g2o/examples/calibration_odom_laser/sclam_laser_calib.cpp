@@ -50,6 +50,8 @@ using namespace g2o;
 
 static bool hasToStop = false;
 
+#define G2O_MODULE_API G2O_CALIBRATION_ODOM_LASER_API
+
 G2O_USE_OPTIMIZATION_LIBRARY(csparse);
 G2O_USE_TYPE_GROUP(slam2d);
 

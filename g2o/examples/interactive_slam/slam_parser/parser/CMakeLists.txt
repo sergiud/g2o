@@ -9,29 +9,21 @@ SET(G2O_PARSER_SRC
   stack.hh
 )
 
-IF (MSVC)
-ADD_LIBRARY(parser_library STATIC
-  ${G2O_PARSER_SRC}
-)
-ELSE()
 ADD_LIBRARY(parser_library
   ${G2O_PARSER_SRC}
 )
-ENDIF()
 
-generate_export_header (parser_library EXPORT_FILE_NAME 
-  ${CMAKE_CURRENT_BINARY_DIR}/slam_parser_api.h
-  EXPORT_MACRO_NAME SLAM_PARSER_API)
+generate_export_header (parser_library EXPORT_FILE_NAME
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o_slam_parser_api.h
+  EXPORT_MACRO_NAME G2O_SLAM_PARSER_API)
 
 target_include_directories (parser_library PUBLIC
   $<INSTALL_INTERFACE:include>
-  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
 set_target_properties (parser_library PROPERTIES EXPORT_NAME parser)
-
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 SET_TARGET_PROPERTIES(parser_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}parser)
 

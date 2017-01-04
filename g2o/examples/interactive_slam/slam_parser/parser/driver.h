@@ -30,11 +30,13 @@
 #include <string>
 #include <vector>
 
+#include "g2o_slam_parser_api.h"
+
 namespace SlamParser {
 
 class SlamContext;
 
-class Driver
+class G2O_SLAM_PARSER_API Driver
 {
 public:
     /// construct a new parser driver context

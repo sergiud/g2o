@@ -1,6 +1,6 @@
 INCLUDE_DIRECTORIES(${CSPARSE_INCLUDE_DIR})
 
-ADD_LIBRARY(tutorial_slam2d_library ${G2O_LIB_TYPE}
+ADD_LIBRARY(tutorial_slam2d_library
   edge_se2_pointxy.cpp  se2.h                vertex_point_xy.h
   edge_se2.cpp    edge_se2_pointxy.h    vertex_se2.cpp
   edge_se2.h      rand.h                vertex_point_xy.cpp  vertex_se2.h
@@ -8,6 +8,14 @@ ADD_LIBRARY(tutorial_slam2d_library ${G2O_LIB_TYPE}
   types_tutorial_slam2d.h types_tutorial_slam2d.cpp
   simulator.h simulator.cpp
   g2o_tutorial_slam2d_api.h
+)
+
+generate_export_header (tutorial_slam2d_library EXPORT_FILE_NAME
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o_tutorial_slam2d_api.h
+  EXPORT_MACRO_NAME G2O_TUTORIAL_SLAM2D_API)
+
+target_include_directories (tutorial_slam2d_library PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
 SET_TARGET_PROPERTIES(tutorial_slam2d_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}tutorial_slam2d)

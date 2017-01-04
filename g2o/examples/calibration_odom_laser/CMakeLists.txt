@@ -1,13 +1,19 @@
-INCLUDE_DIRECTORIES(${CSPARSE_INCLUDE_DIR})
-
-ADD_LIBRARY(calibration_odom_laser_library ${G2O_LIB_TYPE}
+ADD_LIBRARY(calibration_odom_laser_library
   gm2dl_io.cpp gm2dl_io.h
   sclam_helpers.cpp sclam_helpers.h
   motion_information.h
   edge_se2_pure_calib.cpp edge_se2_pure_calib.h
   closed_form_calibration.cpp closed_form_calibration.h
-  g2o_calibration_odom_laser_api.h
 )
+
+generate_export_header (calibration_odom_laser_library EXPORT_FILE_NAME
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o_calibration_odom_laser_api.h
+  EXPORT_MACRO_NAME G2O_CALIBRATION_ODOM_LASER_API)
+
+target_include_directories (calibration_odom_laser_library PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
+
 SET_TARGET_PROPERTIES(calibration_odom_laser_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}calibration_odom_laser)
 TARGET_LINK_LIBRARIES(calibration_odom_laser_library core solver_csparse types_sclam2d types_data)
 

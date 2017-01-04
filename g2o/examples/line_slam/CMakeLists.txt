@@ -1,5 +1,3 @@
-INCLUDE_DIRECTORIES(${CSPARSE_INCLUDE_DIR})
-
 # ADD_EXECUTABLE(line_test line_test.cpp)
 # TARGET_LINK_LIBRARIES(line_test types_slam3d_addons types_slam3d)
 # SET_TARGET_PROPERTIES(line_test PROPERTIES OUTPUT_NAME line_test${EXE_POSTFIX})

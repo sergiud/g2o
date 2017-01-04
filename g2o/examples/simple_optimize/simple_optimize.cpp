@@ -41,10 +41,6 @@
 using namespace std;
 using namespace g2o;
 
-// we use the 2D and 3D SLAM types here
-G2O_USE_TYPE_GROUP(slam2d);
-G2O_USE_TYPE_GROUP(slam3d);
-
 int main(int argc, char** argv)
 {
   // Command line parsing

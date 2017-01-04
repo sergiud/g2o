@@ -1,9 +1,14 @@
-ADD_LIBRARY(g2o_incremental_library ${G2O_LIB_TYPE}
+ADD_LIBRARY(g2o_incremental_library
   graph_optimizer_sparse_incremental.cpp graph_optimizer_sparse_incremental.h
 )
 
-INCLUDE_DIRECTORIES(${CHOLMOD_INCLUDE_DIR})
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../)
+generate_export_header (g2o_incremental_library EXPORT_FILE_NAME
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o_incremental_api.h
+  EXPORT_MACRO_NAME G2O_INCREMENTAL_API)
+
+target_include_directories (g2o_incremental_library PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
 
 SET_TARGET_PROPERTIES(g2o_incremental_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}incremental)
 TARGET_LINK_LIBRARIES(g2o_incremental_library g2o_interactive_library solver_cholmod ${CAMD_LIBRARY})

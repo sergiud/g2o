@@ -1,6 +1,6 @@
 ADD_SUBDIRECTORY(slam_parser)
 
-IF(CHOLMOD_FOUND)
+IF(TARGET solver_cholmod)
   ADD_SUBDIRECTORY(g2o_interactive)
   ADD_SUBDIRECTORY(g2o_incremental)
-ENDIF(CHOLMOD_FOUND)
+ENDIF(TARGET solver_cholmod)

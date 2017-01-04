@@ -4,14 +4,14 @@ ADD_SUBDIRECTORY(sphere)
 
 # The condition on cholmod is required here because the cholmod solver
 # is explicitly used in these examples.
-IF(CHOLMOD_FOUND)
+IF(TARGET solver_cholmod)
   ADD_SUBDIRECTORY(target)
   ADD_SUBDIRECTORY(ba)
   ADD_SUBDIRECTORY(ba_anchored_inverse_depth)
-ENDIF(CHOLMOD_FOUND)
+ENDIF(TARGET solver_cholmod)
 
 # Examples which explicitly use CSparse
-IF(CSPARSE_FOUND)
+IF(TARGET solver_csparse)
   ADD_SUBDIRECTORY(tutorial_slam2d)
   ADD_SUBDIRECTORY(icp)
   ADD_SUBDIRECTORY(calibration_odom_laser)
@@ -20,12 +20,12 @@ IF(CSPARSE_FOUND)
   ADD_SUBDIRECTORY(line_slam)
 ENDIF()
 
-IF(CSPARSE_FOUND OR CHOLMOD_FOUND)
+IF(TARGET solver_cholmod AND TARGET solver_csparse)
   ADD_SUBDIRECTORY(sba)
   ADD_SUBDIRECTORY(bal)
 ENDIF()
 
-IF(QT4_FOUND AND QGLVIEWER_FOUND AND CSPARSE_FOUND)
+IF(QGLVIEWER_FOUND AND TARGET solver_csparse)
   ADD_SUBDIRECTORY(slam2d)
 ENDIF()
 

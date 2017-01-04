@@ -1,11 +1,16 @@
-ADD_LIBRARY(g2o_interactive_library ${G2O_LIB_TYPE}
+ADD_LIBRARY(g2o_interactive_library
   g2o_slam_interface.cpp g2o_slam_interface.h
   graph_optimizer_sparse_online.cpp graph_optimizer_sparse_online.h
   types_online.cpp
 )
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../)
-INCLUDE_DIRECTORIES(${CHOLMOD_INCLUDE_DIR})
+generate_export_header (g2o_interactive_library EXPORT_FILE_NAME
+  ${CMAKE_CURRENT_BINARY_DIR}/g2o_interactive_api.h
+  EXPORT_MACRO_NAME G2O_INTERACTIVE_API)
+
+target_include_directories (g2o_interactive_library PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
 
 SET_TARGET_PROPERTIES(g2o_interactive_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}interactive)
 TARGET_LINK_LIBRARIES(g2o_interactive_library core types_slam2d types_slam3d solver_cholmod parser_library interface_library)

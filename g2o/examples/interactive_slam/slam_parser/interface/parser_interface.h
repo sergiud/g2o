@@ -28,6 +28,7 @@
 #define PARSER_INTERFACE_H
 
 #include "abstract_slam_interface.h"
+#include "g2o_slam_parser_interface_api.h"
 
 #include <iosfwd>
 #include <sstream>
@@ -40,7 +41,7 @@ namespace SlamParser {
   /**
    * \brief top-level interface to the parser
    */
-  class ParserInterface
+  class G2O_SLAM_PARSER_INTERFACE_API ParserInterface
   {
     public:
       /**

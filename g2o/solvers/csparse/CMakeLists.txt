@@ -40,7 +40,7 @@ target_include_directories (solver_csparse PUBLIC
 
 SET_TARGET_PROPERTIES(solver_csparse PROPERTIES OUTPUT_NAME ${LIB_PREFIX}solver_csparse)
 
-TARGET_LINK_LIBRARIES(solver_csparse csparse_extension core)
+TARGET_LINK_LIBRARIES(solver_csparse PUBLIC csparse_extension core)
 
 INSTALL(TARGETS solver_csparse csparse_extension EXPORT g2o-targets
   RUNTIME DESTINATION bin

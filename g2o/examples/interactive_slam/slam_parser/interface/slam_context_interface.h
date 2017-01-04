@@ -28,12 +28,13 @@
 #define SLAM_CONTEXT_INTERFACE_H
 
 #include "slam_parser/parser/slam_context.h"
+#include "g2o_slam_parser_interface_api.h"
 
 namespace SlamParser {
 
   class AbstractSlamInterface;
 
-  class SlamContextInterface : public SlamContext
+  class G2O_SLAM_PARSER_INTERFACE_API SlamContextInterface : public SlamContext
   {
     public:
       SlamContextInterface(AbstractSlamInterface* slam);

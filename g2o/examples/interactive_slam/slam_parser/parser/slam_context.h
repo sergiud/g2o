@@ -29,11 +29,13 @@
 
 #include <vector>
 
+#include "g2o_slam_parser_api.h"
+
 namespace SlamParser {
 
 class CommandNode;
 
-class SlamContext
+class G2O_SLAM_PARSER_API SlamContext
 {
   public:
     SlamContext();
