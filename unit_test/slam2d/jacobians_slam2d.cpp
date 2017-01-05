@@ -26,6 +26,8 @@
 
 #include "gtest/gtest.h"
 
+#include <random>
+
 #include "unit_test/test_helper/evaluate_jacobian.h"
 
 #include "g2o/types/slam2d/edge_pointxy.h"
@@ -46,10 +48,10 @@ static SE2 randomSE2()
 TEST(Slam2D, EdgeSE2Jacobian)
 {
   VertexSE2 v1;
-  v1.setId(0); 
+  v1.setId(0);
 
   VertexSE2 v2;
-  v2.setId(1); 
+  v2.setId(1);
 
   EdgeSE2 e;
   e.setVertex(0, &v1);
@@ -73,7 +75,7 @@ TEST(Slam2D, EdgeSE2Jacobian)
 TEST(Slam2D, EdgeSE2Prior)
 {
   VertexSE2 v1;
-  v1.setId(0); 
+  v1.setId(0);
 
   EdgeSE2Prior e;
   e.setVertex(0, &v1);
@@ -95,10 +97,10 @@ TEST(Slam2D, EdgeSE2Prior)
 TEST(Slam2D, EdgePointXY)
 {
   VertexPointXY v1;
-  v1.setId(0); 
+  v1.setId(0);
 
   VertexPointXY v2;
-  v2.setId(1); 
+  v2.setId(1);
 
   EdgePointXY e;
   e.setVertex(0, &v1);
@@ -122,10 +124,10 @@ TEST(Slam2D, EdgePointXY)
 TEST(Slam2D, EdgeSE2PointXY)
 {
   VertexSE2 v1;
-  v1.setId(0); 
+  v1.setId(0);
 
   VertexPointXY v2;
-  v2.setId(1); 
+  v2.setId(1);
 
   EdgeSE2PointXY e;
   e.setVertex(0, &v1);
@@ -149,10 +151,10 @@ TEST(Slam2D, EdgeSE2PointXY)
 TEST(Slam2D, EdgeSE2PointXYBearing)
 {
   VertexSE2 v1;
-  v1.setId(0); 
+  v1.setId(0);
 
   VertexPointXY v2;
-  v2.setId(1); 
+  v2.setId(1);
 
   EdgeSE2PointXYBearing e;
   e.setVertex(0, &v1);
@@ -164,10 +166,13 @@ TEST(Slam2D, EdgeSE2PointXYBearing)
   numericJacobianWorkspace.updateSize(&e);
   numericJacobianWorkspace.allocate();
 
+  std::default_random_engine eng;
+  std::uniform_real_distribution<> dist;
+
   for (int k = 0; k < 10000; ++k) {
     v1.setEstimate(randomSE2());
     v2.setEstimate(Eigen::Vector2d::Random());
-    e.setMeasurement(drand48() * M_PI);
+    e.setMeasurement(dist(eng) * M_PI);
 
     evaluateJacobian(e, jacobianWorkspace, numericJacobianWorkspace);
   }

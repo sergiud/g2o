@@ -1,5 +1,9 @@
 cmake_minimum_required (VERSION 3.1)
 
+if (POLICY CMP0058)
+  cmake_policy (SET CMP0058 NEW)
+endif (POLICY CMP0058)
+
 if (POLICY CMP0063)
   cmake_policy (SET CMP0063 NEW)
 endif (POLICY CMP0063)
@@ -32,6 +36,7 @@ set (CPACK_PACKAGE_VERSION ${SHORT_VERSION})
 include (CMakeDependentOption)
 include (CMakePackageConfigHelpers)
 include (CPack)
+include (CTest)
 include (GenerateExportHeader)
 include (GNUInstallDirs)
 
@@ -72,6 +77,7 @@ option (WITH_OPENGL "Build g2o with OpenGL support for visualization" OFF)
 option (WITH_OPENMP "Build g2o with OpenMP support (EXPERIMENTAL)" OFF)
 cmake_dependent_option (BUILD_LINKED_APPS "Build apps linked with the libraries (no plugin system)" OFF
   "BUILD_APPS" OFF)
+option (BUILD_TESTING "build unit test framework and the tests" ON)
 
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -174,9 +180,7 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/bin)
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}/lib)
 
 # building unit test framework and our tests
-OPTION(BUILD_UNITTESTS "build unit test framework and the tests" OFF)
-IF(BUILD_UNITTESTS)
-  enable_testing()
+IF(BUILD_TESTING)
   ADD_SUBDIRECTORY(unit_test)
 ENDIF()
 

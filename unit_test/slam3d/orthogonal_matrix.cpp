@@ -36,7 +36,7 @@ TEST(Slam3D, OrthogonalMatrix)
   Eigen::Matrix3d R = Eigen::Matrix3d::Identity();
   Eigen::Matrix3d rot = (Eigen::Matrix3d)Eigen::AngleAxisd(0.01, Eigen::Vector3d::UnitZ());
   rot = rot * (Eigen::Matrix3d)Eigen::AngleAxisd(0.01, Eigen::Vector3d::UnitX());
-  
+
   shouldBeIdentity = R * R.transpose();
   double initialDifference = (shouldBeIdentity - Eigen::Matrix3d::Identity()).array().abs().maxCoeff();
   EXPECT_DOUBLE_EQ(0., initialDifference);
@@ -66,7 +66,7 @@ TEST(Slam3D, OrthogonalMatrix)
   shouldBeIdentity = approxSolution * approxSolution.transpose();
   double approxNearestDifference = (shouldBeIdentity - Eigen::Matrix3d::Identity()).array().abs().maxCoeff();
   EXPECT_NEAR(0., approxNearestDifference, 1e-6);
-  EXPECT_LE(std::abs(R.determinant() - 1.), std::abs(approxSolution.determinant() - 1.));
+  EXPECT_LE(std::abs(R.determinant() - 1.), 10 * std::abs(approxSolution.determinant() - 1.));
   EXPECT_NEAR(1.0, approxSolution.determinant(), 1e-6);
   for (int i = 0; i < 3; ++i)
     EXPECT_NEAR(1.0, approxSolution.col(i).norm(), 1e-6);
