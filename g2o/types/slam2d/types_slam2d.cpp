@@ -33,7 +33,6 @@
 
 #include <iostream>
 
-#define G2O_MODULE_API G2O_TYPES_SLAM2D_API
 
 namespace g2o {
 

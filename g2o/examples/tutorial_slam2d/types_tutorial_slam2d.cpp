@@ -31,7 +31,6 @@
 
 #include <iostream>
 
-#define G2O_MODULE_API G2O_TUTORIAL_SLAM2D_API
 
 #include "g2o_tutorial_slam2d_api.h"
 

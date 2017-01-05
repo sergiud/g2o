@@ -35,7 +35,6 @@
 #include "g2o/core/creators.h"
 #include "g2o/stuff/macros.h"
 
-#define G2O_MODULE_API G2O_TYPES_DATA_API
 
 namespace g2o {
 

@@ -30,7 +30,6 @@
 
 #include <iostream>
 
-#define G2O_MODULE_API G2O_TYPES_ICP_API
 
 using namespace Eigen;
 
