@@ -173,6 +173,13 @@ set (OUTPUT_DIR ${CMAKE_BINARY_DIR})
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/bin)
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}/lib)
 
+# building unit test framework and our tests
+OPTION(BUILD_UNITTESTS "build unit test framework and the tests" OFF)
+IF(BUILD_UNITTESTS)
+  enable_testing()
+  ADD_SUBDIRECTORY(unit_test)
+ENDIF()
+
 # Include the subdirectories
 add_subdirectory(EXTERNAL)
 add_subdirectory(g2o)

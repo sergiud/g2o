@@ -51,15 +51,6 @@ IF(G2O_HAVE_OPENGL)
   TARGET_LINK_LIBRARIES(types_slam3d opengl_helper ${OPENGL_gl_LIBRARY} )
 ENDIF()
 
-ADD_EXECUTABLE(test_isometry3d_mappings test_isometry3d_mappings.cpp)
-TARGET_LINK_LIBRARIES(test_isometry3d_mappings types_slam3d)
-
-ADD_EXECUTABLE(test_mat2quat_jacobian test_mat2quat_jacobian.cpp)
-TARGET_LINK_LIBRARIES(test_mat2quat_jacobian types_slam3d)
-
-ADD_EXECUTABLE(test_slam3d_jacobian test_slam3d_jacobian.cpp)
-TARGET_LINK_LIBRARIES(test_slam3d_jacobian types_slam3d)
-
 INSTALL(TARGETS types_slam3d EXPORT g2o-targets
   RUNTIME DESTINATION ${_g2o_CMake_BINDIR}
   LIBRARY DESTINATION ${_g2o_CMake_LIBDIR}

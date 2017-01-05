@@ -24,18 +24,84 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <iostream>
-#include "dquat2mat.h"
-#include "isometry3d_mappings.h"
-#include "g2o/stuff/macros.h"
-#include "EXTERNAL/ceres/autodiff.h"
+#include "gtest/gtest.h"
 
-#include <cstdio>
+#include "unit_test/test_helper/evaluate_jacobian.h"
+
+#include "g2o/core/jacobian_workspace.h"
+#include "g2o/types/slam3d/edge_se3.h"
+#include "g2o/types/slam3d/edge_pointxyz.h"
+#include "g2o/types/slam3d/dquat2mat.h"
+
+#include "EXTERNAL/ceres/autodiff.h"
 
 using namespace std;
 using namespace g2o;
-using namespace g2o::internal;
 using namespace Eigen;
+
+static Eigen::Isometry3d randomIsometry3d()
+{
+  Eigen::Vector3d rotAxisAngle = Vector3d::Random();
+  rotAxisAngle += Vector3d::Random();
+  Eigen::AngleAxisd rotation(rotAxisAngle.norm(), rotAxisAngle.normalized());
+  Eigen::Isometry3d result = (Eigen::Isometry3d)rotation.toRotationMatrix();
+  result.translation() = Vector3d::Random();
+  return result;
+}
+
+TEST(Slam3D, EdgeSE3Jacobian)
+{
+  VertexSE3 v1;
+  v1.setId(0); 
+
+  VertexSE3 v2;
+  v2.setId(1); 
+
+  EdgeSE3 e;
+  e.setVertex(0, &v1);
+  e.setVertex(1, &v2);
+  e.setInformation(EdgeSE3::InformationType::Identity());
+
+  JacobianWorkspace jacobianWorkspace;
+  JacobianWorkspace numericJacobianWorkspace;
+  numericJacobianWorkspace.updateSize(&e);
+  numericJacobianWorkspace.allocate();
+
+  for (int k = 0; k < 10000; ++k) {
+    v1.setEstimate(randomIsometry3d());
+    v2.setEstimate(randomIsometry3d());
+    e.setMeasurement(randomIsometry3d());
+
+    evaluateJacobian(e, jacobianWorkspace, numericJacobianWorkspace);
+  }
+}
+
+TEST(Slam3D, EdgePointXYZJacobian)
+{
+  VertexPointXYZ v1;
+  v1.setId(0); 
+
+  VertexPointXYZ v2;
+  v2.setId(1); 
+
+  EdgePointXYZ e;
+  e.setVertex(0, &v1);
+  e.setVertex(1, &v2);
+  e.setInformation(EdgePointXYZ::InformationType::Identity());
+
+  JacobianWorkspace jacobianWorkspace;
+  JacobianWorkspace numericJacobianWorkspace;
+  numericJacobianWorkspace.updateSize(&e);
+  numericJacobianWorkspace.allocate();
+
+  for (int k = 0; k < 10000; ++k) {
+    v1.setEstimate(Eigen::Vector3d::Random());
+    v2.setEstimate(Eigen::Vector3d::Random());
+    e.setMeasurement(Eigen::Vector3d::Random());
+
+    evaluateJacobian(e, jacobianWorkspace, numericJacobianWorkspace);
+  }
+}
 
 /**
  * \brief Functor used to compute the Jacobian via AD
@@ -49,7 +115,7 @@ struct RotationMatrix2QuaternionManifold
 
     T t = R.trace();
     if (t > T(0)) {
-      cerr << "w";
+      //cerr << "w";
       t = sqrt(t + T(1));
       //T w = T(0.5)*t;
       t = T(0.5)/t;
@@ -64,7 +130,7 @@ struct RotationMatrix2QuaternionManifold
         i = 2;
       int j = (i+1)%3;
       int k = (j+1)%3;
-      cerr << i;
+      //cerr << i;
 
       t = sqrt(R(i,i) - R(j,j) - R(k,k) + T(1.0));
       quaternion[i] = T(0.5) * t;
@@ -83,10 +149,12 @@ struct RotationMatrix2QuaternionManifold
   }
 };
 
-int main(int , char** )
+TEST(Slam3D, dqDRJacobian)
 {
-  for (int k = 0; k < 100000; ++k) {
-
+  Matrix<double, 3, 9, Eigen::ColMajor>  dq_dR;
+  Matrix<double, 3, 9, Eigen::RowMajor> dq_dR_AD;
+  dq_dR_AD.setZero(); // avoid warning about uninitialized memory
+  for (int k = 0; k < 10000; ++k) {
     // create a random rotation matrix by sampling a random 3d vector
     // that will be used in axis-angle representation to create the matrix
     Vector3D rotAxisAngle = Vector3D::Random();
@@ -95,14 +163,12 @@ int main(int , char** )
     Matrix3D Re = rotation.toRotationMatrix();
 
     // our analytic function which we want to evaluate
-    Matrix<double, 3, 9, Eigen::ColMajor>  dq_dR;
-    compute_dq_dR (dq_dR, 
+    g2o::internal::compute_dq_dR (dq_dR, 
         Re(0,0),Re(1,0),Re(2,0),
         Re(0,1),Re(1,1),Re(2,1),
         Re(0,2),Re(1,2),Re(2,2));
 
     // compute the Jacobian using AD
-    Matrix<double, 3, 9, Eigen::RowMajor> dq_dR_AD;
     typedef ceres::internal::AutoDiff<RotationMatrix2QuaternionManifold, double, 9> AutoDiff_Dq_DR;
     double *parameters[] = { Re.data() };
     double *jacobians[] = { dq_dR_AD.data() };
@@ -110,22 +176,7 @@ int main(int , char** )
     RotationMatrix2QuaternionManifold rot2quat;
     AutoDiff_Dq_DR::Differentiate(rot2quat, parameters, 3, value, jacobians);
 
-    // compare the two Jacobians
-    const double allowedDifference = 1e-6;
-    for (int i = 0; i < dq_dR.rows(); ++i) {
-      for (int j = 0; j < dq_dR.cols(); ++j) {
-        double d = fabs(dq_dR_AD(i,j) - dq_dR(i,j));
-        if (d > allowedDifference) {
-          cerr << "\ndetected difference in the Jacobians" << endl;
-          cerr << PVAR(Re) << endl << endl;
-          cerr << PVAR(dq_dR_AD) << endl << endl;
-          cerr << PVAR(dq_dR) << endl << endl;
-          return 1;
-        }
-      }
-    }
-    cerr << "+";
-
+    double maxDifference = (dq_dR - dq_dR_AD).array().abs().maxCoeff();
+    EXPECT_NEAR(0., maxDifference, 1e-7);
   }
-  return 0;
 }
