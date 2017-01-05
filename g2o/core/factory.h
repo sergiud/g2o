@@ -34,6 +34,7 @@
 
 #include <string>
 #include <map>
+#include <memory>
 #include <iostream>
 
 #include <g2o/core/g2o_core_api.h>
@@ -101,11 +102,10 @@ namespace g2o {
       class CreatorInformation
       {
         public:
-          AbstractHyperGraphElementCreator* creator;
+          std::unique_ptr<AbstractHyperGraphElementCreator> creator;
           int elementTypeBit;
           CreatorInformation()
           {
-            creator = 0;
             elementTypeBit = -1;
           }
 
@@ -114,11 +114,10 @@ namespace g2o {
 #ifdef G2O_DEBUG_FACTORY
             std::cout << "Deleting " << static_cast<void*>(creator) << std::endl;
 #endif
-            delete creator;
           }
       };
 
-      typedef std::map<std::string, CreatorInformation*>               CreatorMap;
+      typedef std::map<std::string, std::unique_ptr<CreatorInformation> >               CreatorMap;
       typedef std::map<std::string, std::string>                      TagLookup;
       Factory();
       ~Factory();

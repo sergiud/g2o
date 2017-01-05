@@ -49,12 +49,6 @@ Factory::~Factory()
 # ifdef G2O_DEBUG_FACTORY
   cerr << "# Factory destroying " << (void*)this << endl;
 # endif
-  for (CreatorMap::iterator it = _creator.begin(); it != _creator.end(); ++it) {
-    delete it->second->creator;
-    delete it->second;
-  }
-  _creator.clear();
-  _tagLookup.clear();
 }
 
 Factory* Factory::instance()
@@ -80,14 +74,14 @@ void Factory::registerType(const std::string& tag, AbstractHyperGraphElementCrea
     assert(0);
   }
 
-  CreatorInformation* ci = new CreatorInformation();
-  ci->creator = c;
+  std::unique_ptr<CreatorInformation> ci(new CreatorInformation);
+  ci->creator.reset(c);
 
 #ifdef G2O_DEBUG_FACTORY
   cerr << "# Factory " << (void*)this << " constructing type " << tag << " ";
 #endif
   // construct an element once to figure out its type
-  HyperGraph::HyperGraphElement* element = c->construct();
+  std::unique_ptr<HyperGraph::HyperGraphElement> element(c->construct());
   ci->elementTypeBit = element->elementType();
 
 #ifdef G2O_DEBUG_FACTORY
@@ -117,9 +111,8 @@ void Factory::registerType(const std::string& tag, AbstractHyperGraphElementCrea
   cerr << endl;
 #endif
 
-  _creator[tag] = ci;
+  _creator[tag] = std::move(ci);
   _tagLookup[c->name()] = tag;
-  delete element;
 }
 
   void Factory::unregisterType(const std::string& tag)
@@ -129,7 +122,7 @@ void Factory::registerType(const std::string& tag, AbstractHyperGraphElementCrea
 
     if (tagPosition != _creator.end()) {
 
-      AbstractHyperGraphElementCreator* c = tagPosition->second->creator;
+      auto& c = tagPosition->second->creator;
 
       // If we found it, remove the creator from the tag lookup map
       TagLookup::iterator classPosition = _tagLookup.find(c->name());
@@ -137,7 +130,6 @@ void Factory::registerType(const std::string& tag, AbstractHyperGraphElementCrea
         {
           _tagLookup.erase(classPosition);
         }
-      delete tagPosition->second;
       _creator.erase(tagPosition);
     }
   }

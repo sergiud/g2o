@@ -39,24 +39,10 @@ namespace g2o {
   {
   }
 
-  OptimizationAlgorithmFactory* OptimizationAlgorithmFactory::factoryInstance = 0;
-
-  OptimizationAlgorithmFactory::OptimizationAlgorithmFactory()
-  {
-  }
-
-  OptimizationAlgorithmFactory::~OptimizationAlgorithmFactory()
-  {
-    for (CreatorList::iterator it = _creator.begin(); it != _creator.end(); ++it)
-      delete *it;
-  }
-
   OptimizationAlgorithmFactory* OptimizationAlgorithmFactory::instance()
   {
-    if (factoryInstance == 0) {
-      factoryInstance = new OptimizationAlgorithmFactory;
-    }
-    return factoryInstance;
+    static OptimizationAlgorithmFactory factoryInstance;
+    return &factoryInstance;
   }
 
   void OptimizationAlgorithmFactory::registerSolver(AbstractOptimizationAlgorithmCreator* c)
@@ -68,7 +54,7 @@ namespace g2o {
       cerr << "SOLVER FACTORY WARNING: Overwriting Solver creator " << name << endl;
       assert(0);
     }
-    _creator.push_back(c);
+    _creator.push_back(std::unique_ptr<AbstractOptimizationAlgorithmCreator>(c));
   }
 
   void OptimizationAlgorithmFactory::unregisterSolver(AbstractOptimizationAlgorithmCreator* c)
@@ -76,7 +62,6 @@ namespace g2o {
     const string& name = c->property().name;
     CreatorList::iterator foundIt = findSolver(name);
     if (foundIt != _creator.end()) {
-      delete *foundIt;
       _creator.erase(foundIt);
     }
   }
@@ -94,8 +79,6 @@ namespace g2o {
 
   void OptimizationAlgorithmFactory::destroy()
   {
-    delete factoryInstance;
-    factoryInstance = 0;
   }
 
   void OptimizationAlgorithmFactory::listSolvers(std::ostream& os) const

@@ -33,6 +33,7 @@
 
 #include <list>
 #include <iostream>
+#include <memory>
 #include <typeinfo>
 
 #include "g2o_core_api.h"
@@ -75,13 +76,13 @@ namespace g2o {
   class G2O_CORE_API OptimizationAlgorithmFactory
   {
     public:
-      typedef std::list<AbstractOptimizationAlgorithmCreator*>      CreatorList;
+      typedef std::list<std::unique_ptr<AbstractOptimizationAlgorithmCreator> >      CreatorList;
 
       //! return the instance
       static OptimizationAlgorithmFactory* instance();
 
       //! free the instance
-      static void destroy();
+      CORE_DEPRECATED static void destroy();
 
       /**
        * register a specific creator for allocating a solver
@@ -105,16 +106,13 @@ namespace g2o {
       const CreatorList& creatorList() const { return _creator;}
 
     protected:
-      OptimizationAlgorithmFactory();
-      ~OptimizationAlgorithmFactory();
+      OptimizationAlgorithmFactory() = default;
+      ~OptimizationAlgorithmFactory() = default;
 
       CreatorList _creator;
 
       CreatorList::const_iterator findSolver(const std::string& name) const;
       CreatorList::iterator findSolver(const std::string& name);
-
-    private:
-      static OptimizationAlgorithmFactory* factoryInstance;
   };
 
   class RegisterOptimizationAlgorithmProxy
