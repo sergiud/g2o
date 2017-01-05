@@ -42,13 +42,21 @@ set (_g2o_CMake_LIBDIR ${CMAKE_INSTALL_LIBDIR}/g2o)
 set (_g2o_CMake_INSTALLDIR ${_g2o_CMake_LIBDIR}/cmake)
 
 if (DEFINED BUILD_CSPARSE AND NOT BUILD_CSPARSE)
+  # BUILD_CSPARSE is set to OFF, require CXSparse
   find_package (CXSparse 3.1 REQUIRED NO_MODULE)
 elseif (DEFINED BUILD_CSPARSE AND BUILD_CSPARSE)
+  # BUILD_CSPARSE is set to ON, we don't need CXSparse
 else (DEFINED BUILD_CSPARSE AND NOT BUILD_CSPARSE)
+  # In other cases, we just try to find CXSParse and decide from there if we
+  # build CSparse or use CXSparse.
   find_package (CXSparse 3.1 NO_MODULE)
 endif (DEFINED BUILD_CSPARSE AND NOT BUILD_CSPARSE)
 
-cmake_dependent_option (BUILD_CSPARSE "Build local CSparse library" OFF "NOT TARGET CXSparse::CXSparse" ON)
+if (NOT TARGET CXSparse::CXSparse)
+  option (BUILD_CSPARSE "Build local CSparse library" ON)
+else (NOT TARGET CXSparse::CXSparse)
+  option (BUILD_CSPARSE "Build local CSparse library" OFF)
+endif (NOT TARGET CXSparse::CXSparse)
 
 if (BUILD_CSPARSE OR TARGET CXSparse::CXSparse)
   set (CSPARSE_FOUND TRUE)
