@@ -6,9 +6,9 @@ ADD_LIBRARY(types_sclam2d
   types_sclam2d.cpp types_sclam2d.h
 )
 
-generate_export_header (types_sclam2d EXPORT_FILE_NAME 
+generate_export_header (types_sclam2d PREFIX_NAME G2O_ EXPORT_FILE_NAME 
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_sclam2d_api.h
-  EXPORT_MACRO_NAME G2O_TYPES_SCLAM2D_API)
+  EXPORT_MACRO_NAME TYPES_SCLAM2D_API)
 
 target_include_directories (types_sclam2d PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>

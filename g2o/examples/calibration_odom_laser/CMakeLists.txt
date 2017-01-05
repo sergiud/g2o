@@ -6,9 +6,9 @@ ADD_LIBRARY(calibration_odom_laser_library
   closed_form_calibration.cpp closed_form_calibration.h
 )
 
-generate_export_header (calibration_odom_laser_library EXPORT_FILE_NAME
+generate_export_header (calibration_odom_laser_library PREFIX_NAME G2O_ EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_calibration_odom_laser_api.h
-  EXPORT_MACRO_NAME G2O_CALIBRATION_ODOM_LASER_API)
+  EXPORT_MACRO_NAME CALIBRATION_ODOM_LASER_API)
 
 target_include_directories (calibration_odom_laser_library PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>

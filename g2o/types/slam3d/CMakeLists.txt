@@ -35,9 +35,9 @@ ADD_LIBRARY(types_slam3d
   types_slam3d.h
 )
 
-generate_export_header (types_slam3d EXPORT_FILE_NAME 
+generate_export_header (types_slam3d PREFIX_NAME G2O_ EXPORT_FILE_NAME 
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_slam3d_api.h
-  EXPORT_MACRO_NAME G2O_TYPES_SLAM3D_API)
+  EXPORT_MACRO_NAME TYPES_SLAM3D_API)
 
 target_include_directories (types_slam3d PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>

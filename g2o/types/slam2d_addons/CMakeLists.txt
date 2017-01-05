@@ -11,9 +11,9 @@ ADD_LIBRARY(types_slam2d_addons
   edge_line2d.cpp          edge_line2d.h
 )
 
-generate_export_header (types_slam2d_addons EXPORT_FILE_NAME 
+generate_export_header (types_slam2d_addons PREFIX_NAME G2O_ EXPORT_FILE_NAME 
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_slam2d_addons_api.h
-  EXPORT_MACRO_NAME G2O_TYPES_SLAM2D_ADDONS_API)
+  EXPORT_MACRO_NAME TYPES_SLAM2D_ADDONS_API)
 
 target_include_directories (types_slam2d_addons PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>

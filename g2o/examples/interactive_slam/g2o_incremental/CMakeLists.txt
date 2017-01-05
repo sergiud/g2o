@@ -2,9 +2,9 @@ ADD_LIBRARY(g2o_incremental_library
   graph_optimizer_sparse_incremental.cpp graph_optimizer_sparse_incremental.h
 )
 
-generate_export_header (g2o_incremental_library EXPORT_FILE_NAME
+generate_export_header (g2o_incremental_library PREFIX_NAME G2O_ EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_incremental_api.h
-  EXPORT_MACRO_NAME G2O_INCREMENTAL_API)
+  EXPORT_MACRO_NAME INCREMENTAL_API)
 
 target_include_directories (g2o_incremental_library PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>

@@ -16,9 +16,9 @@ else (TARGET Eigen3::Eigen)
   target_include_directories (stuff SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
 endif (TARGET Eigen3::Eigen)
 
-generate_export_header (stuff EXPORT_FILE_NAME
+generate_export_header (stuff PREFIX_NAME G2O_ EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_stuff_api.h
-  EXPORT_MACRO_NAME G2O_STUFF_API)
+  EXPORT_MACRO_NAME STUFF_API)
 
 target_include_directories (stuff PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>

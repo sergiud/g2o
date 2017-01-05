@@ -35,9 +35,9 @@ ADD_LIBRARY(viewer_library ${G2O_LIB_TYPE}
   ${UI_HEADERS} ${UI_SOURCES}
 )
 
-generate_export_header (viewer_library EXPORT_FILE_NAME
+generate_export_header (viewer_library PREFIX_NAME G2O_ EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_viewer_api.h
-  EXPORT_MACRO_NAME G2O_VIEWER_API)
+  EXPORT_MACRO_NAME VIEWER_API)
 
 SET_TARGET_PROPERTIES(viewer_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}viewer)
 

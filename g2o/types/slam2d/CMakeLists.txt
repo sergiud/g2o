@@ -15,9 +15,9 @@ ADD_LIBRARY(types_slam2d
   edge_se2_lotsofxy.cpp		edge_se2_lotsofxy.h
 )
 
-generate_export_header (types_slam2d EXPORT_FILE_NAME 
+generate_export_header (types_slam2d PREFIX_NAME G2O_ EXPORT_FILE_NAME 
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_slam2d_api.h
-  EXPORT_MACRO_NAME G2O_TYPES_SLAM2D_API)
+  EXPORT_MACRO_NAME TYPES_SLAM2D_API)
 
 target_include_directories (types_slam2d PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>

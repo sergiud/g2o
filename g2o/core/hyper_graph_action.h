@@ -141,7 +141,7 @@ namespace g2o {
       //! return the single instance of the HyperGraphActionLibrary
       static HyperGraphActionLibrary* instance();
       //! free the instance
-      CORE_DEPRECATED static void destroy();
+      G2O_CORE_DEPRECATED static void destroy();
 
       // returns a pointer to a collection indexed by name
       HyperGraphElementAction* actionByName(const std::string& name);

@@ -13,9 +13,9 @@ ADD_LIBRARY(parser_library
   ${G2O_PARSER_SRC}
 )
 
-generate_export_header (parser_library EXPORT_FILE_NAME
+generate_export_header (parser_library PREFIX_NAME G2O_ EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_slam_parser_api.h
-  EXPORT_MACRO_NAME G2O_SLAM_PARSER_API)
+  EXPORT_MACRO_NAME SLAM_PARSER_API)
 
 target_include_directories (parser_library PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>

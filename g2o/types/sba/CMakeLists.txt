@@ -3,9 +3,9 @@ ADD_LIBRARY(types_sba
   types_sba.cpp   types_six_dof_expmap.cpp
 )
 
-generate_export_header (types_sba EXPORT_FILE_NAME 
+generate_export_header (types_sba PREFIX_NAME G2O_ EXPORT_FILE_NAME 
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_sba_api.h
-  EXPORT_MACRO_NAME G2O_TYPES_SBA_API)
+  EXPORT_MACRO_NAME TYPES_SBA_API)
 
 target_include_directories (types_sba PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>

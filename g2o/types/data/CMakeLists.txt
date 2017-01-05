@@ -10,9 +10,9 @@ ADD_LIBRARY(types_data
   g2o_types_data_api.h
 )
 
-generate_export_header (types_data EXPORT_FILE_NAME 
+generate_export_header (types_data PREFIX_NAME G2O_ EXPORT_FILE_NAME 
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_data_api.h
-  EXPORT_MACRO_NAME G2O_TYPES_DATA_API)
+  EXPORT_MACRO_NAME TYPES_DATA_API)
 
 target_include_directories (types_data PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>

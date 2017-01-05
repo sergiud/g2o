@@ -2,9 +2,9 @@ ADD_LIBRARY(csparse_extension ${G2O_LGPL_LIB_TYPE}
   csparse_helper.cpp csparse_helper.h
 )
 
-generate_export_header (csparse_extension EXPORT_FILE_NAME
+generate_export_header (csparse_extension PREFIX_NAME G2O_ EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_csparse_extension_api.h
-  EXPORT_MACRO_NAME G2O_CSPARSE_EXTENSION_API)
+  EXPORT_MACRO_NAME CSPARSE_EXTENSION_API)
 
 target_include_directories (csparse_extension PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
@@ -27,9 +27,9 @@ ADD_LIBRARY(solver_csparse
   linear_solver_csparse.h
 )
 
-generate_export_header (solver_csparse EXPORT_FILE_NAME
+generate_export_header (solver_csparse PREFIX_NAME G2O_ EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_solver_csparse_api.h
-  EXPORT_MACRO_NAME G2O_SOLVER_CSPARSE_API)
+  EXPORT_MACRO_NAME SOLVER_CSPARSE_API)
 
 target_include_directories (solver_csparse PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>

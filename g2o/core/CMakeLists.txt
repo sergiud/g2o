@@ -36,9 +36,9 @@ robust_kernel_impl.cpp robust_kernel_impl.h
 robust_kernel_factory.cpp robust_kernel_factory.h
 )
 
-generate_export_header (core EXPORT_FILE_NAME
+generate_export_header (core PREFIX_NAME G2O_ EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_core_api.h
-  EXPORT_MACRO_NAME G2O_CORE_API)
+  EXPORT_MACRO_NAME CORE_API)
 
 SET_TARGET_PROPERTIES(core PROPERTIES OUTPUT_NAME ${LIB_PREFIX}core)
 

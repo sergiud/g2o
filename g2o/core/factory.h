@@ -56,7 +56,7 @@ namespace g2o {
       static Factory* instance();
 
       //! free the instance
-      CORE_DEPRECATED static void destroy();
+      G2O_CORE_DEPRECATED static void destroy();
 
       /**
        * register a tag for a specific creator

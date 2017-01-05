@@ -82,7 +82,7 @@ namespace g2o {
       static OptimizationAlgorithmFactory* instance();
 
       //! free the instance
-      CORE_DEPRECATED static void destroy();
+      G2O_CORE_DEPRECATED static void destroy();
 
       /**
        * register a specific creator for allocating a solver

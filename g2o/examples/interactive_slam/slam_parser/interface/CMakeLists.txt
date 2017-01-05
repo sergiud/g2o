@@ -10,9 +10,9 @@ ADD_LIBRARY(interface_library
   ${interface_library_src}
 )
 
-generate_export_header (interface_library EXPORT_FILE_NAME
+generate_export_header (interface_library PREFIX_NAME G2O_ EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/g2o_slam_parser_interface_api.h
-  EXPORT_MACRO_NAME G2O_SLAM_PARSER_INTERFACE_API)
+  EXPORT_MACRO_NAME SLAM_PARSER_INTERFACE_API)
 
 target_include_directories (interface_library PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
