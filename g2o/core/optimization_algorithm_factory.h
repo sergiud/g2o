@@ -57,7 +57,7 @@ namespace g2o {
   {
     public:
       AbstractOptimizationAlgorithmCreator(const OptimizationAlgorithmProperty& p);
-      virtual ~AbstractOptimizationAlgorithmCreator() { }
+      virtual ~AbstractOptimizationAlgorithmCreator() = default;
       //! allocate a solver operating on optimizer, re-implement for your creator
       virtual OptimizationAlgorithm* construct() = 0;
       //! return the properties of the solver
@@ -140,17 +140,6 @@ namespace g2o {
 
 }
 
-#if defined(_MSC_VER) && defined(G2O_SHARED_LIBS) && G2O_SHARED_LIBS
-#define G2O_OAF_EXPORT __declspec(dllexport)
-#define G2O_OAF_IMPORT __declspec(dllimport)
-#elif defined(__GNUC__)
-#define G2O_OAF_EXPORT __attribute__ ((visibility("default")))
-#define G2O_OAF_IMPORT __attribute__ ((visibility("default")))
-#else
-#define G2O_OAF_EXPORT
-#define G2O_OAF_IMPORT
-#endif
-
 /**
  * Use the following macro to register a whole library of
  * algorithms to the factory, e.g.,
@@ -162,26 +151,26 @@ namespace g2o {
  * should then provide the same name as to the macro before.
  */
 #define G2O_REGISTER_OPTIMIZATION_LIBRARY(libraryname) \
-    extern "C" void G2O_OAF_EXPORT g2o_optimization_library_##libraryname(void) {}
+    extern "C" void G2O_FACTORY_EXPORT g2o_optimization_library_##libraryname(void) {}
 
 /**
- * see the documentation to G2O_CORE_API() above.
+ * see the documentation to G2O_FACTORY_IMPORT() above.
  * You should but this into your code, if you expect the factory
  * to be able to allocate a solver but it fails. It enforces linking
  * to the library containing the solver. Hence, the usage of the macro
  * should enforce that the library is actually linked with the binary.
  */
 #define G2O_USE_OPTIMIZATION_LIBRARY(libraryname) \
-    extern "C" void G2O_OAF_IMPORT g2o_optimization_library_##libraryname(void); \
+    extern "C" void G2O_FACTORY_IMPORT g2o_optimization_library_##libraryname(void); \
     static g2o::ForceLinker g2o_force_optimization_algorithm_library_##libraryname(g2o_optimization_library_##libraryname);
 
 /**
- * Similarly to G2O_CORE_API this macro allows to register a singla
+ * Similarly to G2O_FACTORY_EXPORT this macro allows to register a singla
  * more specific algorithm to the library, i.e., gn_var, where gn_var
  * corresponds to a specific instance of csparse based solver for example
  */
 #define G2O_REGISTER_OPTIMIZATION_ALGORITHM(optimizername, instance) \
-    extern "C" void G2O_OAF_EXPORT g2o_optimization_algorithm_##optimizername(void) {} \
+    extern "C" void G2O_FACTORY_EXPORT g2o_optimization_algorithm_##optimizername(void) {} \
     static g2o::RegisterOptimizationAlgorithmProxy g_optimization_algorithm_proxy_##optimizername(instance);
 
 /**
@@ -190,7 +179,7 @@ namespace g2o {
  * solver instance and guarantees its usage with the factory
  */
 #define G2O_USE_OPTIMIZATION_ALGORITHM(optimizername) \
-    extern "C" void G2O_OAF_IMPORT g2o_optimization_algorithm_##optimizername(void); \
+    extern "C" void G2O_FACTORY_IMPORT g2o_optimization_algorithm_##optimizername(void); \
     static g2o::ForceLinker g2o_force_optimization_algorithm_link_##optimizername(g2o_optimization_algorithm_##optimizername);
 
 #endif

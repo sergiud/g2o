@@ -14,6 +14,17 @@
 
 #cmakedefine G2O_CXX_COMPILER "@G2O_CXX_COMPILER@"
 
+#if defined(_MSC_VER) && defined(G2O_SHARED_LIBS) && G2O_SHARED_LIBS
+#define G2O_FACTORY_EXPORT __declspec(dllexport)
+#define G2O_FACTORY_IMPORT __declspec(dllimport)
+#elif defined(__GNUC__)
+#define G2O_FACTORY_EXPORT __attribute__ ((visibility("default")))
+#define G2O_FACTORY_IMPORT __attribute__ ((visibility("default")))
+#else
+#define G2O_FACTORY_EXPORT
+#define G2O_FACTORY_IMPORT
+#endif
+
 #ifdef __cplusplus
 #include <g2o/core/eigen_types.h>
 #endif

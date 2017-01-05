@@ -33,53 +33,35 @@ using namespace std;
 
 namespace g2o {
 
-RobustKernelFactory* RobustKernelFactory::factoryInstance = 0;
-
-RobustKernelFactory::RobustKernelFactory()
-{
-}
-
-RobustKernelFactory::~RobustKernelFactory()
-{
-  for (CreatorMap::iterator it = _creator.begin(); it != _creator.end(); ++it) {
-    delete it->second;
-  }
-  _creator.clear();
-}
-
 RobustKernelFactory* RobustKernelFactory::instance()
 {
-  if (factoryInstance == 0) {
-    factoryInstance = new RobustKernelFactory;
-  }
-
-  return factoryInstance;
+  static RobustKernelFactory factoryInstance;
+  return &factoryInstance;
 }
 
 void RobustKernelFactory::registerRobustKernel(const std::string& tag, AbstractRobustKernelCreator* c)
 {
-  CreatorMap::const_iterator foundIt = _creator.find(tag);
+  auto foundIt = _creator.find(tag);
   if (foundIt != _creator.end()) {
     cerr << "RobustKernelFactory WARNING: Overwriting robust kernel tag " << tag << endl;
     assert(0);
   }
 
-  _creator[tag] = c;
+  _creator[tag].reset(c);
 }
 
 void RobustKernelFactory::unregisterType(const std::string& tag)
 {
-  CreatorMap::iterator tagPosition = _creator.find(tag);
+  auto tagPosition = _creator.find(tag);
   if (tagPosition != _creator.end()) {
-    AbstractRobustKernelCreator* c = tagPosition->second;
-    delete c;
+    tagPosition->second.release();
     _creator.erase(tagPosition);
   }
 }
 
 RobustKernel* RobustKernelFactory::construct(const std::string& tag) const
 {
-  CreatorMap::const_iterator foundIt = _creator.find(tag);
+  auto foundIt = _creator.find(tag);
   if (foundIt != _creator.end()) {
     return foundIt->second->construct();
   }
@@ -88,9 +70,9 @@ RobustKernel* RobustKernelFactory::construct(const std::string& tag) const
 
 AbstractRobustKernelCreator* RobustKernelFactory::creator(const std::string& tag) const
 {
-  CreatorMap::const_iterator foundIt = _creator.find(tag);
+  auto foundIt = _creator.find(tag);
   if (foundIt != _creator.end()) {
-    return foundIt->second;
+    return foundIt->second.get();
   }
   return 0;
 }
@@ -98,14 +80,14 @@ AbstractRobustKernelCreator* RobustKernelFactory::creator(const std::string& tag
 void RobustKernelFactory::fillKnownKernels(std::vector<std::string>& types) const
 {
   types.clear();
-  for (CreatorMap::const_iterator it = _creator.begin(); it != _creator.end(); ++it)
-    types.push_back(it->first);
+  types.reserve(_creator.size());
+
+  for (const auto& c : _creator)
+    types.push_back(c.first);
 }
 
 void RobustKernelFactory::destroy()
 {
-  delete factoryInstance;
-  factoryInstance = 0;
 }
 
 } // end namespace

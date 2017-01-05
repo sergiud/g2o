@@ -50,7 +50,7 @@ namespace g2o
        */
       virtual const std::string& name() const = 0;
 
-      virtual ~AbstractHyperGraphElementCreator() { }
+      virtual ~AbstractHyperGraphElementCreator() = default;
   };
 
   /**

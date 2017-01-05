@@ -28,12 +28,14 @@
 #define G2O_ROBUST_KERNEL_FACTORY_H
 
 #include "g2o_core_api.h"
+#include "g2o/config.h"
 #include "g2o/stuff/misc.h"
 
 #include <string>
 #include <map>
 #include <vector>
 #include <iostream>
+#include <memory>
 
 namespace g2o {
 
@@ -49,7 +51,7 @@ namespace g2o {
        * create a hyper graph element. Has to implemented in derived class.
        */
       virtual RobustKernel* construct() = 0;
-      virtual ~AbstractRobustKernelCreator() { }
+      virtual ~AbstractRobustKernelCreator() = default;
   };
 
   /**
@@ -73,7 +75,7 @@ namespace g2o {
       static RobustKernelFactory* instance();
 
       //! free the instance
-      static void destroy();
+      CORE_DEPRECATED static void destroy();
 
       /**
        * register a tag for a specific creator
@@ -102,9 +104,9 @@ namespace g2o {
 
     protected:
 
-      typedef std::map<std::string, AbstractRobustKernelCreator*>              CreatorMap;
-      RobustKernelFactory();
-      ~RobustKernelFactory();
+      typedef std::map<std::string, std::unique_ptr<AbstractRobustKernelCreator> >              CreatorMap;
+      RobustKernelFactory() = default;
+      ~RobustKernelFactory() = default;
 
       CreatorMap _creator;     ///< look-up map for the existing creators
 
@@ -117,8 +119,9 @@ namespace g2o {
   {
     public:
       RegisterRobustKernelProxy(const std::string& name) : _name(name)
+          , creator_(new RobustKernelCreator<T>)
       {
-        RobustKernelFactory::instance()->registerRobustKernel(_name, new RobustKernelCreator<T>());
+        RobustKernelFactory::instance()->registerRobustKernel(_name, creator_.get());
       }
 
       ~RegisterRobustKernelProxy()
@@ -127,24 +130,17 @@ namespace g2o {
       }
 
     private:
+      std::unique_ptr<RobustKernelCreator<T> > creator_;
       std::string _name;
   };
 
-#if defined _MSC_VER && defined G2O_SHARED_LIBS
-#  define G2O_ROBUST_KERNEL_FACTORY_EXPORT __declspec(dllexport)
-#  define G2O_ROBUST_KERNEL_FACTORY_IMPORT __declspec(dllimport)
-#else
-#  define G2O_ROBUST_KERNEL_FACTORY_EXPORT
-#  define G2O_ROBUST_KERNEL_FACTORY_IMPORT
-#endif
-
   // These macros are used to automate registering of robust kernels and forcing linkage
 #define G2O_REGISTER_ROBUST_KERNEL(name, classname) \
-    extern "C" void G2O_ROBUST_KERNEL_FACTORY_EXPORT g2o_robust_kernel_##classname(void) {} \
+    extern "C" void G2O_FACTORY_EXPORT g2o_robust_kernel_##classname(void) {} \
     static g2o::RegisterRobustKernelProxy<classname> g_robust_kernel_proxy_##classname(#name);
 
 #define G2O_USE_ROBUST_KERNEL(classname) \
-    extern "C" void G2O_ROBUST_KERNEL_FACTORY_IMPORT g2o_robust_kernel_##classname(void); \
+    extern "C" void G2O_FACTORY_IMPORT g2o_robust_kernel_##classname(void); \
     static g2o::TypeFunctionProxy proxy_##classname(g2o_robust_kernel_##classname);
 
 } // end namespace g2o

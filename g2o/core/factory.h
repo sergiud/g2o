@@ -38,13 +38,12 @@
 #include <iostream>
 
 #include <g2o/core/g2o_core_api.h>
+#include <g2o/core/creators.h>
 
 // define to get some verbose output
 //#define G2O_DEBUG_FACTORY
 
 namespace g2o {
-
-  class AbstractHyperGraphElementCreator;
 
   /**
    * \brief create vertices and edges based on TAGs in, for example, a file
