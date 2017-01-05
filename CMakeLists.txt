@@ -130,6 +130,8 @@ IF(ANDROID)
   ADD_DEFINITIONS(-DANDROID)
 ENDIF()
 
+find_package (Qt5 COMPONENTS Core Gui OpenGL Widgets Xml)
+
 # For building the CHOLMOD / CSPARSE solvers
 find_package (SuiteSparse 4.4.5 NO_MODULE)
 
