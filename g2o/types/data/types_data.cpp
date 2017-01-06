@@ -24,16 +24,14 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "g2o/config.h"
-
-#include "robot_laser.h"
-#include "vertex_tag.h"
-#include "vertex_ellipse.h"
-
-
-#include <g2o/core/factory.h>
+#include <g2o/config.h>
 #include <g2o/core/creators.h>
+#include <g2o/core/hyper_graph.h>
 #include <g2o/stuff/macros.h>
+#include <g2o/types/data/g2o_types_data_api.h>
+#include <g2o/types/data/robot_laser.h>
+#include <g2o/types/data/vertex_ellipse.h>
+#include <g2o/types/data/vertex_tag.h>
 
 
 namespace g2o {

@@ -25,8 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "hyper_graph_action.h"
-#include "optimizable_graph.h"
 #include "cache.h"
+#include "optimizable_graph.h"
 #include <g2o/stuff/macros.h>
 
 

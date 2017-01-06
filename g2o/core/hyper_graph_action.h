@@ -27,17 +27,17 @@
 #ifndef G2O_HYPER_GRAPH_ACTION_H
 #define G2O_HYPER_GRAPH_ACTION_H
 
-#include "hyper_graph.h"
+#include <g2o/core/hyper_graph_action.h>
 #include <g2o/stuff/property.h>
 
-#include <typeinfo>
 #include <iosfwd>
-#include <set>
-#include <string>
 #include <iostream>
 #include <memory>
+#include <set>
+#include <string>
+#include <typeinfo>
 
-#include <g2o/core/g2o_core_api.h>
+#include "cache.h"
 
 // define to get verbose output
 //#define G2O_DEBUG_ACTIONLIB

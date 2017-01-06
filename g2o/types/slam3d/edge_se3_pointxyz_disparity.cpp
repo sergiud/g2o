@@ -26,8 +26,8 @@
 
 #include "edge_se3_pointxyz_disparity.h"
 
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 #ifdef G2O_HAVE_OPENGL
 #include <g2o/stuff/opengl_wrapper.h>

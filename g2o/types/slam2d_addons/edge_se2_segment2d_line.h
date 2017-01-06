@@ -28,9 +28,9 @@
 #define G2O_EDGE_SE2_SEGMENT2D_LINE_H
 
 #include "g2o/config.h"
-#include <g2o/types/slam2d/vertex_se2.h>
 #include "vertex_segment2d.h"
 #include <g2o/core/base_binary_edge.h>
+#include <g2o/types/slam2d/vertex_se2.h>
 #include <g2o/types/slam2d_addons/g2o_types_slam2d_addons_api.h>
 
 namespace g2o {

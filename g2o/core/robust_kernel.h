@@ -27,10 +27,11 @@
 #ifndef G2O_ROBUST_KERNEL_H
 #define G2O_ROBUST_KERNEL_H
 
-#include <memory>
 #include <Eigen/Core>
+#include <memory>
 
-#include "eigen_types.h"
+#include <g2o/config.h>
+#include <g2o/core/eigen_types.h>
 #include <g2o/core/g2o_core_api.h>
 
 namespace g2o {
@@ -51,7 +52,7 @@ namespace g2o {
     public:
       RobustKernel();
       explicit RobustKernel(double delta);
-      virtual ~RobustKernel() {}
+      virtual ~RobustKernel() = default;
       /**
        * compute the scaling factor for a error:
        * The error is e^T Omega e

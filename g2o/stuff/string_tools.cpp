@@ -29,8 +29,8 @@
 #include "macros.h"
 
 #include <cctype>
-#include <string>
 #include <cstdarg>
+#include <string>
 #include <cstring>
 #include <algorithm>
 #include <cstdio>

@@ -27,15 +27,16 @@
 #ifndef G2O_OPTIMIZATION_ALGORITHM_H
 #define G2O_OPTIMIZATION_ALGORITHM_H
 
-#include <vector>
-#include <utility>
 #include <iosfwd>
+#include <utility>
+#include <vector>
 
+#include <g2o/core/batch_stats.h>
+#include <g2o/core/g2o_core_api.h>
+#include <g2o/core/hyper_graph_action.h>
+#include <g2o/core/robust_kernel.h>
 #include <g2o/stuff/property.h>
 
-#include "hyper_graph.h"
-#include "sparse_block_matrix.h"
-#include <g2o/core/g2o_core_api.h>
 
 namespace g2o {
 
@@ -97,7 +98,7 @@ namespace g2o {
        * update the properties from a string, see PropertyMap::updateMapFromString()
        */
       bool updatePropertiesFromString(const std::string& propString);
-      
+
       /**
        * print the properties to a stream in a human readable fashion
        */

@@ -27,21 +27,21 @@
 #ifndef G2O_AIS_OPTIMIZABLE_GRAPH_HH_
 #define G2O_AIS_OPTIMIZABLE_GRAPH_HH_
 
-#include <set>
-#include <iostream>
-#include <list>
-#include <limits>
 #include <cmath>
+#include <iostream>
+#include <limits>
+#include <list>
+#include <set>
 #include <typeinfo>
 
-#include "openmp_mutex.h"
-#include "hyper_graph.h"
-#include "parameter.h"
-#include "parameter_container.h"
-#include "jacobian_workspace.h"
-
-#include <g2o/stuff/macros.h>
+#include <g2o/core/eigen_types.h>
 #include <g2o/core/g2o_core_api.h>
+#include <g2o/core/hyper_graph.h>
+#include <g2o/core/jacobian_workspace.h>
+#include <g2o/core/openmp_mutex.h>
+#include <g2o/core/parameter.h>
+#include <g2o/core/parameter_container.h>
+#include <g2o/stuff/macros.h>
 
 namespace g2o {
 
@@ -122,7 +122,7 @@ namespace g2o {
 
         //! returns a deep copy of the current vertex
         virtual Vertex* clone() const ;
-	
+
         virtual ~Vertex();
 
         //! sets the node to the origin (used in the multilevel stuff)
@@ -359,12 +359,12 @@ namespace g2o {
     class G2O_CORE_API Edge: public HyperGraph::Edge, public HyperGraph::DataContainer {
       private:
         friend struct OptimizableGraph;
-	
+
     public:
         Edge();
         virtual ~Edge();
         virtual Edge* clone() const;
-	
+
         // indicates if all vertices are fixed
         virtual bool allVerticesFixed() const = 0;
 

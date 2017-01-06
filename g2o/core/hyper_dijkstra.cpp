@@ -25,12 +25,12 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <queue>
-#include <deque>
-#include <vector>
 #include <cassert>
+#include <deque>
 #include <iostream>
 #include "hyper_dijkstra.h"
 #include <g2o/stuff/macros.h>
+#include <vector>
 
 namespace g2o{
 

@@ -35,7 +35,7 @@
 #include <g2o/core/base_multi_edge.h>
 #include <g2o/types/sba/types_sba.h>
 #include <g2o/types/slam3d/types_slam3d.h>
-#include <g2o/types/icp/g2o_types_icp_api.h>
+#include <g2o/types/slam3d/vertex_se3.h>
 
 #include <Eigen/Geometry>
 #include <iostream>

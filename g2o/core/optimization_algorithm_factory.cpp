@@ -26,9 +26,9 @@
 
 #include "optimization_algorithm_factory.h"
 
+#include <cassert>
 #include <iostream>
 #include <typeinfo>
-#include <cassert>
 
 using namespace std;
 

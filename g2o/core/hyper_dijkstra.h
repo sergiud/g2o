@@ -27,9 +27,9 @@
 #ifndef G2O_AIS_GENERAL_DIJKSTRA_HH
 #define G2O_AIS_GENERAL_DIJKSTRA_HH
 
+#include <limits>
 #include <map>
 #include <set>
-#include <limits>
 
 #include "hyper_graph.h"
 

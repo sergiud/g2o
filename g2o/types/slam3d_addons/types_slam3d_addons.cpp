@@ -28,8 +28,8 @@
 #include <g2o/core/factory.h>
 #include <g2o/stuff/macros.h>
 
-#include <typeinfo>
 #include <iostream>
+#include <typeinfo>
 
 
 namespace g2o {

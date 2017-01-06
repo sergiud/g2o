@@ -27,16 +27,16 @@
 #ifndef G2O_OPTMIZATION_ALGORITHM_PROPERTY_H
 #define G2O_OPTMIZATION_ALGORITHM_PROPERTY_H
 
-#include "g2o/config.h"
+#include <g2o/core/optimization_algorithm_factory.h>
+#include <g2o/core/optimization_algorithm_factory.h>
+#include <g2o/core/optimization_algorithm_property.h>
 #include <g2o/stuff/misc.h>
-#include "optimization_algorithm_property.h"
 
-#include <list>
 #include <iostream>
+#include <list>
 #include <memory>
 #include <typeinfo>
 
-#include <g2o/core/g2o_core_api.h>
 
 // define to get some verbose output
 //#define G2O_DEBUG_OPTIMIZATION_ALGORITHM_FACTORY

@@ -27,11 +27,11 @@
 #include "estimate_propagator.h"
 
 #include <queue>
-#include <vector>
 #include <cassert>
-#include <iostream>
 #include <algorithm>
 #include <fstream>
+#include <iostream>
+#include <vector>
 
 //#define DEBUG_ESTIMATE_PROPAGATOR
 

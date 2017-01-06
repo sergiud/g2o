@@ -27,14 +27,15 @@
 #ifndef G2O_RAW_LASER_H
 #define G2O_RAW_LASER_H
 
-#include "robot_data.h"
-#include "laser_parameters.h"
+#include <g2o/core/eigen_types.h>
 #include <g2o/types/data/g2o_types_data_api.h>
+#include <g2o/types/data/laser_parameters.h>
+#include <g2o/types/data/robot_data.h>
 
 #include <vector>
 
-#include<Eigen/Core>
-#include<Eigen/StdVector>
+#include <Eigen/Core>
+#include <Eigen/StdVector>
 
 namespace g2o {
 

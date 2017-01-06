@@ -26,11 +26,13 @@
 
 #include "optimization_algorithm_with_hessian.h"
 
-#include "solver.h"
+#include "batch_stats.h"
 #include "optimizable_graph.h"
 #include "sparse_optimizer.h"
+#include <g2o/core/solver.h>
 
 #include <iostream>
+
 using namespace std;
 
 namespace g2o {

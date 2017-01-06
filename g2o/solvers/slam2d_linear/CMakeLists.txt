@@ -4,7 +4,7 @@ ADD_LIBRARY(solver_slam2d_linear
 )
 
 generate_export_header (solver_slam2d_linear PREFIX_NAME G2O_ EXPORT_FILE_NAME
-  ${CMAKE_BINARY_DIR}/include/solvers/slam2d_linear/g2o_slam2d_linear_api.h
+  ${CMAKE_BINARY_DIR}/include/g2o/solvers/slam2d_linear/g2o_slam2d_linear_api.h
   EXPORT_MACRO_NAME SLAM2D_LINEAR_API)
 
 target_include_directories (solver_slam2d_linear PUBLIC

@@ -31,8 +31,8 @@
 #include <g2o/stuff/opengl_primitives.h>
 #endif
 
-#include <iostream>
 #include <g2o/core/cache.h>
+#include <iostream>
 
 using namespace Eigen;
 

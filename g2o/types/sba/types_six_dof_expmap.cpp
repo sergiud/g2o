@@ -26,6 +26,7 @@
 
 #include "types_six_dof_expmap.h"
 
+#include <g2o/core/creators.h>
 #include <g2o/core/factory.h>
 #include <g2o/stuff/macros.h>
 

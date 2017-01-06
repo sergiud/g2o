@@ -31,10 +31,10 @@
 #include <g2o/core/linear_solver.h>
 #include <g2o/core/batch_stats.h>
 
-#include <vector>
-#include <utility>
-#include<Eigen/Core>
-#include<Eigen/Cholesky>
+#include <Eigen/Cholesky>
+#include <Eigen/Core>
+#include<utility>
+#include<vector>
 
 
 namespace g2o {

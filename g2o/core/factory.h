@@ -27,18 +27,18 @@
 #ifndef G2O_FACTORY_H
 #define G2O_FACTORY_H
 
-#include "g2o/config.h"
+#include <g2o/core/factory.h>
+#include <g2o/core/factory.h>
+#include <g2o/core/factory.h>
 #include <g2o/stuff/misc.h>
-#include "hyper_graph.h"
-#include "creators.h"
 
-#include <string>
+#include <iostream>
 #include <map>
 #include <memory>
-#include <iostream>
+#include <string>
 
-#include <g2o/core/g2o_core_api.h>
 #include <g2o/core/creators.h>
+#include <g2o/core/g2o_core_api.h>
 
 // define to get some verbose output
 //#define G2O_DEBUG_FACTORY

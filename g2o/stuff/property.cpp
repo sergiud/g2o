@@ -26,8 +26,8 @@
 
 #include "property.h"
 
-#include <vector>
 #include <iostream>
+#include <vector>
 
 #include "macros.h"
 

@@ -31,9 +31,9 @@
 #include "sparse_optimizer.h"
 #include <g2o/core/g2o_core_api.h>
 
+#include <limits>
 #include <map>
 #include <set>
-#include <limits>
 
 #include <unordered_map>
 

@@ -27,13 +27,13 @@
 #ifndef G2O_BASE_UNARY_EDGE_H
 #define G2O_BASE_UNARY_EDGE_H
 
-#include <iostream>
 #include <cassert>
+#include <iostream>
 #include <limits>
 
 #include "base_edge.h"
-#include "robust_kernel.h"
 #include "g2o/config.h"
+#include "robust_kernel.h"
 
 namespace g2o {
 

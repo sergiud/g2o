@@ -3,7 +3,7 @@ ADD_LIBRARY(csparse_extension ${G2O_LGPL_LIB_TYPE}
 )
 
 generate_export_header (csparse_extension PREFIX_NAME G2O_ EXPORT_FILE_NAME
-  ${CMAKE_BINARY_DIR}/include/solvers/csparse/g2o_csparse_extension_api.h
+  ${CMAKE_BINARY_DIR}/include/g2o/solvers/csparse/g2o_csparse_extension_api.h
   EXPORT_MACRO_NAME CSPARSE_EXTENSION_API)
 
 target_include_directories (csparse_extension PUBLIC

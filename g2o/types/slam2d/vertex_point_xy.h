@@ -27,12 +27,11 @@
 #ifndef G2O_VERTEX_POINT_XY_H
 #define G2O_VERTEX_POINT_XY_H
 
-#include <g2o/types/slam2d/g2o_types_slam2d_api.h>
-#include "g2o/config.h"
+#include <g2o/config.h>
 #include <g2o/core/base_vertex.h>
 #include <g2o/core/hyper_graph_action.h>
-
-#include <Eigen/Core>
+#include <g2o/types/slam2d/g2o_types_slam2d_api.h>
+#include <g2o/types/slam2d_addons/line_2d.h>
 
 namespace g2o {
 
@@ -58,7 +57,7 @@ namespace g2o {
         return true;
       }
 
-      virtual int estimateDimension() const { 
+      virtual int estimateDimension() const {
         return 2;
       }
 
@@ -70,7 +69,7 @@ namespace g2o {
         return getEstimateData(est);
       }
 
-      virtual int minimalEstimateDimension() const { 
+      virtual int minimalEstimateDimension() const {
         return 2;
       }
 
@@ -88,7 +87,7 @@ namespace g2o {
   class G2O_TYPES_SLAM2D_API VertexPointXYWriteGnuplotAction: public WriteGnuplotAction {
   public:
     VertexPointXYWriteGnuplotAction();
-    virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element, 
+    virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element,
             HyperGraphElementAction::Parameters* params_);
   };
 
@@ -96,7 +95,7 @@ namespace g2o {
   class G2O_TYPES_SLAM2D_API VertexPointXYDrawAction: public DrawAction{
   public:
     VertexPointXYDrawAction();
-    virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element, 
+    virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element,
             HyperGraphElementAction::Parameters* params_);
   protected:
     FloatProperty *_pointSize;

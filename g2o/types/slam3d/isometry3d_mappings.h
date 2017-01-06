@@ -27,8 +27,8 @@
 #ifndef G2O_ISOMETRY3D_MAPPINGS_H_
 #define G2O_ISOMETRY3D_MAPPINGS_H_
 
-#include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 #include "se3quat.h"
+#include <Eigen/Core>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 

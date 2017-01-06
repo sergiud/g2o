@@ -27,9 +27,9 @@
 #ifndef G2O_SPARSE_BLOCK_MATRIX_CCS_H
 #define G2O_SPARSE_BLOCK_MATRIX_CCS_H
 
-#include <vector>
 #include <cassert>
 #include <Eigen/Core>
+#include <vector>
 
 #include "g2o/config.h"
 #include "matrix_operations.h"

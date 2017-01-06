@@ -16,7 +16,7 @@ ADD_LIBRARY(types_slam2d
 )
 
 generate_export_header (types_slam2d PREFIX_NAME G2O_ EXPORT_FILE_NAME
-  ${CMAKE_BINARY_DIR}/include/g2o/types/g2o_types_slam2d_api.h
+  ${CMAKE_BINARY_DIR}/include/g2o/types/slam2d/g2o_types_slam2d_api.h
   EXPORT_MACRO_NAME TYPES_SLAM2D_API)
 
 target_include_directories (types_slam2d PUBLIC

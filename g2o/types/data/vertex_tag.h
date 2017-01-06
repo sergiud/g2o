@@ -28,8 +28,8 @@
 #define G2O_VERTEX_TAG_H
 
 #include "robot_data.h"
-#include <g2o/types/data/g2o_types_data_api.h>
 #include <g2o/core/hyper_graph_action.h>
+#include <g2o/types/data/g2o_types_data_api.h>
 
 namespace g2o {
 

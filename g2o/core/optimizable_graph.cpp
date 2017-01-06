@@ -27,9 +27,9 @@
 #include "optimizable_graph.h"
 
 #include <cassert>
-#include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <iostream>
 #include <algorithm>
 
 #include <Eigen/Dense>
@@ -38,13 +38,13 @@
 #include "factory.h"
 #include "optimization_algorithm_property.h"
 #include "hyper_graph_action.h"
-#include "cache.h"
 #include "robust_kernel.h"
+#include <g2o/core/g2o_core_api.h>
 
-#include <g2o/stuff/macros.h>
 #include <g2o/stuff/color_macros.h>
-#include <g2o/stuff/string_tools.h>
+#include <g2o/stuff/macros.h>
 #include <g2o/stuff/misc.h>
+#include <g2o/stuff/string_tools.h>
 
 namespace g2o {
 

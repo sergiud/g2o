@@ -25,8 +25,4 @@
 #define G2O_FACTORY_IMPORT
 #endif
 
-#ifdef __cplusplus
-#include <g2o/core/eigen_types.h>
-#endif
-
 #endif

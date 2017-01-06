@@ -27,11 +27,12 @@
 #ifndef G2O_VERTEX_PLANE_H_
 #define G2O_VERTEX_PLANE_H_
 
-#include <g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h>
-#include "g2o/config.h"
+#include <g2o/config.h>
 #include <g2o/core/base_vertex.h>
+#include <g2o/core/g2o_core_api.h>
 #include <g2o/core/hyper_graph_action.h>
-#include "plane3d.h"
+#include <g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h>
+#include <g2o/types/slam3d_addons/plane3d.h>
 
 namespace g2o
 {
@@ -76,7 +77,7 @@ namespace g2o
   {
     public:
       VertexPlaneDrawAction();
-      virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element, 
+      virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element,
           HyperGraphElementAction::Parameters* params_ );
     protected:
       virtual bool refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_);

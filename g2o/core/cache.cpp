@@ -25,8 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "cache.h"
-#include "optimizable_graph.h"
 #include "factory.h"
+#include "g2o/config.h"
 
 #include <iostream>
 

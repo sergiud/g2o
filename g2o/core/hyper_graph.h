@@ -27,16 +27,17 @@
 #ifndef G2O_AIS_HYPER_GRAPH_HH
 #define G2O_AIS_HYPER_GRAPH_HH
 
-#include <map>
-#include <set>
 #include <bitset>
 #include <cassert>
-#include <vector>
-#include <limits>
 #include <cstddef>
+#include <limits>
+#include <map>
+#include <set>
+#include <vector>
 
 #include <unordered_map>
 
+#include <g2o/core/eigen_types.h>
 #include <g2o/core/g2o_core_api.h>
 
 /** @addtogroup graph */
@@ -50,7 +51,7 @@ namespace g2o {
      that operate transparently on edges or vertices (see HyperGraphAction).
 
      The vertices are uniquely identified by an int id, while the edges are
-     identfied by their pointers. 
+     identfied by their pointers.
    */
   class G2O_CORE_API HyperGraph
   {
@@ -77,7 +78,7 @@ namespace g2o {
       class G2O_CORE_API DataContainer;
       class G2O_CORE_API Vertex;
       class G2O_CORE_API Edge;
-      
+
       /**
        * base hyper graph element, specialized in vertex and edge
        */
@@ -158,7 +159,7 @@ namespace g2o {
       };
 
 
-      /** 
+      /**
        * Abstract Edge class. Your nice edge classes should inherit from that one.
        * An hyper-edge has pointers to the vertices it connects and stores them in a vector.
        */

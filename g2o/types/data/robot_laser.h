@@ -27,9 +27,9 @@
 #ifndef G2O_ROBOT_LASER_H
 #define G2O_ROBOT_LASER_H
 
-#include "raw_laser.h"
 #include <g2o/types/data/g2o_types_data_api.h>
-#include <g2o/core/hyper_graph_action.h>
+#include <g2o/types/data/raw_laser.h>
+#include <g2o/types/data/robot_laser.h>
 
 namespace g2o {
 
@@ -49,7 +49,7 @@ namespace g2o {
       virtual bool write(std::ostream& os) const;
       virtual bool read(std::istream& is);
 
-      SE2 laserPose() const { return _odomPose * _laserParams.laserPose;} 
+      SE2 laserPose() const { return _odomPose * _laserParams.laserPose;}
       const SE2& odomPose() const { return _odomPose;}
       void setOdomPose(const SE2& odomPose);
 
@@ -63,7 +63,7 @@ namespace g2o {
   class G2O_TYPES_DATA_API RobotLaserDrawAction: public DrawAction{
   public:
     RobotLaserDrawAction();
-    virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element, 
+    virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element,
             HyperGraphElementAction::Parameters* params_ );
   protected:
     virtual bool refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_);

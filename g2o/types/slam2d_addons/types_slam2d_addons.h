@@ -32,8 +32,8 @@
 
 // line slam ver 1
 #include "edge_se2_segment2d.h"
-#include "edge_se2_segment2d_line.h"
-#include "edge_se2_segment2d_pointLine.h"
+#include <g2o/types/slam2d/vertex_se2.h>
+#include <g2o/types/slam2d_addons/g2o_types_slam2d_addons_api.h>
 
 // line slam ver 2
 #include "edge_se2_line2d.h"

@@ -26,15 +26,15 @@
 
 #include "factory.h"
 
-#include "creators.h"
-#include "parameter.h"
 #include "cache.h"
+#include "creators.h"
 #include "optimizable_graph.h"
+#include "parameter.h"
 #include <g2o/stuff/color_macros.h>
 
+#include <cassert>
 #include <iostream>
 #include <typeinfo>
-#include <cassert>
 
 using namespace std;
 

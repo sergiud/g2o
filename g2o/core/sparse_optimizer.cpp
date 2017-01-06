@@ -26,18 +26,18 @@
 
 #include "sparse_optimizer.h"
 
-#include <iostream>
-#include <iomanip>
 #include <algorithm>
+#include <iomanip>
+#include <iostream>
 #include <iterator>
 #include <cassert>
 #include <algorithm>
 
 #include "estimate_propagator.h"
 #include "optimization_algorithm.h"
-#include "batch_stats.h"
-#include "hyper_graph_action.h"
-#include "robust_kernel.h"
+#include <g2o/core/g2o_core_api.h>
+#include <g2o/core/hyper_graph.h>
+#include <g2o/core/sparse_block_matrix.h>
 #include <g2o/stuff/timeutil.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/misc.h>

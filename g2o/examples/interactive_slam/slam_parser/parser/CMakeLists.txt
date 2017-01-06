@@ -39,4 +39,4 @@ INSTALL(TARGETS parser_library EXPORT g2o-targets
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hh")
 INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/slam_parser_api.h
-  DESTINATION include/slam_parser/parser)
+  DESTINATION include/g2o/slam_parser/parser)

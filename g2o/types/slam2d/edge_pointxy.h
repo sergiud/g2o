@@ -27,8 +27,8 @@
 #ifndef G2O_EDGE_POINTXY_H
 #define G2O_EDGE_POINTXY_H
 
-#include "vertex_point_xy.h"
 #include "g2o/config.h"
+#include "vertex_point_xy.h"
 #include <g2o/core/base_binary_edge.h>
 #include <g2o/types/slam2d/g2o_types_slam2d_api.h>
 

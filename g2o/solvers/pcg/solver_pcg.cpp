@@ -27,8 +27,8 @@
 #include "linear_solver_pcg.h"
 
 #include <g2o/core/block_solver.h>
-#include <g2o/core/solver.h>
 #include <g2o/core/optimization_algorithm_factory.h>
+#include <g2o/core/solver.h>
 #include <g2o/stuff/macros.h>
 
 #include <g2o/core/optimization_algorithm_gauss_newton.h>

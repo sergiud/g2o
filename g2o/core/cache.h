@@ -28,14 +28,16 @@
 #define G2O_CACHE_HH_
 
 #include <map>
+#include <string>
 
-#include "optimizable_graph.h"
-#include <g2o/core/g2o_core_api.h>
+#include <g2o/core/hyper_graph.h>
+#include <g2o/core/optimizable_graph.h>
+#include <g2o/core/parameter.h>
 
 namespace g2o {
 
   class CacheContainer;
-  
+
   class G2O_CORE_API Cache: public HyperGraph::HyperGraphElement
   {
     public:
@@ -80,7 +82,7 @@ namespace g2o {
        * @param parameterIndices: a vector containing the indices if the parameters
        * in _parameters that will be used to assemble the Key of the cache being created
        * For example if I have a cache of type C2, having parameters "A, B, and C",
-       * and it depends on a cache of type C1 that depends on the parameters A and C, 
+       * and it depends on a cache of type C1 that depends on the parameters A and C,
        * the parameterIndices should contain "0, 2", since they are the positions in the
        * parameter vector of C2 of the parameters needed to construct C1.
        * @returns the newly created cache
@@ -119,9 +121,9 @@ namespace g2o {
 
 
   template <typename CacheType>
-  void OptimizableGraph::Edge::resolveCache(CacheType*& cache, 
-      OptimizableGraph::Vertex* v, 
-      const std::string& type_, 
+  void OptimizableGraph::Edge::resolveCache(CacheType*& cache,
+      OptimizableGraph::Vertex* v,
+      const std::string& type_,
       const ParameterVector& parameters_)
   {
     cache = 0;
@@ -132,7 +134,7 @@ namespace g2o {
       c = container->createCache(key);
     }
     if (c) {
-      cache = dynamic_cast<CacheType*>(c); 
+      cache = dynamic_cast<CacheType*>(c);
     }
   }
 

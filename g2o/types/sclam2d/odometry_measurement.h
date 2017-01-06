@@ -27,9 +27,9 @@
 #ifndef G2O_ODOMETRY_MEASUREMENT_H
 #define G2O_ODOMETRY_MEASUREMENT_H
 
+#include <Eigen/Core>
 #include <g2o/core/eigen_types.h>
 #include <g2o/types/sclam2d/g2o_types_sclam2d_api.h>
-#include <Eigen/Core>
 
 namespace g2o {
 

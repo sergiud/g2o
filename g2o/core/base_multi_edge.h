@@ -36,8 +36,8 @@
 #include <Eigen/StdVector>
 
 #include "base_edge.h"
-#include "robust_kernel.h"
 #include "g2o/config.h"
+#include "robust_kernel.h"
 
 namespace g2o {
 

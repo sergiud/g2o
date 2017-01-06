@@ -30,7 +30,7 @@
 #include <iostream>
 #include <vector>
 
-#include <g2o/core/g2o_core_api.h>
+#include "sparse_block_matrix.h"
 
 namespace g2o {
 

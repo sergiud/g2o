@@ -32,7 +32,7 @@
 
 #include "base_edge.h"
 #include "robust_kernel.h"
-#include "g2o/config.h"
+#include <g2o/core/g2o_core_api.h>
 
 namespace g2o {
 

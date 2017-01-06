@@ -31,9 +31,9 @@
 #include <g2o/stuff/timeutil.h>
 
 #include "block_solver.h"
-#include "sparse_optimizer.h"
-#include "solver.h"
 #include "batch_stats.h"
+#include "solver.h"
+#include "sparse_optimizer.h"
 using namespace std;
 
 namespace g2o {

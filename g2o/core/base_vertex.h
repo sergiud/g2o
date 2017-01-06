@@ -27,8 +27,9 @@
 #ifndef G2O_BASE_VERTEX_H
 #define G2O_BASE_VERTEX_H
 
-#include "optimizable_graph.h"
-#include "creators.h"
+#include <g2o/core/creators.h>
+#include <g2o/core/eigen_types.h>
+#include <g2o/core/optimizable_graph.h>
 #include <g2o/stuff/macros.h>
 
 #include <Eigen/Core>
@@ -50,7 +51,7 @@ namespace g2o {
   class BaseVertex : public OptimizableGraph::Vertex {
     public:
     typedef T EstimateType;
-    typedef std::stack<EstimateType, 
+    typedef std::stack<EstimateType,
                        std::vector<EstimateType,  Eigen::aligned_allocator<EstimateType> > >
     BackupStackType;
 
@@ -70,7 +71,7 @@ namespace g2o {
 
     virtual int copyB(double* b_) const {
       memcpy(b_, _b.data(), Dimension * sizeof(double));
-      return Dimension; 
+      return Dimension;
     }
 
     virtual const double& b(int i) const { assert(i < D); return _b(i);}

@@ -28,8 +28,8 @@
 
 #include "g2o/config.h"
 #include <g2o/core/block_solver.h>
-#include <g2o/core/solver.h>
 #include <g2o/core/optimization_algorithm_factory.h>
+#include <g2o/core/solver.h>
 
 #include <g2o/core/optimization_algorithm_gauss_newton.h>
 #include <g2o/core/optimization_algorithm_levenberg.h>

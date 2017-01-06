@@ -27,11 +27,11 @@
 #ifndef G2O_PROPERTY_H_
 #define G2O_PROPERTY_H_
 
-#include <string>
 #include <map>
 #include <sstream>
+#include <string>
 
-#include "string_tools.h"
+#include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/g2o_stuff_api.h>
 
 namespace g2o {
@@ -95,7 +95,7 @@ namespace g2o {
       /**
        * return a property by its name
        */
-      template <typename P> 
+      template <typename P>
       P* getProperty(const std::string& name_)
       {
         PropertyMapIterator it=find(name_);
@@ -103,7 +103,7 @@ namespace g2o {
           return 0;
         return dynamic_cast<P*>(it->second);
       }
-      template <typename P> 
+      template <typename P>
       const P* getProperty(const std::string& name_) const
       {
         PropertyMapConstIterator it=find(name_);
@@ -115,7 +115,7 @@ namespace g2o {
       /**
        * create a property and insert it
        */
-      template <typename P> 
+      template <typename P>
       P* makeProperty(const std::string& name_, const typename P::ValueType& v)
       {
         PropertyMapIterator it=find(name_);
@@ -123,7 +123,7 @@ namespace g2o {
           P* p=new P(name_, v);
           addProperty(p);
           return p;
-        } else 
+        } else
           return dynamic_cast<P*>(it->second);
       }
 

@@ -27,9 +27,9 @@
 #ifndef G2O_STRING_TOOLS_H
 #define G2O_STRING_TOOLS_H
 
-#include <string>
-#include <sstream>
 #include <cstdlib>
+#include <sstream>
+#include <string>
 #include <vector>
 
 #include "macros.h"

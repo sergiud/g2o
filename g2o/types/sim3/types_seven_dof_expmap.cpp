@@ -27,6 +27,7 @@
 #include "types_seven_dof_expmap.h"
 
 #include <g2o/core/factory.h>
+#include <g2o/core/hyper_graph.h>
 #include <g2o/stuff/macros.h>
 
 

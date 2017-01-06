@@ -30,9 +30,9 @@
 #include <g2o/core/linear_solver.h>
 #include <g2o/core/batch_stats.h>
 
-#include <vector>
+#include <Eigen/Core>
 #include <utility>
-#include<Eigen/Core>
+#include<vector>
 //#ifndef EIGEN_USE_NEW_STDVECTOR
 //#define EIGEN_USE_NEW_STDVECTOR
 //#endif
