@@ -8,7 +8,7 @@
 #include <limits>
 #include <cassert>
 
-#include "g2o/types/slam2d/types_three_dof.h"
+#include <g2o/types/slam2d/types_three_dof.h>
 
 namespace g2o{
 

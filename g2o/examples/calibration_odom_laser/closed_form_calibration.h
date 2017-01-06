@@ -29,7 +29,7 @@
 
 #include <Eigen/Core>
 #include "motion_information.h"
-#include "g2o_calibration_odom_laser_api.h"
+#include <g2o/examples/calibration_odom_laser/g2o_calibration_odom_laser_api.h>
 
 namespace g2o {
 

@@ -4,14 +4,14 @@ ADD_LIBRARY(g2o_cli_library
   g2o_common.cpp g2o_common.h
 )
 
-generate_export_header (g2o_cli_library PREFIX_NAME G2O_ EXPORT_FILE_NAME 
-  ${CMAKE_CURRENT_BINARY_DIR}/g2o_cli_api.h
+generate_export_header (g2o_cli_library PREFIX_NAME G2O_ EXPORT_FILE_NAME
+  ${CMAKE_BINARY_DIR}/include/g2o/cli/g2o_cli_api.h
   EXPORT_MACRO_NAME CLI_API)
 
 target_include_directories (g2o_cli_library PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
   $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 )
 
 set_target_properties (g2o_cli_library PROPERTIES EXPORT_NAME cli)

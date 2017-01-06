@@ -28,8 +28,8 @@
 #define G2O_SENSOR_SEGMENT2D_LINE_H_
 
 #include "simulator2d.h"
-#include "g2o/apps/g2o_simulator/pointsensorparameters.h"
-#include "g2o/types/slam2d_addons/types_slam2d_addons.h"
+#include <g2o/apps/g2o_simulator/pointsensorparameters.h>
+#include <g2o/types/slam2d_addons/types_slam2d_addons.h>
 
 namespace g2o {
 

@@ -31,7 +31,7 @@
 #include <cmath>
 #include <ctime>
 
-#include "g2o_tutorial_slam2d_api.h"
+#include <g2o/examples/tutorial_slam2d/g2o_tutorial_slam2d_api.h>
 
 namespace g2o {
 

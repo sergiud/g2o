@@ -26,7 +26,7 @@
 
 #include "data_queue.h"
 
-#include "g2o/types/data/robot_data.h"
+#include <g2o/types/data/robot_data.h>
 
 namespace g2o {
 

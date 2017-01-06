@@ -9,11 +9,11 @@ ADD_LIBRARY(tutorial_slam2d_library
 )
 
 generate_export_header (tutorial_slam2d_library PREFIX_NAME G2O_ EXPORT_FILE_NAME
-  ${CMAKE_CURRENT_BINARY_DIR}/g2o_tutorial_slam2d_api.h
+  ${CMAKE_BINARY_DIR}/include/g2o/examples/tutorial_slam2d/g2o_tutorial_slam2d_api.h
   EXPORT_MACRO_NAME TUTORIAL_SLAM2D_API)
 
 target_include_directories (tutorial_slam2d_library PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 )
 
 SET_TARGET_PROPERTIES(tutorial_slam2d_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}tutorial_slam2d)

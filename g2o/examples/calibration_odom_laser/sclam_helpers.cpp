@@ -28,18 +28,18 @@
 
 #include "gm2dl_io.h"
 
-#include "g2o/types/sclam2d/odometry_measurement.h"
-#include "g2o/types/sclam2d/vertex_odom_differential_params.h"
-#include "g2o/types/sclam2d/edge_se2_sensor_calib.h"
-#include "g2o/types/sclam2d/edge_se2_odom_differential_calib.h"
-#include "g2o/types/data/robot_laser.h"
-#include "g2o/types/data/data_queue.h"
+#include <g2o/types/sclam2d/odometry_measurement.h>
+#include <g2o/types/sclam2d/vertex_odom_differential_params.h>
+#include <g2o/types/sclam2d/edge_se2_sensor_calib.h>
+#include <g2o/types/sclam2d/edge_se2_odom_differential_calib.h>
+#include <g2o/types/data/robot_laser.h>
+#include <g2o/types/data/data_queue.h>
 
-#include "g2o/core/sparse_optimizer.h"
-#include "g2o/core/block_solver.h"
-#include "g2o/core/optimization_algorithm_gauss_newton.h"
-#include "g2o/core/optimization_algorithm_levenberg.h"
-#include "g2o/solvers/csparse/linear_solver_csparse.h"
+#include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/block_solver.h>
+#include <g2o/core/optimization_algorithm_gauss_newton.h>
+#include <g2o/core/optimization_algorithm_levenberg.h>
+#include <g2o/solvers/csparse/linear_solver_csparse.h>
 
 #include <iostream>
 using namespace std;

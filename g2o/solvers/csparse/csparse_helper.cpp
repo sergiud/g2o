@@ -16,7 +16,7 @@
 
 #include "csparse_helper.h"
 
-#include "g2o/stuff/macros.h"
+#include <g2o/stuff/macros.h>
 
 #include <string>
 #include <cassert>

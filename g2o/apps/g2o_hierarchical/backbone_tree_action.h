@@ -3,9 +3,9 @@
 
 #include <string>
 #include <map>
-#include "g2o/core/sparse_optimizer.h"
-#include "g2o/core/hyper_dijkstra.h"
-#include "g2o/core/factory.h"
+#include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/hyper_dijkstra.h>
+#include <g2o/core/factory.h>
 #include "star.h"
 
 namespace g2o {

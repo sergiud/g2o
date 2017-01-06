@@ -27,7 +27,7 @@
 #ifndef G2O_LINE2D_H
 #define G2O_LINE2D_H
 
-#include "g2o/types/slam2d/se2.h"
+#include <g2o/types/slam2d/se2.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>

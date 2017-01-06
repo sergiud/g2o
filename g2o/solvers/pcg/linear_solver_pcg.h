@@ -27,8 +27,8 @@
 #ifndef G2O_LINEAR_SOLVER_PCG_H
 #define G2O_LINEAR_SOLVER_PCG_H
 
-#include "g2o/core/linear_solver.h"
-#include "g2o/core/batch_stats.h"
+#include <g2o/core/linear_solver.h>
+#include <g2o/core/batch_stats.h>
 
 #include <vector>
 #include <utility>

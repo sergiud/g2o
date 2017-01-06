@@ -26,11 +26,11 @@
 
 #include "output_helper.h"
 
-#include "g2o/core/optimizable_graph.h"
-#include "g2o/core/hyper_graph_action.h"
+#include <g2o/core/optimizable_graph.h>
+#include <g2o/core/hyper_graph_action.h>
 
-#include "g2o/stuff/filesys_tools.h"
-#include "g2o/stuff/string_tools.h"
+#include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/string_tools.h>
 
 #include <Eigen/Core>
 

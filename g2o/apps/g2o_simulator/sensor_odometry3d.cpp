@@ -26,7 +26,7 @@
 
 #include "sensor_odometry3d.h"
 
-#include "g2o/types/slam3d/isometry3d_mappings.h"
+#include <g2o/types/slam3d/isometry3d_mappings.h>
 
 namespace g2o {
   using namespace std;

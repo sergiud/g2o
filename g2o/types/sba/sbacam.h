@@ -41,11 +41,11 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include "g2o/stuff/misc.h"
-#include "g2o/stuff/macros.h"
-#include "g2o/types/slam3d/se3quat.h"
+#include <g2o/stuff/misc.h>
+#include <g2o/stuff/macros.h>
+#include <g2o/types/slam3d/se3quat.h>
 
-#include "g2o_types_sba_api.h"
+#include <g2o/types/sba/g2o_types_sba_api.h>
 
 // this seems to have to go outside of the AISNav namespace...
 //USING_PART_OF_NAMESPACE_EIGEN;

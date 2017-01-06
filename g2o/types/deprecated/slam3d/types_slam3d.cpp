@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "types_slam3d.h"
-#include "g2o/core/factory.h"
+#include <g2o/core/factory.h>
 
 namespace g2o {
 namespace deprecated {

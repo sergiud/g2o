@@ -27,13 +27,13 @@
 #include "vertex_point_xy.h"
 
 #ifdef G2O_HAVE_OPENGL
-#include "g2o/stuff/opengl_wrapper.h"
-#include "g2o/stuff/opengl_primitives.h"
+#include <g2o/stuff/opengl_wrapper.h>
+#include <g2o/stuff/opengl_primitives.h>
 #endif
 
 #include <typeinfo>
 
-#include "g2o/stuff/macros.h"
+#include <g2o/stuff/macros.h>
 
 namespace g2o {
 

@@ -31,8 +31,8 @@
 #include "edge_se2_sensor_calib.h"
 #include "edge_se2_odom_differential_calib.h"
 
-#include "g2o/core/factory.h"
-#include "g2o/stuff/macros.h"
+#include <g2o/core/factory.h>
+#include <g2o/stuff/macros.h>
 
 
 namespace g2o {

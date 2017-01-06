@@ -171,7 +171,7 @@ SET(G2O_SHARED_LIBS ${BUILD_SHARED_LIBS})
 SET(G2O_LGPL_SHARED_LIBS ${BUILD_LGPL_SHARED_LIBS})
 SET(G2O_CXX_COMPILER "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}")
 
-configure_file(config.h.in ${PROJECT_BINARY_DIR}/g2o/config.h)
+configure_file(config.h.in ${CMAKE_BINARY_DIR}/include/g2o/config.h)
 
 install(FILES ${PROJECT_BINARY_DIR}/g2o/config.h DESTINATION ${_g2o_CMake_INCLUDEDIR})
 

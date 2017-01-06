@@ -24,15 +24,15 @@
 #include "gui_hyper_graph_action.h"
 
 #include "g2o/config.h"
-#include "g2o/core/sparse_optimizer.h"
-#include "g2o/core/factory.h"
-#include "g2o/core/optimization_algorithm_factory.h"
-#include "g2o/core/hyper_graph_action.h"
+#include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/factory.h>
+#include <g2o/core/optimization_algorithm_factory.h>
+#include <g2o/core/hyper_graph_action.h>
 
-#include "g2o/apps/g2o_cli/dl_wrapper.h"
+#include <g2o/apps/g2o_cli/dl_wrapper.h>
 
-#include "g2o/stuff/command_args.h"
-#include "g2o/stuff/opengl_wrapper.h"
+#include <g2o/stuff/command_args.h>
+#include <g2o/stuff/opengl_wrapper.h>
 
 #include <QApplication>
 #include <QThread>

@@ -20,8 +20,8 @@
 #define G2O_QGL_GRAPH_VIEWER_H
 
 #include "qglviewer.h"
-#include "g2o_viewer_api.h"
-#include "g2o/core/hyper_graph_action.h"
+#include <g2o/viewer/g2o_viewer_api.h>
+#include <g2o/core/hyper_graph_action.h>
 
 namespace g2o {
 

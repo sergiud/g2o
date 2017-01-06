@@ -27,9 +27,9 @@
 #ifndef G2O_SE2_H_
 #define G2O_SE2_H_
 
-#include "g2o/core/eigen_types.h"
-#include "g2o/stuff/misc.h"
-#include "g2o_types_slam2d_api.h"
+#include <g2o/core/eigen_types.h>
+#include <g2o/stuff/misc.h>
+#include <g2o/types/slam2d/g2o_types_slam2d_api.h>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 

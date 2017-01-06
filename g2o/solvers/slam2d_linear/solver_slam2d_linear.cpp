@@ -28,16 +28,16 @@
 
 #include <Eigen/Core>
 
-#include "g2o/core/sparse_block_matrix.h"
-#include "g2o/core/sparse_optimizer.h"
-#include "g2o/core/hyper_dijkstra.h"
+#include <g2o/core/sparse_block_matrix.h>
+#include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/hyper_dijkstra.h>
 
-#include "g2o/types/slam2d/edge_se2.h"
+#include <g2o/types/slam2d/edge_se2.h>
 
-#include "g2o/stuff/misc.h"
-#include "g2o/stuff/scoped_pointer.h"
+#include <g2o/stuff/misc.h>
+#include <g2o/stuff/scoped_pointer.h>
 
-#include "g2o/solvers/csparse/linear_solver_csparse.h"
+#include <g2o/solvers/csparse/linear_solver_csparse.h>
 
 using namespace std;
 

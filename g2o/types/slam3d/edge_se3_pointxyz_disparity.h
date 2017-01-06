@@ -29,8 +29,8 @@
 
 #include "vertex_se3.h"
 #include "vertex_pointxyz.h"
-#include "g2o/core/hyper_graph_action.h"
-#include "g2o/core/base_binary_edge.h"
+#include <g2o/core/hyper_graph_action.h>
+#include <g2o/core/base_binary_edge.h>
 #include "parameter_camera.h"
 
 #define EDGE_PROJECT_DISPARITY_ANALYTIC_JACOBIAN

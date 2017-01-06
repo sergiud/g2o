@@ -27,12 +27,12 @@
 #ifndef G2O_EDGE_SE2_POINT_XY_OFFSET_H_
 #define G2O_EDGE_SE2_POINT_XY_OFFSET_H_
 
-#include "g2o/core/base_binary_edge.h"
+#include <g2o/core/base_binary_edge.h>
 
 #include "vertex_se2.h"
 #include "vertex_point_xy.h"
 #include "parameter_se2_offset.h"
-#include "g2o_types_slam2d_api.h"
+#include <g2o/types/slam2d/g2o_types_slam2d_api.h>
 
 namespace g2o {
 

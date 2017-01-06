@@ -26,13 +26,13 @@
 
 #include "types_tutorial_slam2d.h"
 
-#include "g2o/core/factory.h"
-#include "g2o/stuff/macros.h"
+#include <g2o/core/factory.h>
+#include <g2o/stuff/macros.h>
 
 #include <iostream>
 
 
-#include "g2o_tutorial_slam2d_api.h"
+#include <g2o/examples/tutorial_slam2d/g2o_tutorial_slam2d_api.h>
 
 namespace g2o {
   namespace tutorial {

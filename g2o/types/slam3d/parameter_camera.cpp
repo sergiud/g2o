@@ -29,8 +29,8 @@
 #include "isometry3d_mappings.h"
 
 #ifdef G2O_HAVE_OPENGL
-#include "g2o/stuff/opengl_wrapper.h"
-#include "g2o/stuff/opengl_primitives.h"
+#include <g2o/stuff/opengl_wrapper.h>
+#include <g2o/stuff/opengl_primitives.h>
 #endif
 
 using namespace std;

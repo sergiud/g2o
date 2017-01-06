@@ -28,11 +28,11 @@
 #define G2O_EDGE_SE2_LINE2D_H
 
 #include "g2o/config.h"
-#include "g2o/types/slam2d/vertex_se2.h"
+#include <g2o/types/slam2d/vertex_se2.h>
 #include "vertex_line2d.h"
-#include "g2o/core/base_binary_edge.h"
-#include "g2o/stuff/misc.h"
-#include "g2o_types_slam2d_addons_api.h"
+#include <g2o/core/base_binary_edge.h>
+#include <g2o/stuff/misc.h>
+#include <g2o/types/slam2d_addons/g2o_types_slam2d_addons_api.h>
 
 namespace g2o {
 

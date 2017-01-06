@@ -28,7 +28,7 @@
 
 #include <iostream>
 
-#include "g2o/stuff/timeutil.h"
+#include <g2o/stuff/timeutil.h>
 
 #include "block_solver.h"
 #include "sparse_optimizer.h"

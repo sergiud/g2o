@@ -20,10 +20,10 @@
 
 #include "run_g2o_viewer.h"
 
-#include "g2o/core/optimizable_graph.h"
-#include "g2o/apps/g2o_cli/g2o_common.h"
-#include "g2o/apps/g2o_cli/dl_wrapper.h"
-#include "g2o/stuff/command_args.h"
+#include <g2o/core/optimizable_graph.h>
+#include <g2o/apps/g2o_cli/g2o_common.h>
+#include <g2o/apps/g2o_cli/dl_wrapper.h>
+#include <g2o/stuff/command_args.h>
 
 #include <QApplication>
 using namespace std;

@@ -3,13 +3,13 @@
 
 #include <string>
 #include <map>
-#include "g2o/core/sparse_optimizer.h"
-#include "g2o/core/hyper_dijkstra.h"
+#include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/hyper_dijkstra.h>
 #include "star.h"
 #include "edge_creator.h"
 #include "edge_labeler.h"
 
-#include "g2o_hierarchical_api.h"
+#include <g2o/hierarchical/g2o_hierarchical_api.h>
 
 namespace g2o {
 

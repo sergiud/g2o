@@ -27,7 +27,7 @@
 #ifndef G2O_SIM_3
 #define G2O_SIM_3
 
-#include "g2o/types/slam3d/se3_ops.h"
+#include <g2o/types/slam3d/se3_ops.h>
 #include <Eigen/Geometry>
 
 namespace g2o

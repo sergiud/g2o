@@ -1,5 +1,5 @@
 #include "star.h"
-#include "g2o/core/optimization_algorithm_with_hessian.h"
+#include <g2o/core/optimization_algorithm_with_hessian.h>
 
 namespace g2o {
   using namespace std;

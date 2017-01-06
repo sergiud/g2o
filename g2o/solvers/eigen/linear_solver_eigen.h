@@ -30,9 +30,9 @@
 #include <Eigen/Sparse>
 #include <Eigen/SparseCholesky>
 
-#include "g2o/core/linear_solver.h"
-#include "g2o/core/batch_stats.h"
-#include "g2o/stuff/timeutil.h"
+#include <g2o/core/linear_solver.h>
+#include <g2o/core/batch_stats.h>
+#include <g2o/stuff/timeutil.h>
 
 #include <iostream>
 #include <vector>

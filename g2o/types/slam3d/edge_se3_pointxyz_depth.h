@@ -27,12 +27,12 @@
 #ifndef G2O_EDGE_PROJECT_DEPTH_H_
 #define G2O_EDGE_PROJECT_DEPTH_H_
 
-#include "g2o/core/base_binary_edge.h"
+#include <g2o/core/base_binary_edge.h>
 
 #include "vertex_se3.h"
 #include "vertex_pointxyz.h"
 #include "parameter_camera.h"
-#include "g2o_types_slam3d_api.h"
+#include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 
 namespace g2o {
 

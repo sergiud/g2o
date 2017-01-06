@@ -1,4 +1,4 @@
-#include "g2o/core/factory.h"
+#include <g2o/core/factory.h>
 #include "edge_creator.h"
 
 namespace g2o {

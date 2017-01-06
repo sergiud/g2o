@@ -27,8 +27,8 @@
 #ifndef G2O_SIMULATOR3D_BASE_H_
 #define G2O_SIMULATOR3D_BASE_H_
 
-#include "g2o/types/slam3d/types_slam3d.h"
-#include "g2o/types/slam3d_addons/types_slam3d_addons.h"
+#include <g2o/types/slam3d/types_slam3d.h>
+#include <g2o/types/slam3d_addons/types_slam3d_addons.h>
 #include "simulator.h"
 
 namespace g2o {

@@ -27,8 +27,8 @@
 #ifndef G2O_TYPES_SLAM3D_ONLINE_H
 #define G2O_TYPES_SLAM3D_ONLINE_H
 
-#include "g2o_interactive_api.h"
-#include "g2o/types/slam3d/edge_se3.h"
+#include <g2o/examples/interactive_slam/g2o_interactive_api.h>
+#include <g2o/types/slam3d/edge_se3.h>
 
 #include <iostream>
 

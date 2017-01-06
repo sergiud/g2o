@@ -53,8 +53,7 @@ endif (TARGET Eigen3::Eigen)
 target_include_directories (core PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
   $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
-  $<BUILD_INTERFACE:${g2o_BINARY_DIR}>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 )
 
 target_compile_features (core

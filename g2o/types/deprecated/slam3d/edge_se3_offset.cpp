@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "edge_se3_offset.h"
-#include "g2o/types/slam3d/isometry3d_gradients.h"
+#include <g2o/types/slam3d/isometry3d_gradients.h>
 #include "parameter_se3_offset.h"
 
 #include <iostream>

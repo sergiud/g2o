@@ -28,16 +28,16 @@
 #define G2O_DEPRECATED_EDGE_SE3_QUAT_
 
 #include "g2o/config.h"
-#include "g2o/core/base_vertex.h"
-#include "g2o/core/base_binary_edge.h"
-#include "g2o/core/hyper_graph_action.h"
-#include "g2o/types/slam3d/se3quat.h"
+#include <g2o/core/base_vertex.h>
+#include <g2o/core/base_binary_edge.h>
+#include <g2o/core/hyper_graph_action.h>
+#include <g2o/types/slam3d/se3quat.h>
 
 #define EDGE_SE3_QUAT_ANALYTIC_JACOBIAN
 
 #include "vertex_se3_quat.h"
 
-#include "g2o_deprecated_types_slam3d_api.h"
+#include <g2o/deprecated/g2o_deprecated_types_slam3d_api.h>
 
 namespace g2o {
 namespace deprecated {

@@ -2,24 +2,24 @@
 // Copyright (C) 2011 R. Kuemmerle, G. Grisetti, W. Burgard
 //
 // This file is part of g2o.
-// 
+//
 // g2o is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // g2o is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with g2o.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "g2o_qglviewer.h"
-#include "g2o/stuff/opengl_primitives.h"
-#include "g2o/core/sparse_optimizer.h"
-#include "g2o/core/hyper_graph_action.h"
+#include <g2o/stuff/opengl_primitives.h>
+#include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/hyper_graph_action.h>
 
 // some macro helpers for identifying the version number of QGLViewer
 // QGLViewer changed some parts of its API in version 2.6.
@@ -59,17 +59,17 @@ namespace {
       StandardCamera() : _standard(true) {};
 
       qglv_real zNear() const {
-        if (_standard) 
+        if (_standard)
           return qglv_real(0.001);
-        else 
-          return Camera::zNear(); 
+        else
+          return Camera::zNear();
       }
 
       qglv_real zFar() const
-      {  
-        if (_standard) 
+      {
+        if (_standard)
           return qglv_real(10000.0);
-        else 
+        else
           return Camera::zFar();
       }
 
@@ -105,7 +105,7 @@ void G2oQGLViewer::draw()
     _drawActions = HyperGraphActionLibrary::instance()->actionByName("draw");
     assert(_drawActions);
   }
-  
+
   if (! _drawActions) // avoid segmentation fault in release build
     return;
   if (_updateDisplay) {
@@ -114,7 +114,7 @@ void G2oQGLViewer::draw()
     applyAction(graph, _drawActions, _drawActionParameters);
     glEndList();
   } else {
-    glCallList(_drawList); 
+    glCallList(_drawList);
   }
 }
 
@@ -128,7 +128,7 @@ void G2oQGLViewer::init()
 
   // some default settings i like
   glEnable(GL_LINE_SMOOTH);
-  glEnable(GL_BLEND); 
+  glEnable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
   //glEnable(GL_CULL_FACE);

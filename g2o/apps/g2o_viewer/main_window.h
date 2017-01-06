@@ -19,10 +19,10 @@
 #ifndef G2O_MAIN_WINDOW_H
 #define G2O_MAIN_WINDOW_H
 
-#include "g2o_viewer_api.h"
+#include <g2o/viewer/g2o_viewer_api.h>
 #include "ui_base_main_window.h"
 
-#include "g2o/core/optimization_algorithm_property.h"
+#include <g2o/core/optimization_algorithm_property.h>
 
 #include <vector>
 

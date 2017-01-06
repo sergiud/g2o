@@ -19,13 +19,13 @@
 #include "main_window.h"
 #include "viewer_properties_widget.h"
 
-#include "g2o/core/optimization_algorithm_property.h"
-#include "g2o/core/optimization_algorithm_factory.h"
-#include "g2o/core/sparse_optimizer.h"
-#include "g2o/core/estimate_propagator.h"
-#include "g2o/core/optimization_algorithm.h"
-#include "g2o/core/robust_kernel_factory.h"
-#include "g2o/core/robust_kernel.h"
+#include <g2o/core/optimization_algorithm_property.h>
+#include <g2o/core/optimization_algorithm_factory.h>
+#include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/estimate_propagator.h>
+#include <g2o/core/optimization_algorithm.h>
+#include <g2o/core/robust_kernel_factory.h>
+#include <g2o/core/robust_kernel.h>
 
 #include <QFileDialog>
 #include <QStandardItemModel>

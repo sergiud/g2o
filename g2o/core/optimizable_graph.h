@@ -40,8 +40,8 @@
 #include "parameter_container.h"
 #include "jacobian_workspace.h"
 
-#include "g2o/stuff/macros.h"
-#include "g2o_core_api.h"
+#include <g2o/stuff/macros.h>
+#include <g2o/core/g2o_core_api.h>
 
 namespace g2o {
 

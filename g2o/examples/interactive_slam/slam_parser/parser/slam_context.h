@@ -29,7 +29,7 @@
 
 #include <vector>
 
-#include "g2o_slam_parser_api.h"
+#include <g2o/slam_parser/g2o_slam_parser_api.h>
 
 namespace SlamParser {
 

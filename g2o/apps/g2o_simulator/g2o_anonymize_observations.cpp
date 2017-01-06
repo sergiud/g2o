@@ -25,10 +25,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <cstdlib>
-#include "g2o/core/optimizable_graph.h"
-#include "g2o/stuff/command_args.h"
-#include "g2o/types/slam2d/types_slam2d.h"
-#include "g2o/types/slam3d/types_slam3d.h"
+#include <g2o/core/optimizable_graph.h>
+#include <g2o/stuff/command_args.h>
+#include <g2o/types/slam2d/types_slam2d.h>
+#include <g2o/types/slam3d/types_slam3d.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>

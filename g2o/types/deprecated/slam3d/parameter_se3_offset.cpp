@@ -27,7 +27,7 @@
 #include "parameter_se3_offset.h"
 
 #include "vertex_se3_quat.h"
-#include "g2o/stuff/opengl_wrapper.h"
+#include <g2o/stuff/opengl_wrapper.h>
 
 using namespace Eigen;
 

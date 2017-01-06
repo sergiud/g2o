@@ -26,7 +26,7 @@
 
 #include "closed_form_calibration.h"
 
-#include "g2o/types/sclam2d/odometry_measurement.h"
+#include <g2o/types/sclam2d/odometry_measurement.h>
 
 #include <iostream>
 #include <limits>

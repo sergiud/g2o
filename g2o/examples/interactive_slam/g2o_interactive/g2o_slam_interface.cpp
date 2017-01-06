@@ -24,7 +24,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "g2o_slam_interface.h"
+#include <g2o_interactive/g2o_slam_interface.h>
 
 #include "fast_output.h"
 
@@ -32,7 +32,7 @@
 #include "types_slam3d_online.h"
 
 #include "graph_optimizer_sparse_online.h"
-#include "g2o/types/slam3d/se3quat.h"
+#include <g2o/types/slam3d/se3quat.h>
 
 #include <iostream>
 using namespace std;
@@ -67,8 +67,8 @@ namespace g2o {
           Vector3d trb=tr0;
           tra[i] -= delta;
           trb[i] += delta;
-          ta = SE3Quat(q0, tra); 
-          tb = SE3Quat(q0, trb); 
+          ta = SE3Quat(q0, tra);
+          tb = SE3Quat(q0, trb);
         } else {
           Quaterniond qa=q0;
           Quaterniond qb=q0;
@@ -86,8 +86,8 @@ namespace g2o {
           }
           qa.normalize();
           qb.normalize();
-          ta = SE3Quat(qa, tr0); 
-          tb = SE3Quat(qb, tr0); 
+          ta = SE3Quat(qa, tr0);
+          tb = SE3Quat(qb, tr0);
         }
 
         Vector3d dtr = (tb.translation() - ta.translation())*idelta;
@@ -198,16 +198,16 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension, in
             }
             break;
           }
-        case 2: 
+        case 2:
           {
             HyperGraph::VertexSet fromSet;
             fromSet.insert(from);
             if (e->initialEstimatePossible(fromSet, to) > 0.) {
-              e->initialEstimate(fromSet, to);  
+              e->initialEstimate(fromSet, to);
             }
             break;
           }
-        default: cerr << "doInit wrong value\n"; 
+        default: cerr << "doInit wrong value\n";
       }
     }
 
@@ -219,7 +219,7 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension, in
 
     if (measurement.size() == 7) { // measurement is a Quaternion
       Vector7d meas;
-      for (int i=0; i<7; ++i) 
+      for (int i=0; i<7; ++i)
         meas(i) = measurement[i];
       // normalize the quaternion to recover numerical precision lost by storing as human readable text
       Vector4d::MapType(meas.data()+3).normalize();
@@ -301,16 +301,16 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension, in
             }
             break;
           }
-        case 2: 
+        case 2:
           {
             HyperGraph::VertexSet fromSet;
             fromSet.insert(from);
             if (e->initialEstimatePossible(fromSet, to) > 0.) {
-              e->initialEstimate(fromSet, to);  
+              e->initialEstimate(fromSet, to);
             }
             break;
           }
-        default: cerr << "doInit wrong value\n"; 
+        default: cerr << "doInit wrong value\n";
       }
     }
 

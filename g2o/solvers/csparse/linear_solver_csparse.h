@@ -29,11 +29,11 @@
 
 #include "csparse_helper.h"
 
-#include "g2o/core/linear_solver.h"
-#include "g2o/core/batch_stats.h"
-#include "g2o/core/marginal_covariance_cholesky.h"
-#include "g2o/stuff/timeutil.h"
-#include "g2o_solver_csparse_api.h"
+#include <g2o/core/linear_solver.h>
+#include <g2o/core/batch_stats.h>
+#include <g2o/core/marginal_covariance_cholesky.h>
+#include <g2o/stuff/timeutil.h>
+#include <g2o/solvers/csparse/g2o_solver_csparse_api.h>
 
 #include <iostream>
 

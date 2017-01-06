@@ -24,7 +24,7 @@
 
 #include <QDialog>
 
-#include "g2o_viewer_api.h"
+#include <g2o/viewer/g2o_viewer_api.h>
 #include "ui_base_properties_widget.h"
 
 namespace g2o

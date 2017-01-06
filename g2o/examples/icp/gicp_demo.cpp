@@ -29,12 +29,12 @@
 #include <iostream>
 #include <stdint.h>
 
-#include "g2o/core/sparse_optimizer.h"
-#include "g2o/core/block_solver.h"
-#include "g2o/core/solver.h"
-#include "g2o/core/optimization_algorithm_levenberg.h"
-#include "g2o/solvers/dense/linear_solver_dense.h"
-#include "g2o/types/icp/types_icp.h"
+#include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/block_solver.h>
+#include <g2o/core/solver.h>
+#include <g2o/core/optimization_algorithm_levenberg.h>
+#include <g2o/solvers/dense/linear_solver_dense.h>
+#include <g2o/types/icp/types_icp.h>
 
 using namespace Eigen;
 using namespace std;

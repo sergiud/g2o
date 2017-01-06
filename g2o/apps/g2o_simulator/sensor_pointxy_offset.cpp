@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "sensor_pointxy_offset.h"
-#include "g2o/core/factory.h"
+#include <g2o/core/factory.h>
 
 namespace g2o {
   using namespace std;

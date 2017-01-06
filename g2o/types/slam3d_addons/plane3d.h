@@ -27,8 +27,8 @@
 #ifndef G2O_PLANE3D_H_
 #define G2O_PLANE3D_H_
 
-#include "g2o_types_slam3d_addons_api.h"
-#include "g2o/stuff/misc.h"
+#include <g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h>
+#include <g2o/stuff/misc.h>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 

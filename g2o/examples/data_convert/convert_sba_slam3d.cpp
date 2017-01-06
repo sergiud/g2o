@@ -27,14 +27,14 @@
 #include <iostream>
 #include <fstream>
 
-#include "g2o/stuff/macros.h"
-#include "g2o/stuff/command_args.h"
+#include <g2o/stuff/macros.h>
+#include <g2o/stuff/command_args.h>
 
-#include "g2o/core/optimizable_graph.h"
+#include <g2o/core/optimizable_graph.h>
 
-#include "g2o/types/sba/types_sba.h"
-#include "g2o/types/slam3d/parameter_camera.h"
-#include "g2o/types/slam3d/edge_se3_pointxyz_disparity.h"
+#include <g2o/types/sba/types_sba.h>
+#include <g2o/types/slam3d/parameter_camera.h>
+#include <g2o/types/slam3d/edge_se3_pointxyz_disparity.h>
 
 using namespace std;
 using namespace g2o;

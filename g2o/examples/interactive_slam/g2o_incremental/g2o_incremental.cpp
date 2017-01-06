@@ -19,10 +19,10 @@
 #include <csignal>
 #include <cstdlib>
 
-#include "g2o/stuff/macros.h"
-#include "g2o/stuff/command_args.h"
-#include "g2o/stuff/string_tools.h"
-#include "g2o/stuff/tictoc.h"
+#include <g2o/stuff/macros.h>
+#include <g2o/stuff/command_args.h>
+#include <g2o/stuff/string_tools.h>
+#include <g2o/stuff/tictoc.h>
 
 #include "slam_parser/interface/parser_interface.h"
 

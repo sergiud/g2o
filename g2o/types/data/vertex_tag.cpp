@@ -26,11 +26,11 @@
 
 #include "vertex_tag.h"
 
-#include "g2o/stuff/macros.h"
+#include <g2o/stuff/macros.h>
 
 #ifdef G2O_HAVE_OPENGL
-#include "g2o/stuff/opengl_wrapper.h"
-#include "g2o/stuff/opengl_primitives.h"
+#include <g2o/stuff/opengl_wrapper.h>
+#include <g2o/stuff/opengl_primitives.h>
 #include "EXTERNAL/freeglut/freeglut_minimal.h"
 #endif
 

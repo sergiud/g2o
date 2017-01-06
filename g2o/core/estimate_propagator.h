@@ -29,7 +29,7 @@
 
 #include "optimizable_graph.h"
 #include "sparse_optimizer.h"
-#include "g2o_core_api.h"
+#include <g2o/core/g2o_core_api.h>
 
 #include <map>
 #include <set>

@@ -28,7 +28,7 @@
 #define EXAMPLE_SLAM_INTERFACE_H
 
 #include "slam_parser/interface/abstract_slam_interface.h"
-#include "g2o_example_api.h"
+#include <g2o/slam_parser/example/g2o_example_api.h>
 
 #include <map>
 #include <vector>

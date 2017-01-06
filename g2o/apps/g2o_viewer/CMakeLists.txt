@@ -36,7 +36,7 @@ ADD_LIBRARY(viewer_library ${G2O_LIB_TYPE}
 )
 
 generate_export_header (viewer_library PREFIX_NAME G2O_ EXPORT_FILE_NAME
-  ${CMAKE_CURRENT_BINARY_DIR}/g2o_viewer_api.h
+  ${CMAKE_BINARY_DIR}/include/g2o/viewer/g2o_viewer_api.h
   EXPORT_MACRO_NAME VIEWER_API)
 
 SET_TARGET_PROPERTIES(viewer_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}viewer)
@@ -44,6 +44,8 @@ SET_TARGET_PROPERTIES(viewer_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}viewer)
 ADD_EXECUTABLE(g2o_viewer
   g2o_viewer.cpp
 )
+
+target_include_directories (g2o_viewer PRIVATE ${CMAKE_BINARY_DIR}/include)
 
 SET_TARGET_PROPERTIES(g2o_viewer PROPERTIES OUTPUT_NAME g2o_viewer${EXE_POSTFIX})
 

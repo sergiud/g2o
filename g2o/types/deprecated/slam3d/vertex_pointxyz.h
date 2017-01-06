@@ -27,10 +27,10 @@
 #ifndef G2O_DEPRECATED_VERTEX_TRACKXYZ_H_
 #define G2O_DEPRECATED_VERTEX_TRACKXYZ_H_
 
-#include "g2o/core/base_vertex.h"
-#include "g2o/core/hyper_graph_action.h"
+#include <g2o/core/base_vertex.h>
+#include <g2o/core/hyper_graph_action.h>
 
-#include "g2o_deprecated_types_slam3d_api.h"
+#include <g2o/deprecated/g2o_deprecated_types_slam3d_api.h>
 
 namespace g2o {
 namespace deprecated {

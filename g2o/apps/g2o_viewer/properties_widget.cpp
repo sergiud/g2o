@@ -23,7 +23,7 @@
 #include <iostream>
 #include <cassert>
 
-#include "g2o/stuff/property.h"
+#include <g2o/stuff/property.h>
 
 using namespace std;
 

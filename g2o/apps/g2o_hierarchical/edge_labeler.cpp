@@ -1,6 +1,6 @@
 #include <Eigen/Dense>
 #include "edge_labeler.h"
-#include "g2o/stuff/unscented.h"
+#include <g2o/stuff/unscented.h>
 
 namespace g2o {
 

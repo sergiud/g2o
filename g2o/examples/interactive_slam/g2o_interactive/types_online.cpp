@@ -26,8 +26,8 @@
 
 #include "types_slam2d_online.h"
 #include "types_slam3d_online.h"
-#include "g2o/core/factory.h"
-#include "g2o/stuff/macros.h"
+#include <g2o/core/factory.h>
+#include <g2o/stuff/macros.h>
 
 #include <iostream>
 

@@ -32,7 +32,7 @@
 #include <sstream>
 
 #include "string_tools.h"
-#include "g2o_stuff_api.h"
+#include <g2o/stuff/g2o_stuff_api.h>
 
 namespace g2o {
 

@@ -27,7 +27,7 @@
 #include <iostream>
 #include "edge_se3_plane_calib.h"
 
-#include "g2o/stuff/opengl_wrapper.h"
+#include <g2o/stuff/opengl_wrapper.h>
 
 namespace g2o
 {

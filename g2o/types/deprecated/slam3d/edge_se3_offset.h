@@ -27,7 +27,7 @@
 #ifndef G2O_DEPRECATED_EDGE_SE3_OFFSET_H_
 #define G2O_DEPRECATED_EDGE_SE3_OFFSET_H_
 
-#include "g2o/core/base_binary_edge.h"
+#include <g2o/core/base_binary_edge.h>
 
 #include "vertex_se3_quat.h"
 

@@ -26,9 +26,9 @@
 
 #include "structure_only_solver.h"
 
-#include "g2o/core/optimization_algorithm_factory.h"
-#include "g2o/core/optimization_algorithm.h"
-#include "g2o/stuff/macros.h"
+#include <g2o/core/optimization_algorithm_factory.h>
+#include <g2o/core/optimization_algorithm.h>
+#include <g2o/stuff/macros.h>
 
 namespace g2o {
 

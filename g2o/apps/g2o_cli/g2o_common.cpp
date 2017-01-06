@@ -25,10 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "g2o_common.h"
-
 #include "dl_wrapper.h"
-#include "g2o/stuff/string_tools.h"
-#include "g2o/stuff/filesys_tools.h"
+#include <g2o/stuff/string_tools.h>
+#include <g2o/stuff/filesys_tools.h>
 
 #include <vector>
 #include <iostream>

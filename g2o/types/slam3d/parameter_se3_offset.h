@@ -27,11 +27,11 @@
 #ifndef G2O_VERTEX_SE3_OFFSET_PARAMETERS_H_
 #define G2O_VERTEX_SE3_OFFSET_PARAMETERS_H_
 
-#include "g2o/core/optimizable_graph.h"
+#include <g2o/core/optimizable_graph.h>
 
-#include "g2o/core/hyper_graph_action.h"
-#include "g2o/core/cache.h"
-#include "g2o_types_slam3d_api.h"
+#include <g2o/core/hyper_graph_action.h>
+#include <g2o/core/cache.h>
+#include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 
 #include <Eigen/Geometry>
 

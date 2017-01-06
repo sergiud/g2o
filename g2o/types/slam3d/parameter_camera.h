@@ -27,9 +27,9 @@
 #ifndef G2O_CAMERA_PARAMETERS_H_
 #define G2O_CAMERA_PARAMETERS_H_
 
-#include "g2o/core/hyper_graph_action.h"
+#include <g2o/core/hyper_graph_action.h>
 #include "parameter_se3_offset.h"
-#include "g2o_types_slam3d_api.h"
+#include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 
 namespace g2o {
   /**

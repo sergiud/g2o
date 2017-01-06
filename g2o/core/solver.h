@@ -30,7 +30,7 @@
 #include "hyper_graph.h"
 #include "batch_stats.h"
 #include "sparse_block_matrix.h"
-#include "g2o_core_api.h"
+#include <g2o/core/g2o_core_api.h>
 #include <cstddef>
 
 namespace g2o {

@@ -1,7 +1,7 @@
 #ifndef _DQUAT2MAT_H_
 #define _DQUAT2MAT_H_
 #include <Eigen/Core>
-#include "g2o_types_slam3d_api.h"
+#include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 
 namespace g2o {
   namespace internal {

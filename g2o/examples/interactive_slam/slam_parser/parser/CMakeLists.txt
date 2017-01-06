@@ -14,13 +14,13 @@ ADD_LIBRARY(parser_library
 )
 
 generate_export_header (parser_library PREFIX_NAME G2O_ EXPORT_FILE_NAME
-  ${CMAKE_CURRENT_BINARY_DIR}/g2o_slam_parser_api.h
+  ${CMAKE_BINARY_DIR}/include/g2o/slam_parser/g2o_slam_parser_api.h
   EXPORT_MACRO_NAME SLAM_PARSER_API)
 
 target_include_directories (parser_library PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 )
 
 set_target_properties (parser_library PROPERTIES EXPORT_NAME parser)

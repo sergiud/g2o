@@ -30,7 +30,7 @@
 #include <vector>
 #include <string>
 
-#include "g2o_slam_parser_interface_api.h"
+#include <g2o/slam_parser/interface/g2o_slam_parser_interface_api.h>
 
 namespace SlamParser {
 

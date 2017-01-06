@@ -27,9 +27,9 @@
 #ifndef G2O_SIX_DOF_TYPES_EXPMAP
 #define G2O_SIX_DOF_TYPES_EXPMAP
 
-#include "g2o/core/base_vertex.h"
-#include "g2o/core/base_binary_edge.h"
-#include "g2o/types/slam3d/se3_ops.h"
+#include <g2o/core/base_vertex.h>
+#include <g2o/core/base_binary_edge.h>
+#include <g2o/types/slam3d/se3_ops.h>
 #include "types_sba.h"
 #include <Eigen/Geometry>
 

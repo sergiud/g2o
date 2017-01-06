@@ -30,9 +30,9 @@
 #include <string>
 #include <set>
 #include "g2o/config.h"
-#include "g2o/types/slam3d/types_slam3d.h"
-#include "g2o/stuff/sampler.h"
-#include "g2o_simulator_api.h"
+#include <g2o/types/slam3d/types_slam3d.h>
+#include <g2o/stuff/sampler.h>
+#include <g2o/simulator/g2o_simulator_api.h>
 
 namespace g2o {
 

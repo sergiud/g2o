@@ -38,9 +38,9 @@
 #include "batch_stats.h"
 #include "hyper_graph_action.h"
 #include "robust_kernel.h"
-#include "g2o/stuff/timeutil.h"
-#include "g2o/stuff/macros.h"
-#include "g2o/stuff/misc.h"
+#include <g2o/stuff/timeutil.h>
+#include <g2o/stuff/macros.h>
+#include <g2o/stuff/misc.h>
 #include "g2o/config.h"
 
 namespace g2o{

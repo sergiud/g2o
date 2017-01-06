@@ -3,14 +3,14 @@ ADD_LIBRARY(types_sba
   types_sba.cpp   types_six_dof_expmap.cpp
 )
 
-generate_export_header (types_sba PREFIX_NAME G2O_ EXPORT_FILE_NAME 
-  ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_sba_api.h
+generate_export_header (types_sba PREFIX_NAME G2O_ EXPORT_FILE_NAME
+  ${CMAKE_BINARY_DIR}/include/g2o/types/sba/g2o_types_sba_api.h
   EXPORT_MACRO_NAME TYPES_SBA_API)
 
 target_include_directories (types_sba PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
   $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 )
 
 SET_TARGET_PROPERTIES(types_sba PROPERTIES OUTPUT_NAME ${LIB_PREFIX}types_sba)

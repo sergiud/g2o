@@ -28,10 +28,10 @@
 #ifndef G2O_STRUCTURE_ONLY_SOLVER_H
 #define G2O_STRUCTURE_ONLY_SOLVER_H
 
-#include "g2o/core/base_vertex.h"
-#include "g2o/core/base_binary_edge.h"
-#include "g2o/core/optimization_algorithm.h"
-#include "g2o/core/sparse_optimizer.h"
+#include <g2o/core/base_vertex.h>
+#include <g2o/core/base_binary_edge.h>
+#include <g2o/core/optimization_algorithm.h>
+#include <g2o/core/sparse_optimizer.h>
 
 namespace g2o
 {

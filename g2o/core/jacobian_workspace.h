@@ -34,7 +34,7 @@
 #include <cassert>
 
 #include "g2o/config.h"
-#include "g2o_core_api.h"
+#include <g2o/core/g2o_core_api.h>
 #include "hyper_graph.h"
 
 namespace g2o {

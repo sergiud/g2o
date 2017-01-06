@@ -1,5 +1,5 @@
 #include <limits>
-#include "g2o/core/factory.h"
+#include <g2o/core/factory.h>
 #include "edge_types_cost_function.h"
 
 namespace g2o {

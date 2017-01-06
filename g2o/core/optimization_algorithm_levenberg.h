@@ -28,7 +28,7 @@
 #define G2O_SOLVER_LEVENBERG_H
 
 #include "optimization_algorithm_with_hessian.h"
-#include "g2o_core_api.h"
+#include <g2o/core/g2o_core_api.h>
 
 namespace g2o {
 

@@ -19,8 +19,8 @@
 #include "main_window.h"
 //#include "moc_main_window.cpp"
 
-#include "g2o/core/sparse_optimizer.h"
-#include "g2o/core/estimate_propagator.h"
+#include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/estimate_propagator.h>
 
 #include <QFileDialog>
 

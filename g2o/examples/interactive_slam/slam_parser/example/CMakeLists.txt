@@ -4,11 +4,11 @@ ADD_LIBRARY(example_library
 )
 
 generate_export_header (example_library PREFIX_NAME G2O_ EXPORT_FILE_NAME
-  ${CMAKE_CURRENT_BINARY_DIR}/g2o_example_api.h
+  ${CMAKE_BINARY_DIR}/include/g2o/slam_parser/example/g2o_example_api.h
   EXPORT_MACRO_NAME EXAMPLE_API)
 
 target_include_directories (example_library PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include/g2o>
 )
 
 SET_TARGET_PROPERTIES(example_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}example)

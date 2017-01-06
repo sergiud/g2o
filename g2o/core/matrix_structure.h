@@ -27,7 +27,7 @@
 #ifndef G2O_MATRIX_STRUCTURE_H
 #define G2O_MATRIX_STRUCTURE_H
 
-#include "g2o_core_api.h"
+#include <g2o/core/g2o_core_api.h>
 
 namespace g2o {
 

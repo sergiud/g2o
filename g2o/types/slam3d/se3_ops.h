@@ -30,7 +30,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include "g2o_types_slam3d_api.h"
+#include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 
 namespace g2o {
 

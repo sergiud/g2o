@@ -32,11 +32,11 @@
 #include <Eigen/Core>
 #include <Eigen/StdVector>
 
-#include "g2o/types/slam3d/vertex_se3.h"
-#include "g2o/types/slam3d/edge_se3.h"
-#include "g2o/stuff/sampler.h"
-#include "g2o/stuff/command_args.h"
-#include "g2o/core/factory.h"
+#include <g2o/types/slam3d/vertex_se3.h>
+#include <g2o/types/slam3d/edge_se3.h>
+#include <g2o/stuff/sampler.h>
+#include <g2o/stuff/command_args.h>
+#include <g2o/core/factory.h>
 
 using namespace std;
 using namespace g2o;

@@ -3,11 +3,11 @@ ADD_LIBRARY(g2o_incremental_library
 )
 
 generate_export_header (g2o_incremental_library PREFIX_NAME G2O_ EXPORT_FILE_NAME
-  ${CMAKE_CURRENT_BINARY_DIR}/g2o_incremental_api.h
+  ${CMAKE_BINARY_DIR}/include/g2o/examples/interactive_slam/g2o_incremental_api.h
   EXPORT_MACRO_NAME INCREMENTAL_API)
 
 target_include_directories (g2o_incremental_library PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 )
 
 SET_TARGET_PROPERTIES(g2o_incremental_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}incremental)

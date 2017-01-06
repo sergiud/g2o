@@ -27,7 +27,7 @@
 #ifndef G2O_SENSOR_ODOMETRY2D_H_
 #define G2O_SENSOR_ODOMETRY2D_H_
 
-#include "g2o_simulator_api.h"
+#include <g2o/simulator/g2o_simulator_api.h>
 #include "simulator2d_base.h"
 
 namespace g2o {

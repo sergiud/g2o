@@ -29,13 +29,13 @@
 #include <csignal>
 #include <cstdlib>
 
-#include "g2o/stuff/macros.h"
-#include "g2o/stuff/command_args.h"
-#include "g2o/stuff/timeutil.h"
+#include <g2o/stuff/macros.h>
+#include <g2o/stuff/command_args.h>
+#include <g2o/stuff/timeutil.h>
 
 #include "slam_parser/interface/parser_interface.h"
 
-#include "g2o_slam_interface.h"
+#include <g2o_interactive/g2o_slam_interface.h>
 #include "graph_optimizer_sparse_online.h"
 
 static bool hasToStop=false;
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
   arg.param("pcg", pcg, false, "use PCG instead of Cholesky");
   arg.param("v", verbose, false, "verbose output of the optimization process");
   arg.param("g", vis, false, "gnuplot visualization");
-  
+
   arg.parseArgs(argc, argv);
 
   SparseOptimizerOnline optimizer(pcg);

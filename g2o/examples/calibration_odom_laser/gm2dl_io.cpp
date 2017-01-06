@@ -26,15 +26,15 @@
 
 #include "gm2dl_io.h"
 
-#include "g2o/types/data/data_queue.h"
+#include <g2o/types/data/data_queue.h>
 
-#include "g2o/core/sparse_optimizer.h"
-#include "g2o/core/factory.h"
+#include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/factory.h>
 
-#include "g2o/types/sclam2d/edge_se2_sensor_calib.h"
-#include "g2o/types/data/robot_laser.h"
+#include <g2o/types/sclam2d/edge_se2_sensor_calib.h>
+#include <g2o/types/data/robot_laser.h>
 
-#include "g2o/stuff/string_tools.h"
+#include <g2o/stuff/string_tools.h>
 
 #include <fstream>
 #include <iostream>

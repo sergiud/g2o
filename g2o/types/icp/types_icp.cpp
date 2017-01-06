@@ -25,8 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "types_icp.h"
-#include "g2o/core/factory.h"
-#include "g2o/stuff/macros.h"
+#include <g2o/core/factory.h>
+#include <g2o/stuff/macros.h>
 
 #include <iostream>
 

@@ -27,8 +27,8 @@
 #ifndef G2O_VERTEX_ODOM_DIFFERENTIAL_PARAMS_H
 #define G2O_VERTEX_ODOM_DIFFERENTIAL_PARAMS_H
 
-#include "g2o_types_sclam2d_api.h"
-#include "g2o/core/base_vertex.h"
+#include <g2o/types/sclam2d/g2o_types_sclam2d_api.h>
+#include <g2o/core/base_vertex.h>
 
 namespace g2o {
 

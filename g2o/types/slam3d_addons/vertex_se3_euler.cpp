@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "vertex_se3_euler.h"
-#include "g2o/types/slam3d/isometry3d_mappings.h"
+#include <g2o/types/slam3d/isometry3d_mappings.h>
 
 #include <iostream>
 

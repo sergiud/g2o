@@ -26,7 +26,7 @@
 
 #include "vertex_plane.h"
 
-#include "g2o/stuff/opengl_wrapper.h"
+#include <g2o/stuff/opengl_wrapper.h>
 
 namespace g2o
 {

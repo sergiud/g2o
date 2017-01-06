@@ -27,8 +27,8 @@
 #ifndef G2O_SLAM_INTERFACE_H
 #define G2O_SLAM_INTERFACE_H
 
-#include "g2o_interactive_api.h"
-#include "g2o/core/optimizable_graph.h"
+#include <g2o/examples/interactive_slam/g2o_interactive_api.h>
+#include <g2o/core/optimizable_graph.h>
 #include "slam_parser/interface/abstract_slam_interface.h"
 
 #include <map>

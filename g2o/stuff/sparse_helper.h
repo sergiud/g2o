@@ -27,7 +27,7 @@
 #ifndef G2O_SPARSE_HELPER_H
 #define G2O_SPARSE_HELPER_H
 
-#include "g2o_stuff_api.h"
+#include <g2o/stuff/g2o_stuff_api.h>
 
 #include <string>
 

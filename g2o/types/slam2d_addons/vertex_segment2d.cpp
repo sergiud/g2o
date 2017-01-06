@@ -31,12 +31,12 @@
 #endif
 
 #ifdef G2O_HAVE_OPENGL
-#include "g2o/stuff/opengl_wrapper.h"
+#include <g2o/stuff/opengl_wrapper.h>
 #endif
 
 #include <typeinfo>
 
-#include "g2o/stuff/macros.h"
+#include <g2o/stuff/macros.h>
 
 namespace g2o {
 

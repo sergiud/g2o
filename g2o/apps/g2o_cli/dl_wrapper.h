@@ -34,7 +34,7 @@
 #include <windows.h>
 #endif
 
-#include "g2o_cli_api.h"
+#include <g2o/cli/g2o_cli_api.h>
 
 namespace g2o {
 

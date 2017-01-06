@@ -27,10 +27,10 @@
 #ifndef G2O_TUTORIAL_VERTEX_SE2_H
 #define G2O_TUTORIAL_VERTEX_SE2_H
 
-#include "g2o/core/base_vertex.h"
-#include "g2o/core/hyper_graph_action.h"
+#include <g2o/core/base_vertex.h>
+#include <g2o/core/hyper_graph_action.h>
 #include "se2.h"
-#include "g2o_tutorial_slam2d_api.h"
+#include <g2o/examples/tutorial_slam2d/g2o_tutorial_slam2d_api.h>
 
 namespace g2o {
   namespace tutorial {

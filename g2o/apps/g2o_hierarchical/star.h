@@ -1,7 +1,7 @@
 #ifndef G2O_STAR_
 #define G2O_STAR_
 
-#include "g2o/core/sparse_optimizer.h"
+#include <g2o/core/sparse_optimizer.h>
 #include "edge_labeler.h"
 #include <Eigen/Core>
 #include <vector>

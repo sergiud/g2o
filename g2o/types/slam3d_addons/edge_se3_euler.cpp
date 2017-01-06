@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "edge_se3_euler.h"
-#include "g2o/core/factory.h"
+#include <g2o/core/factory.h>
 #include <iostream>
 
 using namespace Eigen;

@@ -20,14 +20,14 @@ ADD_LIBRARY(types_slam3d_addons
   types_slam3d_addons.h
 )
 
-generate_export_header (types_slam3d_addons PREFIX_NAME G2O_ EXPORT_FILE_NAME 
-  ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_slam3d_addons_api.h
+generate_export_header (types_slam3d_addons PREFIX_NAME G2O_ EXPORT_FILE_NAME
+  ${CMAKE_BINARY_DIR}/include/g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h
   EXPORT_MACRO_NAME TYPES_SLAM3D_ADDONS_API)
 
 target_include_directories (types_slam3d_addons PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
   $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 )
 
 target_compile_definitions (types_slam3d_addons PRIVATE EIGEN_NO_STATIC_ASSERT)

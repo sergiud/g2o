@@ -27,8 +27,8 @@
 #ifndef G2O_SOLVER_SLAM2D_LINEAR
 #define G2O_SOLVER_SLAM2D_LINEAR
 
-#include "g2o/core/optimization_algorithm_gauss_newton.h"
-#include "g2o_slam2d_linear_api.h"
+#include <g2o/core/optimization_algorithm_gauss_newton.h>
+#include <g2o/solvers/slam2d_linear/g2o_slam2d_linear_api.h>
 
 namespace g2o {
 

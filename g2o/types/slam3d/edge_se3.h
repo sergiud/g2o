@@ -1,9 +1,9 @@
 #ifndef G2O_EDGE_SE3_H_
 #define G2O_EDGE_SE3_H_
 
-#include "g2o/core/base_binary_edge.h"
+#include <g2o/core/base_binary_edge.h>
 
-#include "g2o_types_slam3d_api.h"
+#include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 #include "vertex_se3.h"
 
 namespace g2o {

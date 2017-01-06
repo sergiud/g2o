@@ -27,7 +27,7 @@
 #ifndef G2O_DEPRECATED_EDGE_PROJECT_DEPTH_H_
 #define G2O_DEPRECATED_EDGE_PROJECT_DEPTH_H_
 
-#include "g2o/core/base_binary_edge.h"
+#include <g2o/core/base_binary_edge.h>
 
 #include "vertex_se3_quat.h"
 #include "vertex_pointxyz.h"

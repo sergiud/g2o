@@ -28,7 +28,7 @@
 #define G2O_ROBUST_KERNEL_IMPL_H
 
 #include "robust_kernel.h"
-#include "g2o_core_api.h"
+#include <g2o/core/g2o_core_api.h>
 
 namespace g2o {
 

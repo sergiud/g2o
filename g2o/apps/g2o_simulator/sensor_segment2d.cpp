@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "sensor_segment2d.h"
-#include "g2o/apps/g2o_simulator/simutils.h"
+#include <g2o/apps/g2o_simulator/simutils.h>
 #include <iostream>
 
 namespace g2o{

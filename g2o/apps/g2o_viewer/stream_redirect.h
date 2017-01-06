@@ -22,7 +22,7 @@
 #include <string>
 #include <QMutex>
 
-#include "g2o_viewer_api.h"
+#include <g2o/viewer/g2o_viewer_api.h>
 
 class QPlainTextEdit;
 

@@ -28,7 +28,7 @@
 #define G2O_HYPER_GRAPH_ACTION_H
 
 #include "hyper_graph.h"
-#include "g2o/stuff/property.h"
+#include <g2o/stuff/property.h>
 
 #include <typeinfo>
 #include <iosfwd>
@@ -37,7 +37,7 @@
 #include <iostream>
 #include <memory>
 
-#include "g2o_core_api.h"
+#include <g2o/core/g2o_core_api.h>
 
 // define to get verbose output
 //#define G2O_DEBUG_ACTIONLIB

@@ -31,7 +31,7 @@
 #include <Eigen/Core>
 
 #include "eigen_types.h"
-#include "g2o_core_api.h"
+#include <g2o/core/g2o_core_api.h>
 
 namespace g2o {
 

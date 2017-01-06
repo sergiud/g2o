@@ -1,7 +1,7 @@
 #include "simple_star_ops.h"
 #include "backbone_tree_action.h"
 #include "edge_types_cost_function.h"
-#include "g2o/core/optimization_algorithm_with_hessian.h"
+#include <g2o/core/optimization_algorithm_with_hessian.h>
 #include <iostream>
 #include <Eigen/LU>
 #include <Eigen/Cholesky>

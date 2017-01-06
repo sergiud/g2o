@@ -31,11 +31,11 @@
 #include <utility>
 #include <iosfwd>
 
-#include "g2o/stuff/property.h"
+#include <g2o/stuff/property.h>
 
 #include "hyper_graph.h"
 #include "sparse_block_matrix.h"
-#include "g2o_core_api.h"
+#include <g2o/core/g2o_core_api.h>
 
 namespace g2o {
 
