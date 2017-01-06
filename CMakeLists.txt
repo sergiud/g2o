@@ -1,5 +1,9 @@
 cmake_minimum_required (VERSION 3.1)
 
+if (POLICY CMP0022)
+  cmake_policy (SET CMP0022 NEW)
+endif (POLICY CMP0022)
+
 if (POLICY CMP0058)
   cmake_policy (SET CMP0058 NEW)
 endif (POLICY CMP0058)
