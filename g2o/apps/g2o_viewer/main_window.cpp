@@ -216,7 +216,7 @@ void MainWindow::updateDisplayedSolvers()
   for (map<string, vector<OptimizationAlgorithmProperty> >::iterator it = solverLookUp.begin(); it != solverLookUp.end(); ++it) {
     if (_knownSolvers.size() > 0) {
       coOptimizer->insertSeparator(coOptimizer->count());
-      _knownSolvers.push_back(OptimizationAlgorithmProperty());
+      _knownSolvers.emplace_back();
     }
     const vector<OptimizationAlgorithmProperty>& vsp = it->second;
     for (size_t j = 0; j < vsp.size(); ++j) {

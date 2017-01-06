@@ -153,7 +153,7 @@ int main(int argc, char** argv)
       currentLine >> token;
       if (token == "EDGE_SE2") {
         graphDimension = 3;
-        edgesFromGraph.push_back(EdgeInformation());
+        edgesFromGraph.emplace_back();
         EdgeInformation& currentEdge = edgesFromGraph.back();
         currentLine >> currentEdge.fromId >> currentEdge.toId;
         currentEdge.measurement.resize(3);
@@ -163,7 +163,7 @@ int main(int argc, char** argv)
           currentLine >> currentEdge.information[i];
       } else if (token == "EDGE_SE3:QUAT") {
         graphDimension = 6;
-        edgesFromGraph.push_back(EdgeInformation());
+        edgesFromGraph.emplace_back();
         EdgeInformation& currentEdge = edgesFromGraph.back();
         currentLine >> currentEdge.fromId >> currentEdge.toId;
         currentEdge.measurement.resize(7);

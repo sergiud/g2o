@@ -161,7 +161,7 @@ class LinearSolverEigen: public LinearSolver<MatrixType>
               const int& r = it->first;
               if (r > static_cast<int>(c)) // only upper triangle
                 break;
-              triplets.push_back(Triplet(r, c, 0.));
+              triplets.emplace_back(r, c, 0.);
             }
           }
 

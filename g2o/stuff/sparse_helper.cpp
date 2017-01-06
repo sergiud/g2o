@@ -69,9 +69,9 @@ namespace g2o {
       const int& rbeg = Ap[i];
       const int& rend = Ap[i+1];
       for (int j = rbeg; j < rend; j++) {
-        entries.push_back(TripletEntry(Ai[j], i, Ax[j]));
+        entries.emplace_back(Ai[j], i, Ax[j]);
         if (upperTriangleSymmetric && Ai[j] != i)
-          entries.push_back(TripletEntry(i, Ai[j], Ax[j]));
+          entries.emplace_back(i, Ai[j], Ax[j]);
       }
     }
     sort(entries.begin(), entries.end(), TripletColSort());

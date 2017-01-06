@@ -161,9 +161,9 @@ namespace csparse_extension {
         const int& rbeg = Ap[i];
         const int& rend = Ap[i+1];
         for (int j = rbeg; j < rend; j++) {
-          entries.push_back(SparseMatrixEntry(Ai[j], i, Ax[j]));
+          entries.emplace_back(Ai[j], i, Ax[j]);
           if (upperTriangular && Ai[j] != i)
-            entries.push_back(SparseMatrixEntry(i, Ai[j], Ax[j]));
+            entries.emplace_back(i, Ai[j], Ax[j]);
         }
       }
     } else { // Triplet matrix
@@ -172,9 +172,9 @@ namespace csparse_extension {
       int *Ai = A->i;             // row indices
       double *Ax = A->x;          // values;
       for (int i = 0; i < A->nz; ++i) {
-        entries.push_back(SparseMatrixEntry(Ai[i], Aj[i], Ax[i]));
+        entries.emplace_back(Ai[i], Aj[i], Ax[i]);
         if (upperTriangular && Ai[i] != Aj[i])
-          entries.push_back(SparseMatrixEntry(Aj[i], Ai[i], Ax[i]));
+          entries.emplace_back(Aj[i], Ai[i], Ax[i]);
       }
     }
     sort(entries.begin(), entries.end(), SparseMatrixEntryColSort());

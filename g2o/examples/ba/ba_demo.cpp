@@ -147,9 +147,9 @@ int main(int argc, const char* argv[]){
   vector<Vector3d> true_points;
   for (size_t i=0;i<500; ++i)
   {
-    true_points.push_back(Vector3d((Sample::uniform()-0.5)*3,
+    true_points.emplace_back((Sample::uniform()-0.5)*3,
                                    Sample::uniform()-0.5,
-                                   Sample::uniform()+3));
+                                   Sample::uniform()+3);
   }
 
   double focal_length= 1000.;

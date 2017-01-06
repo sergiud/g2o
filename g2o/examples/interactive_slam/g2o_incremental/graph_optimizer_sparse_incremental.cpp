@@ -282,7 +282,7 @@ namespace g2o {
       sizePoses+=dim;
       _updateMat.rowBlockIndices().push_back(sizePoses);
       _updateMat.colBlockIndices().push_back(sizePoses);
-      _updateMat.blockCols().push_back(SparseBlockMatrix<MatrixXd>::IntBlockMap());
+      _updateMat.blockCols().emplace_back();
       int ind = v->hessianIndex();
       //cerr << PVAR(ind) << endl;
       if (ind >= 0) {

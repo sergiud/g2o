@@ -213,7 +213,7 @@ namespace g2o {
         const GridPose& prev = poses[i-1];
         const GridPose& p = poses[i];
 
-        _odometry.push_back(GridEdge());
+        _odometry.emplace_back();
         GridEdge& edge = _odometry.back();
 
         edge.from = prev.id;
@@ -260,7 +260,7 @@ namespace g2o {
               observation[1] += Rand::gauss_rand(0., landmarkNoise[1]);
             }
 
-            _landmarkObservations.push_back(LandmarkEdge());
+            _landmarkObservations.emplace_back();
             LandmarkEdge& le = _landmarkObservations.back();
 
             le.from = p.id;

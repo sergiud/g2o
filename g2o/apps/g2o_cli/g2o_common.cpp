@@ -87,7 +87,7 @@ void findArguments(const std::string& option, vector<string>& args, int argc, ch
   args.clear();
   for (int i = 0; i < argc; ++i) {
     if (argv[i] == option && i + 1 < argc) {
-      args.push_back(argv[i+1]);
+      args.emplace_back(argv[i+1]);
     }
   }
 }
