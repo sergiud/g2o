@@ -41,7 +41,7 @@
 #line 1 "parser.yy"
  /*** C/C++ Declarations ***/
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <vector>
 

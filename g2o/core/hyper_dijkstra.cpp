@@ -27,7 +27,7 @@
 #include <queue>
 #include <deque>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 #include "hyper_dijkstra.h"
 #include <g2o/stuff/macros.h>

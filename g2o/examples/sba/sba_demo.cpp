@@ -29,7 +29,7 @@
 #include <unordered_set>
 
 #include <iostream>
-#include <stdint.h>
+#include <cstdint>
 
 #include "g2o/config.h"
 #include <g2o/core/sparse_optimizer.h>

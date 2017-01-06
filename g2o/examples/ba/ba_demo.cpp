@@ -26,7 +26,7 @@
 
 #include <Eigen/StdVector>
 #include <iostream>
-#include <stdint.h>
+#include <cstdint>
 
 #include <unordered_set>
 

@@ -32,7 +32,7 @@
 #ifndef CERES_PUBLIC_INTERNAL_VARIADIC_EVALUATE_H_
 #define CERES_PUBLIC_INTERNAL_VARIADIC_EVALUATE_H_
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "jet.h"
 #include "eigen.h"

@@ -140,7 +140,7 @@
 #ifndef CERES_PUBLIC_INTERNAL_AUTODIFF_H_
 #define CERES_PUBLIC_INTERNAL_AUTODIFF_H_
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "jet.h"
 #include "eigen.h"

@@ -38,8 +38,8 @@
 #define G2O_FAST_OUTPUT_H
 
 #include <cstdio>
-#include <stdint.h>
-#include <assert.h>
+#include <cstdint>
+#include <cassert>
 
 #ifdef __cplusplus
 extern "C" {

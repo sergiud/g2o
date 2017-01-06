@@ -26,7 +26,7 @@
 
 #include "hyper_graph.h"
 
-#include <assert.h>
+#include <cassert>
 #include <queue>
 
 namespace g2o {

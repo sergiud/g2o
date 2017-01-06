@@ -5,7 +5,7 @@
 #include <Eigen/StdVector>
 #include <iostream>
 
-#include <stdint.h>
+#include <cstdint>
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/core/block_solver.h>
 #include <g2o/core/solver.h>
