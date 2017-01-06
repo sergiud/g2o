@@ -80,4 +80,4 @@ namespace SlamParser {
     return false;
   }
 
-} // end namespace
+} // namespace SlamParser

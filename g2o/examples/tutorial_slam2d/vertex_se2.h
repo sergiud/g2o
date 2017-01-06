@@ -59,7 +59,7 @@ namespace g2o {
 
     };
 
-  } // end namespace
-} // end namespace
+  } // namespace tutorial
+} // namespace g2o
 
 #endif

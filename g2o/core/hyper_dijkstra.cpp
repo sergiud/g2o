@@ -61,7 +61,7 @@ namespace g2o{
   HyperDijkstra::HyperDijkstra(HyperGraph* g): _graph(g)
   {
     for (HyperGraph::VertexIDMap::const_iterator it=_graph->vertices().begin(); it!=_graph->vertices().end(); it++){
-      AdjacencyMapEntry entry(it->second, 0,0,std::numeric_limits< double >::max());
+      AdjacencyMapEntry entry(it->second, nullptr,nullptr,std::numeric_limits< double >::max());
       _adjacencyMap.insert(make_pair(entry.child(), entry));
     }
   }
@@ -71,7 +71,7 @@ namespace g2o{
     for (HyperGraph::VertexSet::iterator it=_visited.begin(); it!=_visited.end(); it++){
       AdjacencyMap::iterator at=_adjacencyMap.find(*it);
       assert(at!=_adjacencyMap.end());
-      at->second=AdjacencyMapEntry(at->first,0,0,std::numeric_limits< double >::max());
+      at->second=AdjacencyMapEntry(at->first,nullptr,nullptr,std::numeric_limits< double >::max());
     }
     _visited.clear();
   }
@@ -97,7 +97,7 @@ namespace g2o{
       }
       assert(it!=_adjacencyMap.end());
       it->second._distance=0.;
-      it->second._parent=0;
+      it->second._parent=nullptr;
       frontier.push(it->second);
     }
 
@@ -185,7 +185,7 @@ namespace g2o{
     for (AdjacencyMap::iterator it=amap.begin(); it!=amap.end(); ++it){
       AdjacencyMapEntry& entry(it->second);
       if (! entry.parent()) {
-        action->perform(it->first,0,0);
+        action->perform(it->first,nullptr,nullptr);
         q.push_back(it->first);
       }
     }
@@ -258,4 +258,4 @@ namespace g2o{
     return 1.;
   }
 
-};
+} // namespace g2o;

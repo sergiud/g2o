@@ -44,6 +44,6 @@ namespace g2o {
     bool isVisible(WorldObjectType* to);
   };
 
-}
+} // namespace g2o
 
 #endif

@@ -58,7 +58,7 @@ namespace g2o {
     if (!r)
       return;
     
-    PoseObject* pprev=0, *pcurr=0;
+    PoseObject* pprev=nullptr, *pcurr=nullptr;
     std::list<PoseObject*>::reverse_iterator it=r->trajectory().rbegin();
     if (it!=r->trajectory().rend()){
       pcurr = *it; 
@@ -84,4 +84,4 @@ namespace g2o {
     _robotPoseObject = pcurr;
   }
 
-}
+} // namespace g2o

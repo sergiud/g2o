@@ -58,4 +58,4 @@ namespace g2o {
     _hostname = hostname;
   }
 
-} // end namespace
+} // namespace g2o

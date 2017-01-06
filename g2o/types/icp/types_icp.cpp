@@ -69,7 +69,7 @@ namespace g2o {
 
       types_icp::initialized = 1;
     }
-  }
+  } // namespace types_icp
 
   using namespace std;
   using namespace Eigen;
@@ -335,4 +335,4 @@ namespace g2o {
   bool VertexSCam::write(std::ostream&) const
   { return false; }
 
-} // end namespace
+} // namespace g2o

@@ -130,6 +130,6 @@ namespace SlamParser {
       std::vector<int> _ids;
   };
 
-} // end namespace
+} // namespace SlamParser
 
 #endif

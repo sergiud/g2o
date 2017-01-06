@@ -104,7 +104,7 @@ namespace g2o {
 
 #ifdef G2O_HAVE_OPENGL
   VertexEllipseDrawAction::VertexEllipseDrawAction(): DrawAction(typeid(VertexEllipse).name()){
-    _scaleFactor = 0;
+    _scaleFactor = nullptr;
   }
 
   bool VertexEllipseDrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
@@ -113,7 +113,7 @@ namespace g2o {
     if (_previousParams){
       _scaleFactor = _previousParams->makeProperty<DoubleProperty>(_typeName + "::", 1);
     } else {
-      _scaleFactor = 0;
+      _scaleFactor = nullptr;
     }
     return true;
   }
@@ -121,7 +121,7 @@ namespace g2o {
   HyperGraphElementAction* VertexEllipseDrawAction::operator()(HyperGraph::HyperGraphElement* element,
 							       HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return 0;
+      return nullptr;
 
     refreshPropertyPtrs(params_);
     if (! _previousParams){
@@ -175,4 +175,4 @@ namespace g2o {
   }
 #endif
 
-}
+} // namespace g2o

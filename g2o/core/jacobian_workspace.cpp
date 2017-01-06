@@ -86,4 +86,4 @@ void JacobianWorkspace::updateSize(int numVertices, int dimension)
   _maxDimension = max(dimension, _maxDimension);
 }
 
-} // end namespace
+} // namespace g2o

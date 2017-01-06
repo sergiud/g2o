@@ -1078,7 +1078,7 @@ namespace SlamParser {
   "\"Vertex SE3\"", "\"Edge SE2\"", "\"Edge SE3\"", "\"Fix\"",
   "\"Solve State\"", "\"Query State\"", "';'", "$accept", "int_list",
   "NUMBER", "add_se2", "add_se3", "fix_node", "solve_state", "query_state",
-  "command", "start", 0
+  "command", "start", nullptr
   };
 #endif
 
@@ -1207,7 +1207,7 @@ namespace SlamParser {
 /* Line 1054 of lalr1.cc  */
 #line 1 "[Bison:b4_percent_define_default]"
 
-} // SlamParser
+} // namespace SlamParser
 
 /* Line 1054 of lalr1.cc  */
 #line 1214 "bison_parser.cpp"

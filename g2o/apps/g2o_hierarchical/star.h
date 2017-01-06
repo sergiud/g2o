@@ -72,5 +72,5 @@ struct Star{
   typedef std::map<HyperGraph::Edge*, Star*> EdgeStarMap;
 
 
-} // end namespace
+} // namespace g2o
 #endif

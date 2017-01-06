@@ -37,7 +37,7 @@ namespace g2o {
       template<typename T>
       void operator()(T* t) { delete t;}
     };
-  }
+  } // namespace
 
   /**
    * \brief a scoped pointer for an objectarray, i.e., object will be deleted on leaving the scope
@@ -142,6 +142,6 @@ namespace g2o {
       const ScopedArray& operator=(const ScopedArray&);
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

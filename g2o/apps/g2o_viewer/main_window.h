@@ -32,7 +32,7 @@ class PropertiesWidget;
 namespace g2o {
   class DlWrapper;
   class OptimizationAlgorithm;
-} // end namespace
+} // namespace g2o
 
 /**
  * \brief main window of the g2o viewer
@@ -41,7 +41,7 @@ class G2O_VIEWER_API MainWindow : public QMainWindow, public Ui::BaseMainWindow
 {
   Q_OBJECT
   public:
-    MainWindow(QWidget * parent = 0, Qt::WindowFlags flags = 0);
+    MainWindow(QWidget * parent = nullptr, Qt::WindowFlags flags = nullptr);
     ~MainWindow();
 
   public:

@@ -47,5 +47,5 @@ protected:
    SparseOptimizer* _optimizer;
 };
 
-} // end namespace
+} // namespace g2o
 #endif

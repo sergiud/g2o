@@ -49,9 +49,9 @@ namespace g2o{
     
     struct G2O_CORE_API AdjacencyMapEntry{
       friend struct HyperDijkstra;
-      AdjacencyMapEntry(HyperGraph::Vertex* _child=0, 
-          HyperGraph::Vertex* _parent=0, 
-          HyperGraph::Edge* _edge=0, 
+      AdjacencyMapEntry(HyperGraph::Vertex* _child=nullptr, 
+          HyperGraph::Vertex* _parent=nullptr, 
+          HyperGraph::Edge* _edge=nullptr, 
           double _distance=std::numeric_limits<double>::max());
       HyperGraph::Vertex* child() const {return _child;}
       HyperGraph::Vertex* parent() const {return _parent;}
@@ -108,5 +108,5 @@ namespace g2o{
     virtual double operator ()(HyperGraph::Edge* edge, HyperGraph::Vertex* from, HyperGraph::Vertex* to);
   };
 
-}
+} // namespace g2o
 #endif

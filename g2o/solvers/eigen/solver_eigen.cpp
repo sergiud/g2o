@@ -46,7 +46,7 @@ namespace g2o {
    */
   static OptimizationAlgorithm* createSolver(const std::string& fullSolverName)
   {
-    g2o::Solver* s = 0;
+    g2o::Solver* s = nullptr;
 
     string methodName = fullSolverName.substr(0, 2);
     string solverName = fullSolverName.substr(3);
@@ -75,7 +75,7 @@ namespace g2o {
     }
 #endif
 
-    OptimizationAlgorithm* snl = 0;
+    OptimizationAlgorithm* snl = nullptr;
     if (methodName == "gn") {
       snl = new OptimizationAlgorithmGaussNewton(s);
     }
@@ -108,4 +108,4 @@ namespace g2o {
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(lm_var_eigen, new EigenSolverCreator(OptimizationAlgorithmProperty("lm_var_eigen", "Levenberg: Cholesky solver using Eigen's Sparse Cholesky methods (variable blocksize)", "Eigen", false, Eigen::Dynamic, Eigen::Dynamic)));
 
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(dl_var_eigen, new EigenSolverCreator(OptimizationAlgorithmProperty("dl_var_eigen", "Dogleg: Cholesky solver using Eigen's Sparse Cholesky methods (variable blocksize)", "Eigen", false, Eigen::Dynamic, Eigen::Dynamic)));
-}
+} // namespace g2o

@@ -308,6 +308,6 @@ namespace g2o {
     BatchStatisticsContainer _batchStatistics;   ///< global statistics of the optimizer, e.g., timing, num-non-zeros
     bool _computeBatchStatistics;
   };
-} // end namespace
+} // namespace g2o
 
 #endif

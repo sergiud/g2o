@@ -46,8 +46,8 @@ namespace g2o {
     information().setIdentity();
     J.fill(0);
     J.block<3,3>(0,0) = -Matrix3D::Identity();
-    cache = 0;
-    offsetParam = 0;
+    cache = nullptr;
+    offsetParam = nullptr;
     resizeParameters(1);
     installParameter(offsetParam, 0);
   }
@@ -56,7 +56,7 @@ namespace g2o {
     ParameterVector pv(1);
     pv[0]=offsetParam;
     resolveCache(cache, (OptimizableGraph::Vertex*)_vertices[0],"CACHE_SE3_OFFSET",pv);
-    return cache != 0;
+    return cache != nullptr;
   }
 
 
@@ -179,7 +179,7 @@ namespace g2o {
   HyperGraphElementAction* EdgeSE3PointXYZDrawAction::operator()(HyperGraph::HyperGraphElement* element,
                HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return 0;
+      return nullptr;
     refreshPropertyPtrs(params_);
     if (! _previousParams)
       return this;
@@ -205,4 +205,4 @@ namespace g2o {
   }
 #endif
 
-} // end namespace
+} // namespace g2o

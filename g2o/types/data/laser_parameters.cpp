@@ -52,4 +52,4 @@ namespace g2o {
     fov            = angularStep * nbeams;
   }
 
-} // end namespace
+} // namespace g2o

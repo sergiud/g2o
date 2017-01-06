@@ -82,7 +82,7 @@ namespace g2o {
       /**
        * return whether the factory knows this tag or not
        */
-      bool knowsTag(const std::string& tag, int* elementType = 0) const;
+      bool knowsTag(const std::string& tag, int* elementType = nullptr) const;
 
       //! return the TAG given a vertex
       const std::string& tag(const HyperGraph::HyperGraphElement* v) const;
@@ -164,6 +164,6 @@ namespace g2o {
 #define G2O_USE_TYPE_GROUP(typeGroupName) \
     extern "C" void G2O_FACTORY_IMPORT g2o_type_group_##typeGroupName(void); \
     static g2o::ForceLinker g2o_force_type_link_##typeGroupName(g2o_type_group_##typeGroupName);
-}
+} // namespace g2o
 
 #endif

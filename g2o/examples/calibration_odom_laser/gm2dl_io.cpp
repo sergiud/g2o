@@ -63,7 +63,7 @@ namespace g2o {
 
     // parse the GM2DL file an extract the vertices, edges, and the laser data
     stringstream currentLine;
-    VertexSE2* previousVertex = 0;
+    VertexSE2* previousVertex = nullptr;
     while(1) {
       int bytesRead = readLine(is, currentLine);
       if (bytesRead == -1)
@@ -108,7 +108,7 @@ namespace g2o {
           m(2, 0) = m(0, 2);
           m(2, 1) = m(1, 2);
         }
-        previousVertex = 0;
+        previousVertex = nullptr;
         VertexSE2* v1 = dynamic_cast<VertexSE2*>(optimizer.vertex(id1));
         VertexSE2* v2 = dynamic_cast<VertexSE2*>(optimizer.vertex(id2));
         if (! v1) {
@@ -151,7 +151,7 @@ namespace g2o {
             laserOffset->setEstimate(rl2->laserParams().laserPose);
           }
           previousVertex->setUserData(rl2);
-          previousVertex = 0;
+          previousVertex = nullptr;
         }
       }
     }
@@ -261,4 +261,4 @@ namespace g2o {
     return cnt;
   }
 
-} // end namespace
+} // namespace g2o

@@ -57,7 +57,7 @@ namespace g2o {
 
     };
 
-  }
-}
+  } // namespace tutorial
+} // namespace g2o
 
 #endif

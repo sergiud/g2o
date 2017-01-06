@@ -92,6 +92,6 @@ namespace g2o {
       void operator=(const ScopedOpenMPMutex&);
   };
 
-}
+} // namespace g2o
 
 #endif

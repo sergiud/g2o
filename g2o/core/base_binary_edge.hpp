@@ -39,7 +39,7 @@ OptimizableGraph::Vertex* BaseBinaryEdge<D, E, VertexXiType, VertexXjType>::crea
   switch(i) {
   case 0: return new VertexXiType();
   case 1: return new VertexXjType();
-  default: return 0;
+  default: return nullptr;
   }
 }
 
@@ -81,7 +81,7 @@ void BaseBinaryEdge<D, E, VertexXiType, VertexXjType>::constructQuadraticForm()
 #endif
     const InformationType& omega = _information;
     Eigen::Matrix<double, D, 1, Eigen::ColMajor> omega_r = - omega * _error;
-    if (this->robustKernel() == 0) {
+    if (this->robustKernel() == nullptr) {
       if (fromNotFixed) {
         Eigen::Matrix<double, VertexXiType::Dimension, D, Eigen::ColMajor> AtO = A.transpose() * omega;
         from->b().noalias() += A.transpose() * omega_r;

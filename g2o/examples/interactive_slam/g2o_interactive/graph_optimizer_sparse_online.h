@@ -64,6 +64,6 @@ namespace g2o {
       Solver* _underlyingSolver;
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

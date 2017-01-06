@@ -34,7 +34,7 @@ namespace g2o{
   OptimizableGraph* BaseWorldObject::graph() {
     if (_world)
       return _world-> graph();
-    return 0;
+    return nullptr;
   }
 
   void BaseWorldObject::setVertex(OptimizableGraph::Vertex* vertex_){ 
@@ -45,7 +45,7 @@ namespace g2o{
   OptimizableGraph* BaseRobot::graph() {
     if (_world)
       return _world-> graph();
-    return 0;
+    return nullptr;
   }
 
   bool BaseRobot::addSensor(BaseSensor* sensor){
@@ -68,13 +68,13 @@ namespace g2o{
   // Sensor
   World* BaseSensor::world() {
     if (!_robot)
-      return 0;
+      return nullptr;
     return _robot->world();
   }
 
   OptimizableGraph* BaseSensor::graph() {
     if (!_robot)
-      return 0;
+      return nullptr;
     return _robot->graph();
   }
 
@@ -109,4 +109,4 @@ namespace g2o{
   }
 
 
-} // end namespace
+} // namespace g2o

@@ -304,5 +304,5 @@ void drawSlice(GLfloat radius, GLfloat height, GLfloat fov, int slices_per_circl
     glVertex3f(0,0,0);
     glEnd();
   }
-} // end namespace
-} // end namespace
+} // namespace opengl
+} // namespace g2o

@@ -66,7 +66,7 @@ namespace g2o {
       /**
        * re-implement to carry out an action given the graph
        */
-      virtual HyperGraphAction* operator()(const HyperGraph* graph, Parameters* parameters = 0);
+      virtual HyperGraphAction* operator()(const HyperGraph* graph, Parameters* parameters = nullptr);
   };
 
   /**
@@ -159,7 +159,7 @@ namespace g2o {
   /**
    * apply an action to all the elements of the graph.
    */
-  void G2O_CORE_API applyAction(HyperGraph* graph, HyperGraphElementAction* action, HyperGraphElementAction::Parameters* parameters=0, const std::string& typeName="");
+  void G2O_CORE_API applyAction(HyperGraph* graph, HyperGraphElementAction* action, HyperGraphElementAction::Parameters* parameters=nullptr, const std::string& typeName="");
 
   /**
    * brief write into gnuplot
@@ -221,6 +221,6 @@ namespace g2o {
 #define G2O_REGISTER_ACTION(classname) \
     extern "C" void g2o_action_##classname(void) {} \
     static g2o::RegisterActionProxy<classname> g_action_proxy_##classname;
-};
+} // namespace g2o
 
 #endif

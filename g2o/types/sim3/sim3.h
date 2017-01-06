@@ -292,7 +292,7 @@ namespace g2o
     return out_str;
   }
 
-} // end namespace
+} // namespace g2o
 
 
 #endif

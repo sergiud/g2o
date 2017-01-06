@@ -46,6 +46,6 @@ namespace g2o {
     ParameterSE3Offset* _offsetParam;
   };
 
-}
+} // namespace g2o
 
 #endif

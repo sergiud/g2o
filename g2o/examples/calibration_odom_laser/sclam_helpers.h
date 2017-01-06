@@ -38,6 +38,6 @@ namespace g2o {
 
   G2O_CALIBRATION_ODOM_LASER_API void allocateSolverForSclam(SparseOptimizer& optimizer, bool levenberg = false);
 
-} // end namespace
+} // namespace g2o
 
 #endif

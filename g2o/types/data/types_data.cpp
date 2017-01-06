@@ -48,4 +48,4 @@ namespace g2o {
   G2O_REGISTER_ACTION(VertexEllipseDrawAction);
 #endif
 
-} // end namespace
+} // namespace g2o

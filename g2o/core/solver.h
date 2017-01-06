@@ -147,6 +147,6 @@ namespace g2o {
       Solver(const Solver&) { }
       Solver& operator= (const Solver&) { return *this; }
   };
-} // end namespace
+} // namespace g2o
 
 #endif

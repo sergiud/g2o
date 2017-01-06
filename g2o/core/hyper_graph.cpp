@@ -32,8 +32,8 @@
 namespace g2o {
 
   HyperGraph::Data::Data() {
-    _next = 0;
-    _dataContainer = 0;
+    _next = nullptr;
+    _dataContainer = nullptr;
   }
 
   HyperGraph::Data::~Data() {
@@ -67,7 +67,7 @@ namespace g2o {
 
   void HyperGraph::Edge::resize(size_t size)
   {
-    _vertices.resize(size, 0);
+    _vertices.resize(size, nullptr);
   }
 
   void HyperGraph::Edge::setId(int id)
@@ -79,7 +79,7 @@ namespace g2o {
   {
     VertexIDMap::iterator it=_vertices.find(id);
     if (it==_vertices.end())
-      return 0;
+      return nullptr;
     return it->second;
   }
 
@@ -87,7 +87,7 @@ namespace g2o {
   {
     VertexIDMap::const_iterator it=_vertices.find(id);
     if (it==_vertices.end())
-      return 0;
+      return nullptr;
     return it->second;
   }
 
@@ -117,7 +117,7 @@ namespace g2o {
   bool HyperGraph::addEdge(Edge* e)
   {
     for (std::vector<Vertex*>::iterator it = e->vertices().begin(); it != e->vertices().end(); ++it) {
-      if (*it == NULL)
+      if (*it == nullptr)
         return false;
     }
     std::pair<EdgeSet::iterator, bool> result = _edges.insert(e);
@@ -176,7 +176,7 @@ namespace g2o {
       HyperGraph::Edge* e = *it;
       for (size_t i = 0 ; i<e->vertices().size(); i++){
 	if (v == e->vertex(i))
-	  setEdgeVertex(e,i,0);
+	  setEdgeVertex(e,i,nullptr);
       }
     }
     return true;
@@ -244,4 +244,4 @@ namespace g2o {
     clear();
   }
 
-} // end namespace
+} // namespace g2o

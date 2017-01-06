@@ -107,6 +107,6 @@ namespace g2o {
 
 #include "linear_solver_pcg.hpp"
 
-}// end namespace
+} // namespace g2o
 
 #endif

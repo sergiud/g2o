@@ -41,15 +41,15 @@ BlockSolver<Traits>::BlockSolver(LinearSolverType* linearSolver) :
   _linearSolver(linearSolver)
 {
   // workspace
-  _Hpp=0;
-  _Hll=0;
-  _Hpl=0;
-  _HplCCS = 0;
-  _HschurTransposedCCS = 0;
-  _Hschur=0;
-  _DInvSchur=0;
-  _coefficients=0;
-  _bschur = 0;
+  _Hpp=nullptr;
+  _Hll=nullptr;
+  _Hpl=nullptr;
+  _HplCCS = nullptr;
+  _HschurTransposedCCS = nullptr;
+  _Hschur=nullptr;
+  _DInvSchur=nullptr;
+  _coefficients=nullptr;
+  _bschur = nullptr;
   _xSize=0;
   _numPoses=0;
   _numLandmarks=0;
@@ -92,23 +92,23 @@ template <typename Traits>
 void BlockSolver<Traits>::deallocate()
 {
   delete _Hpp;
-  _Hpp=0;
+  _Hpp=nullptr;
   delete _Hll;
-  _Hll=0;
+  _Hll=nullptr;
   delete _Hpl;
-  _Hpl = 0;
+  _Hpl = nullptr;
   delete _Hschur;
-  _Hschur=0;
+  _Hschur=nullptr;
   delete _DInvSchur;
-  _DInvSchur=0;
+  _DInvSchur=nullptr;
   delete[] _coefficients;
-  _coefficients = 0;
+  _coefficients = nullptr;
   delete[] _bschur;
-  _bschur = 0;
+  _bschur = nullptr;
   delete _HplCCS;
-  _HplCCS = 0;
+  _HplCCS = nullptr;
   delete _HschurTransposedCCS;
-  _HschurTransposedCCS = 0;
+  _HschurTransposedCCS = nullptr;
 }
 
 template <typename Traits>
@@ -174,7 +174,7 @@ bool BlockSolver<Traits>::buildStructure(bool zeroBlocks)
   assert(poseIdx == _numPoses && landmarkIdx == _numLandmarks);
 
   // temporary structures for building the pattern of the Schur complement
-  SparseBlockMatrixHashMap<PoseMatrixType>* schurMatrixLookup = 0;
+  SparseBlockMatrixHashMap<PoseMatrixType>* schurMatrixLookup = nullptr;
   if (_doSchur) {
     schurMatrixLookup = new SparseBlockMatrixHashMap<PoseMatrixType>(_Hschur->rowBlockIndices(), _Hschur->colBlockIndices());
     schurMatrixLookup->blockCols().resize(_Hschur->blockCols().size());
@@ -396,7 +396,7 @@ bool BlockSolver<Traits>::solve(){
       assert(i1 >= 0 && i1 < static_cast<int>(_HschurTransposedCCS->blockCols().size()) && "Index out of bounds");
       typename SparseBlockMatrixCCS<PoseMatrixType>::SparseColumn::iterator targetColumnIt = _HschurTransposedCCS->blockCols()[i1].begin();
 
-      typename SparseBlockMatrixCCS<PoseLandmarkMatrixType>::RowBlock aux(i1, 0);
+      typename SparseBlockMatrixCCS<PoseLandmarkMatrixType>::RowBlock aux(i1, nullptr);
       typename SparseBlockMatrixCCS<PoseLandmarkMatrixType>::SparseColumn::const_iterator it_inner = lower_bound(landmarkColumn.begin(), landmarkColumn.end(), aux);
       for (; it_inner != landmarkColumn.end(); ++it_inner) {
         int i2 = it_inner->row;
@@ -612,4 +612,4 @@ bool BlockSolver<Traits>::saveHessian(const std::string& fileName) const
   return _Hpp->writeOctave(fileName.c_str(), true);
 }
 
-} // end namespace
+} // namespace g2o

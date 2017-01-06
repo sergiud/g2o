@@ -50,6 +50,6 @@ namespace g2o {
       static Eigen::VectorXd solveLagrange(const Eigen::Matrix<double,5,5>& M, double lambda);
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

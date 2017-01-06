@@ -95,4 +95,4 @@ static void jac_quat3_euler3(Eigen::Matrix<double, 6, 6, Eigen::ColMajor>& J, co
     return os.good();
   }
 
-} // end namespace
+} // namespace g2o

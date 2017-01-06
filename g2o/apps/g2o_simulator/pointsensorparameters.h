@@ -49,6 +49,6 @@ namespace g2o {
     double _maxRange2, _minRange2, _fov,  _maxAngularDifference;
   };
 
-}
+} // namespace g2o
 
 #endif

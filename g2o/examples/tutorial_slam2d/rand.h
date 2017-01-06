@@ -71,7 +71,7 @@ namespace g2o {
          */
         static void seed_rand()
         {
-          seed_rand(static_cast<unsigned int>(std::time(NULL)));
+          seed_rand(static_cast<unsigned int>(std::time(nullptr)));
         }
 
         /** seed the random number generator */
@@ -81,7 +81,7 @@ namespace g2o {
         }
     };
 
-  } // end namespace
-} // end namespace
+  } // namespace tutorial
+} // namespace g2o
 
 #endif

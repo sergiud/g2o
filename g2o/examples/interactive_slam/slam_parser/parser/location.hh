@@ -163,7 +163,7 @@ namespace SlamParser {
 /* Line 271 of location.cc  */
 #line 1 "[Bison:b4_percent_define_default]"
 
-} // SlamParser
+} // namespace SlamParser
 
 /* Line 271 of location.cc  */
 #line 170 "location.hh"

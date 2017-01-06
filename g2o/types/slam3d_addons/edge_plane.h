@@ -87,6 +87,6 @@ public:
 };
 
 
-} // end namespace
+} // namespace g2o
 
 #endif

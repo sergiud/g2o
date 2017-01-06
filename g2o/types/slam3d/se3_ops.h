@@ -44,6 +44,6 @@ namespace g2o {
 
   #include "se3_ops.hpp"
 
-}
+} // namespace g2o
 
 #endif //MATH_STUFF

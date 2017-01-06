@@ -50,6 +50,6 @@ namespace g2o {
     double maxRange;
   };
 
-}
+} // namespace g2o
 
 #endif

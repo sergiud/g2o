@@ -62,4 +62,4 @@ namespace g2o {
     _jacobianOplusXi << 1,0,0, 0,1,0;
   }
 
-} // end namespace
+} // namespace g2o

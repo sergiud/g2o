@@ -38,12 +38,12 @@ namespace g2o {
       /**
        * calling updateGL, processEvents to visualize the current state after each iteration
        */
-      HyperGraphAction* operator()(const HyperGraph* graph, Parameters* parameters = 0);
+      HyperGraphAction* operator()(const HyperGraph* graph, Parameters* parameters = nullptr);
 
       G2oQGLViewer* viewer;   ///< the viewer which visualizes the graph
       bool dumpScreenshots;
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

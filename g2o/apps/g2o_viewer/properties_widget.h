@@ -31,13 +31,13 @@ namespace g2o
 {
   class G2oQGLViewer;
   class PropertyMap;
-}
+} // namespace g2o
 
 class G2O_VIEWER_API PropertiesWidget : public QDialog, public Ui::BasePropertiesWidget
 {
   Q_OBJECT
   public:
-    PropertiesWidget(QWidget * parent = 0, Qt::WindowFlags f = 0);
+    PropertiesWidget(QWidget * parent = nullptr, Qt::WindowFlags f = nullptr);
     virtual ~PropertiesWidget();
 
     void setProperties(g2o::PropertyMap* properties);

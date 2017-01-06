@@ -130,7 +130,7 @@ namespace {
 
 Slam2DViewer::Slam2DViewer(QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFlags flags) :
   QGLViewer(parent, shareWidget, flags),
-  graph(0), drawCovariance(false)
+  graph(nullptr), drawCovariance(false)
 {
 }
 
@@ -217,4 +217,4 @@ void Slam2DViewer::init()
   delete oldcam;
 }
 
-} // end namespace
+} // namespace g2o

@@ -52,8 +52,8 @@ namespace g2o {
 
   OptimizableGraph::Vertex::Vertex() :
     HyperGraph::Vertex(),
-    _graph(0), _userData(0), _hessianIndex(-1), _fixed(false), _marginalized(false),
-    _colInHessian(-1), _cacheContainer(0)
+    _graph(nullptr), _userData(nullptr), _hessianIndex(-1), _fixed(false), _marginalized(false),
+    _colInHessian(-1), _cacheContainer(nullptr)
   {
   }
 
@@ -79,7 +79,7 @@ namespace g2o {
 
   OptimizableGraph::Vertex* OptimizableGraph::Vertex::clone() const
   {
-    return 0;
+    return nullptr;
   }
 
   bool OptimizableGraph::Vertex::setEstimateData(const double* v)
@@ -119,7 +119,7 @@ namespace g2o {
 
   OptimizableGraph::Edge::Edge() :
     HyperGraph::Edge(),
-    _dimension(-1), _level(0), _robustKernel(0)
+    _dimension(-1), _level(0), _robustKernel(nullptr)
   {
   }
 
@@ -130,19 +130,19 @@ namespace g2o {
 
   OptimizableGraph* OptimizableGraph::Edge::graph(){
     if (! _vertices.size())
-      return 0;
+      return nullptr;
     OptimizableGraph::Vertex* v=(OptimizableGraph::Vertex*)_vertices[0];
     if (!v)
-      return 0;
+      return nullptr;
     return v->graph();
   }
 
   const OptimizableGraph* OptimizableGraph::Edge::graph() const{
     if (! _vertices.size())
-      return 0;
+      return nullptr;
     const OptimizableGraph::Vertex* v=(const OptimizableGraph::Vertex*) _vertices[0];
     if (!v)
-      return 0;
+      return nullptr;
     return v->graph();
   }
 
@@ -151,7 +151,7 @@ namespace g2o {
       return false;
     if (argNum<0)
       return false;
-    *_parameters[argNum] = 0;
+    *_parameters[argNum] = nullptr;
     _parameterIds[argNum] = paramId;
     return true;
   }
@@ -212,7 +212,7 @@ namespace g2o {
   OptimizableGraph::Edge* OptimizableGraph::Edge::clone() const
   {
     // TODO
-    return 0;
+    return nullptr;
   }
 
 
@@ -243,7 +243,7 @@ namespace g2o {
     }
     OptimizableGraph::Vertex* ov=dynamic_cast<OptimizableGraph::Vertex*>(v);
     assert(ov && "Vertex does not inherit from OptimizableGraph::Vertex");
-    if (ov->_graph != 0 && ov->_graph != this) {
+    if (ov->_graph != nullptr && ov->_graph != this) {
       cerr << __FUNCTION__ << ": FATAL, vertex with ID " << v->id() << " has already registered with another graph " << ov->_graph << endl;
       assert(0 && "Vertex already registered with another graph");
       return false;
@@ -389,8 +389,8 @@ bool OptimizableGraph::load(istream& is, bool createEdges)
   elemBitset[HyperGraph::HGET_PARAMETER] = 1;
   elemBitset.flip();
 
-  HyperGraph::DataContainer*  previousDataContainer = 0;
-  Data* previousData = 0;
+  HyperGraph::DataContainer*  previousDataContainer = nullptr;
+  Data* previousData = nullptr;
 
   int lineNumber = 0;
   while (1) {
@@ -444,7 +444,7 @@ bool OptimizableGraph::load(istream& is, bool createEdges)
     HyperGraph::HyperGraphElement* element = factory->construct(token, elemBitset);
     if (dynamic_cast<Vertex*>(element)) { // it's a vertex type
       //cerr << "it is a vertex" << endl;
-      previousData = 0;
+      previousData = nullptr;
       Vertex* v = static_cast<Vertex*>(element);
       int id;
       currentLine >> id;
@@ -461,7 +461,7 @@ bool OptimizableGraph::load(istream& is, bool createEdges)
     }
     else if (dynamic_cast<Edge*>(element)) {
       //cerr << "it is an edge" << endl;
-      previousData = 0;
+      previousData = nullptr;
       Edge* e = static_cast<Edge*>(element);
       int numV = e->vertices().size();
       if (_edge_has_id){
@@ -496,12 +496,12 @@ bool OptimizableGraph::load(istream& is, bool createEdges)
 	  if ( (!from && id1>=0) ){
             cerr << __PRETTY_FUNCTION__ << ": Unable to find vertex for edge " << token << " " << id1 << " <-> " << id2 << endl;
 	    delete e;
-	    e=0;
+	    e=nullptr;
 	  }
 	  if (! to && id2>=0 ){
             cerr << __PRETTY_FUNCTION__ << ": Unable to find vertex for edge " << token << " " << id1 << " <-> " << id2 << endl;
 	    delete e;
-	    e=0;
+	    e=nullptr;
 	  }
 	}
 	if (e){
@@ -552,7 +552,7 @@ bool OptimizableGraph::load(istream& is, bool createEdges)
         bool vertsOkay = true;
         for (int l = 0; l < numV; ++l) {
 	  int vertexId=ids[l];
-	  HyperGraph::Vertex* v=0;
+	  HyperGraph::Vertex* v=nullptr;
 	  if (vertexId != HyperGraph::UnassignedId){
 	    v = vertex(vertexId);
 	    e->setVertex(l,v);
@@ -580,7 +580,7 @@ bool OptimizableGraph::load(istream& is, bool createEdges)
               cerr << " " << ids[l];
             }
             delete e;
-	    e=0;
+	    e=nullptr;
           }
         }
       }
@@ -592,7 +592,7 @@ bool OptimizableGraph::load(istream& is, bool createEdges)
       if (! r) {
 	cerr << __PRETTY_FUNCTION__ << ": Error reading data " << token << " at line " << lineNumber << endl;
 	delete d;
-	previousData = 0;
+	previousData = nullptr;
       } else if (previousData){
 	//cerr << "chaining" << endl;
 	previousData->setNext(d);
@@ -604,12 +604,12 @@ bool OptimizableGraph::load(istream& is, bool createEdges)
 	previousDataContainer->setUserData(d);
 	d->setDataContainer(previousDataContainer);
 	previousData = d;
-	previousDataContainer = 0;
+	previousDataContainer = nullptr;
 	//cerr << "done" << endl;
       } else {
         cerr << __PRETTY_FUNCTION__ << ": got data element, but no data container available" << endl;
         delete d;
-	previousData = 0;
+	previousData = nullptr;
       }
     }
   } // while read line
@@ -976,5 +976,5 @@ bool OptimizableGraph::initMultiThreading()
   return true;
 }
 
-} // end namespace
+} // namespace g2o
 

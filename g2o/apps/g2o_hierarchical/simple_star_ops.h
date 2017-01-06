@@ -36,5 +36,5 @@ namespace g2o {
                           int starIterations=30,
                           double rejectionThreshold=1e-5, bool debug=false);
 
-}
+} // namespace g2o
 #endif

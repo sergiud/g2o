@@ -25,12 +25,12 @@
 namespace g2o
 {
   class G2oQGLViewer;
-}
+} // namespace g2o
 
 class G2O_VIEWER_API ViewerPropertiesWidget : public PropertiesWidget
 {
   public:
-    ViewerPropertiesWidget(QWidget * parent = 0, Qt::WindowFlags f = 0);
+    ViewerPropertiesWidget(QWidget * parent = nullptr, Qt::WindowFlags f = nullptr);
     virtual ~ViewerPropertiesWidget();
 
     void setViewer(g2o::G2oQGLViewer* viewer);

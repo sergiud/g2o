@@ -174,7 +174,7 @@ inline T wrap(T l, T x, T u)
 /**
  * tests whether there is a NaN in the array
  */
-inline bool arrayHasNaN(const double* array, int size, int* nanIndex = 0)
+inline bool arrayHasNaN(const double* array, int size, int* nanIndex = nullptr)
 {
   for (int i = 0; i < size; ++i)
     if (g2o_isnan(array[i])) {
@@ -199,7 +199,7 @@ struct ForceLinker
 };
 
 
-} // end namespace
+} // namespace g2o
 
 // @}
 

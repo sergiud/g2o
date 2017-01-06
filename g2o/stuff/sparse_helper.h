@@ -43,6 +43,6 @@ namespace g2o {
    */
   G2O_STUFF_API bool writeCCSMatrix(const std::string& filename, int rows, int cols, const int* p, const int* i, const double* v, bool upperTriangleSymmetric = true);
 
-} // end namespace
+} // namespace g2o
 
 #endif

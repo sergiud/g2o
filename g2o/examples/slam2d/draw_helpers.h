@@ -41,6 +41,6 @@ namespace g2o {
    */
   void drawCircle(GLfloat radius, int segments = 32);
 
-}
+} // namespace g2o
 
 #endif

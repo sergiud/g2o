@@ -49,7 +49,7 @@ namespace g2o {
 
   static OptimizationAlgorithm* createSolver(const std::string& fullSolverName)
   {
-    g2o::Solver* s = 0;
+    g2o::Solver* s = nullptr;
 
     string methodName = fullSolverName.substr(0, 2);
     string solverName = fullSolverName.substr(3);
@@ -67,7 +67,7 @@ namespace g2o {
       ALLOC_DENSE(s, 7, 3);
     }
 
-    OptimizationAlgorithm* snl = 0;
+    OptimizationAlgorithm* snl = nullptr;
     if (methodName == "gn") {
       snl = new OptimizationAlgorithmGaussNewton(s);
     }
@@ -99,4 +99,4 @@ namespace g2o {
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(lm_dense6_3, new DenseSolverCreator(OptimizationAlgorithmProperty("lm_dense6_3", "Levenberg: Dense solver (fixed blocksize)", "Dense", true, 6, 3)));
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(lm_dense7_3, new DenseSolverCreator(OptimizationAlgorithmProperty("lm_dense7_3", "Levenberg: Dense solver (fixed blocksize)", "Dense", true, 7, 3)));
 
-} // end namespace
+} // namespace g2o

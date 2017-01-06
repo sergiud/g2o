@@ -188,4 +188,4 @@ namespace g2o {
       << "\t levenbergIter= " << _levenbergIterations;
   }
 
-} // end namespace
+} // namespace g2o

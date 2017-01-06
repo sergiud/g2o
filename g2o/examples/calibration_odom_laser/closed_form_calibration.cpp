@@ -179,4 +179,4 @@ Eigen::VectorXd ClosedFormCalibration::solveLagrange(const Eigen::Matrix<double,
   return result;
 }
 
-} // end namespace
+} // namespace g2o

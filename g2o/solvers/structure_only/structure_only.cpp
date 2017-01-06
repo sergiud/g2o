@@ -47,7 +47,7 @@ namespace g2o {
       return optimizationAlgo;
     }
     else
-      return 0;
+      return nullptr;
   }
 
   class StructureOnlyCreator : public AbstractOptimizationAlgorithmCreator
@@ -65,4 +65,4 @@ namespace g2o {
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(structure_only_2, new StructureOnlyCreator(OptimizationAlgorithmProperty("structure_only_2", "Optimize the landmark poses (2D)", "Eigen", true, 3, 2)));
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(structure_only_3, new StructureOnlyCreator(OptimizationAlgorithmProperty("structure_only_3", "Optimize the landmark poses (3D)", "Eigen", true, 6, 3)));
 
-} // end namespace
+} // namespace g2o

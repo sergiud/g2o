@@ -47,6 +47,6 @@ class G2O_TYPES_SLAM3D_ADDONS_API EdgeSE3Euler : public EdgeSE3
 };
 
 
-} // end namespace
+} // namespace g2o
 
 #endif

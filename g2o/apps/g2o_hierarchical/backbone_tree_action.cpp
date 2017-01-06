@@ -68,7 +68,7 @@ namespace g2o {
     OptimizableGraph::Vertex* v= (OptimizableGraph::Vertex*)v_;
     VertexStarMap::iterator it=_vsMap.find(v);
     if (it==_vsMap.end())
-      return 0;
+      return nullptr;
     return it->second;
   }
 
@@ -85,4 +85,4 @@ namespace g2o {
     }
     return false;
   }
-}
+} // namespace g2o

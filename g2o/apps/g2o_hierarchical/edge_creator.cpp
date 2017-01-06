@@ -37,19 +37,19 @@ namespace g2o {
     EntryMap::iterator it=_vertexToEdgeMap.find(key.str());
     if (it==_vertexToEdgeMap.end()){
       cerr << "no thing in factory: " << key.str() << endl;
-      return 0;
+      return nullptr;
     }
     HyperGraph::HyperGraphElement* element=factory->construct(it->second._edgeTypeName);
     if (! element) {
       cerr << "no thing can be created" << endl;
-      return 0;
+      return nullptr;
     }
     OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(element);
     assert(it->second._parameterIds.size() == e->numParameters());
     for (size_t i=0; i<it->second._parameterIds.size(); i++){
       if (! e->setParameterId(i,it->second._parameterIds[i])) {
         cerr << "no thing in good for setting params" << endl;
-        return 0;
+        return nullptr;
       }
     }
     assert (e);
@@ -58,5 +58,5 @@ namespace g2o {
     return e;
   }
 
-}
+} // namespace g2o
 

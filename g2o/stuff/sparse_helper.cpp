@@ -50,7 +50,7 @@ namespace g2o {
         return e1.c < e2.c || (e1.c == e2.c && e1.r < e2.r);
       }
     };
-  }
+  } // namespace
 
   bool writeVector(const string& filename, const double*v, int n)
   {
@@ -96,4 +96,4 @@ namespace g2o {
     return fout.good();
   }
 
-} // end namespace
+} // namespace g2o

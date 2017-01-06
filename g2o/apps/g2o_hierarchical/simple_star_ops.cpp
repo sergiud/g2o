@@ -471,4 +471,4 @@ void computeBorder(StarSet& stars, EdgeStarMap& hesmap){
   }
 
 
-}
+} // namespace g2o

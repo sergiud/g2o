@@ -88,5 +88,5 @@ namespace g2o {
     CacheCamera* cache;
   };
 
-}
+} // namespace g2o
 #endif

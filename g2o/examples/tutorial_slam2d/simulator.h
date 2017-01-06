@@ -121,7 +121,7 @@ namespace g2o {
         SE2 sampleTransformation(const SE2& trueMotion_, const Eigen::Vector2d& transNoise, double rotNoise);
     };
 
-  } // end namespace
-} // end namespace
+  } // namespace tutorial
+} // namespace g2o
 
 #endif

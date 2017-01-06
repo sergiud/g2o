@@ -84,7 +84,7 @@ namespace {
 
 G2oQGLViewer::G2oQGLViewer(QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFlags flags) :
   QGLViewer(parent, shareWidget, flags),
-  graph(0), _drawActions(0), _drawList(0)
+  graph(nullptr), _drawActions(nullptr), _drawList(0)
 {
   setAxisIsDrawn(false);
   _drawActionParameters = new DrawAction::Parameters();
@@ -101,7 +101,7 @@ void G2oQGLViewer::draw()
   if (! graph)
     return;
 
-  if (_drawActions == 0) {
+  if (_drawActions == nullptr) {
     _drawActions = HyperGraphActionLibrary::instance()->actionByName("draw");
     assert(_drawActions);
   }
@@ -173,4 +173,4 @@ void G2oQGLViewer::setUpdateDisplay(bool updateDisplay)
   _updateDisplay = updateDisplay;
 }
 
-} // end namespace
+} // namespace g2o

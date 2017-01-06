@@ -49,7 +49,7 @@ namespace g2o {
 
   static OptimizationAlgorithm* createSolver(const std::string& fullSolverName)
   {
-    g2o::Solver* s = 0;
+    g2o::Solver* s = nullptr;
 
     string methodName = fullSolverName.substr(0, 2);
     string solverName = fullSolverName.substr(3);
@@ -67,7 +67,7 @@ namespace g2o {
       ALLOC_PCG(s, 7, 3);
     }
 
-    OptimizationAlgorithm* snl = 0;
+    OptimizationAlgorithm* snl = nullptr;
     if (methodName == "gn") {
       snl = new OptimizationAlgorithmGaussNewton(s);
     }
@@ -98,4 +98,4 @@ namespace g2o {
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(lm_pcg3_2, new PCGSolverCreator(OptimizationAlgorithmProperty("lm_pcg3_2", "Levenberg: PCG solver using block-Jacobi pre-conditioner (fixed blocksize)", "PCG", true, 3, 2)));
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(lm_pcg6_3, new PCGSolverCreator(OptimizationAlgorithmProperty("lm_pcg6_3", "Levenberg: PCG solver using block-Jacobi pre-conditioner (fixed blocksize)", "PCG", true, 6, 3)));
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(lm_pcg7_3, new PCGSolverCreator(OptimizationAlgorithmProperty("lm_pcg7_3", "Levenberg: PCG solver using block-Jacobi pre-conditioner (fixed blocksize)", "PCG", true, 7, 3)));
-}
+} // namespace g2o

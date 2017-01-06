@@ -52,4 +52,4 @@ namespace g2o {
   G2O_REGISTER_ACTION(VertexLine2DDrawAction);
 #endif
 
-} // end namespace
+} // namespace g2o

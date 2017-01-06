@@ -129,7 +129,7 @@ void G2O_OPENGL_API drawPoint(float  pointSize);
 #define LANDMARK_EDGE_GHOST_COLOR   0.7f,0.4f,0.2f
 
 
-} // end namespace
-} // end namespace
+} // namespace opengl
+} // namespace g2o
 
 #endif

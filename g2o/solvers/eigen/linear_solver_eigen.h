@@ -230,6 +230,6 @@ class LinearSolverEigen: public LinearSolver<MatrixType>
     }
 };
 
-} // end namespace
+} // namespace g2o
 
 #endif

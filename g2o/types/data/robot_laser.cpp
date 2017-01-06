@@ -130,9 +130,9 @@ namespace g2o {
       _pointSize = _previousParams->makeProperty<FloatProperty>(_typeName + "::POINT_SIZE", 1.0f);
       _maxRange = _previousParams->makeProperty<FloatProperty>(_typeName + "::MAX_RANGE", -1.);
     } else {
-      _beamsDownsampling = 0;
-      _pointSize= 0;
-      _maxRange = 0;
+      _beamsDownsampling = nullptr;
+      _pointSize= nullptr;
+      _maxRange = nullptr;
     }
     return true;
   }
@@ -140,7 +140,7 @@ namespace g2o {
   HyperGraphElementAction* RobotLaserDrawAction::operator()(HyperGraph::HyperGraphElement* element, 
                  HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return 0;
+      return nullptr;
 
     refreshPropertyPtrs(params_);
     if (! _previousParams){
@@ -190,4 +190,4 @@ namespace g2o {
   }
 #endif
 
-}
+} // namespace g2o

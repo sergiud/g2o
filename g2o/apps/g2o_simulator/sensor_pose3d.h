@@ -49,6 +49,6 @@ namespace g2o {
     std::set<PoseObject*> _posesToIgnore;
   };
 
-}
+} // namespace g2o
 
 #endif

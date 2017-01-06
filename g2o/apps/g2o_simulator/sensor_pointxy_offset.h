@@ -47,6 +47,6 @@ namespace g2o {
     RobotPoseType _sensorPose;
   }; 
 
-}
+} // namespace g2o
 
 #endif

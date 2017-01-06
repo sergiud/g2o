@@ -44,7 +44,7 @@ namespace g2o {
 
   namespace types_icp {
     void init();
-  }
+  } // namespace types_icp
 
   typedef  Eigen::Matrix<double, 6, 1, Eigen::ColMajor> Vector6d;
 
@@ -411,6 +411,6 @@ namespace g2o {
 
 
 
-} // end namespace
+} // namespace g2o
 
 #endif // TYPES_ICP

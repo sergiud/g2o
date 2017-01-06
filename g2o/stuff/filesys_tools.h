@@ -89,6 +89,6 @@ G2O_STUFF_API bool fileExists(const char* filename);
  */
 G2O_STUFF_API std::vector<std::string> getFilesByPattern(const char* pattern);
 
-} // end namespace
+} // namespace g2o
 // @}
 #endif

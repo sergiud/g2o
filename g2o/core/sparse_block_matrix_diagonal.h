@@ -103,6 +103,6 @@ namespace g2o {
       DiagonalVector _diagonal;
   };
 
-} //end namespace
+} // namespace g2o
 
 #endif

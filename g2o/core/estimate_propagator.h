@@ -168,5 +168,5 @@ namespace g2o {
       OptimizableGraph* _graph;
   };
 
-}
+} // namespace g2o
 #endif

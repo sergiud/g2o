@@ -52,11 +52,11 @@ namespace g2o {
   static OptimizationAlgorithm* createSolver(const std::string& fullSolverName)
   {
     if (fullSolverName != "2dlinear")
-      return 0;
+      return nullptr;
 
-    g2o::Solver* s = 0;
+    g2o::Solver* s = nullptr;
     ALLOC_CSPARSE(s, 3, 2, true);
-    OptimizationAlgorithm* snl = 0;
+    OptimizationAlgorithm* snl = nullptr;
     snl = new SolverSLAM2DLinear(s);
 
     return snl;
@@ -76,4 +76,4 @@ namespace g2o {
 
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(2dlinear, new SLAM2DLinearSolverCreator(OptimizationAlgorithmProperty("2dlinear", "Solve Orientation + Gauss-Newton: Works only on 2D pose graphs!!", "CSparse", false, 3, 3)));
 
-} // end namespace
+} // namespace g2o

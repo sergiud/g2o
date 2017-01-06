@@ -47,6 +47,6 @@ namespace g2o {
    */
   G2O_CLI_API bool dumpEdges(std::ostream& os, const OptimizableGraph& optimizer);
 
-} // end namespace
+} // namespace g2o
 
 #endif

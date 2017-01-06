@@ -178,7 +178,7 @@ int main(int argc, char** argv)
     }
   }
 
-  AbstractRobustKernelCreator* kernelCreator=0;
+  AbstractRobustKernelCreator* kernelCreator=nullptr;
   if (robustKernel.size() > 0) {
     kernelCreator = RobustKernelFactory::instance()->creator(robustKernel);
   }
@@ -464,7 +464,7 @@ int main(int argc, char** argv)
     cerr << "# Robust error function disabled ";
     for (SparseOptimizer::EdgeSet::iterator it = optimizer.edges().begin(); it != optimizer.edges().end(); ++it) {
       SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(*it);
-      e->setRobustKernel(0);
+      e->setRobustKernel(nullptr);
     }
     cerr << "done." << endl;
   } else {

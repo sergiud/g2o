@@ -30,7 +30,7 @@ namespace g2o {
 class G2O_INCREMENTAL_API LinearSolverCholmodOnlineInterface
 {
   public:
-    LinearSolverCholmodOnlineInterface() : cmember(0), batchEveryN(100) {}
+    LinearSolverCholmodOnlineInterface() : cmember(nullptr), batchEveryN(100) {}
     virtual int choleskyUpdate(cholmod_sparse* update) = 0;
     virtual bool solve(double* x, double* b) = 0;
     virtual cholmod_factor* L() const = 0;
@@ -50,7 +50,7 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>, public Linear
       LinearSolver<MatrixType>()
     {
       _cholmodSparse = new CholmodExt();
-      _cholmodFactor = 0;
+      _cholmodFactor = nullptr;
       cholmod_start(&_cholmodCommon);
 
       // setup ordering strategy
@@ -67,7 +67,7 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>, public Linear
       delete _cholmodSparse;
       if (_cholmodFactor) {
         cholmod_free_factor(&_cholmodFactor, &_cholmodCommon);
-        _cholmodFactor = 0;
+        _cholmodFactor = nullptr;
       }
       cholmod_finish(&_cholmodCommon);
     }
@@ -80,7 +80,7 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>, public Linear
     bool solve(const SparseBlockMatrix<MatrixType>& A, double* x, double* b)
     {
       cholmod_free_factor(&_cholmodFactor, &_cholmodCommon);
-      _cholmodFactor = 0;
+      _cholmodFactor = nullptr;
       fillCholmodExt(A, false);
 
       computeSymbolicDecomposition(A);
@@ -180,7 +180,7 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>, public Linear
       if (_blockPermutation.size() < _matrixStructure.n) // double space if resizing
         _blockPermutation.resize(2*_matrixStructure.n);
 
-      int amdStatus = camd_order(_matrixStructure.n, _matrixStructure.Ap, _matrixStructure.Aii, _blockPermutation.data(), NULL, NULL, cmember->data());
+      int amdStatus = camd_order(_matrixStructure.n, _matrixStructure.Ap, _matrixStructure.Aii, _blockPermutation.data(), nullptr, nullptr, cmember->data());
       if (amdStatus != CAMD_OK) {
         std::cerr << "Error while computing ordering" << std::endl;
       }
@@ -206,7 +206,7 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>, public Linear
       // apply the ordering
       _cholmodCommon.nmethods = 1;
       _cholmodCommon.method[0].ordering = CHOLMOD_GIVEN;
-      _cholmodFactor = cholmod_analyze_p(_cholmodSparse, _scalarPermutation.data(), NULL, 0, &_cholmodCommon);
+      _cholmodFactor = cholmod_analyze_p(_cholmodSparse, _scalarPermutation.data(), nullptr, 0, &_cholmodCommon);
 
       G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
       if (globalStats)
@@ -271,6 +271,6 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>, public Linear
 
 };
 
-} // end namespace
+} // namespace g2o
 
 #endif

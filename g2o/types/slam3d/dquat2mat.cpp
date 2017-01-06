@@ -57,5 +57,5 @@ namespace g2o {
       if (qw<=0)
 	dq_dR *= -1;
     }
-  }
-}
+  } // namespace internal
+} // namespace g2o

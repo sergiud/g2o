@@ -208,7 +208,7 @@ int main(int argc, char** argv)
   optimizer.setVerbose(verbose);
   optimizer.setForceStopFlag(&hasToStop);
 
-  SparseOptimizerTerminateAction* terminateAction = 0;
+  SparseOptimizerTerminateAction* terminateAction = nullptr;
   if (maxIterations < 0) {
     cerr << "# setup termination criterion based on the gain of the iteration" << endl;
     maxIterations = maxIterationsWithGain;
@@ -281,7 +281,7 @@ int main(int argc, char** argv)
  
   // check for vertices to fix to remove DoF
   bool gaugeFreedom = optimizer.gaugeFreedom();
-  OptimizableGraph::Vertex* gauge=0;
+  OptimizableGraph::Vertex* gauge=nullptr;
   if (gaugeList.size()){
     cerr << "Fixing gauges: ";
     for (size_t i=0; i<gaugeList.size(); i++){

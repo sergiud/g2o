@@ -49,4 +49,4 @@ namespace g2o {
   G2O_REGISTER_ACTION(EdgeSE2OdomDifferentialCalibDrawAction);
 #endif
 
-} // end namespace
+} // namespace g2o

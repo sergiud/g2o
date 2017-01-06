@@ -40,6 +40,6 @@ namespace g2o {
     virtual void addNoise(EdgeType* e);
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

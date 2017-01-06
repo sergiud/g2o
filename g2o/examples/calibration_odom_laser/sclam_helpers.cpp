@@ -51,7 +51,7 @@ namespace g2o {
 
   void addOdometryCalibLinksDifferential(SparseOptimizer& optimizer, const DataQueue& odomData)
   {
-    SparseOptimizer::Vertex* odomParamsVertex = 0;
+    SparseOptimizer::Vertex* odomParamsVertex = nullptr;
     odomParamsVertex = new VertexOdomDifferentialParams;
     odomParamsVertex->setToOrigin();
     odomParamsVertex->setId(Gm2dlIO::ID_ODOMCALIB);
@@ -113,7 +113,7 @@ namespace g2o {
     SclamLinearSolver* linearSolver = new SclamLinearSolver();
     linearSolver->setBlockOrdering(false);
     SclamBlockSolver* blockSolver = new SclamBlockSolver(linearSolver);
-    OptimizationAlgorithm* solver = 0;
+    OptimizationAlgorithm* solver = nullptr;
     if (levenberg) {
       solver = new OptimizationAlgorithmLevenberg(blockSolver);
     } else {
@@ -122,4 +122,4 @@ namespace g2o {
     optimizer.setAlgorithm(solver);
   }
       
-} // end namespace
+} // namespace g2o

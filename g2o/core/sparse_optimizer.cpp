@@ -48,14 +48,14 @@ namespace g2o{
 
 
   SparseOptimizer::SparseOptimizer() :
-    _forceStopFlag(0), _verbose(false), _algorithm(0), _computeBatchStatistics(false)
+    _forceStopFlag(nullptr), _verbose(false), _algorithm(nullptr), _computeBatchStatistics(false)
   {
     _graphActions.resize(AT_NUM_ELEMENTS);
   }
 
   SparseOptimizer::~SparseOptimizer(){
     delete _algorithm;
-    G2OBatchStatistics::setGlobalStats(0);
+    G2OBatchStatistics::setGlobalStats(nullptr);
   }
 
   void SparseOptimizer::computeActiveErrors()
@@ -115,7 +115,7 @@ namespace g2o{
 
   OptimizableGraph::Vertex* SparseOptimizer::findGauge(){
     if (vertices().empty())
-      return 0;
+      return nullptr;
 
     int maxDim=0;
     for (HyperGraph::VertexIDMap::iterator it=vertices().begin(); it!=vertices().end(); ++it){
@@ -123,7 +123,7 @@ namespace g2o{
       maxDim=std::max(maxDim,v->dimension());
     }
     
-    OptimizableGraph::Vertex* rut=0;
+    OptimizableGraph::Vertex* rut=nullptr;
     for (HyperGraph::VertexIDMap::iterator it=vertices().begin(); it!=vertices().end(); ++it){
       OptimizableGraph::Vertex* v=static_cast<OptimizableGraph::Vertex*>(it->second);
       if (v->dimension()==maxDim){
@@ -192,7 +192,7 @@ namespace g2o{
   void SparseOptimizer::clearIndexMapping(){
     for (size_t i=0; i<_ivMap.size(); ++i){
       _ivMap[i]->setHessianIndex(-1);
-      _ivMap[i]=0;
+      _ivMap[i]=nullptr;
     }
   }
 
@@ -446,7 +446,7 @@ namespace g2o{
   void SparseOptimizer::setComputeBatchStatistics(bool computeBatchStatistics)
   {
     if ((_computeBatchStatistics == true) && (computeBatchStatistics == false)) {
-      G2OBatchStatistics::setGlobalStats(0);
+      G2OBatchStatistics::setGlobalStats(nullptr);
       _batchStatistics.clear();
     }
     _computeBatchStatistics = computeBatchStatistics;
@@ -570,7 +570,7 @@ namespace g2o{
   void SparseOptimizer::setAlgorithm(OptimizationAlgorithm* algorithm)
   {
     if (_algorithm) // reset the optimizer for the formerly used solver
-      _algorithm->setOptimizer(0);
+      _algorithm->setOptimizer(nullptr);
     _algorithm = algorithm;
     if (_algorithm)
       _algorithm->setOptimizer(this);
@@ -621,4 +621,4 @@ namespace g2o{
     discardTop(_activeVertices);
   }
 
-} // end namespace
+} // namespace g2o

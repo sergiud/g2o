@@ -30,7 +30,7 @@ namespace internal {
     int elemsUpToCol = ((j-1) * j) / 2;
     return elemsUpToCol + i;
   }
-}
+} // namespace internal
 
 template <int D, typename E>
 void BaseMultiEdge<D, E>::constructQuadraticForm()
@@ -146,7 +146,7 @@ void BaseMultiEdge<D, E>::resize(size_t size)
   int maxIdx = (n * (n-1))/2;
   assert(maxIdx >= 0);
   _hessian.resize(maxIdx);
-  _jacobianOplus.resize(size, JacobianType(0,0,0));
+  _jacobianOplus.resize(size, JacobianType(nullptr,0,0));
 }
 
 template <int D, typename E>
@@ -331,7 +331,7 @@ void BaseMultiEdge<-1, E>::resize(size_t size)
   int maxIdx = (n * (n-1))/2;
   assert(maxIdx >= 0);
   _hessian.resize(maxIdx);
-  _jacobianOplus.resize(size, JacobianType(0,0,0));
+  _jacobianOplus.resize(size, JacobianType(nullptr,0,0));
 }
 
 template <typename E>

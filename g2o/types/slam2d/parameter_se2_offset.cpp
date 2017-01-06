@@ -64,13 +64,13 @@ namespace g2o {
 
   CacheSE2Offset::CacheSE2Offset() :
     Cache(),
-    _offsetParam(0)
+    _offsetParam(nullptr)
   {
   }
 
   bool CacheSE2Offset::resolveDependancies(){
     _offsetParam = dynamic_cast <ParameterSE2Offset*> (_parameters[0]);
-    return _offsetParam != 0;
+    return _offsetParam != nullptr;
   }
 
   void CacheSE2Offset::updateImpl(){
@@ -102,4 +102,4 @@ namespace g2o {
   }
 
 
-} // end namespace
+} // namespace g2o

@@ -57,11 +57,11 @@ namespace g2o {
     nzmax = 0;
     nrow  = 0;
     ncol  = 0;
-    p     = 0;
-    i     = 0;
-    nz    = 0;
-    x     = 0;
-    z     = 0;
+    p     = nullptr;
+    i     = nullptr;
+    nz    = nullptr;
+    x     = nullptr;
+    z     = nullptr;
     stype = 1; // upper triangular block only
     itype = CHOLMOD_INT;
     xtype = CHOLMOD_REAL;
@@ -73,14 +73,14 @@ namespace g2o {
 
   CholmodExt::~CholmodExt()
   {
-    delete[] (int*)p; p = 0;
-    delete[] (double*)x; x = 0;
-    delete[] (int*)i; i = 0;
+    delete[] (int*)p; p = nullptr;
+    delete[] (double*)x; x = nullptr;
+    delete[] (int*)i; i = nullptr;
   }
 
   static OptimizationAlgorithm* createSolver(const std::string& fullSolverName)
   {
-    g2o::Solver* s = 0;
+    g2o::Solver* s = nullptr;
 
     string methodName = fullSolverName.substr(0, 2);
     string solverName = fullSolverName.substr(3);
@@ -109,7 +109,7 @@ namespace g2o {
     }
 #endif
 
-    OptimizationAlgorithm* snl = 0;
+    OptimizationAlgorithm* snl = nullptr;
     if (methodName == "gn") {
       snl = new OptimizationAlgorithmGaussNewton(s);
     }
@@ -158,4 +158,4 @@ namespace g2o {
 #endif
 
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(dl_var_cholmod, new CholmodSolverCreator(OptimizationAlgorithmProperty("dl_var_cholmod", "Dogleg: Cholesky solver using CHOLMOD (variable blocksize)", "CHOLMOD", false, Eigen::Dynamic, Eigen::Dynamic)));
-}
+} // namespace g2o

@@ -89,4 +89,4 @@ int RunG2OViewer::run(int argc, char** argv, CommandArgs& arg)
   return 0;
 }
 
-} //end namespace
+} // namespace g2o

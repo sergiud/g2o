@@ -35,8 +35,8 @@ namespace g2o {
   EdgeSE3Prior::EdgeSE3Prior() : BaseUnaryEdge<6, Isometry3D, VertexSE3>() {
     setMeasurement(Isometry3D::Identity());
     information().setIdentity();
-    _cache = 0;
-    _offsetParam = 0;
+    _cache = nullptr;
+    _offsetParam = nullptr;
     resizeParameters(1);
     installParameter(_offsetParam, 0);
   }
@@ -47,7 +47,7 @@ namespace g2o {
     ParameterVector pv(1);
     pv[0]=_offsetParam;
     resolveCache(_cache, (OptimizableGraph::Vertex*)_vertices[0],"CACHE_SE3_OFFSET",pv);
-    return _cache != 0;
+    return _cache != nullptr;
   }
 
 
@@ -127,4 +127,4 @@ namespace g2o {
     v->setEstimate(newEstimate);
   }
 
-}
+} // namespace g2o

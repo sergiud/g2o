@@ -85,6 +85,6 @@ namespace SlamParser {
       virtual bool solveState() = 0;
   };
 
-}
+} // namespace SlamParser
 
 #endif

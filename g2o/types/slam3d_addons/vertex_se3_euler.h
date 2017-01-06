@@ -45,6 +45,6 @@ class G2O_TYPES_SLAM3D_ADDONS_API VertexSE3Euler : public VertexSE3
     virtual bool write(std::ostream& os) const;
 };
 
-} // end namespace
+} // namespace g2o
 
 #endif

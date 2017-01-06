@@ -65,6 +65,6 @@ class G2O_CORE_API MatrixStructure
     int maxNz;    ///< size of the allocated memory
 };
 
-} // end namespace
+} // namespace g2o
 
 #endif

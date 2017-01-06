@@ -48,6 +48,6 @@ namespace g2o {
     protected:
       double _baseline;
   };
-};
+} // namespace g2o
 
 #endif

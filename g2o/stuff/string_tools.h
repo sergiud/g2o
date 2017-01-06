@@ -172,6 +172,6 @@ G2O_STUFF_API int readLine(std::istream& is, std::stringstream& currentLine);
 
 // @}
 
-} // end namespace
+} // namespace g2o
 
 #endif

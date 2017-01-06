@@ -273,6 +273,6 @@ namespace g2o {
       std::vector<SparseColumn> _blockCols;     ///< the matrices stored in CCS order
   };
 
-} //end namespace
+} // namespace g2o
 
 #endif

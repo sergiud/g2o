@@ -311,7 +311,7 @@ int main(int argc, char** argv)
   typedef g2o::LinearSolverPCG<BalBlockSolver::PoseMatrixType> BalLinearSolverPCG;
 
   g2o::SparseOptimizer optimizer;
-  g2o::LinearSolver<BalBlockSolver::PoseMatrixType>* linearSolver = 0;
+  g2o::LinearSolver<BalBlockSolver::PoseMatrixType>* linearSolver = nullptr;
   if (usePCG) {
     cout << "Using PCG" << endl;
     linearSolver = new BalLinearSolverPCG();

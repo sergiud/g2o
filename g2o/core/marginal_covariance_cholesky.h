@@ -95,6 +95,6 @@ namespace g2o {
       double computeEntry(int r, int c);
   };
 
-}
+} // namespace g2o
 
 #endif

@@ -54,6 +54,6 @@ namespace g2o {
     return est;
   }
 
-}
+} // namespace g2o
 
 #endif

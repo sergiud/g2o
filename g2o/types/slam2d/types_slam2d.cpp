@@ -70,4 +70,4 @@ namespace g2o {
   G2O_REGISTER_ACTION(EdgeSE2PointXYBearingDrawAction);
 
 #endif
-} // end namespace
+} // namespace g2o

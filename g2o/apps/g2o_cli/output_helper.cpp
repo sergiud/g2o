@@ -201,4 +201,4 @@ bool dumpEdges(std::ostream& os, const OptimizableGraph& optimizer)
   return true;
 }
 
-} // end namespace
+} // namespace g2o

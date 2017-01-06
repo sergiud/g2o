@@ -203,8 +203,8 @@ namespace g2o {
       return atan2(direction.z(), direction.head<2>().norm());
     }
     
-  }
+  } // namespace internal
 
-}
+} // namespace g2o
 
 #endif

@@ -187,7 +187,7 @@ namespace g2o {
   // 2Dof landmarks 3Dof poses
   typedef BlockSolver< BlockSolverTraits<3, 2> > BlockSolver_3_2;
 
-} // end namespace
+} // namespace g2o
 
 #include "block_solver.hpp"
 

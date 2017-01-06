@@ -121,4 +121,4 @@ double get_monotonic_time()
 #endif
 }
 
-} // end namespace
+} // namespace g2o

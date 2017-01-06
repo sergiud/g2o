@@ -60,7 +60,7 @@ namespace g2o {
       //! remove a parameter from the container, i.e., the user now owns the pointer
       Parameter* detachParameter(int id);
       //! read parameters from a stream
-      virtual bool read(std::istream& is, const std::map<std::string, std::string>* renamedMap =0);
+      virtual bool read(std::istream& is, const std::map<std::string, std::string>* renamedMap =nullptr);
       //! write the data to a stream
       virtual bool write(std::ostream& os) const;
       bool isMainStorage() const {return _isMainStorage;}
@@ -73,6 +73,6 @@ namespace g2o {
       bool _isMainStorage;
     };
 
-} // end namespace
+} // namespace g2o
 
 #endif

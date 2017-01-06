@@ -99,6 +99,6 @@ namespace g2o {
       static MotionMeasurement convertToMotion(const VelocityMeasurement& vi, double l = 1.0);
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

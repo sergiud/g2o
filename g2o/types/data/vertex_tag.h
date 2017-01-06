@@ -71,6 +71,6 @@ namespace g2o {
   };
 #endif
 
-}
+} // namespace g2o
 
 #endif

@@ -37,7 +37,7 @@ G2O_CSPARSE_EXTENSION_API bool writeCs2Octave(const char* filename, const cs* A,
 G2O_CSPARSE_EXTENSION_API csn* cs_chol_workspace (const cs *A, const css *S, int* cin, double* xin);
 G2O_CSPARSE_EXTENSION_API int cs_cholsolsymb(const cs *A, double *b, const css* S, double* workspace, int* work);
 
-} // end namespace
-} // end namespace
+} // namespace csparse_extension
+} // namespace g2o
 
 #endif

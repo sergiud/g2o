@@ -65,7 +65,7 @@ namespace g2o {
        std::string _algorithmPart;
    };
 
-} // end namespace
+} // namespace g2o
 
 #ifndef G2O_SCOPED_TICTOC
 #define G2O_SCOPED_TICTOC(s) \

@@ -48,5 +48,5 @@ namespace g2o {
 
   G2O_REGISTER_TYPE(TUTORIAL_EDGE_SE2, EdgeSE2);
   G2O_REGISTER_TYPE(TUTORIAL_EDGE_SE2_POINT_XY, EdgeSE2PointXY);
-  }
-} // end namespace
+  } // namespace tutorial
+} // namespace g2o

@@ -64,13 +64,13 @@ namespace g2o {
 
   CacheSE3Offset::CacheSE3Offset() :
     Cache(),
-    _offsetParam(0)
+    _offsetParam(nullptr)
   {
   }
 
   bool CacheSE3Offset::resolveDependancies(){
     _offsetParam = dynamic_cast <ParameterSE3Offset*> (_parameters[0]);
-    return _offsetParam != 0;
+    return _offsetParam != nullptr;
   }
 
   void CacheSE3Offset::updateImpl(){
@@ -88,7 +88,7 @@ namespace g2o {
 #ifdef G2O_HAVE_OPENGL
   CacheSE3OffsetDrawAction::CacheSE3OffsetDrawAction(): DrawAction(typeid(CacheSE3Offset).name()){
     _previousParams = (DrawAction::Parameters*)0x42;
-    refreshPropertyPtrs(0);
+    refreshPropertyPtrs(nullptr);
   }
 
 
@@ -98,7 +98,7 @@ namespace g2o {
     if (_previousParams){
       _cubeSide = _previousParams->makeProperty<FloatProperty>(_typeName + "::CUBE_SIDE", .05f);
     } else {
-      _cubeSide = 0;
+      _cubeSide = nullptr;
     }
     return true;
   }
@@ -106,7 +106,7 @@ namespace g2o {
   HyperGraphElementAction* CacheSE3OffsetDrawAction::operator()(HyperGraph::HyperGraphElement* element, 
                 HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return 0;
+      return nullptr;
     CacheSE3Offset* that = static_cast<CacheSE3Offset*>(element);
     refreshPropertyPtrs(params_);
     if (! _previousParams)
@@ -126,4 +126,4 @@ namespace g2o {
   }
 #endif
 
-} // end namespace
+} // namespace g2o

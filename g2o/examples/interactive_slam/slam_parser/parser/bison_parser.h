@@ -57,7 +57,7 @@ namespace SlamParser {
 /* Line 35 of lalr1.cc  */
 #line 1 "[Bison:b4_percent_define_default]"
 
-} // SlamParser
+} // namespace SlamParser
 
 /* Line 35 of lalr1.cc  */
 #line 64 "bison_parser.h"
@@ -329,7 +329,7 @@ namespace SlamParser {
 /* Line 35 of lalr1.cc  */
 #line 1 "[Bison:b4_percent_define_default]"
 
-} // SlamParser
+} // namespace SlamParser
 
 /* Line 35 of lalr1.cc  */
 #line 336 "bison_parser.h"

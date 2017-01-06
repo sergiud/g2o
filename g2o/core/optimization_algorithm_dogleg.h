@@ -85,6 +85,6 @@ namespace g2o {
       int _lastNumTries;
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

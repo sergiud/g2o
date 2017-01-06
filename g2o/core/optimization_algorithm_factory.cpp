@@ -75,7 +75,7 @@ namespace g2o {
       return (*foundIt)->construct();
     }
     cerr << "SOLVER FACTORY WARNING: Unable to create solver " << name << endl;
-    return 0;
+    return nullptr;
   }
 
   void OptimizationAlgorithmFactory::destroy()
@@ -118,4 +118,4 @@ namespace g2o {
     return _creator.end();
   }
 
-} // end namespace
+} // namespace g2o

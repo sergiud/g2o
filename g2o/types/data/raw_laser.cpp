@@ -103,4 +103,4 @@ namespace g2o {
     return points;
   }
 
-} // end namespace
+} // namespace g2o

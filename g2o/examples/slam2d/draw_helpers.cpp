@@ -62,7 +62,7 @@ namespace g2o {
         }
         GLUquadricObj* _quadratic;;
     };
-  }
+  } // namespace
 
   void drawDisk(GLfloat radius)
   {

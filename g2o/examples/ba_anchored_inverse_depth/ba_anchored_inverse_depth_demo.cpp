@@ -310,7 +310,7 @@ int main(int argc, const char* argv[]){
     }
     g2o::VertexSBAPointXYZ * v_p
         = dynamic_cast< g2o::VertexSBAPointXYZ * > (v_it->second);
-    if (v_p==0){
+    if (v_p==nullptr){
       cerr << "Vertex " << it->first << "is not a PointXYZ!" << endl;
       exit(-1);
     }
@@ -323,7 +323,7 @@ int main(int argc, const char* argv[]){
     }
     g2o::VertexSE3Expmap * v_anchor
         = dynamic_cast< g2o::VertexSE3Expmap * > (v_it->second);
-    if (v_p==0){
+    if (v_p==nullptr){
       cerr << "Vertex " << it->first << "is not a SE3Expmap!" << endl;
       exit(-1);
     }

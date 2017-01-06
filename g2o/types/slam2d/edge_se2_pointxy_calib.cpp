@@ -60,4 +60,4 @@ namespace g2o {
     return os.good();
   }
 
-} // end namespace
+} // namespace g2o

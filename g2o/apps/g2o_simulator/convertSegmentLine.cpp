@@ -60,8 +60,8 @@ struct LineInfo {
     line=new VertexLine2D();
     line->setId(s->id());
     line->setEstimate(computeLineParameters(s->estimateP1(), s->estimateP2()));
-    p1=0;
-    p2=0;
+    p1=nullptr;
+    p2=nullptr;
   }
   VertexLine2D* line;
   VertexPointXY* p1;

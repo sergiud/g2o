@@ -70,6 +70,6 @@ namespace g2o
       std::string _name;
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

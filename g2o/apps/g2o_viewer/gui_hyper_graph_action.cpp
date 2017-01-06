@@ -26,7 +26,7 @@ namespace g2o {
 
 GuiHyperGraphAction::GuiHyperGraphAction() :
   HyperGraphAction(),
-  viewer(0), dumpScreenshots(false)
+  viewer(nullptr), dumpScreenshots(false)
 {
 }
 
@@ -53,7 +53,7 @@ HyperGraphAction* GuiHyperGraphAction::operator()(const HyperGraph* graph, Param
     qApp->processEvents();
     return this;
   }
-  return 0;
+  return nullptr;
 }
 
-} // end namespace
+} // namespace g2o

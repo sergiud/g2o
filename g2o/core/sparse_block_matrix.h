@@ -224,7 +224,7 @@ std::ostream& operator << (std::ostream&, const SparseBlockMatrix<MatrixType>& m
 
   typedef SparseBlockMatrix<MatrixXD> SparseBlockMatrixXd;
 
-} //end namespace
+} // namespace g2o
 
 #include "sparse_block_matrix.hpp"
 

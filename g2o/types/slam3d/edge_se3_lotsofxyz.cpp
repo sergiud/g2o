@@ -178,4 +178,4 @@ namespace g2o{
 
     return -1.0;
   }
-}
+} // namespace g2o

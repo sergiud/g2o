@@ -93,6 +93,6 @@ namespace g2o {
       int _maxDimension;            ///< the maximum dimension (number of elements) for a Jacobian
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

@@ -34,7 +34,7 @@ namespace g2o {
 
   SensorPose3DOffset::SensorPose3DOffset(const std::string& name_): 
     BinarySensor<Robot3D, EdgeSE3Offset, WorldObjectSE3>(name_){  
-    _offsetParam1 = _offsetParam2 =0;
+    _offsetParam1 = _offsetParam2 =nullptr;
     _stepsToIgnore = 10;
     _information.setIdentity();
     _information*=100;
@@ -89,7 +89,7 @@ namespace g2o {
   
  
   void SensorPose3DOffset::sense() {
-    _robotPoseObject=0;
+    _robotPoseObject=nullptr;
     RobotType* r= dynamic_cast<RobotType*>(robot());
     std::list<PoseObject*>::reverse_iterator it=r->trajectory().rbegin();
     _posesToIgnore.clear();
@@ -117,4 +117,4 @@ namespace g2o {
     }
   }
 
-}
+} // namespace g2o

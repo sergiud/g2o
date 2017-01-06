@@ -92,7 +92,7 @@ G2O_STUFF_API int gettimeofday(struct timeval *tv, struct timezone *tz);
 inline double get_time() 
 {
   struct timeval ts;
-  gettimeofday(&ts,0);
+  gettimeofday(&ts,nullptr);
   return ts.tv_sec + ts.tv_usec*1e-6;
 }
 
@@ -121,7 +121,7 @@ class G2O_STUFF_API ScopeTime {
     double _startTime;
 };
 
-} // end namespace
+} // namespace g2o
 
 #ifndef MEASURE_FUNCTION_TIME
 #define MEASURE_FUNCTION_TIME \

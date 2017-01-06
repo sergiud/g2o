@@ -161,4 +161,4 @@ std::vector<std::string> getFilesByPattern(const char* pattern)
   return result;
 }
 
-}
+} // namespace g2o

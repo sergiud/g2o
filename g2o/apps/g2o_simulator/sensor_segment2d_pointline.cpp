@@ -104,7 +104,7 @@ namespace g2o{
 
 
   void SensorSegment2DPointLine::sense() {
-    _robotPoseObject=0;
+    _robotPoseObject=nullptr;
     RobotType* r= dynamic_cast<RobotType*>(robot());
     std::list<PoseObject*>::reverse_iterator it=r->trajectory().rbegin();
     int count = 0;
@@ -128,4 +128,4 @@ namespace g2o{
     }
   }
 
-} // end namespace
+} // namespace g2o

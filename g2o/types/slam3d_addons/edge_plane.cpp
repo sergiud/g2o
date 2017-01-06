@@ -75,4 +75,4 @@ void EdgePlane::linearizeOplus()
 #endif
 
 
-} // end namespace
+} // namespace g2o

@@ -53,7 +53,7 @@ namespace g2o {
     ParameterVector pv(1);
     pv[0]=params;
     resolveCache(cache, (OptimizableGraph::Vertex*)_vertices[0],"CACHE_CAMERA",pv);
-    return cache != 0;
+    return cache != nullptr;
   }
 
 
@@ -221,7 +221,7 @@ namespace g2o {
   HyperGraphElementAction* EdgeProjectDisparityDrawAction::operator()(HyperGraph::HyperGraphElement* element, 
                 HyperGraphElementAction::Parameters*  params_ ){
   if (typeid(*element).name()!=_typeName)
-      return 0;
+      return nullptr;
     refreshPropertyPtrs(params_);
     if (! _previousParams)
       return this;
@@ -246,4 +246,4 @@ namespace g2o {
   }
 #endif
 
-}
+} // namespace g2o

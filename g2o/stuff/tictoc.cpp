@@ -72,7 +72,7 @@ namespace g2o {
     bool enabled;
     TicTocInitializer()
     {
-      enabled = getenv("G2O_ENABLE_TICTOC") != NULL;
+      enabled = getenv("G2O_ENABLE_TICTOC") != nullptr;
     }
     ~TicTocInitializer()
     {
@@ -160,4 +160,4 @@ namespace g2o {
     tictoc(_algorithmPart.c_str());
   }
 
-} // end namespace
+} // namespace g2o

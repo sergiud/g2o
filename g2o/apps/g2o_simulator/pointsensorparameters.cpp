@@ -36,4 +36,4 @@ namespace g2o {
     _fov = M_PI/2;
     _maxAngularDifference = M_PI/2;
   }
-}
+} // namespace g2o

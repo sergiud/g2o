@@ -59,6 +59,6 @@ namespace g2o {
       Buffer _buffer;
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

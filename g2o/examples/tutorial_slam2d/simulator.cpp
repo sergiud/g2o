@@ -49,7 +49,7 @@ namespace g2o {
 
     Simulator::Simulator()
     {
-      time_t seed = time(0);
+      time_t seed = time(nullptr);
       Rand::seed_rand(static_cast<unsigned int>(seed));
     }
 
@@ -318,5 +318,5 @@ namespace g2o {
       return noiseMotion;
     }
 
-  } // end namespace
-} // end namespace
+  } // namespace tutorial
+} // namespace g2o

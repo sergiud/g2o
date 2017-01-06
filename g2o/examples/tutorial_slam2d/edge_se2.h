@@ -64,8 +64,8 @@ namespace g2o {
         SE2 _inverseMeasurement;
     };
 
-  }
+  } // namespace tutorial
 
-} // end namespace
+} // namespace g2o
 
 #endif

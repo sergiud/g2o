@@ -64,7 +64,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
       _writeDebug = true;
       _blockOrdering = false;
       _cholmodSparse.reset(new CholmodExt);
-      _cholmodFactor = 0;
+      _cholmodFactor = nullptr;
       cholmod_start(&_cholmodCommon);
 
       // setup ordering strategy
@@ -77,18 +77,18 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
 
     virtual ~LinearSolverCholmod()
     {
-      if (_cholmodFactor != 0) {
+      if (_cholmodFactor != nullptr) {
         cholmod_free_factor(&_cholmodFactor, &_cholmodCommon);
-        _cholmodFactor = 0;
+        _cholmodFactor = nullptr;
       }
       cholmod_finish(&_cholmodCommon);
     }
 
     virtual bool init()
     {
-      if (_cholmodFactor != 0) {
+      if (_cholmodFactor != nullptr) {
         cholmod_free_factor(&_cholmodFactor, &_cholmodCommon);
-        _cholmodFactor = 0;
+        _cholmodFactor = nullptr;
       }
       return true;
     }
@@ -96,9 +96,9 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
     bool solve(const SparseBlockMatrix<MatrixType>& A, double* x, double* b)
     {
       //cerr << __PRETTY_FUNCTION__ << " using cholmod" << endl;
-      fillCholmodExt(A, _cholmodFactor != 0); // _cholmodFactor used as bool, if not existing will copy the whole structure, otherwise only the values
+      fillCholmodExt(A, _cholmodFactor != nullptr); // _cholmodFactor used as bool, if not existing will copy the whole structure, otherwise only the values
 
-      if (_cholmodFactor == 0) {
+      if (_cholmodFactor == nullptr) {
         computeSymbolicDecomposition(A);
         assert(_cholmodFactor != 0 && "Symbolic cholesky failed");
       }
@@ -137,9 +137,9 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
     bool solveBlocks(double**& blocks, const SparseBlockMatrix<MatrixType>& A)
     {
       //cerr << __PRETTY_FUNCTION__ << " using cholmod" << endl;
-      fillCholmodExt(A, _cholmodFactor != 0); // _cholmodFactor used as bool, if not existing will copy the whole structure, otherwise only the values
+      fillCholmodExt(A, _cholmodFactor != nullptr); // _cholmodFactor used as bool, if not existing will copy the whole structure, otherwise only the values
 
-      if (_cholmodFactor == 0) {
+      if (_cholmodFactor == nullptr) {
         computeSymbolicDecomposition(A);
         assert(_cholmodFactor && "Symbolic cholesky failed");
       }
@@ -188,9 +188,9 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
     virtual bool solvePattern(SparseBlockMatrix<MatrixXD>& spinv, const std::vector<std::pair<int, int> >& blockIndices, const SparseBlockMatrix<MatrixType>& A)
     {
       //cerr << __PRETTY_FUNCTION__ << " using cholmod" << endl;
-      fillCholmodExt(A, _cholmodFactor != 0); // _cholmodFactor used as bool, if not existing will copy the whole structure, otherwise only the values
+      fillCholmodExt(A, _cholmodFactor != nullptr); // _cholmodFactor used as bool, if not existing will copy the whole structure, otherwise only the values
 
-      if (_cholmodFactor == 0) {
+      if (_cholmodFactor == nullptr) {
         computeSymbolicDecomposition(A);
         assert(_cholmodFactor && "Symbolic cholesky failed");
       }
@@ -273,16 +273,16 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
         auxCholmodSparse.nrow = auxCholmodSparse.ncol = _matrixStructure.n;
         auxCholmodSparse.p = _matrixStructure.Ap;
         auxCholmodSparse.i = _matrixStructure.Aii;
-        auxCholmodSparse.nz = 0;
-        auxCholmodSparse.x = 0;
-        auxCholmodSparse.z = 0;
+        auxCholmodSparse.nz = nullptr;
+        auxCholmodSparse.x = nullptr;
+        auxCholmodSparse.z = nullptr;
         auxCholmodSparse.stype = 1;
         auxCholmodSparse.xtype = CHOLMOD_PATTERN;
         auxCholmodSparse.itype = CHOLMOD_INT;
         auxCholmodSparse.dtype = CHOLMOD_DOUBLE;
         auxCholmodSparse.sorted = 1;
         auxCholmodSparse.packed = 1;
-        int amdStatus = cholmod_amd(&auxCholmodSparse, NULL, 0, _blockPermutation.data(), &_cholmodCommon);
+        int amdStatus = cholmod_amd(&auxCholmodSparse, nullptr, 0, _blockPermutation.data(), &_cholmodCommon);
         if (! amdStatus) {
           return;
         }
@@ -305,7 +305,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
         // apply the ordering
         _cholmodCommon.nmethods = 1 ;
         _cholmodCommon.method[0].ordering = CHOLMOD_GIVEN;
-        _cholmodFactor = cholmod_analyze_p(_cholmodSparse.get(), _scalarPermutation.data(), NULL, 0, &_cholmodCommon);
+        _cholmodFactor = cholmod_analyze_p(_cholmodSparse.get(), _scalarPermutation.data(), nullptr, 0, &_cholmodCommon);
 
       }
       G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
@@ -354,6 +354,6 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
 
 };
 
-} // end namespace
+} // namespace g2o
 
 #endif

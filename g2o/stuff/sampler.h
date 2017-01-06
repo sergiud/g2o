@@ -41,14 +41,14 @@
 
 namespace g2o {
 
-  double G2O_STUFF_API sampleUniform(double min=0, double max=1, std::mt19937* generator=0);
-  double G2O_STUFF_API sampleGaussian(std::mt19937* generator = 0);
+  double G2O_STUFF_API sampleUniform(double min=0, double max=1, std::mt19937* generator=nullptr);
+  double G2O_STUFF_API sampleGaussian(std::mt19937* generator = nullptr);
 
   template <class SampleType, class CovarianceType>
   class GaussianSampler {
   public:
     GaussianSampler(bool hasGenerator=true) :
-      _generator(0)
+      _generator(nullptr)
     {
       if (hasGenerator){
         _generator = new std::mt19937;
@@ -113,7 +113,7 @@ namespace g2o {
        */
       static void seedRand()
       {
-        seedRand(static_cast<unsigned int>(std::time(NULL)));
+        seedRand(static_cast<unsigned int>(std::time(nullptr)));
       }
 
       /** seed the random number generator */
@@ -123,6 +123,6 @@ namespace g2o {
       }
   };
 
-}
+} // namespace g2o
 
 #endif

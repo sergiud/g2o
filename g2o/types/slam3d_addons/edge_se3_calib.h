@@ -49,6 +49,6 @@ namespace g2o
       G2O_TYPES_SLAM3D_ADDONS_API virtual bool write(std::ostream& os) const;
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

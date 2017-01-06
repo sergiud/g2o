@@ -23,13 +23,13 @@
 
 namespace g2o {
   class OptimizationAlgorithm;
-}
+} // namespace g2o
 
 class MainWindow : public QMainWindow, public Ui::BaseMainWindow
 {
   Q_OBJECT
   public:
-    MainWindow(QWidget * parent = 0, Qt::WindowFlags flags = 0);
+    MainWindow(QWidget * parent = nullptr, Qt::WindowFlags flags = nullptr);
     ~MainWindow();
 
     g2o::OptimizationAlgorithm* solverGaussNewton;

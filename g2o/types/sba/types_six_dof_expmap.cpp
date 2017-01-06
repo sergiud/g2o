@@ -138,7 +138,7 @@ bool EdgeSE3Expmap::write(std::ostream& os) const {
 }
 
 EdgeProjectXYZ2UV::EdgeProjectXYZ2UV() : BaseBinaryEdge<2, Vector2D, VertexSBAPointXYZ, VertexSE3Expmap>() {
-  _cam = 0;
+  _cam = nullptr;
   resizeParameters(1);
   installParameter(_cam, 0);
 }
@@ -238,7 +238,7 @@ void EdgeProjectPSI2UV::linearizeOplus(){
 
 EdgeProjectXYZ2UVU::EdgeProjectXYZ2UVU() : BaseBinaryEdge<3, Vector3D, VertexSBAPointXYZ, VertexSE3Expmap>()
 {
-  _cam = 0;
+  _cam = nullptr;
   resizeParameters(1);
   installParameter(_cam, 0);
 }
@@ -355,4 +355,4 @@ bool EdgeProjectXYZ2UVU::write(std::ostream& os) const {
   return os.good();
 }
 
-} // end namespace
+} // namespace g2o

@@ -52,12 +52,12 @@ namespace g2o {
         return hessianIndex < other.hessianIndex;
       }
     };
-  }
+  } // namespace
 
   SparseOptimizerIncremental::SparseOptimizerIncremental()
   {
     _cholmodSparse = new CholmodExt();
-    _cholmodFactor = 0;
+    _cholmodFactor = nullptr;
     cholmod_start(&_cholmodCommon);
 
     // setup ordering strategy to not permute the matrix
@@ -67,9 +67,9 @@ namespace g2o {
     _cholmodCommon.supernodal = CHOLMOD_SIMPLICIAL;
 
     _permutedUpdate = cholmod_allocate_triplet(1000, 1000, 1024, 0, CHOLMOD_REAL, &_cholmodCommon);
-    _L = 0;
-    _cholmodFactor = 0;
-    _solverInterface = 0;
+    _L = nullptr;
+    _cholmodFactor = nullptr;
+    _solverInterface = nullptr;
 
     _permutedUpdateAsSparse = new CholmodExt;
   }
@@ -81,7 +81,7 @@ namespace g2o {
     delete _cholmodSparse;
     if (_cholmodFactor) {
       cholmod_free_factor(&_cholmodFactor, &_cholmodCommon);
-      _cholmodFactor = 0;
+      _cholmodFactor = nullptr;
     }
     cholmod_free_triplet(&_permutedUpdate, &_cholmodCommon);
     cholmod_finish(&_cholmodCommon);
@@ -274,7 +274,7 @@ namespace g2o {
     _updateMat.blockCols().clear();
 
     // placing the current stuff in _updateMat
-    MatrixXd* lastBlock = 0;
+    MatrixXd* lastBlock = nullptr;
     int sizePoses = 0;
     for (int i = 0; i < idx; ++i) {
       OptimizableGraph::Vertex* v = backupIdx[i].vertex;
@@ -403,7 +403,7 @@ namespace g2o {
   {
     if (_cholmodFactor) {
       cholmod_free_factor(&_cholmodFactor, &_cholmodCommon);
-      _cholmodFactor = 0;
+      _cholmodFactor = nullptr;
     }
 
     const SparseBlockMatrix<MatrixXd>& A = _updateMat;
@@ -458,7 +458,7 @@ namespace g2o {
 
   static OptimizationAlgorithm* createSolver(const std::string& solverName)
   {
-    g2o::Solver* s = 0;
+    g2o::Solver* s = nullptr;
 
     if (solverName == "fix3_2_cholmod") {
       ALLOC_CHOLMOD(s, 3, 2);
@@ -566,4 +566,4 @@ namespace g2o {
 
   }
 
-} // end namespace
+} // namespace g2o

@@ -105,7 +105,7 @@ namespace g2o {
         }
       }
     }
-  }
+  } // namespace
 
 G2oSlamInterface::G2oSlamInterface(SparseOptimizerOnline* optimizer) :
   _optimizer(optimizer), _firstOptimization(true), _nodesAdded(0),
@@ -381,7 +381,7 @@ OptimizableGraph::Vertex* G2oSlamInterface::addVertex(int dimension, int id)
     return v;
   }
   else {
-    return 0;
+    return nullptr;
   }
 }
 
@@ -480,4 +480,4 @@ void G2oSlamInterface::setBatchSolveEachN(int n)
   _batchEveryN = n;
 }
 
-} // end namespace
+} // namespace g2o

@@ -76,6 +76,6 @@ namespace g2o {
       SE2 _inverseMeasurement;
   };
 
-}
+} // namespace g2o
 
 #endif

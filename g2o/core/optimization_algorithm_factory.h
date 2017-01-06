@@ -138,7 +138,7 @@ namespace g2o {
       AbstractOptimizationAlgorithmCreator* _creator;
   };
 
-}
+} // namespace g2o
 
 /**
  * Use the following macro to register a whole library of

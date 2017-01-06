@@ -50,7 +50,7 @@ namespace g2o {
       typedef typename BaseEdge<D,E>::InformationType InformationType;
 
       BaseUnaryEdge() : BaseEdge<D,E>(),
-        _jacobianOplusXi(0, D, VertexXiType::Dimension)
+        _jacobianOplusXi(nullptr, D, VertexXiType::Dimension)
       {
         _vertices.resize(1);
       }

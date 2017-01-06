@@ -44,4 +44,4 @@ namespace g2o {
     return _univariateSampler(_gen_real);
   }
 
-}
+} // namespace g2o

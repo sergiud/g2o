@@ -112,7 +112,7 @@ namespace g2o {
         Eigen::Vector2d _t;
     };
 
-  } // end namespace
-} // end namespace
+  } // namespace tutorial
+} // namespace g2o
 
 #endif

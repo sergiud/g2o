@@ -45,6 +45,6 @@ namespace g2o {
 
   typedef std::vector<MotionInformation, Eigen::aligned_allocator<MotionInformation> >     MotionInformationVector;
 
-} // end namespace
+} // namespace g2o
 
 #endif

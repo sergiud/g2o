@@ -62,4 +62,4 @@ void EdgeSE2PureCalib::computeError()
   _error = delta.toVector();
 }
 
-} // end namespace
+} // namespace g2o

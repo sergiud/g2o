@@ -20,7 +20,7 @@ namespace g2o {
   {
     public:
       SparseOptimizerTerminateAction();
-      virtual HyperGraphAction* operator()(const HyperGraph* graph, Parameters* parameters = 0);
+      virtual HyperGraphAction* operator()(const HyperGraph* graph, Parameters* parameters = nullptr);
 
       double gainThreshold() const { return _gainThreshold;}
       void setGainThreshold(double gainThreshold);
@@ -37,6 +37,6 @@ namespace g2o {
       void setOptimizerStopFlag(const SparseOptimizer* optimizer, bool stop);
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

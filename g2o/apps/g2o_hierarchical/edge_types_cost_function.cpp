@@ -19,4 +19,4 @@ namespace g2o {
     return std::numeric_limits<double>::max();
   }
 
-}
+} // namespace g2o

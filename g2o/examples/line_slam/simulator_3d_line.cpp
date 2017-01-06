@@ -63,7 +63,7 @@ protected:
 };
 
 struct WorldItem : public SimulatorItem {
-  WorldItem(OptimizableGraph* graph_, OptimizableGraph::Vertex* vertex_ = 0) :
+  WorldItem(OptimizableGraph* graph_, OptimizableGraph::Vertex* vertex_ = nullptr) :
     SimulatorItem(graph_),_vertex(vertex_) {}
   OptimizableGraph::Vertex* vertex() { return _vertex; }
   void  setVertex(OptimizableGraph::Vertex* vertex_) { _vertex = vertex_; }
@@ -138,7 +138,7 @@ struct Robot: public WorldItem {
     move(newPosition, id);
   }
 
-  void sense(WorldItem* wi = 0) {
+  void sense(WorldItem* wi = nullptr) {
     for(size_t i = 0; i < _sensors.size(); ++i) {
       Sensor* s = _sensors[i];
       s->sense(wi, _position);

@@ -33,7 +33,7 @@ namespace g2o {
 
     EdgeSE2PointXY::EdgeSE2PointXY() :
       BaseBinaryEdge<2, Vector2d, VertexSE2, VertexPointXY>(),
-      _sensorOffset(0), _sensorCache(0)
+      _sensorOffset(nullptr), _sensorCache(nullptr)
     {
       resizeParameters(1);
       installParameter(_sensorOffset, 0);
@@ -70,8 +70,8 @@ namespace g2o {
       ParameterVector pv(1);
       pv[0] = _sensorOffset;
       resolveCache(_sensorCache, static_cast<OptimizableGraph::Vertex*>(_vertices[0]), "TUTORIAL_CACHE_SE2_OFFSET", pv);
-      return _sensorCache != 0;
+      return _sensorCache != nullptr;
     }
 
-  } // end namespace
-} // end namespace
+  } // namespace tutorial
+} // namespace g2o

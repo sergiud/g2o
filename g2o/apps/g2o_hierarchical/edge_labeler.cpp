@@ -206,4 +206,4 @@ namespace g2o {
     return true;
   }
 
-}
+} // namespace g2o

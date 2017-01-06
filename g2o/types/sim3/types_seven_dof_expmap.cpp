@@ -216,4 +216,4 @@ namespace g2o {
 //    _jacobianOplusXj(1,6) = 0; // scale is ignored
 //  }
 
-} // end namespace
+} // namespace g2o

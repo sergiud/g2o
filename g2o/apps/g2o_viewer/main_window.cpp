@@ -40,7 +40,7 @@ using namespace g2o;
 
 MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
   QMainWindow(parent, flags),
-  _lastSolver(-1), _currentSolver(0), _viewerPropertiesWidget(0), _optimizerPropertiesWidget(0)
+  _lastSolver(-1), _currentSolver(nullptr), _viewerPropertiesWidget(nullptr), _optimizerPropertiesWidget(nullptr)
 {
   setupUi(this);
   leKernelWidth->setValidator(new QDoubleValidator(-numeric_limits<double>::max(), numeric_limits<double>::max(), 7, this));
@@ -274,7 +274,7 @@ bool MainWindow::allocateSolver(bool& allocatedNewSolver)
 
   // delete the old optimization algorithm
   OptimizationAlgorithm* algorithmPointer = const_cast<OptimizationAlgorithm*>(viewer->graph->algorithm());
-  viewer->graph->setAlgorithm(0);
+  viewer->graph->setAlgorithm(nullptr);
   delete algorithmPointer;
 
   // create the new algorithm
@@ -339,7 +339,7 @@ void MainWindow::setRobustKernel()
   } else {
     for (SparseOptimizer::EdgeSet::const_iterator it = optimizer->edges().begin(); it != optimizer->edges().end(); ++it) {
       OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(*it);
-      e->setRobustKernel(0);
+      e->setRobustKernel(nullptr);
     }
   }
 }
@@ -399,7 +399,7 @@ void MainWindow::on_btnOptimizerParamaters_clicked()
   if (_currentSolver) {
     _optimizerPropertiesWidget->setProperties(const_cast<g2o::PropertyMap*>(&_currentSolver->properties()));
   } else {
-    _optimizerPropertiesWidget->setProperties(0);
+    _optimizerPropertiesWidget->setProperties(nullptr);
   }
   _optimizerPropertiesWidget->show();
 }

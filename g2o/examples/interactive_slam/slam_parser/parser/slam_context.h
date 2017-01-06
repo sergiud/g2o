@@ -44,6 +44,6 @@ class G2O_SLAM_PARSER_API SlamContext
     virtual bool process(CommandNode* commandNode);
 };
 
-} // end namespace
+} // namespace SlamParser
 
 #endif

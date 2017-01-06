@@ -80,8 +80,8 @@ namespace g2o
       _planeWidth = _previousParams->makeProperty<FloatProperty>(_typeName + "::PLANE_WIDTH", 3.0f);
       _planeHeight = _previousParams->makeProperty<FloatProperty>(_typeName + "::PLANE_HEIGHT", 3.0f);
     } else {
-      _planeWidth = 0;
-      _planeHeight = 0;
+      _planeWidth = nullptr;
+      _planeHeight = nullptr;
     }
     return true;
   }
@@ -90,7 +90,7 @@ namespace g2o
                  HyperGraphElementAction::Parameters* params_)
   {
     if (typeid(*element).name()!=_typeName)
-      return 0;
+      return nullptr;
 
     refreshPropertyPtrs(params_);
     if (! _previousParams)
@@ -108,7 +108,7 @@ namespace g2o
     const VertexSE3* sensor = dynamic_cast<const VertexSE3*>(that->vertex(2));
 
     if (! robot|| ! sensor)
-      return 0;
+      return nullptr;
 
     double d=that->measurement().distance();
     double azimuth=Plane3D::azimuth(that->measurement().normal());
@@ -145,4 +145,4 @@ namespace g2o
   }
 #endif
 
-} // end namespace
+} // namespace g2o

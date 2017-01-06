@@ -29,5 +29,5 @@ struct EdgeTypesCostFunction: public HyperDijkstra::CostFunction {
   int _level;
 };
 
-}
+} // namespace g2o
 #endif

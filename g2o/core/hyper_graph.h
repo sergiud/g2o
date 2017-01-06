@@ -88,7 +88,7 @@ namespace g2o {
          * returns the type of the graph element, see HyperGraphElementType
          */
         virtual HyperGraphElementType elementType() const = 0;
-	HyperGraphElement* clone() const { return 0; }
+	HyperGraphElement* clone() const { return nullptr; }
       };
 
       /**
@@ -121,7 +121,7 @@ namespace g2o {
        */
       class G2O_CORE_API DataContainer {
         public:
-          DataContainer() {_userData = 0;}
+          DataContainer() {_userData = nullptr;}
           virtual ~DataContainer() { delete _userData;}
           //! the user data associated with this vertex
           const Data* userData() const { return _userData; }
@@ -281,7 +281,7 @@ namespace g2o {
       HyperGraph& operator= (const HyperGraph&) { return *this; }
   };
 
-} // end namespace
+} // namespace g2o
 
 //@}
 

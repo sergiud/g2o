@@ -41,7 +41,7 @@ class BaseSensor;
 
 class G2O_SIMULATOR_API BaseWorldObject{
   public:
-    BaseWorldObject(World* world_=0) {_world = world_; _vertex=0;}
+    BaseWorldObject(World* world_=nullptr) {_world = world_; _vertex=nullptr;}
     virtual ~BaseWorldObject();
     void setWorld(World* world_) {_world = world_;}
     World* world() {return _world;}
@@ -60,7 +60,7 @@ class WorldObject: public BaseWorldObject, VertexType_{
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     typedef VertexType_ VertexType;
     typedef typename VertexType_::EstimateType EstimateType;
-    WorldObject(World* world_=0): BaseWorldObject(world_){
+    WorldObject(World* world_=nullptr): BaseWorldObject(world_){
       _vertex = new VertexType();
     }
     virtual void setVertex(OptimizableGraph::Vertex* vertex_){
@@ -70,7 +70,7 @@ class WorldObject: public BaseWorldObject, VertexType_{
     }
 
     VertexType* vertex() {
-      if (! _vertex) return 0;
+      if (! _vertex) return nullptr;
       return dynamic_cast<VertexType*>(_vertex);
     }
 };
@@ -162,7 +162,7 @@ class UnarySensor: public BaseSensor {
     const InformationType& information() {return _information; }
 
     virtual void sense() {
-      _robotPoseObject = 0;
+      _robotPoseObject = nullptr;
       // set the robot pose
       if (! robot())
         return;
@@ -226,7 +226,7 @@ class BinarySensor: public BaseSensor {
     const InformationType& information() {return _information; }
 
     virtual void sense() {
-      _robotPoseObject = 0;
+      _robotPoseObject = nullptr;
       // set the robot pose
       if (! robot())
         return;
@@ -291,6 +291,6 @@ class G2O_SIMULATOR_API World
     int _paramId;
 };
 
-} // end namespace
+} // namespace g2o
 
 #endif

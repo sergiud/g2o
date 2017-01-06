@@ -67,8 +67,8 @@ namespace g2o
       _planeWidth = _previousParams->makeProperty<FloatProperty>(_typeName + "::PLANE_WIDTH", 3);
       _planeHeight = _previousParams->makeProperty<FloatProperty>(_typeName + "::PLANE_HEIGHT", 3);
     } else {
-      _planeWidth = 0;
-      _planeHeight = 0;
+      _planeWidth = nullptr;
+      _planeHeight = nullptr;
     }
     return true;
   }
@@ -77,7 +77,7 @@ namespace g2o
                  HyperGraphElementAction::Parameters* params_)
   {
     if (typeid(*element).name()!=_typeName)
-      return 0;
+      return nullptr;
 
     refreshPropertyPtrs(params_);
     if (! _previousParams)
@@ -111,4 +111,4 @@ namespace g2o
   }
 #endif
 
-}
+} // namespace g2o

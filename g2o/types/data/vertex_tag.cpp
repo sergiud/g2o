@@ -79,7 +79,7 @@ namespace g2o {
     if (_previousParams){
       _textSize = _previousParams->makeProperty<DoubleProperty>(_typeName + "::TEXT_SIZE", 1);
     } else {
-      _textSize = 0;
+      _textSize = nullptr;
     }
     return true;
   }
@@ -87,7 +87,7 @@ namespace g2o {
   HyperGraphElementAction* VertexTagDrawAction::operator()(HyperGraph::HyperGraphElement* element,
                  HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return 0;
+      return nullptr;
 
     refreshPropertyPtrs(params_);
     if (! _previousParams){
@@ -110,4 +110,4 @@ namespace g2o {
   }
 #endif
 
-}
+} // namespace g2o

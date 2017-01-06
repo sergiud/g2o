@@ -63,8 +63,8 @@ namespace g2o {
       _lineWidth = _previousParams->makeProperty<FloatProperty>(_typeName + "::LINE_WIDTH", 5);
     }
     else {
-      _lineLength = 0;
-      _lineWidth = 0;
+      _lineLength = nullptr;
+      _lineWidth = nullptr;
     }
     return true;
   }
@@ -72,7 +72,7 @@ namespace g2o {
   HyperGraphElementAction* VertexLine3DDrawAction::operator()(HyperGraph::HyperGraphElement* element,
 							     HyperGraphElementAction::Parameters* params_) {
     if(typeid(*element).name() != _typeName) {
-      return 0;
+      return nullptr;
     }
 
     refreshPropertyPtrs(params_);
@@ -109,4 +109,4 @@ namespace g2o {
   }
 #endif
   
-}
+} // namespace g2o

@@ -35,10 +35,10 @@ namespace g2o {
 
   EdgeSE2Offset::EdgeSE2Offset() : BaseBinaryEdge<3, SE2, VertexSE2, VertexSE2>() {
     information().setIdentity();
-    _offsetFrom = 0;
-    _offsetTo = 0;
-    _cacheFrom = 0;
-    _cacheTo = 0;
+    _offsetFrom = nullptr;
+    _offsetTo = nullptr;
+    _cacheFrom = nullptr;
+    _cacheTo = nullptr;
     resizeParameters(2);
     installParameter(_offsetFrom, 0);
     installParameter(_offsetTo, 1);
@@ -117,4 +117,4 @@ namespace g2o {
       from->setEstimate(to->estimate() * virtualMeasurement.inverse());
   }
 
-}
+} // namespace g2o

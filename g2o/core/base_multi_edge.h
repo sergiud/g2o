@@ -57,7 +57,7 @@ namespace g2o {
       struct HessianHelper {
         Eigen::Map<MatrixXD> matrix;     ///< the mapped memory
         bool transposed;          ///< the block has to be transposed
-        HessianHelper() : matrix(0, 0, 0), transposed(false) {}
+        HessianHelper() : matrix(nullptr, 0, 0), transposed(false) {}
       };
 
     public:
@@ -119,7 +119,7 @@ namespace g2o {
       struct HessianHelper {
         Eigen::Map<MatrixXD> matrix;     ///< the mapped memory
         bool transposed;          ///< the block has to be transposed
-        HessianHelper() : matrix(0, 0, 0), transposed(false) {}
+        HessianHelper() : matrix(nullptr, 0, 0), transposed(false) {}
       };
 
     public:

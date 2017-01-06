@@ -114,6 +114,6 @@ namespace g2o {
       OptimizationAlgorithm& operator= (const OptimizationAlgorithm&) { return *this; }
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

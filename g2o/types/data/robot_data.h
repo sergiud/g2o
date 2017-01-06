@@ -63,6 +63,6 @@ namespace g2o {
       std::string _hostname; ///< name of the computer/robot generating the data
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

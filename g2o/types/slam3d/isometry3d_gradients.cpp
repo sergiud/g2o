@@ -34,4 +34,4 @@ namespace g2o {
   #include "dquat2mat.cpp"
   } // end namespace internal
 
-} // end namespace
+} // namespace g2o

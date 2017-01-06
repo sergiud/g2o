@@ -49,5 +49,5 @@ namespace g2o {
       return os.good();
     }
 
-  } // end namespace
-} // end namespace
+  } // namespace tutorial
+} // namespace g2o

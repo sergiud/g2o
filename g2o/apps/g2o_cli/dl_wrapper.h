@@ -79,6 +79,6 @@ namespace g2o {
       DlWrapper& operator=(const DlWrapper& );
   };
 
-}
+} // namespace g2o
 
 #endif

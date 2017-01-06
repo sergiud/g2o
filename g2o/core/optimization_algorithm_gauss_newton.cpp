@@ -100,4 +100,4 @@ namespace g2o {
       << "\t schur= " << _solver->schur();
   }
 
-} // end namespace
+} // namespace g2o

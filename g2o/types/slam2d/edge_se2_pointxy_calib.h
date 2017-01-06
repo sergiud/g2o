@@ -58,6 +58,6 @@ namespace g2o {
       virtual void initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* to);
   };
 
-}
+} // namespace g2o
 
 #endif

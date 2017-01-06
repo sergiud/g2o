@@ -88,7 +88,7 @@ namespace g2o {
     if  (!CacheSE3Offset::resolveDependancies())
       return false;
     params = dynamic_cast<ParameterCamera*>(_parameters[0]);
-    return params != 0;
+    return params != nullptr;
   }
 
   void CacheCamera::updateImpl(){
@@ -100,7 +100,7 @@ namespace g2o {
 
   CacheCameraDrawAction::CacheCameraDrawAction(): DrawAction(typeid(CacheCamera).name()){
     _previousParams = (DrawAction::Parameters*)0x42;
-    refreshPropertyPtrs(0);
+    refreshPropertyPtrs(nullptr);
   }
 
 
@@ -112,8 +112,8 @@ namespace g2o {
       _cameraSide = _previousParams->makeProperty<FloatProperty>(_typeName + "::CAMERA_SIDE", .05f);
       
     } else {
-      _cameraZ = 0;
-      _cameraSide = 0;
+      _cameraZ = nullptr;
+      _cameraSide = nullptr;
     }
     return true;
   }
@@ -121,7 +121,7 @@ namespace g2o {
   HyperGraphElementAction* CacheCameraDrawAction::operator()(HyperGraph::HyperGraphElement* element, 
                  HyperGraphElementAction::Parameters* params){
     if (typeid(*element).name()!=_typeName)
-      return 0;
+      return nullptr;
     CacheCamera* that = static_cast<CacheCamera*>(element);
     refreshPropertyPtrs(params);
     if (! _previousParams)
@@ -142,4 +142,4 @@ namespace g2o {
   }
 #endif
 
-}
+} // namespace g2o

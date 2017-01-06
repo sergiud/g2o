@@ -56,6 +56,6 @@ namespace g2o {
 
   
   G2O_SIMULATOR_API Eigen::Vector2d computeLineParameters(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2);
-}
+} // namespace g2o
 
 #endif

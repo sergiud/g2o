@@ -50,6 +50,6 @@ namespace g2o {
       virtual void printVerbose(std::ostream& os) const;
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

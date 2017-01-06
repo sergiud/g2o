@@ -87,7 +87,7 @@ template <typename MatrixType>
 class LinearSolverCCS : public LinearSolver<MatrixType>
 {
   public:
-    LinearSolverCCS() : LinearSolver<MatrixType>(), _ccsMatrix(0) {}
+    LinearSolverCCS() : LinearSolver<MatrixType>(), _ccsMatrix(nullptr) {}
     ~LinearSolverCCS()
     {
       delete _ccsMatrix;
@@ -104,6 +104,6 @@ class LinearSolverCCS : public LinearSolver<MatrixType>
     }
 };
 
-} // end namespace
+} // namespace g2o
 
 #endif

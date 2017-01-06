@@ -73,7 +73,7 @@ namespace internal {
   {
     y.segment(yoff, A.cols()) += A.transpose() * x.segment(xoff, A.rows());
   }
-}
+} // namespace internal
 // helpers end
 
 template <typename MatrixType>

@@ -64,5 +64,5 @@ protected:
 };
 
 
-} // end namespace
+} // namespace g2o
 #endif

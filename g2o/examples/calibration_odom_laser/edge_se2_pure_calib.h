@@ -57,6 +57,6 @@ namespace g2o {
       virtual bool write(std::ostream& os) const;
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

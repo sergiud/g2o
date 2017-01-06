@@ -33,7 +33,7 @@ namespace g2o {
   class G2O_VIEWER_API G2oQGLViewer : public QGLViewer
   {
     public:
-      G2oQGLViewer(QWidget* parent=NULL, const QGLWidget* shareWidget=0, Qt::WindowFlags flags=0);
+      G2oQGLViewer(QWidget* parent=nullptr, const QGLWidget* shareWidget=nullptr, Qt::WindowFlags flags=nullptr);
       ~G2oQGLViewer();
       void draw();
       void init();
@@ -57,6 +57,6 @@ namespace g2o {
       DrawAction::Parameters* _drawActionParameters;
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

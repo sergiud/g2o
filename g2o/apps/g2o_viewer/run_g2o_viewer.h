@@ -39,4 +39,4 @@ namespace g2o {
       static int run(int argc, char** argv, CommandArgs& arg);
   };
 
-} // end namespace
+} // namespace g2o

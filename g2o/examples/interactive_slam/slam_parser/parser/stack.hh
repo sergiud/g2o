@@ -134,7 +134,7 @@ namespace SlamParser {
 /* Line 1153 of lalr1.cc  */
 #line 1 "[Bison:b4_percent_define_default]"
 
-} // SlamParser
+} // namespace SlamParser
 
 /* Line 1153 of lalr1.cc  */
 #line 141 "stack.hh"

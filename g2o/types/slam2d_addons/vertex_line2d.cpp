@@ -85,7 +85,7 @@ namespace g2o {
     if (_previousParams){
       _pointSize = _previousParams->makeProperty<FloatProperty>(_typeName + "::POINT_SIZE", 1.);
     } else {
-      _pointSize = 0;
+      _pointSize = nullptr;
     }
     return true;
   }
@@ -94,7 +94,7 @@ namespace g2o {
                      HyperGraphElementAction::Parameters* params_ ){
 
     if (typeid(*element).name()!=_typeName)
-      return 0;
+      return nullptr;
 
     refreshPropertyPtrs(params_);
     if (! _previousParams)
@@ -113,7 +113,7 @@ namespace g2o {
     Vector2D pmiddle=n*that->rho();
     Vector2D t(-n.y(), n.x());
     double l1,l2 = 10;
-    VertexPointXY *vp1=0, *vp2=0;
+    VertexPointXY *vp1=nullptr, *vp2=nullptr;
     vp1=dynamic_cast<VertexPointXY*> (that->graph()->vertex(that->p1Id));
     vp2=dynamic_cast<VertexPointXY*> (that->graph()->vertex(that->p2Id));
 
@@ -143,4 +143,4 @@ namespace g2o {
   }
 #endif
 
-} // end namespace
+} // namespace g2o

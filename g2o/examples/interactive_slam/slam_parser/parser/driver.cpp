@@ -80,4 +80,4 @@ namespace SlamParser {
     std::cerr << m << std::endl;
   }
 
-} // namespace example
+} // namespace SlamParser

@@ -102,4 +102,4 @@ namespace g2o {
     return status;
   }
 
-} // end namespace
+} // namespace g2o

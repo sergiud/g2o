@@ -49,9 +49,9 @@ struct G2O_SOLVER_CSPARSE_API CSparseExt : public cs
     nzmax = 0;
     m = 0;
     n = 0;
-    p = 0;
-    i = 0;
-    x = 0;
+    p = nullptr;
+    i = nullptr;
+    x = nullptr;
     nz = 0;
     columnsAllocated = 0;
   }
@@ -74,10 +74,10 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
     LinearSolverCSparse() :
       LinearSolverCCS<MatrixType>()
     {
-      _symbolicDecomposition = 0;
+      _symbolicDecomposition = nullptr;
       _csWorkspaceSize = -1;
-      _csWorkspace = 0;
-      _csIntWorkspace = 0;
+      _csWorkspace = nullptr;
+      _csIntWorkspace = nullptr;
       _ccsA = new CSparseExt;
       _blockOrdering = true;
       _writeDebug = true;
@@ -87,10 +87,10 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
     {
       if (_symbolicDecomposition) {
         cs_sfree(_symbolicDecomposition);
-        _symbolicDecomposition = 0;
+        _symbolicDecomposition = nullptr;
       }
-      delete[] _csWorkspace; _csWorkspace = 0;
-      delete[] _csIntWorkspace; _csIntWorkspace = 0;
+      delete[] _csWorkspace; _csWorkspace = nullptr;
+      delete[] _csIntWorkspace; _csIntWorkspace = nullptr;
       delete _ccsA;
     }
 
@@ -98,16 +98,16 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
     {
       if (_symbolicDecomposition) {
         cs_sfree(_symbolicDecomposition);
-        _symbolicDecomposition = 0;
+        _symbolicDecomposition = nullptr;
       }
       return true;
     }
 
     bool solve(const SparseBlockMatrix<MatrixType>& A, double* x, double* b)
     {
-      fillCSparse(A, _symbolicDecomposition != 0);
+      fillCSparse(A, _symbolicDecomposition != nullptr);
       // perform symbolic cholesky once
-      if (_symbolicDecomposition == 0) {
+      if (_symbolicDecomposition == nullptr) {
         computeSymbolicDecomposition(A);
       }
       // re-allocate the temporary workspace for cholesky
@@ -142,9 +142,9 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
     }
 
     bool solveBlocks(double**& blocks, const SparseBlockMatrix<MatrixType>& A) {
-      fillCSparse(A, _symbolicDecomposition != 0);
+      fillCSparse(A, _symbolicDecomposition != nullptr);
       // perform symbolic cholesky once
-      if (_symbolicDecomposition == 0) {
+      if (_symbolicDecomposition == nullptr) {
         computeSymbolicDecomposition(A);
         assert(_symbolicDecomposition && "Symbolic cholesky failed");
       }
@@ -188,9 +188,9 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
     }
 
     virtual bool solvePattern(SparseBlockMatrix<MatrixXD>& spinv, const std::vector<std::pair<int, int> >& blockIndices, const SparseBlockMatrix<MatrixType>& A) {
-      fillCSparse(A, _symbolicDecomposition != 0);
+      fillCSparse(A, _symbolicDecomposition != nullptr);
       // perform symbolic cholesky once
-      if (_symbolicDecomposition == 0) {
+      if (_symbolicDecomposition == nullptr) {
         computeSymbolicDecomposition(A);
         assert(_symbolicDecomposition && "Symbolic cholesky failed");
       }
@@ -257,7 +257,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
         auxBlock.m = auxBlock.n = _matrixStructure.n;
         auxBlock.p = _matrixStructure.Ap;
         auxBlock.i = _matrixStructure.Aii;
-        auxBlock.x = NULL; // no values
+        auxBlock.x = nullptr; // no values
         auxBlock.nz = -1; // CCS format
 
         // AMD ordering on the block structure
@@ -294,7 +294,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
         cs_free(c);
         if (_symbolicDecomposition->lnz < 0) {
           cs_sfree(_symbolicDecomposition);
-          _symbolicDecomposition = 0;
+          _symbolicDecomposition = nullptr;
         }
 
       }
@@ -344,6 +344,6 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
     }
 };
 
-} // end namespace
+} // namespace g2o
 
 #endif

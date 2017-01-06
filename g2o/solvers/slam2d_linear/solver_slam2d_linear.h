@@ -66,6 +66,6 @@ namespace g2o {
       bool solveOrientation();
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

@@ -89,6 +89,6 @@ namespace g2o {
       return nl;
     }
     
-  }
+  } // namespace internal
 
-}
+} // namespace g2o

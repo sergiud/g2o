@@ -112,6 +112,6 @@ namespace g2o {
   };
 #endif
 
-} // end namespace
+} // namespace g2o
 
 #endif

@@ -27,8 +27,8 @@ namespace SlamParser {
       /** Create a new scanner object. The streams arg_yyin and arg_yyout default
        * to cin and cout, but that assignment is only made when initializing in
        * yylex(). */
-      Scanner(std::istream* arg_yyin = 0,
-          std::ostream* arg_yyout = 0);
+      Scanner(std::istream* arg_yyin = nullptr,
+          std::ostream* arg_yyout = nullptr);
 
       /** Required for virtual functions */
       virtual ~Scanner();
@@ -45,6 +45,6 @@ namespace SlamParser {
       void set_debug(bool b);
   };
 
-} // end namespace
+} // namespace SlamParser
 
 #endif

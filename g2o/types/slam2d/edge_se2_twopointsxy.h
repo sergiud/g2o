@@ -25,5 +25,5 @@ namespace g2o{
       virtual void initialEstimate(const OptimizableGraph::VertexSet&, OptimizableGraph::Vertex*);
       virtual double initialEstimatePossible(const OptimizableGraph::VertexSet&, OptimizableGraph::Vertex*);
   };
-}
+} // namespace g2o
 #endif	// G2O_EDGE_SE2_TWOPOINTS_XY_H

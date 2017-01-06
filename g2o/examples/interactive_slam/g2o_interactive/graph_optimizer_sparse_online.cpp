@@ -61,8 +61,8 @@ namespace g2o {
 
 SparseOptimizerOnline::SparseOptimizerOnline(bool pcg) :
   SparseOptimizer(),
-  slamDimension(3), newEdges(0), batchStep(true), vizWithGnuplot(false),
-  _gnuplot(0), _usePcg(pcg), _underlyingSolver(0)
+  slamDimension(3), newEdges(nullptr), batchStep(true), vizWithGnuplot(false),
+  _gnuplot(nullptr), _usePcg(pcg), _underlyingSolver(nullptr)
 {
 }
 
@@ -193,7 +193,7 @@ bool SparseOptimizerOnline::updateInitialization(HyperGraph::VertexSet& vset, Hy
 
 static Solver* createSolver(const std::string& solverName)
 {
-  g2o::Solver* s = 0;
+  g2o::Solver* s = nullptr;
   if (solverName == "pcg3_2") {
     ALLOC_PCG(s, 3, 2);
   }
@@ -209,7 +209,7 @@ bool SparseOptimizerOnline::initSolver(int dimension, int /*batchEveryN*/)
   OptimizationAlgorithmFactory* solverFactory = OptimizationAlgorithmFactory::instance();
   OptimizationAlgorithmProperty solverProperty;
   if (_usePcg) {
-    Solver* s = 0;
+    Solver* s = nullptr;
     if (dimension == 3) {
       s = createSolver("pcg3_2");
     } else {
@@ -245,7 +245,7 @@ void SparseOptimizerOnline::gnuplotVisualization()
 #else
       _gnuplot = popen("gnuplot -persistent", "w");
 #endif
-      if (_gnuplot == 0)
+      if (_gnuplot == nullptr)
         return;
       fprintf(_gnuplot, "set terminal X11 noraise\n");
       fprintf(_gnuplot, "set size ratio -1\n");
@@ -267,7 +267,7 @@ void SparseOptimizerOnline::gnuplotVisualization()
 #else
       _gnuplot = popen("gnuplot -persistent", "w");
 #endif
-      if (_gnuplot == 0)
+      if (_gnuplot == nullptr)
         return;
       fprintf(_gnuplot, "set terminal X11 noraise\n");
     }
@@ -283,4 +283,4 @@ void SparseOptimizerOnline::gnuplotVisualization()
   }
 }
 
-} // end namespace
+} // namespace g2o

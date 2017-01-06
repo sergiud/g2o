@@ -52,7 +52,7 @@ static std::string demangleName(const std::string& fullPropName)
   }
 
   int status;
-  char* s = abi::__cxa_demangle(mangledName.c_str(), 0, 0, &status);
+  char* s = abi::__cxa_demangle(mangledName.c_str(), nullptr, nullptr, &status);
   if (status != 0) {
     free(s);
     return fullPropName;

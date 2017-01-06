@@ -64,4 +64,4 @@ bool SlamContext::process(CommandNode* commandNode)
   return true;
 }
 
-} // end namespace
+} // namespace SlamParser

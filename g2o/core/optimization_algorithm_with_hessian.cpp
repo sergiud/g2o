@@ -100,4 +100,4 @@ namespace g2o {
     _writeDebug->setValue(writeDebug);
   }
 
-} // end namespace
+} // namespace g2o

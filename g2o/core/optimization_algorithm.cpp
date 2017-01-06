@@ -31,7 +31,7 @@ using namespace std;
 namespace g2o {
 
 OptimizationAlgorithm::OptimizationAlgorithm() :
-  _optimizer(0)
+  _optimizer(nullptr)
 {
 }
 
@@ -59,4 +59,4 @@ void OptimizationAlgorithm::setOptimizer(SparseOptimizer* optimizer)
   _optimizer = optimizer;
 }
 
-} // end namespace
+} // namespace g2o

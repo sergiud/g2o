@@ -125,4 +125,4 @@ namespace g2o {
     lp[1]=n.dot(p1+p2)*.5;
     return lp;
   } 
-} // end namespace
+} // namespace g2o

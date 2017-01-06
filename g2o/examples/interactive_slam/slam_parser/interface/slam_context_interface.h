@@ -46,6 +46,6 @@ namespace SlamParser {
       AbstractSlamInterface* _slam;
   };
 
-} // end namespace
+} // namespace SlamParser
 
 #endif

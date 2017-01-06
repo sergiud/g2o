@@ -43,7 +43,7 @@ struct ColSort
 };
 
 MatrixStructure::MatrixStructure() :
-  n(0), m(0), Ap(0), Aii(0), maxN(0), maxNz(0)
+  n(0), m(0), Ap(nullptr), Aii(nullptr), maxN(0), maxNz(0)
 {
 }
 
@@ -81,8 +81,8 @@ void MatrixStructure::free()
   m = 0;
   maxN = 0;
   maxNz = 0;
-  delete[] Aii; Aii = 0;
-  delete[] Ap; Ap = 0;
+  delete[] Aii; Aii = nullptr;
+  delete[] Ap; Ap = nullptr;
 }
 
 bool MatrixStructure::write(const char* filename) const
@@ -122,4 +122,4 @@ bool MatrixStructure::write(const char* filename) const
   return fout.good();
 }
 
-} // end namespace
+} // namespace g2o

@@ -41,7 +41,7 @@ bool anonymizeLandmarkEdge(HyperGraph::Edge* e_, OptimizableGraph& g){
   T* e= dynamic_cast<T*> (e_);
   if (!e)
     return false;
-  g.setEdgeVertex(e,1,0);
+  g.setEdgeVertex(e,1,nullptr);
   return true;
 }
 
@@ -56,9 +56,9 @@ bool anonymizePoseEdge(HyperGraph::Edge* e_, OptimizableGraph& g){
     int deltaId = abs(from->id() - to->id());
     if (deltaId>1) {
       if (from->id()>to->id()){
-	g.setEdgeVertex(e,0,0);
+	g.setEdgeVertex(e,0,nullptr);
       } else {
-	g.setEdgeVertex(e,1,0);
+	g.setEdgeVertex(e,1,nullptr);
       }
       return true;
     }

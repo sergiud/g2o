@@ -89,4 +89,4 @@ namespace g2o {
     return ok;
   }
 
-}
+} // namespace g2o

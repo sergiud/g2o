@@ -43,7 +43,7 @@ namespace g2o {
 
   HyperGraphAction* HyperGraphAction::operator()(const HyperGraph*, Parameters*)
   {
-    return 0;
+    return nullptr;
   }
 
   HyperGraphElementAction::HyperGraphElementAction(const std::string& typeName_)
@@ -59,12 +59,12 @@ namespace g2o {
 
   HyperGraphElementAction* HyperGraphElementAction::operator()(HyperGraph::HyperGraphElement* , HyperGraphElementAction::Parameters* )
   {
-    return 0;
+    return nullptr;
   }
 
   HyperGraphElementAction* HyperGraphElementAction::operator()(const HyperGraph::HyperGraphElement* , HyperGraphElementAction::Parameters* )
   {
-    return 0;
+    return nullptr;
   }
 
   HyperGraphElementActionCollection::HyperGraphElementActionCollection(const std::string& name_)
@@ -77,7 +77,7 @@ namespace g2o {
     ActionMap::iterator it=_actionMap.find(typeid(*element).name());
     //cerr << typeid(*element).name() << endl;
     if (it==_actionMap.end())
-      return 0;
+      return nullptr;
     HyperGraphElementAction* action=it->second.get();
     return (*action)(element, params);
   }
@@ -86,7 +86,7 @@ namespace g2o {
   {
     ActionMap::iterator it=_actionMap.find(typeid(*element).name());
     if (it==_actionMap.end())
-      return 0;
+      return nullptr;
     HyperGraphElementAction* action=it->second.get();
     return (*action)(element, params);
   }
@@ -130,13 +130,13 @@ namespace g2o {
     HyperGraphElementAction::ActionMap::iterator it=_actionMap.find(name);
     if (it!=_actionMap.end())
       return it->second.get();
-    return 0;
+    return nullptr;
   }
 
   bool HyperGraphActionLibrary::registerAction(HyperGraphElementAction* action)
   {
     HyperGraphElementAction* oldAction = actionByName(action->name());
-    HyperGraphElementActionCollection* collection = 0;
+    HyperGraphElementActionCollection* collection = nullptr;
     if (oldAction) {
       collection = dynamic_cast<HyperGraphElementActionCollection*>(oldAction);
       if (! collection) {
@@ -192,8 +192,8 @@ namespace g2o {
   {
     _name="draw";
     _previousParams = (Parameters*)0x42;
-    refreshPropertyPtrs(0);
-    _cacheDrawActions = 0;
+    refreshPropertyPtrs(nullptr);
+    _cacheDrawActions = nullptr;
   }
 
   bool DrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
@@ -201,9 +201,9 @@ namespace g2o {
       return false;
     DrawAction::Parameters* p=dynamic_cast<DrawAction::Parameters*>(params_);
     if (! p){
-      _previousParams = 0;
-      _show = 0;
-      _showId = 0;
+      _previousParams = nullptr;
+      _show = nullptr;
+      _showId = nullptr;
     } else {
       _previousParams = p;
       _show = p->makeProperty<BoolProperty>(_typeName+"::SHOW", true);
@@ -249,4 +249,4 @@ namespace g2o {
     }
   }
 
-} // end namespace
+} // namespace g2o

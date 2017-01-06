@@ -41,6 +41,6 @@ namespace g2o {
 
   typedef Robot<WorldObjectSE2>  Robot2D;
 
-}
+} // namespace g2o
 
 #endif

@@ -61,6 +61,6 @@ namespace SlamParser {
       std::stringstream _buffer;
   };
 
-} // end namespace
+} // namespace SlamParser
 
 #endif

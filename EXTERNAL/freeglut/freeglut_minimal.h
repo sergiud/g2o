@@ -85,7 +85,7 @@ namespace freeglut_minimal {
    */
   G2O_FGAPI int glutStrokeLength(FontID fontID, const char* string);
 
-} // end namespace
+} // namespace freeglut_minimal
 
 /*** END OF FILE ***/
 

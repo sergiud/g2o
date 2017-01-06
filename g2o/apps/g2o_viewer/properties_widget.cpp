@@ -31,7 +31,7 @@ using namespace g2o;
 
 PropertiesWidget::PropertiesWidget(QWidget * parent, Qt::WindowFlags f) :
   QDialog(parent, f),
-  _properties(0)
+  _properties(nullptr)
 {
   setupUi(this);
 }

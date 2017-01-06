@@ -78,5 +78,5 @@ namespace g2o {
     Factory * _factory;
   };
 
-}
+} // namespace g2o
 #endif

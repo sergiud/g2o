@@ -51,6 +51,6 @@ namespace g2o {
 
     typedef std::vector<Parameter*> ParameterVector;
 
-} // end namespace
+} // namespace g2o
 
 #endif

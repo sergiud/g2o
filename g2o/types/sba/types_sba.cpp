@@ -572,4 +572,4 @@ namespace g2o {
     return true;
   }
 
-} // end namespace
+} // namespace g2o

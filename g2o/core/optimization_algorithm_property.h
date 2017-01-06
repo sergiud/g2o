@@ -54,6 +54,6 @@ struct G2O_CORE_API OptimizationAlgorithmProperty
   }
 };
 
-} // end namespace
+} // namespace g2o
 
 #endif

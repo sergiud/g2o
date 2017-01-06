@@ -47,7 +47,7 @@ namespace g2o {
         return Pred()(left.first, right.first);
       }
     };
-  }
+  } // namespace
 
   template <class MatrixType>
   SparseBlockMatrix<MatrixType>::SparseBlockMatrix( const int * rbi, const int* cbi, int rb, int cb, bool hasStorage):
@@ -90,10 +90,10 @@ namespace g2o {
   template <class MatrixType>
   typename SparseBlockMatrix<MatrixType>::SparseMatrixBlock* SparseBlockMatrix<MatrixType>::block(int r, int c, bool alloc) {
     typename SparseBlockMatrix<MatrixType>::IntBlockMap::iterator it =_blockCols[c].find(r);
-    typename SparseBlockMatrix<MatrixType>::SparseMatrixBlock* _block=0;
+    typename SparseBlockMatrix<MatrixType>::SparseMatrixBlock* _block=nullptr;
     if (it==_blockCols[c].end()){
       if (!_hasStorage && ! alloc )
-        return 0;
+        return nullptr;
       else {
         int rb=rowsOfBlock(r);
         int cb=colsOfBlock(c);
@@ -113,7 +113,7 @@ namespace g2o {
   const typename SparseBlockMatrix<MatrixType>::SparseMatrixBlock* SparseBlockMatrix<MatrixType>::block(int r, int c) const {
     typename SparseBlockMatrix<MatrixType>::IntBlockMap::const_iterator it =_blockCols[c].find(r);
     if (it==_blockCols[c].end())
-  return 0;
+  return nullptr;
     return it->second;
   }
 
@@ -653,4 +653,4 @@ namespace g2o {
     }
   }
 
-}// end namespace
+} // namespace g2o

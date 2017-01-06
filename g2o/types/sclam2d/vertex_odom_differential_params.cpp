@@ -45,4 +45,4 @@ namespace g2o {
     return os.good();
   }
 
-}
+} // namespace g2o

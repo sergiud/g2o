@@ -358,6 +358,6 @@ class G2O_TYPES_SBA_API VertexIntrinsics : public BaseVertex<4, Eigen::Matrix<do
 
 
 
-} // end namespace
+} // namespace g2o
 
 #endif // SBA_TYPES

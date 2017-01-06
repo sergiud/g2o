@@ -58,7 +58,7 @@ namespace SlamParser {
 
     /// Construct a position.
     position ()
-      : filename (0), line (1), column (1)
+      : filename (nullptr), line (1), column (1)
     {
     }
 
@@ -160,7 +160,7 @@ namespace SlamParser {
 /* Line 144 of location.cc  */
 #line 1 "[Bison:b4_percent_define_default]"
 
-} // SlamParser
+} // namespace SlamParser
 
 /* Line 144 of location.cc  */
 #line 167 "position.hh"

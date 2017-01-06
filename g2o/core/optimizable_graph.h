@@ -449,9 +449,9 @@ namespace g2o {
         //! returns the dimensions of the error function
         int dimension() const { return _dimension;}
 
-        G2O_ATTRIBUTE_DEPRECATED(virtual Vertex* createFrom()) {return 0;}
-	G2O_ATTRIBUTE_DEPRECATED(virtual Vertex* createTo())   {return 0;}
-	virtual Vertex* createVertex(int) {return 0;}
+        G2O_ATTRIBUTE_DEPRECATED(virtual Vertex* createFrom()) {return nullptr;}
+	G2O_ATTRIBUTE_DEPRECATED(virtual Vertex* createTo())   {return nullptr;}
+	virtual Vertex* createVertex(int) {return nullptr;}
 
         //! read the vertex from a stream, i.e., the internal state of the vertex
         virtual bool read(std::istream& is) = 0;
@@ -468,7 +468,7 @@ namespace g2o {
         inline const Parameter* parameter(int argNo) const {return *_parameters.at(argNo);}
         inline size_t numParameters() const {return _parameters.size();}
         inline void resizeParameters(size_t newSize) {
-          _parameters.resize(newSize, 0);
+          _parameters.resize(newSize, nullptr);
           _parameterIds.resize(newSize, -1);
           _parameterTypes.resize(newSize, typeid(void*).name());
         }
@@ -520,7 +520,7 @@ namespace g2o {
      * @return false if a vertex with the same id as v is already in the graph, true otherwise.
      */
     virtual bool addVertex(HyperGraph::Vertex* v, Data* userData);
-    virtual bool addVertex(HyperGraph::Vertex* v) { return addVertex(v, 0);}
+    virtual bool addVertex(HyperGraph::Vertex* v) { return addVertex(v, nullptr);}
 
     /**
      * adds a new edge.
@@ -677,6 +677,6 @@ namespace g2o {
     @}
    */
 
-} // end namespace
+} // namespace g2o
 
 #endif

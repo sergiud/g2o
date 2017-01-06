@@ -79,6 +79,6 @@ namespace g2o {
       LaserParameters _laserParams;
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

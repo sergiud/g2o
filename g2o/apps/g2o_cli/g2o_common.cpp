@@ -97,7 +97,7 @@ void loadStandardTypes(DlWrapper& dlTypesWrapper, int argc, char** argv)
   char * envTypesPath = getenv("G2O_TYPES_DIR");
   string typesPath;
 
-  if (envTypesPath != NULL) {
+  if (envTypesPath != nullptr) {
     typesPath = envTypesPath;
   } else {
     typesPath = G2O_DEFAULT_TYPES_DIR_;
@@ -121,7 +121,7 @@ void loadStandardTypes(DlWrapper& dlTypesWrapper, int argc, char** argv)
   }
 
   vector<string> libs;
-  if (argc > 0 && argv != 0)
+  if (argc > 0 && argv != nullptr)
     findArguments("-typeslib", libs, argc, argv);
   for (vector<string>::const_iterator it = libs.begin(); it != libs.end(); ++it) {
     cerr << "Loading types " << *it << endl;
@@ -134,7 +134,7 @@ void loadStandardSolver(DlWrapper& dlSolverWrapper, int argc, char** argv)
   char * envSolversPath = getenv("G2O_SOLVERS_DIR");
   string solversPath = G2O_DEFAULT_SOLVERS_DIR_;
 
-  if (envSolversPath != NULL) {
+  if (envSolversPath != nullptr) {
       solversPath = envSolversPath;
   } else {
 #if (defined UNIX)
@@ -157,7 +157,7 @@ void loadStandardSolver(DlWrapper& dlSolverWrapper, int argc, char** argv)
   }
 
   vector<string> libs;
-  if (argc > 0 && argv != 0)
+  if (argc > 0 && argv != nullptr)
     findArguments("-solverlib", libs, argc, argv);
   for (vector<string>::const_iterator it = libs.begin(); it != libs.end(); ++it) {
     cerr << "Loading solver " << *it << endl;
@@ -165,4 +165,4 @@ void loadStandardSolver(DlWrapper& dlSolverWrapper, int argc, char** argv)
   }
 }
 
-} // end namespace
+} // namespace g2o

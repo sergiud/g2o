@@ -58,11 +58,11 @@ namespace g2o {
 
   HyperGraphElementAction* VertexSE2WriteGnuplotAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return 0;
+      return nullptr;
     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
     if (!params || !params->os){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, no valid output stream specified" << std::endl;
-      return 0;
+      return nullptr;
     }
 
     VertexSE2* v =  static_cast<VertexSE2*>(element);
@@ -73,7 +73,7 @@ namespace g2o {
 
 #ifdef G2O_HAVE_OPENGL
   VertexSE2DrawAction::VertexSE2DrawAction(): DrawAction(typeid(VertexSE2).name()){
-    _drawActions = 0;
+    _drawActions = nullptr;
   }
 
   bool VertexSE2DrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
@@ -83,8 +83,8 @@ namespace g2o {
       _triangleX = _previousParams->makeProperty<FloatProperty>(_typeName + "::TRIANGLE_X", .2f);
       _triangleY = _previousParams->makeProperty<FloatProperty>(_typeName + "::TRIANGLE_Y", .05f);
     } else {
-      _triangleX = 0;
-      _triangleY = 0;
+      _triangleX = nullptr;
+      _triangleY = nullptr;
     }
     return true;
   }
@@ -93,7 +93,7 @@ namespace g2o {
   HyperGraphElementAction* VertexSE2DrawAction::operator()(HyperGraph::HyperGraphElement* element,
                  HyperGraphElementAction::Parameters* params_){
    if (typeid(*element).name()!=_typeName)
-      return 0;
+      return nullptr;
     initializeDrawActionsCache();
     refreshPropertyPtrs(params_);
 
@@ -118,4 +118,4 @@ namespace g2o {
 #endif
 
 
-} // end namespace
+} // namespace g2o

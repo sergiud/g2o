@@ -31,7 +31,7 @@ namespace g2o {
 
   // SensorSE3Prior
   SensorSE3Prior::SensorSE3Prior(const std::string& name_): UnarySensor<Robot3D, EdgeSE3Prior>(name_) {
-    _offsetParam = 0;
+    _offsetParam = nullptr;
     _information.setIdentity();
     _information*=1000;
     _information(2,2)=10;
@@ -57,7 +57,7 @@ namespace g2o {
     if (! _offsetParam){
       return;
     }
-    _robotPoseObject=0;
+    _robotPoseObject=nullptr;
     RobotType* r= dynamic_cast<RobotType*>(robot());
     std::list<PoseObject*>::reverse_iterator it=r->trajectory().rbegin();
     int count = 0;
@@ -79,4 +79,4 @@ namespace g2o {
     }
   }
 
-}
+} // namespace g2o

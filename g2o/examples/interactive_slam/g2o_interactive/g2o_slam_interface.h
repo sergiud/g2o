@@ -83,6 +83,6 @@ namespace g2o {
       bool printVertex(OptimizableGraph::Vertex* v);
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

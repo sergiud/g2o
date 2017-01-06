@@ -32,8 +32,8 @@ namespace g2o {
 
   EdgeSE3Line3D::EdgeSE3Line3D() {
     information().setIdentity();
-    cache = 0;
-    offsetParam = 0;
+    cache = nullptr;
+    offsetParam = nullptr;
     resizeParameters(1);
     installParameter(offsetParam, 0);
     color << 0.0, 0.5, 1.0;
@@ -82,7 +82,7 @@ namespace g2o {
     ParameterVector pv(1);
     pv[0] = offsetParam;
     resolveCache(cache, (OptimizableGraph::Vertex*)_vertices[0], "CACHE_SE3_OFFSET", pv);
-    return cache != 0;
+    return cache != nullptr;
   }
 
 #ifdef G2O_HAVE_OPENGL
@@ -97,8 +97,8 @@ namespace g2o {
       _lineWidth = _previousParams->makeProperty<FloatProperty>(_typeName + "::LINE_WIDTH", 2.0f);
     }
     else {
-      _lineLength = 0;
-      _lineWidth = 0;
+      _lineLength = nullptr;
+      _lineWidth = nullptr;
     }
     return true;
   }
@@ -106,7 +106,7 @@ namespace g2o {
   HyperGraphElementAction* EdgeSE3Line3DDrawAction::operator()(HyperGraph::HyperGraphElement* element,
 							       HyperGraphElementAction::Parameters* params_) {
     if(typeid(*element).name() != _typeName) {
-      return 0;
+      return nullptr;
     }
 
     refreshPropertyPtrs(params_);
@@ -128,7 +128,7 @@ namespace g2o {
     const VertexLine3D* landmark = dynamic_cast<const VertexLine3D*>(that->vertex(1));
 
     if(!robot || !landmark) {
-      return 0;
+      return nullptr;
     }
 
     Line3D line = that->measurement();
@@ -157,4 +157,4 @@ namespace g2o {
   }
 #endif
   
-}
+} // namespace g2o

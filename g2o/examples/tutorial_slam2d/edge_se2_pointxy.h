@@ -59,7 +59,7 @@ namespace g2o {
         virtual bool resolveCaches();
     };
 
-  } // end namespace
-} // end namespace
+  } // namespace tutorial
+} // namespace g2o
 
 #endif

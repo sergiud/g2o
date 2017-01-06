@@ -137,6 +137,6 @@ class G2O_TYPES_SIM3_API EdgeSim3ProjectXYZ : public  BaseBinaryEdge<2, Vector2D
 
 };
 
-} // end namespace
+} // namespace g2o
 
 #endif

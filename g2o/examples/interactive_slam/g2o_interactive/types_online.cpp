@@ -46,4 +46,4 @@ namespace g2o {
     factory->registerType("ONLINE_EDGE_SE3:QUAT", new HyperGraphElementCreator<OnlineEdgeSE3>);
   }
 
-} // end namespace
+} // namespace g2o

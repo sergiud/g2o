@@ -59,7 +59,7 @@ namespace g2o {
           ParameterVector _parameters;
       };
 
-      Cache(CacheContainer* container_ = 0, const ParameterVector& parameters_ = ParameterVector());
+      Cache(CacheContainer* container_ = nullptr, const ParameterVector& parameters_ = ParameterVector());
 
       CacheKey key() const;
 
@@ -126,7 +126,7 @@ namespace g2o {
       const std::string& type_,
       const ParameterVector& parameters_)
   {
-    cache = 0;
+    cache = nullptr;
     CacheContainer* container= v->cacheContainer();
     Cache::CacheKey key(type_, parameters_);
     Cache* c = container->findCache(key);
@@ -138,6 +138,6 @@ namespace g2o {
     }
   }
 
-} // end namespace
+} // namespace g2o
 
 #endif

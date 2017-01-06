@@ -237,7 +237,7 @@ namespace g2o {
 
   };
 
-} // end namespace
+} // namespace g2o
 
 
 #endif  // SBACam

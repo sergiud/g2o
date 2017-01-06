@@ -55,9 +55,9 @@ namespace g2o {
 
   void EstimatePropagator::AdjacencyMapEntry::reset()
   {
-    _child = 0;
+    _child = nullptr;
     _parent.clear();
-    _edge = 0;
+    _edge = nullptr;
     _distance = numeric_limits<double>::max();
     _frontierLevel = -1;
     inQueue = false;
@@ -267,4 +267,4 @@ namespace g2o {
     return e->initialEstimatePossible(from_, to);
   }
 
-} // end namespace
+} // namespace g2o

@@ -48,7 +48,7 @@ namespace g2o {
    */
   static OptimizationAlgorithm* createSolver(const std::string& fullSolverName)
   {
-    g2o::Solver* s = 0;
+    g2o::Solver* s = nullptr;
 
     string methodName = fullSolverName.substr(0, 2);
     string solverName = fullSolverName.substr(3);
@@ -77,7 +77,7 @@ namespace g2o {
     }
 #endif
 
-    OptimizationAlgorithm* snl = 0;
+    OptimizationAlgorithm* snl = nullptr;
     if (methodName == "gn") {
       snl = new OptimizationAlgorithmGaussNewton(s);
     }
@@ -124,4 +124,4 @@ namespace g2o {
 #endif
 
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(dl_var, new CSparseSolverCreator(OptimizationAlgorithmProperty("dl_var", "Dogleg: Cholesky solver using CSparse (variable blocksize)", "CSparse", false, Eigen::Dynamic, Eigen::Dynamic)));
-}
+} // namespace g2o

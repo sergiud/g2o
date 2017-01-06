@@ -45,6 +45,6 @@ namespace g2o {
     int _visiblePoint;
   };
 
-}
+} // namespace g2o
 
 #endif

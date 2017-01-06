@@ -77,7 +77,7 @@ namespace g2o {
   
  
   void SensorPose3D::sense() {
-    _robotPoseObject=0;
+    _robotPoseObject=nullptr;
     RobotType* r= dynamic_cast<RobotType*>(robot());
     std::list<PoseObject*>::reverse_iterator it=r->trajectory().rbegin();
     _posesToIgnore.clear();
@@ -103,4 +103,4 @@ namespace g2o {
     }
   }
 
-}
+} // namespace g2o

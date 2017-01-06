@@ -219,6 +219,6 @@ class StructureOnlySolver : public OptimizationAlgorithm
     OptimizableGraph::VertexContainer _points;
 };
 
-}
+} // namespace g2o
 
 #endif

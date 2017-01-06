@@ -43,7 +43,7 @@ struct MatrixElem
 };
 
 MarginalCovarianceCholesky::MarginalCovarianceCholesky() :
-  _n(0), _Ap(0), _Ai(0), _Ax(0), _perm(0)
+  _n(0), _Ap(nullptr), _Ai(nullptr), _Ax(nullptr), _perm(nullptr)
 {
 }
 
@@ -219,4 +219,4 @@ void MarginalCovarianceCholesky::computeCovariance(SparseBlockMatrix<MatrixXD>& 
   }
 }
 
-} // end namespace
+} // namespace g2o

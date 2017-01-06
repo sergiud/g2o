@@ -122,6 +122,6 @@ namespace g2o {
       Vector2D _t;
   };
 
-} // end namespace
+} // namespace g2o
 
 #endif

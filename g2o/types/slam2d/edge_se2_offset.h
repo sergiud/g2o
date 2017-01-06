@@ -89,5 +89,5 @@ namespace g2o {
       CacheSE2Offset  *_cacheFrom, *_cacheTo;
   };
 
-} // end namespace
+} // namespace g2o
 #endif

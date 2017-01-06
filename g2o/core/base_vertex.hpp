@@ -27,7 +27,7 @@
 template <int D, typename T>
 BaseVertex<D, T>::BaseVertex() :
   OptimizableGraph::Vertex(),
-  _hessian(0, D, D)
+  _hessian(nullptr, D, D)
 {
   _dimension = D;
 }

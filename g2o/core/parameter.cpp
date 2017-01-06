@@ -37,4 +37,4 @@ namespace g2o {
     _id = id_;
   }
   
-} // end namespace
+} // namespace g2o

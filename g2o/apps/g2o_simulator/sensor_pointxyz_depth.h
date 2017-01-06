@@ -46,6 +46,6 @@ namespace g2o {
     RobotPoseType _sensorPose;
     ParameterSE3Offset* _offsetParam;
   };
-}
+} // namespace g2o
 
 #endif

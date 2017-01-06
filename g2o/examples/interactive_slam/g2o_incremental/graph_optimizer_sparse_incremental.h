@@ -59,6 +59,6 @@ namespace g2o {
       void convertTripletUpdateToSparse();
   };
 
-}
+} // namespace g2o
 
 #endif
