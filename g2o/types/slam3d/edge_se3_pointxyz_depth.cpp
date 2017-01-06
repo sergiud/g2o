@@ -24,7 +24,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "edge_se3_pointxyz_depth.h"
+#include <g2o/types/slam3d/edge_se3_pointxyz_depth.h>
 
 namespace g2o {
   using namespace g2o;

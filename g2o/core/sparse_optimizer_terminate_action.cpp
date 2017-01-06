@@ -1,6 +1,6 @@
-#include "sparse_optimizer_terminate_action.h"
+#include <g2o/core/sparse_optimizer_terminate_action.h>
 
-#include "sparse_optimizer.h"
+#include <g2o/core/sparse_optimizer.h>
 
 #include <limits>
 

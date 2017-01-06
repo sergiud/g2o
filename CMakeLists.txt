@@ -249,6 +249,14 @@ if (TARGET solver_eigen)
   list (APPEND g2o_TARGETS solver_eigen)
 endif (TARGET solver_eigen)
 
+if (TARGET freeglut_minimal)
+  list (APPEND g2o_TARGETS freeglut_minimal)
+endif (TARGET freeglut_minimal)
+
+if (TARGET opengl_helper)
+  list (APPEND g2o_TARGETS opengl_helper)
+endif (TARGET opengl_helper)
+
 set_target_properties (${g2o_TARGETS} PROPERTIES DEBUG_POSTFIX _d)
 
 configure_package_config_file (g2o-config.cmake.in

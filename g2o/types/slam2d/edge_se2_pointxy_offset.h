@@ -29,8 +29,8 @@
 
 #include <g2o/core/base_binary_edge.h>
 
-#include "parameter_se2_offset.h"
-#include "vertex_point_xy.h"
+#include <g2o/types/slam2d/parameter_se2_offset.h>
+#include <g2o/types/slam2d/vertex_point_xy.h>
 #include <Eigen/Geometry>
 #include <g2o/types/slam2d/g2o_types_slam2d_api.h>
 

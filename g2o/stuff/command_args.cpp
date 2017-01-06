@@ -24,7 +24,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "command_args.h"
+#include <g2o/stuff/command_args.h>
 
 #include <cstdlib>
 #include <cstring>
@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <functional>
 
-#include "os_specific.h"
+#include <g2o/stuff/os_specific.h>
 using namespace std;
 
 namespace g2o {

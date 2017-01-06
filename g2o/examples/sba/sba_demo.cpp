@@ -31,7 +31,7 @@
 #include <iostream>
 #include <cstdint>
 
-#include "g2o/config.h"
+#include <g2o/config.h>
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/core/block_solver.h>
 #include <g2o/core/solver.h>

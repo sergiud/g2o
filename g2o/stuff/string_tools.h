@@ -32,7 +32,7 @@
 #include <string>
 #include <vector>
 
-#include "macros.h"
+#include <g2o/stuff/macros.h>
 #include <g2o/stuff/g2o_stuff_api.h>
 
 namespace g2o {

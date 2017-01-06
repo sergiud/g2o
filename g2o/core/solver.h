@@ -27,11 +27,11 @@
 #ifndef G2O_SOLVER_H
 #define G2O_SOLVER_H
 
-#include "batch_stats.h"
-#include "hyper_graph.h"
-#include "solver.h"
-#include "solver.h"
-#include "sparse_block_matrix.h"
+#include <g2o/core/batch_stats.h>
+#include <g2o/core/hyper_graph.h>
+#include <g2o/core/solver.h>
+#include <g2o/core/solver.h>
+#include <g2o/core/sparse_block_matrix.h>
 
 namespace g2o {
 

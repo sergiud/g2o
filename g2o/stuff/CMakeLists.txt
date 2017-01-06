@@ -7,7 +7,6 @@ ADD_LIBRARY(stuff
   property.cpp       property.h
   sampler.cpp        sampler.h        unscented.h
   tictoc.cpp tictoc.h
-  g2o_stuff_api.h
 )
 
 if (TARGET Eigen3::Eigen)
@@ -23,7 +22,7 @@ generate_export_header (stuff PREFIX_NAME G2O_ EXPORT_FILE_NAME
 target_include_directories (stuff PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
   $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
-  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 )
 
 SET_TARGET_PROPERTIES(stuff PROPERTIES OUTPUT_NAME ${LIB_PREFIX}stuff)
@@ -36,15 +35,26 @@ INSTALL(TARGETS stuff EXPORT g2o-targets
 
 # build our OpenGL helper library
 IF(OPENGL_FOUND AND G2O_HAVE_OPENGL)
-  ADD_LIBRARY(opengl_helper ${G2O_LIB_TYPE}
+  ADD_LIBRARY(opengl_helper
     opengl_primitives.cpp opengl_primitives.h
   )
+
+  generate_export_header (opengl_helper PREFIX_NAME G2O_ EXPORT_FILE_NAME
+    ${CMAKE_BINARY_DIR}/include/g2o/stuff/g2o_opengl_api.h
+    EXPORT_MACRO_NAME OPENGL_API)
+
+  target_include_directories (opengl_helper PUBLIC
+    $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
+    $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+  )
+
   INSTALL(TARGETS opengl_helper EXPORT g2o-targets
     RUNTIME DESTINATION ${_g2o_CMake_BINDIR}
     LIBRARY DESTINATION ${_g2o_CMake_LIBDIR}
     ARCHIVE DESTINATION ${_g2o_CMake_LIBDIR}
   )
-  TARGET_LINK_LIBRARIES(opengl_helper ${OPENGL_LIBRARIES})
+  TARGET_LINK_LIBRARIES(opengl_helper ${OPENGL_LIBRARIES} stuff)
   SET_TARGET_PROPERTIES(opengl_helper PROPERTIES OUTPUT_NAME ${LIB_PREFIX}opengl_helper)
 ENDIF()
 
@@ -54,5 +64,6 @@ ENDIF()
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
-INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_stuff_api.h
+INSTALL(FILES
+  ${headers} ${CMAKE_BINARY_DIR}/include/g2o/stuff/g2o_stuff_api.h
   DESTINATION ${_g2o_CMake_INCLUDEDIR}/stuff)

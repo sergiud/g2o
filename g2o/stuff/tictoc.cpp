@@ -24,9 +24,9 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "tictoc.h"
+#include <g2o/stuff/tictoc.h>
 
-#include "timeutil.h"
+#include <g2o/stuff/timeutil.h>
 
 #include <map>
 #include <limits>

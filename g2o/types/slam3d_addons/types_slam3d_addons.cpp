@@ -24,7 +24,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "types_slam3d_addons.h"
+#include <g2o/types/slam3d_addons/types_slam3d_addons.h>
 #include <g2o/core/factory.h>
 #include <g2o/stuff/macros.h>
 

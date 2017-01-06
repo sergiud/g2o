@@ -24,8 +24,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "edge_se3_pointxyz.h"
-#include "parameter_se3_offset.h"
+#include <g2o/types/slam3d/edge_se3_pointxyz.h>
+#include <g2o/types/slam3d/parameter_se3_offset.h>
 
 #ifdef G2O_HAVE_OPENGL
 #include <g2o/stuff/opengl_wrapper.h>

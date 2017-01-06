@@ -29,9 +29,9 @@
 
 #include <g2o/core/base_binary_edge.h>
 
-#include "edge_se3.h"
-#include "parameter_camera.h"
-#include "parameter_stereo_camera.h"
+#include <g2o/types/slam3d/edge_se3.h>
+#include <g2o/types/slam3d/parameter_camera.h>
+#include <g2o/types/slam3d/parameter_stereo_camera.h>
 
 namespace g2o {
   class ParameterSE3Offset;

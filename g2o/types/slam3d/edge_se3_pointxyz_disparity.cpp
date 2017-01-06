@@ -24,7 +24,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "edge_se3_pointxyz_disparity.h"
+#include <g2o/types/slam3d/edge_se3_pointxyz_disparity.h>
 
 #include <iomanip>
 #include <iostream>

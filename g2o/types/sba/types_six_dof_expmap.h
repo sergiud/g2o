@@ -30,7 +30,7 @@
 #include <g2o/core/base_binary_edge.h>
 #include <g2o/core/base_vertex.h>
 #include <g2o/types/slam3d/se3_ops.h>
-#include "types_sba.h"
+#include <g2o/types/sba/types_sba.h>
 #include <Eigen/Geometry>
 
 #include <g2o/types/sba/g2o_types_sba_api.h>

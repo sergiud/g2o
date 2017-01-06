@@ -24,7 +24,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "edge_se3_line.h"
+#include <g2o/types/slam3d_addons/edge_se3_line.h>
 
 #include <g2o/stuff/opengl_wrapper.h>
 

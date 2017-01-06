@@ -27,8 +27,8 @@
 #ifndef G2O_EDGE_SE2_LINE2D_H
 #define G2O_EDGE_SE2_LINE2D_H
 
-#include "g2o/config.h"
-#include "vertex_line2d.h"
+#include <g2o/config.h>
+#include <g2o/types/slam2d_addons/vertex_line2d.h>
 #include <g2o/core/base_binary_edge.h>
 #include <g2o/stuff/misc.h>
 #include <g2o/types/slam2d/vertex_se2.h>

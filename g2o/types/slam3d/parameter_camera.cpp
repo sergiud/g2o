@@ -24,9 +24,9 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "parameter_camera.h"
-#include "isometry3d_gradients.h"
-#include "isometry3d_mappings.h"
+#include <g2o/types/slam3d/parameter_camera.h>
+#include <g2o/types/slam3d/isometry3d_gradients.h>
+#include <g2o/types/slam3d/isometry3d_mappings.h>
 
 #ifdef G2O_HAVE_OPENGL
 #include <g2o/stuff/opengl_wrapper.h>

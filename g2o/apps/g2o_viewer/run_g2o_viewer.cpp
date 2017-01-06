@@ -23,7 +23,7 @@
 
 #include "gui_hyper_graph_action.h"
 
-#include "g2o/config.h"
+#include <g2o/config.h>
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/core/factory.h>
 #include <g2o/core/optimization_algorithm_factory.h>

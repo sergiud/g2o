@@ -34,5 +34,6 @@ INSTALL(TARGETS interface_library EXPORT g2o-targets
 )
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
-INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/slam_parser_interface_api.h
-  DESTINATION include/g2o/slam_parser/interface)
+INSTALL(FILES ${headers}
+  ${CMAKE_BINARY_DIR}/include/g2o/slam_parser/interface/g2o_slam_parser_interface_api.h
+  DESTINATION ${_g2o_CMake_INCLUDEDIR}/slam_parser/interface)

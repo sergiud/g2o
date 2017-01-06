@@ -27,7 +27,7 @@
 #ifndef G2O_STEREO_CAMERA_PARAMETERS_H_
 #define G2O_STEREO_CAMERA_PARAMETERS_H_
 
-#include "parameter_camera.h"
+#include <g2o/types/slam3d/parameter_camera.h>
 #include <g2o/core/hyper_graph_action.h>
 #include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 

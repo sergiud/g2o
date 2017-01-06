@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with g2o.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "opengl_primitives.h"
+#include <g2o/stuff/opengl_primitives.h>
 
 #include <cstdlib>
 #include <cmath>

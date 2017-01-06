@@ -24,8 +24,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "parameter_se2_offset.h"
-#include "edge_se2_pointxy_offset.h"
+#include <g2o/types/slam2d/parameter_se2_offset.h>
+#include <g2o/types/slam2d/edge_se2_pointxy_offset.h>
 #include <iostream>
 
 namespace g2o {

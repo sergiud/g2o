@@ -2,7 +2,7 @@ ADD_LIBRARY(g2o_simulator_library ${G2O_LIB_TYPE}
    simulator.cpp simulator.h
    pointsensorparameters.cpp  pointsensorparameters.h
    simulator2d_base.h simulator2d.h
-   sensor_odometry2d.cpp sensor_odometry2d.h 
+   sensor_odometry2d.cpp sensor_odometry2d.h
    sensor_pose2d.cpp sensor_pose2d.h
    sensor_pointxy.cpp sensor_pointxy.h
    sensor_pointxy_bearing.cpp sensor_pointxy_bearing.h
@@ -12,7 +12,7 @@ ADD_LIBRARY(g2o_simulator_library ${G2O_LIB_TYPE}
    sensor_segment2d_line.cpp  sensor_segment2d_line.h
    sensor_segment2d_pointline.cpp  sensor_segment2d_pointline.h
 
-   
+
    simulator3d_base.h    simulator3d.h
    sensor_odometry3d.cpp sensor_odometry3d.h
    sensor_pose3d.cpp sensor_pose3d.h
@@ -23,6 +23,17 @@ ADD_LIBRARY(g2o_simulator_library ${G2O_LIB_TYPE}
    sensor_se3_prior.cpp sensor_se3_prior.h
 
    g2o_simulator_api.h
+)
+
+
+generate_export_header (g2o_simulator_library PREFIX_NAME G2O_ EXPORT_FILE_NAME
+  ${CMAKE_BINARY_DIR}/include/g2o/simulator/g2o_simulator_api.h
+  EXPORT_MACRO_NAME SIMULATOR_API)
+
+target_include_directories (g2o_simulator_library PUBLIC
+  $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
+  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 )
 
 SET_TARGET_PROPERTIES(g2o_simulator_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}simulator)

@@ -24,9 +24,9 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "string_tools.h"
-#include "os_specific.h"
-#include "macros.h"
+#include <g2o/stuff/string_tools.h>
+#include <g2o/stuff/os_specific.h>
+#include <g2o/stuff/macros.h>
 
 #include <cctype>
 #include <cstdarg>

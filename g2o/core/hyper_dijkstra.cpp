@@ -28,7 +28,7 @@
 #include <cassert>
 #include <deque>
 #include <iostream>
-#include "hyper_dijkstra.h"
+#include <g2o/core/hyper_dijkstra.h>
 #include <g2o/stuff/macros.h>
 #include <vector>
 

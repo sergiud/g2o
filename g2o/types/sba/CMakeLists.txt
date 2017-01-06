@@ -25,5 +25,5 @@ INSTALL(TARGETS types_sba EXPORT g2o-targets
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
-INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_sba_api.h
+INSTALL(FILES ${headers} ${CMAKE_BINARY_DIR}/include/g2o/types/sba/g2o_types_sba_api.h
   DESTINATION ${_g2o_CMake_INCLUDEDIR}/types/sba)

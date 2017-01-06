@@ -27,8 +27,8 @@
 #ifndef G2O_EDGE_SE2_ODOM_CALIB_DIFFERENTIAL_H
 #define G2O_EDGE_SE2_ODOM_CALIB_DIFFERENTIAL_H
 
-#include "odometry_measurement.h"
-#include "vertex_odom_differential_params.h"
+#include <g2o/types/sclam2d/odometry_measurement.h>
+#include <g2o/types/sclam2d/vertex_odom_differential_params.h>
 #include <g2o/types/sclam2d/g2o_types_sclam2d_api.h>
 
 #include <g2o/types/slam2d/g2o_types_slam2d_api.h>

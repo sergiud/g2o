@@ -14,7 +14,7 @@ SET_TARGET_PROPERTIES(types_sim3 PROPERTIES OUTPUT_NAME ${LIB_PREFIX}types_sim3)
 TARGET_LINK_LIBRARIES(types_sim3 types_sba)
 
 generate_export_header (types_sim3 PREFIX_NAME G2O_ EXPORT_FILE_NAME
-  ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_sim3_api.h
+  ${CMAKE_BINARY_DIR}/include/g2o/types/sim3/g2o_types_sim3_api.h
   EXPORT_MACRO_NAME TYPES_SIM3_API)
 
 INSTALL(TARGETS types_sim3 EXPORT g2o-targets
@@ -26,6 +26,6 @@ INSTALL(TARGETS types_sim3 EXPORT g2o-targets
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
 INSTALL(FILES ${headers}
-  ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_sim3_api.h
+  ${CMAKE_BINARY_DIR}/include/g2o/types/sim3/g2o_types_sim3_api.h
   DESTINATION ${_g2o_CMake_INCLUDEDIR}/types/sim3)
 

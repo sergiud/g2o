@@ -47,6 +47,6 @@ INSTALL(TARGETS solver_csparse csparse_extension EXPORT g2o-targets
 )
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 INSTALL(FILES ${headers}
-  ${CMAKE_CURRENT_BINARY_DIR}/g2o_csparse_extension_api.h
-  ${CMAKE_CURRENT_BINARY_DIR}/g2o_solver_csparse_api.h
+  ${CMAKE_BINARY_DIR}/include/g2o/solvers/csparse/g2o_csparse_extension_api.h
+  ${CMAKE_BINARY_DIR}/include/g2o/solvers/csparse/g2o_solver_csparse_api.h
   DESTINATION ${_g2o_CMake_INCLUDEDIR}/solvers/csparse)

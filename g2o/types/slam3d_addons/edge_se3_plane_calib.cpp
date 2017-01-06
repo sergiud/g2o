@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <iostream>
-#include "edge_se3_plane_calib.h"
+#include <g2o/types/slam3d_addons/edge_se3_plane_calib.h>
 
 #include <g2o/stuff/opengl_wrapper.h>
 

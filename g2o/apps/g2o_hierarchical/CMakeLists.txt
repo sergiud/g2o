@@ -12,7 +12,6 @@ ADD_LIBRARY(g2o_hierarchical_library
   edge_types_cost_function.h
   backbone_tree_action.h
   simple_star_ops.h
-  g2o_hierarchical_api.h
 )
 
 generate_export_header (g2o_hierarchical_library PREFIX_NAME G2O_ EXPORT_FILE_NAME
@@ -46,5 +45,5 @@ INSTALL(TARGETS g2o_hierarchical_library g2o_hierarchical_application EXPORT g2o
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 INSTALL(FILES
-  ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_hierarchical_api.h
-  DESTINATION ${_g2o_CMake_INCLUDEDIR}/apps/g2o_hierarchical)
+  ${headers} ${CMAKE_BINARY_DIR}/include/g2o/hierarchical/g2o_hierarchical_api.h
+  DESTINATION ${_g2o_CMake_INCLUDEDIR}/hierarchical)

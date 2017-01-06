@@ -30,8 +30,8 @@
 #include <iostream>
 #include <limits>
 
-#include "base_edge.h"
-#include "robust_kernel.h"
+#include <g2o/core/base_edge.h>
+#include <g2o/core/robust_kernel.h>
 #include <g2o/core/g2o_core_api.h>
 
 namespace g2o {

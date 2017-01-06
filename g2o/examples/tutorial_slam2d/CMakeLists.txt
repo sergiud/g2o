@@ -5,7 +5,6 @@ ADD_LIBRARY(tutorial_slam2d_library
   parameter_se2_offset.h parameter_se2_offset.cpp
   types_tutorial_slam2d.h types_tutorial_slam2d.cpp
   simulator.h simulator.cpp
-  g2o_tutorial_slam2d_api.h
 )
 
 generate_export_header (tutorial_slam2d_library PREFIX_NAME G2O_ EXPORT_FILE_NAME

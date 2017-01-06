@@ -37,7 +37,7 @@
 #include <string>
 #include <typeinfo>
 
-#include "cache.h"
+#include <g2o/core/cache.h>
 
 // define to get verbose output
 //#define G2O_DEBUG_ACTIONLIB

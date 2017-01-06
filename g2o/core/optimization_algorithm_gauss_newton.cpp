@@ -24,14 +24,14 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "optimization_algorithm_gauss_newton.h"
+#include <g2o/core/optimization_algorithm_gauss_newton.h>
 
 #include <iostream>
 
 #include <g2o/stuff/timeutil.h>
 #include <g2o/stuff/macros.h>
 
-#include "solver.h"
+#include <g2o/core/solver.h>
 #include <cstddef>
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/sparse_optimizer.h>

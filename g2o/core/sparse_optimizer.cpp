@@ -24,7 +24,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "sparse_optimizer.h"
+#include <g2o/core/sparse_optimizer.h>
 
 #include <algorithm>
 #include <iomanip>
@@ -33,15 +33,15 @@
 #include <cassert>
 #include <algorithm>
 
-#include "estimate_propagator.h"
-#include "optimization_algorithm.h"
+#include <g2o/core/estimate_propagator.h>
+#include <g2o/core/optimization_algorithm.h>
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/hyper_graph.h>
 #include <g2o/core/sparse_block_matrix.h>
 #include <g2o/stuff/timeutil.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/misc.h>
-#include "g2o/config.h"
+#include <g2o/config.h>
 
 namespace g2o{
   using namespace std;

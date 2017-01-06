@@ -27,7 +27,7 @@
 #ifndef G2O_DEPRECATED_VERTEX_SE3_QUAT_
 #define G2O_DEPRECATED_VERTEX_SE3_QUAT_
 
-#include "g2o/config.h"
+#include <g2o/config.h>
 #include <g2o/core/base_vertex.h>
 #include <g2o/core/hyper_graph_action.h>
 #include <g2o/types/slam3d/se3quat.h>

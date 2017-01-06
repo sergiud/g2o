@@ -35,10 +35,10 @@
 #include <map>
 #include <vector>
 
-#include "sparse_block_matrix_ccs.h"
-#include "matrix_structure.h"
-#include "g2o/config.h"
-#include "matrix_operations.h"
+#include <g2o/core/sparse_block_matrix_ccs.h>
+#include <g2o/core/matrix_structure.h>
+#include <g2o/config.h>
+#include <g2o/core/matrix_operations.h>
 #include <g2o/core/eigen_types.h>
 
 namespace g2o {

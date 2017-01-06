@@ -31,7 +31,7 @@
  *  Copyright 2007 Rainer Kümmerle
  *  Email rk@raikue.net
  ****************************************************************************/
-#include "filesys_tools.h"
+#include <g2o/stuff/filesys_tools.h>
 
 #include <sys/stat.h>
 #include <ctime>

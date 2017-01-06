@@ -27,9 +27,12 @@
 #ifndef G2O_LINEAR_SOLVER_CHOLMOD
 #define G2O_LINEAR_SOLVER_CHOLMOD
 
+#include <memory>
+
+#include <g2o/core/batch_stats.h>
 #include <g2o/core/linear_solver.h>
 #include <g2o/core/marginal_covariance_cholesky.h>
-#include <g2o/core/batch_stats.h>
+#include <g2o/solvers/cholmod/g2o_solver_cholmod_api.h>
 #include <g2o/stuff/sparse_helper.h>
 #include <g2o/stuff/timeutil.h>
 
@@ -40,32 +43,11 @@ namespace g2o {
 /**
  * \brief Our extension of the CHOLMOD matrix struct
  */
-struct CholmodExt : public cholmod_sparse
+struct G2O_SOLVER_CHOLMOD_API CholmodExt : public cholmod_sparse
 {
-  CholmodExt()
-  {
-    nzmax = 0;
-    nrow  = 0;
-    ncol  = 0;
-    p     = 0;
-    i     = 0;
-    nz    = 0;
-    x     = 0;
-    z     = 0;
-    stype = 1; // upper triangular block only
-    itype = CHOLMOD_INT;
-    xtype = CHOLMOD_REAL;
-    dtype = CHOLMOD_DOUBLE;
-    sorted = 1;
-    packed = 1;
-    columnsAllocated = 0;
-  }
-  ~CholmodExt()
-  {
-    delete[] (int*)p; p = 0;
-    delete[] (double*)x; x = 0;
-    delete[] (int*)i; i = 0;
-  }
+  CholmodExt();
+  ~CholmodExt();
+
   size_t columnsAllocated;
 };
 
@@ -81,7 +63,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
     {
       _writeDebug = true;
       _blockOrdering = false;
-      _cholmodSparse = new CholmodExt();
+      _cholmodSparse.reset(new CholmodExt);
       _cholmodFactor = 0;
       cholmod_start(&_cholmodCommon);
 
@@ -95,7 +77,6 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
 
     virtual ~LinearSolverCholmod()
     {
-      delete _cholmodSparse;
       if (_cholmodFactor != 0) {
         cholmod_free_factor(&_cholmodFactor, &_cholmodCommon);
         _cholmodFactor = 0;
@@ -131,7 +112,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
       bcholmod.xtype = CHOLMOD_REAL;
       bcholmod.dtype = CHOLMOD_DOUBLE;
 
-      cholmod_factorize(_cholmodSparse, _cholmodFactor, &_cholmodCommon);
+      cholmod_factorize(_cholmodSparse.get(), _cholmodFactor, &_cholmodCommon);
       if (_cholmodCommon.status == CHOLMOD_NOT_POSDEF) {
         if (_writeDebug) {
           std::cerr << "Cholesky failure, writing debug.txt (Hessian loadable by Octave)" << std::endl;
@@ -173,7 +154,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
         }
       }
 
-      cholmod_factorize(_cholmodSparse, _cholmodFactor, &_cholmodCommon);
+      cholmod_factorize(_cholmodSparse.get(), _cholmodFactor, &_cholmodCommon);
       if (_cholmodCommon.status == CHOLMOD_NOT_POSDEF)
         return false;
 
@@ -214,7 +195,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
         assert(_cholmodFactor && "Symbolic cholesky failed");
       }
 
-      cholmod_factorize(_cholmodSparse, _cholmodFactor, &_cholmodCommon);
+      cholmod_factorize(_cholmodSparse.get(), _cholmodFactor, &_cholmodCommon);
       if (_cholmodCommon.status == CHOLMOD_NOT_POSDEF)
         return false;
 
@@ -261,7 +242,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
   protected:
     // temp used for cholesky with cholmod
     cholmod_common _cholmodCommon;
-    CholmodExt* _cholmodSparse;
+    std::unique_ptr<CholmodExt> _cholmodSparse;
     cholmod_factor* _cholmodFactor;
     bool _blockOrdering;
     MatrixStructure _matrixStructure;
@@ -275,7 +256,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
         // setup ordering strategy
         _cholmodCommon.nmethods = 1;
         _cholmodCommon.method[0].ordering = CHOLMOD_AMD; //CHOLMOD_COLAMD
-        _cholmodFactor = cholmod_analyze(_cholmodSparse, &_cholmodCommon); // symbolic factorization
+        _cholmodFactor = cholmod_analyze(_cholmodSparse.get(), &_cholmodCommon); // symbolic factorization
       } else {
 
         A.fillBlockStructure(_matrixStructure);
@@ -285,7 +266,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
           _blockPermutation.resize(_matrixStructure.n);
         if (_blockPermutation.size() < _matrixStructure.n) // double space if resizing
           _blockPermutation.resize(2*_matrixStructure.n);
- 
+
         // prepare AMD call via CHOLMOD
         cholmod_sparse auxCholmodSparse;
         auxCholmodSparse.nzmax = _matrixStructure.nzMax();
@@ -324,7 +305,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
         // apply the ordering
         _cholmodCommon.nmethods = 1 ;
         _cholmodCommon.method[0].ordering = CHOLMOD_GIVEN;
-        _cholmodFactor = cholmod_analyze_p(_cholmodSparse, _scalarPermutation.data(), NULL, 0, &_cholmodCommon);
+        _cholmodFactor = cholmod_analyze_p(_cholmodSparse.get(), _scalarPermutation.data(), NULL, 0, &_cholmodCommon);
 
       }
       G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();

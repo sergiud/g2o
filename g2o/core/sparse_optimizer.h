@@ -29,8 +29,8 @@
 
 #include <g2o/stuff/macros.h>
 
-#include "batch_stats.h"
-#include "optimizable_graph.h"
+#include <g2o/core/batch_stats.h>
+#include <g2o/core/optimizable_graph.h>
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/g2o_core_api.h>
 

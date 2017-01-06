@@ -31,8 +31,8 @@
 #include <g2o/types/slam3d/parameter_se3_offset.h>
 #include <g2o/types/slam3d/vertex_se3.h>
 
-#include "line3d.h"
-#include "vertex_line3d.h"
+#include <g2o/types/slam3d_addons/line3d.h>
+#include <g2o/types/slam3d_addons/vertex_line3d.h>
 #include <g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h>
 
 namespace g2o {

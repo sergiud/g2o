@@ -1,4 +1,4 @@
-#include "dquat2mat.h"
+#include <g2o/types/slam3d/dquat2mat.h>
 #include <iostream>
 namespace g2o {
   namespace internal {

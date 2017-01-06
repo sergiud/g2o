@@ -1,4 +1,4 @@
-#include "edge_se2_lotsofxy.h"
+#include <g2o/types/slam2d/edge_se2_lotsofxy.h>
 
 #ifdef G2O_HAVE_OPENGL
 #include <g2o/stuff/opengl_wrapper.h>

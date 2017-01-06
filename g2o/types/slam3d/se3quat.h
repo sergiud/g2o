@@ -27,7 +27,7 @@
 #ifndef G2O_SE3QUAT_H_
 #define G2O_SE3QUAT_H_
 
-#include "se3_ops.h"
+#include <g2o/types/slam3d/se3_ops.h>
 #include <g2o/core/eigen_types.h>
 
 #include <Eigen/Core>

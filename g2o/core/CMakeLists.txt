@@ -69,5 +69,5 @@ INSTALL(TARGETS core EXPORT g2o-targets
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
-INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_core_api.h
+INSTALL(FILES ${headers} ${CMAKE_BINARY_DIR}/include/g2o/core/g2o_core_api.h
   DESTINATION ${_g2o_CMake_INCLUDEDIR}/core)

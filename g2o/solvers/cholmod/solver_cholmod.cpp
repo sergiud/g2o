@@ -52,6 +52,32 @@ using namespace std;
 
 namespace g2o {
 
+  CholmodExt::CholmodExt()
+  {
+    nzmax = 0;
+    nrow  = 0;
+    ncol  = 0;
+    p     = 0;
+    i     = 0;
+    nz    = 0;
+    x     = 0;
+    z     = 0;
+    stype = 1; // upper triangular block only
+    itype = CHOLMOD_INT;
+    xtype = CHOLMOD_REAL;
+    dtype = CHOLMOD_DOUBLE;
+    sorted = 1;
+    packed = 1;
+    columnsAllocated = 0;
+  }
+
+  CholmodExt::~CholmodExt()
+  {
+    delete[] (int*)p; p = 0;
+    delete[] (double*)x; x = 0;
+    delete[] (int*)i; i = 0;
+  }
+
   static OptimizationAlgorithm* createSolver(const std::string& fullSolverName)
   {
     g2o::Solver* s = 0;

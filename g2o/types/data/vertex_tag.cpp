@@ -24,14 +24,14 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "vertex_tag.h"
-
+#include <g2o/config.h>
+#include <g2o/types/data/vertex_tag.h>
 #include <g2o/stuff/macros.h>
 
 #ifdef G2O_HAVE_OPENGL
 #include <g2o/stuff/opengl_wrapper.h>
 #include <g2o/stuff/opengl_primitives.h>
-#include "EXTERNAL/freeglut/freeglut_minimal.h"
+#include <EXTERNAL/freeglut/freeglut_minimal.h>
 #endif
 
 #include <iomanip>
@@ -84,7 +84,7 @@ namespace g2o {
     return true;
   }
 
-  HyperGraphElementAction* VertexTagDrawAction::operator()(HyperGraph::HyperGraphElement* element, 
+  HyperGraphElementAction* VertexTagDrawAction::operator()(HyperGraph::HyperGraphElement* element,
                  HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
       return 0;

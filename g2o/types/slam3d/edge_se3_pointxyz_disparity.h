@@ -27,9 +27,9 @@
 #ifndef G2O_EDGE_SE3_POINTXYZ_DISPARITY_H_
 #define G2O_EDGE_SE3_POINTXYZ_DISPARITY_H_
 
-#include "parameter_camera.h"
-#include "vertex_pointxyz.h"
-#include "vertex_se3.h"
+#include <g2o/types/slam3d/parameter_camera.h>
+#include <g2o/types/slam3d/vertex_pointxyz.h>
+#include <g2o/types/slam3d/vertex_se3.h>
 #include <g2o/core/base_binary_edge.h>
 #include <g2o/core/hyper_graph_action.h>
 

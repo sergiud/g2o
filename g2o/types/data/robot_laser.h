@@ -27,6 +27,7 @@
 #ifndef G2O_ROBOT_LASER_H
 #define G2O_ROBOT_LASER_H
 
+#include <g2o/core/hyper_graph_action.h>
 #include <g2o/types/data/g2o_types_data_api.h>
 #include <g2o/types/data/raw_laser.h>
 #include <g2o/types/data/robot_laser.h>

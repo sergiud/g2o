@@ -45,13 +45,14 @@ ADD_EXECUTABLE(g2o_viewer
   g2o_viewer.cpp
 )
 
+TARGET_LINK_LIBRARIES(viewer_library PUBLIC opengl_helper)
+
 target_include_directories (g2o_viewer PRIVATE ${CMAKE_BINARY_DIR}/include)
 
 SET_TARGET_PROPERTIES(g2o_viewer PROPERTIES OUTPUT_NAME g2o_viewer${EXE_POSTFIX})
 
-TARGET_LINK_LIBRARIES(viewer_library core g2o_cli_library ${QGLVIEWER_LIBRARY} ${MY_QT_LIBRARIES} ${OPENGL_LIBRARY})
-#TARGET_LINK_LIBRARIES(viewer_library core opengl_helper)
-TARGET_LINK_LIBRARIES(g2o_viewer viewer_library)
+TARGET_LINK_LIBRARIES(viewer_library PUBLIC core g2o_cli_library ${QGLVIEWER_LIBRARY} ${MY_QT_LIBRARIES} ${OPENGL_LIBRARY})
+TARGET_LINK_LIBRARIES(g2o_viewer PRIVATE viewer_library)
 
 INSTALL(TARGETS g2o_viewer viewer_library
   RUNTIME DESTINATION ${_g2o_CMake_BINDIR}

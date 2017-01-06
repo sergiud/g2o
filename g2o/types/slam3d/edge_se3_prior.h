@@ -27,9 +27,9 @@
 #ifndef G2O_EDGE_SE3_PRIOR_H_
 #define G2O_EDGE_SE3_PRIOR_H_
 
-#include "vertex_se3.h"
+#include <g2o/types/slam3d/vertex_se3.h>
 #include <g2o/core/base_unary_edge.h>
-#include "parameter_se3_offset.h"
+#include <g2o/types/slam3d/parameter_se3_offset.h>
 #include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 namespace g2o {
   /**

@@ -37,7 +37,7 @@
 #include "output_helper.h"
 #include "g2o_common.h"
 
-#include "g2o/config.h"
+#include <g2o/config.h>
 #include <g2o/core/estimate_propagator.h>
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/core/factory.h>

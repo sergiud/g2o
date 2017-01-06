@@ -24,12 +24,12 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "parameter_container.h"
+#include <g2o/core/parameter_container.h>
 
 #include <iostream>
 
-#include "factory.h"
-#include "parameter.h"
+#include <g2o/core/factory.h>
+#include <g2o/core/parameter.h>
 
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/macros.h>

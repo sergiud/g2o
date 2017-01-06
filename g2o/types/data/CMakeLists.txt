@@ -7,7 +7,6 @@ ADD_LIBRARY(types_data
   raw_laser.cpp raw_laser.h
   robot_laser.cpp robot_laser.h
   data_queue.cpp data_queue.h
-  g2o_types_data_api.h
 )
 
 generate_export_header (types_data PREFIX_NAME G2O_ EXPORT_FILE_NAME
@@ -22,9 +21,9 @@ target_include_directories (types_data PUBLIC
 
 SET_TARGET_PROPERTIES(types_data PROPERTIES OUTPUT_NAME ${LIB_PREFIX}types_data)
 
-TARGET_LINK_LIBRARIES(types_data core types_slam2d)
+TARGET_LINK_LIBRARIES(types_data PUBLIC core types_slam2d)
 IF(G2O_HAVE_OPENGL)
-  TARGET_LINK_LIBRARIES(types_data freeglut_minimal opengl_helper)
+  TARGET_LINK_LIBRARIES(types_data PUBLIC freeglut_minimal opengl_helper)
 ENDIF()
 
 INSTALL(TARGETS types_data EXPORT g2o-targets
@@ -34,5 +33,5 @@ INSTALL(TARGETS types_data EXPORT g2o-targets
 )
 
 FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-INSTALL(FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/g2o_types_data_api.h
+INSTALL(FILES ${headers} ${CMAKE_BINARY_DIR}/include/g2o/types/data/g2o_types_data_api.h
   DESTINATION ${_g2o_CMake_INCLUDEDIR}/types/data)

@@ -27,7 +27,7 @@
 #ifndef G2O_SBA_TYPES
 #define G2O_SBA_TYPES
 
-#include "sbacam.h"
+#include <g2o/types/sba/sbacam.h>
 #include <Eigen/Geometry>
 #include <g2o/core/base_binary_edge.h>
 #include <g2o/core/base_multi_edge.h>

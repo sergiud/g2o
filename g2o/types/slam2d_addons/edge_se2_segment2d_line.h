@@ -27,28 +27,28 @@
 #ifndef G2O_EDGE_SE2_SEGMENT2D_LINE_H
 #define G2O_EDGE_SE2_SEGMENT2D_LINE_H
 
-#include "g2o/config.h"
-#include "vertex_segment2d.h"
+#include <g2o/config.h>
+#include <g2o/types/slam2d_addons/vertex_segment2d.h>
 #include <g2o/core/base_binary_edge.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 #include <g2o/types/slam2d_addons/g2o_types_slam2d_addons_api.h>
 
 namespace g2o {
 
-  class EdgeSE2Segment2DLine : public BaseBinaryEdge<2, Vector2D, VertexSE2, VertexSegment2D> //Avoid redefinition of BaseEdge in MSVC
+  class G2O_TYPES_SLAM2D_ADDONS_API EdgeSE2Segment2DLine : public BaseBinaryEdge<2, Vector2D, VertexSE2, VertexSegment2D> //Avoid redefinition of BaseEdge in MSVC
   {
     public:
-      G2O_TYPES_SLAM2D_ADDONS_API EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      G2O_TYPES_SLAM2D_ADDONS_API EdgeSE2Segment2DLine();
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      EdgeSE2Segment2DLine();
 
-      G2O_TYPES_SLAM2D_ADDONS_API double theta() const {return _measurement[0];}
-      G2O_TYPES_SLAM2D_ADDONS_API double rho()   const {return _measurement[1];}
+      double theta() const {return _measurement[0];}
+      double rho()   const {return _measurement[1];}
 
-      G2O_TYPES_SLAM2D_ADDONS_API void   setTheta( double t)  {_measurement[0] = t;}
-      G2O_TYPES_SLAM2D_ADDONS_API void   setRho( double r)    {_measurement[1] = r;}
+      void   setTheta( double t)  {_measurement[0] = t;}
+      void   setRho( double r)    {_measurement[1] = r;}
 
 
-      G2O_TYPES_SLAM2D_ADDONS_API void computeError()
+      void computeError()
       {
         const VertexSE2* v1 = static_cast<const VertexSE2*>(_vertices[0]);
         const VertexSegment2D* l2 = static_cast<const VertexSegment2D*>(_vertices[1]);
@@ -64,21 +64,21 @@ namespace g2o {
         _error[0]=normalize_theta(_error[0]);
       }
 
-      G2O_TYPES_SLAM2D_ADDONS_API virtual bool setMeasurementData(const double* d){
+      virtual bool setMeasurementData(const double* d){
         Eigen::Map<const Vector2D> data(d);
 	_measurement = data;
 	return true;
       }
 
-      G2O_TYPES_SLAM2D_ADDONS_API virtual bool getMeasurementData(double* d) const{
+      virtual bool getMeasurementData(double* d) const{
         Eigen::Map<Vector2D> data(d);
 	data = _measurement;
 	return true;
       }
 
-      G2O_TYPES_SLAM2D_ADDONS_API virtual int measurementDimension() const {return 2;}
+      virtual int measurementDimension() const {return 2;}
 
-      G2O_TYPES_SLAM2D_ADDONS_API virtual bool setMeasurementFromState(){
+      virtual bool setMeasurementFromState(){
      const VertexSE2* v1 = static_cast<const VertexSE2*>(_vertices[0]);
         const VertexSegment2D* l2 = static_cast<const VertexSegment2D*>(_vertices[1]);
         SE2 iEst=v1->estimate().inverse();
@@ -92,8 +92,8 @@ namespace g2o {
 	return true;
       }
 
-      G2O_TYPES_SLAM2D_ADDONS_API virtual bool read(std::istream& is);
-      G2O_TYPES_SLAM2D_ADDONS_API virtual bool write(std::ostream& os) const;
+      virtual bool read(std::istream& is);
+      virtual bool write(std::ostream& os) const;
 
 
 /* #ifndef NUMERIC_JACOBIAN_TWO_D_TYPES */
@@ -101,7 +101,7 @@ namespace g2o {
 /* #endif */
   };
 
-/*   class G2O_TYPES_SLAM2D_ADDONS_API EdgeSE2Segment2DLineWriteGnuplotAction: public WriteGnuplotAction { */
+/*   class EdgeSE2Segment2DLineWriteGnuplotAction: public WriteGnuplotAction { */
 /*   public: */
 /*     EdgeSE2Segment2DLineWriteGnuplotAction(); */
 /*     virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element,  */
@@ -109,7 +109,7 @@ namespace g2o {
 /*   }; */
 
 /* #ifdef G2O_HAVE_OPENGL */
-/*   class G2O_TYPES_SLAM2D_ADDONS_API EdgeSE2Segment2DLineDrawAction: public DrawAction{ */
+/*   class EdgeSE2Segment2DLineDrawAction: public DrawAction{ */
 /*   public: */
 /*     EdgeSE2Segment2DLineDrawAction(); */
 /*     virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element,  */
