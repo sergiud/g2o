@@ -54,9 +54,9 @@ namespace g2o {
       {
         if (vParent == nullptr)
           return 0.;
-        EdgeSE2* odom    = static_cast<EdgeSE2*>(e);
-        VertexSE2* from  = static_cast<VertexSE2*>(vParent);
-        VertexSE2* to    = static_cast<VertexSE2*>(v);
+        EdgeSE2* odom    = dynamic_cast<EdgeSE2*>(e);
+        VertexSE2* from  = dynamic_cast<VertexSE2*>(vParent);
+        VertexSE2* to    = dynamic_cast<VertexSE2*>(v);
         assert(to->hessianIndex() >= 0);
         double fromTheta = from->hessianIndex() < 0 ? 0. : _thetaGuess[from->hessianIndex()];
         bool direct      = odom->vertices()[0] == from;
@@ -120,10 +120,10 @@ namespace g2o {
       EdgeSE2* e = dynamic_cast<EdgeSE2*>(it);
       assert(e && "Active edges contain non-odometry edge"); //
 #    else
-      EdgeSE2* e = static_cast<EdgeSE2*>(it);
+      EdgeSE2* e = dynamic_cast<EdgeSE2*>(it);
 #    endif
-      OptimizableGraph::Vertex* from = static_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
-      OptimizableGraph::Vertex* to   = static_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
+      OptimizableGraph::Vertex* from = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
+      OptimizableGraph::Vertex* to   = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
 
       int ind1 = from->hessianIndex();
       int ind2 = to->hessianIndex();
@@ -144,7 +144,7 @@ namespace g2o {
 
     // walk along the Minimal Spanning Tree to compute the guess for the robot orientation
     assert(fixedSet.size() == 1);
-    VertexSE2* root = static_cast<VertexSE2*>(*fixedSet.begin());
+    VertexSE2* root = dynamic_cast<VertexSE2*>(*fixedSet.begin());
     VectorXD thetaGuess;
     thetaGuess.setZero(_optimizer->indexMapping().size());
     UniformCostFunction uniformCost;
@@ -157,9 +157,9 @@ namespace g2o {
 
     // construct for the orientation
     for (auto it : _optimizer->activeEdges()) {
-      EdgeSE2* e = static_cast<EdgeSE2*>(it);
-      VertexSE2* from = static_cast<VertexSE2*>(e->vertices()[0]);
-      VertexSE2* to   = static_cast<VertexSE2*>(e->vertices()[1]);
+      EdgeSE2* e = dynamic_cast<EdgeSE2*>(it);
+      VertexSE2* from = dynamic_cast<VertexSE2*>(e->vertices()[0]);
+      VertexSE2* to   = dynamic_cast<VertexSE2*>(e->vertices()[1]);
 
       double omega = e->information()(2,2);
 
@@ -202,7 +202,7 @@ namespace g2o {
     // update the orientation of the 2D poses and set translation to 0, GN shall solve that
     root->setToOrigin();
     for (auto i : _optimizer->indexMapping()) {
-      VertexSE2* v = static_cast<VertexSE2*>(i);
+      VertexSE2* v = dynamic_cast<VertexSE2*>(i);
       int poseIdx = v->hessianIndex();
       SE2 poseUpdate(0, 0, normalize_theta(thetaGuess(poseIdx) + x(poseIdx)));
       v->setEstimate(poseUpdate);

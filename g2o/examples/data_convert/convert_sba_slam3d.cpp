@@ -65,7 +65,7 @@ int main(int argc, char** argv)
   bool firstCam = true;
   for (OptimizableGraph::VertexIDMap::const_iterator it = inputGraph.vertices().begin(); it != inputGraph.vertices().end(); ++it) {
     if (dynamic_cast<VertexCam*>(it->second) != nullptr) {
-      VertexCam* v = static_cast<VertexCam*>(it->second);
+      VertexCam* v = dynamic_cast<VertexCam*>(it->second);
       if (firstCam) {
         firstCam = false;
         auto* camParams = new g2o::ParameterCamera;
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
       }
     }
     else if (dynamic_cast<VertexSBAPointXYZ*>(it->second) != nullptr) {
-      VertexSBAPointXYZ* v = static_cast<VertexSBAPointXYZ*>(it->second);
+      VertexSBAPointXYZ* v = dynamic_cast<VertexSBAPointXYZ*>(it->second);
 
       auto* ov = new VertexPointXYZ;
       ov->setId(v->id());
@@ -101,7 +101,7 @@ int main(int argc, char** argv)
   
   for (auto it : inputGraph.edges()) {
     if (dynamic_cast<EdgeProjectP2SC*>(it) != nullptr) {
-      EdgeProjectP2SC* e = static_cast<EdgeProjectP2SC*>(it);
+      EdgeProjectP2SC* e = dynamic_cast<EdgeProjectP2SC*>(it);
 
       auto* oe = new EdgeSE3PointXYZDisparity;
       oe->vertices()[0] = outputGraph.vertex(e->vertices()[1]->id());

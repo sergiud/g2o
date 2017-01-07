@@ -131,7 +131,7 @@ namespace g2o {
   OptimizableGraph* OptimizableGraph::Edge::graph(){
     if (_vertices.empty())
       return nullptr;
-    OptimizableGraph::Vertex* v=(OptimizableGraph::Vertex*)_vertices[0];
+    OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(_vertices[0]);
     if (v == nullptr)
       return nullptr;
     return v->graph();
@@ -140,7 +140,7 @@ namespace g2o {
   const OptimizableGraph* OptimizableGraph::Edge::graph() const{
     if (_vertices.empty())
       return nullptr;
-    const OptimizableGraph::Vertex* v=(const OptimizableGraph::Vertex*) _vertices[0];
+    const OptimizableGraph::Vertex* v=dynamic_cast<const OptimizableGraph::Vertex*>( _vertices[0]);
     if (v == nullptr)
       return nullptr;
     return v->graph();
@@ -286,7 +286,7 @@ namespace g2o {
       OptimizableGraph::Edge* ee = dynamic_cast<OptimizableGraph::Edge*>(e);
       assert(ee && "Edge is not a OptimizableGraph::Edge");
 #else
-      OptimizableGraph::Edge* ee = static_cast<OptimizableGraph::Edge*>(e);
+      OptimizableGraph::Edge* ee = dynamic_cast<OptimizableGraph::Edge*>(e);
 #endif
       if (! ee->resolveParameters()){
 	cerr << __FUNCTION__ << ": FATAL, cannot resolve parameters for edge " << e << endl;
@@ -307,7 +307,7 @@ double OptimizableGraph::chi2() const
 {
   double chi = 0.0;
   for (auto it : this->edges()) {
-    const OptimizableGraph::Edge* e = static_cast<const OptimizableGraph::Edge*>(it);
+    const OptimizableGraph::Edge* e = dynamic_cast<const OptimizableGraph::Edge*>(it);
     chi += e->chi2();
   }
   return chi;
@@ -316,7 +316,7 @@ double OptimizableGraph::chi2() const
 void OptimizableGraph::push()
 {
   for (auto & _vertice : _vertices) {
-    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(_vertice.second);
+    OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(_vertice.second);
     v->push();
   }
 }
@@ -324,7 +324,7 @@ void OptimizableGraph::push()
 void OptimizableGraph::pop()
 {
   for (auto & _vertice : _vertices) {
-    OptimizableGraph::Vertex* v= static_cast<OptimizableGraph::Vertex*>(_vertice.second);
+    OptimizableGraph::Vertex* v= dynamic_cast<OptimizableGraph::Vertex*>(_vertice.second);
     v->pop();
   }
 }
@@ -332,7 +332,7 @@ void OptimizableGraph::pop()
 void OptimizableGraph::discardTop()
 {
   for (auto & _vertice : _vertices) {
-    OptimizableGraph::Vertex* v= static_cast<OptimizableGraph::Vertex*>(_vertice.second);
+    OptimizableGraph::Vertex* v= dynamic_cast<OptimizableGraph::Vertex*>(_vertice.second);
     v->discardTop();
   }
 }
@@ -340,7 +340,7 @@ void OptimizableGraph::discardTop()
 void OptimizableGraph::push(HyperGraph::VertexSet& vset)
 {
   for (auto it : vset) {
-    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it);
+    OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it);
     v->push();
   }
 }
@@ -348,7 +348,7 @@ void OptimizableGraph::push(HyperGraph::VertexSet& vset)
 void OptimizableGraph::pop(HyperGraph::VertexSet& vset)
 {
   for (auto it : vset) {
-    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it);
+    OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it);
     v->pop();
   }
 }
@@ -356,7 +356,7 @@ void OptimizableGraph::pop(HyperGraph::VertexSet& vset)
 void OptimizableGraph::discardTop(HyperGraph::VertexSet& vset)
 {
   for (auto it : vset) {
-    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it);
+    OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it);
     v->discardTop();
   }
 }
@@ -364,7 +364,7 @@ void OptimizableGraph::discardTop(HyperGraph::VertexSet& vset)
   void OptimizableGraph::setFixed(HyperGraph::VertexSet& vset, bool fixed)
 {
   for (auto it : vset) {
-    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it);
+    OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it);
     v->setFixed(fixed);
   }
 }
@@ -445,7 +445,7 @@ bool OptimizableGraph::load(istream& is, bool createEdges)
     if (dynamic_cast<Vertex*>(element) != nullptr) { // it's a vertex type
       //cerr << "it is a vertex" << endl;
       previousData = nullptr;
-      Vertex* v = static_cast<Vertex*>(element);
+      Vertex* v = dynamic_cast<Vertex*>(element);
       int id;
       currentLine >> id;
       bool r = v->read(currentLine);
@@ -462,7 +462,7 @@ bool OptimizableGraph::load(istream& is, bool createEdges)
     else if (dynamic_cast<Edge*>(element) != nullptr) {
       //cerr << "it is an edge" << endl;
       previousData = nullptr;
-      Edge* e = static_cast<Edge*>(element);
+      Edge* e = dynamic_cast<Edge*>(element);
       int numV = e->vertices().size();
       if (_edge_has_id){
         int id;
@@ -587,7 +587,7 @@ bool OptimizableGraph::load(istream& is, bool createEdges)
       previousDataContainer = e;
     } else if (dynamic_cast<Data*>(element) != nullptr) { // reading in the data packet for the vertex
       //cerr << "read data packet " << token << " vertex " << previousVertex->id() << endl;
-      Data* d = static_cast<Data*>(element);
+      Data* d = dynamic_cast<Data*>(element);
       bool r = d->read(currentLine);
       if (! r) {
 	cerr << __PRETTY_FUNCTION__ << ": Error reading data " << token << " at line " << lineNumber << endl;
@@ -641,11 +641,11 @@ bool OptimizableGraph::save(ostream& os, int level) const
     return false;
   set<Vertex*, VertexIDCompare> verticesToSave;
   for (auto it : edges()) {
-    OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(it);
+    OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
     if (e->level() == level) {
       for (vector<HyperGraph::Vertex*>::const_iterator it = e->vertices().begin(); it != e->vertices().end(); ++it) {
 	if (*it != nullptr)
-	  verticesToSave.insert(static_cast<OptimizableGraph::Vertex*>(*it));
+	  verticesToSave.insert(dynamic_cast<OptimizableGraph::Vertex*>(*it));
       }
     }
   }
@@ -708,7 +708,7 @@ bool OptimizableGraph::saveSubset(ostream& os, HyperGraph::EdgeSet& eset)
   std::set<OptimizableGraph::Vertex*> vset;
   for (auto e : eset) {
     for (vector<HyperGraph::Vertex*>::const_iterator it = e->vertices().begin(); it != e->vertices().end(); ++it) {
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(*it);
+      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(*it);
       if (v != nullptr)
 	vset.insert(v);
     }
@@ -729,7 +729,7 @@ bool OptimizableGraph::saveSubset(ostream& os, HyperGraph::EdgeSet& eset)
 
 void OptimizableGraph::addGraph(OptimizableGraph* g){
   for (auto & it : g->vertices()){
-    OptimizableGraph::Vertex* v= (OptimizableGraph::Vertex*)(it.second);
+    OptimizableGraph::Vertex* v= dynamic_cast<OptimizableGraph::Vertex*>(it.second);
     if (vertex(v->id()) != nullptr)
       continue;
     OptimizableGraph::Vertex* v2=v->clone();
@@ -738,7 +738,7 @@ void OptimizableGraph::addGraph(OptimizableGraph* g){
     addVertex(v2);
   }
   for (auto it : g->edges()){
-    OptimizableGraph::Edge* e = (OptimizableGraph::Edge*)it;
+    OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
     OptimizableGraph::Edge* en = e->clone();
     en->resize(e->vertices().size());
     int cnt = 0;
@@ -754,7 +754,7 @@ void OptimizableGraph::addGraph(OptimizableGraph* g){
 int OptimizableGraph::maxDimension() const{
   int maxDim=0;
   for (const auto & it : vertices()){
-    const OptimizableGraph::Vertex* v= static_cast< const OptimizableGraph::Vertex*>(it.second);
+    const OptimizableGraph::Vertex* v= dynamic_cast< const OptimizableGraph::Vertex*>(it.second);
     maxDim = (std::max)(maxDim, v->dimension());
   }
   return maxDim;
@@ -813,7 +813,7 @@ std::set<int> OptimizableGraph::dimensions() const
 {
   std::set<int> auxDims;
   for (const auto & it : vertices()) {
-    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it.second);
+    OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it.second);
     auxDims.insert(v->dimension());
   }
   return auxDims;
@@ -937,7 +937,7 @@ bool OptimizableGraph::verifyInformationMatrices(bool verbose) const
   bool allEdgeOk = true;
   Eigen::SelfAdjointEigenSolver<MatrixXD> eigenSolver;
   for (auto it : edges()) {
-    OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(it);
+    OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
     MatrixXD::MapType information(e->informationData(), e->dimension(), e->dimension());
     // test on symmetry
     bool isSymmetric = information.transpose() == information;

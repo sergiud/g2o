@@ -42,7 +42,7 @@ namespace g2o {
     virtual void addNoise(EdgeType* e);
   protected:
     bool isVisible(WorldObjectType* to);
-    int _visiblePoint;
+    int _visiblePoint{};
   };
 
 } // namespace g2o

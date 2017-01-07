@@ -81,7 +81,7 @@ namespace g2o
           HyperGraphElementAction::Parameters* params_ );
     protected:
       virtual bool refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_);
-      FloatProperty* _planeWidth, *_planeHeight;
+      FloatProperty* _planeWidth{}, *_planeHeight{};
   };
 #endif
 

@@ -45,9 +45,9 @@ namespace g2o {
 
       void computeError()
       {
-        const VertexSE3* v1            = static_cast<const VertexSE3*>(_vertices[0]);
-        const VertexPlane* planeVertex = static_cast<const VertexPlane*>(_vertices[1]);
-        const VertexSE3* offset        = static_cast<const VertexSE3*>(_vertices[2]);
+        const VertexSE3* v1            = dynamic_cast<const VertexSE3*>(_vertices[0]);
+        const VertexPlane* planeVertex = dynamic_cast<const VertexPlane*>(_vertices[1]);
+        const VertexSE3* offset        = dynamic_cast<const VertexSE3*>(_vertices[2]);
         const Plane3D& plane           = planeVertex->estimate();
 	// measurement function: remap the plane in global coordinates
         Isometry3D w2n=(v1->estimate()*offset->estimate()).inverse();
@@ -72,7 +72,7 @@ namespace g2o {
             HyperGraphElementAction::Parameters* params_ );
   protected:
     virtual bool refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_);
-    FloatProperty* _planeWidth, *_planeHeight;
+    FloatProperty* _planeWidth{}, *_planeHeight{};
   };
 #endif
 

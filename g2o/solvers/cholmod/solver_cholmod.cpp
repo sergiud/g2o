@@ -52,7 +52,7 @@ using namespace std;
 
 namespace g2o {
 
-  CholmodExt::CholmodExt()
+  CholmodExt::CholmodExt() : cholmod_sparse_struct()
   {
     nzmax = 0;
     nrow  = 0;

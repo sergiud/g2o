@@ -128,7 +128,7 @@ namespace g2o {
         continue;
       assert(element->elementType() == HyperGraph::HGET_PARAMETER && "Should be a param");
 
-      Parameter* p = static_cast<Parameter*>(element);
+      Parameter* p = dynamic_cast<Parameter*>(element);
       int pid;
       currentLine >> pid;
       p->setId(pid);

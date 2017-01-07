@@ -114,13 +114,13 @@ namespace g2o {
           int frontierLevel() const { return _frontierLevel;}
 
         protected:
-          OptimizableGraph::Vertex* _child;
+          OptimizableGraph::Vertex* _child{};
           OptimizableGraph::VertexSet _parent;
-          OptimizableGraph::Edge* _edge;
-          double _distance;
-          int _frontierLevel;
+          OptimizableGraph::Edge* _edge{};
+          double _distance{};
+          int _frontierLevel{};
         private: // for PriorityQueue
-          bool inQueue;
+          bool inQueue{};
           PriorityQueue::iterator queueIt;
       };
 

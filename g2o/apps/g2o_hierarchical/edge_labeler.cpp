@@ -40,12 +40,12 @@ namespace g2o {
 
   void EdgeLabeler::augmentSparsePattern(std::set<std::pair<int, int> >& pattern, OptimizableGraph::Edge* e){
     for (size_t i=0; i<e->vertices().size(); i++){
-      const OptimizableGraph::Vertex* v=(const OptimizableGraph::Vertex*) e->vertices()[i];
+      const OptimizableGraph::Vertex* v=dynamic_cast<const OptimizableGraph::Vertex*>( e->vertices()[i]);
       int ti=v->hessianIndex();
       if (ti==-1)
 	continue;
       for (size_t j=i; j<e->vertices().size(); j++){
-	const OptimizableGraph::Vertex* v=(const OptimizableGraph::Vertex*) e->vertices()[j];
+	const OptimizableGraph::Vertex* v=dynamic_cast<const OptimizableGraph::Vertex*>( e->vertices()[j]);
 	int tj = v->hessianIndex();
 	if (tj==-1)
 	  continue;
@@ -78,7 +78,7 @@ namespace g2o {
 
     int maxDim=0;
     for (auto & i : e->vertices()){
-      const OptimizableGraph::Vertex* v=(const OptimizableGraph::Vertex*) i;
+      const OptimizableGraph::Vertex* v=dynamic_cast<const OptimizableGraph::Vertex*>( i);
       int ti=v->hessianIndex();
       if (ti==-1)
 	continue;
@@ -90,12 +90,12 @@ namespace g2o {
     MatrixXd cov(maxDim, maxDim);
     int cumRow=0;
     for (size_t i=0; i<e->vertices().size(); i++){
-      const OptimizableGraph::Vertex* vr=(const OptimizableGraph::Vertex*) e->vertices()[i];
+      const OptimizableGraph::Vertex* vr=dynamic_cast<const OptimizableGraph::Vertex*>( e->vertices()[i]);
       int ti=vr->hessianIndex();
       if (ti>-1) {
 	int cumCol=0;
 	for (auto & j : e->vertices()){
-	  const OptimizableGraph::Vertex* vc=(const OptimizableGraph::Vertex*) j;
+	  const OptimizableGraph::Vertex* vc=dynamic_cast<const OptimizableGraph::Vertex*>( j);
 	  int tj = vc->hessianIndex();
 	  if (tj>-1){
 	    // cerr << "ti=" << ti << " tj=" << tj
@@ -154,7 +154,7 @@ namespace g2o {
 
       // push all the "active" state variables
       for (auto & j : e->vertices()){
-        OptimizableGraph::Vertex* vr=(OptimizableGraph::Vertex*) j;
+        OptimizableGraph::Vertex* vr=dynamic_cast<OptimizableGraph::Vertex*>( j);
         int tj=vr->hessianIndex();
         if (tj==-1)
           continue;
@@ -162,7 +162,7 @@ namespace g2o {
       }
 
       for (auto & j : e->vertices()){
-        OptimizableGraph::Vertex* vr=(OptimizableGraph::Vertex*) j;
+        OptimizableGraph::Vertex* vr=dynamic_cast<OptimizableGraph::Vertex*>( j);
         int tj=vr->hessianIndex();
         if (tj==-1)
           continue;
@@ -186,7 +186,7 @@ namespace g2o {
 
       // pop all the "active" state variables
       for (auto & j : e->vertices()){
-        OptimizableGraph::Vertex* vr=(OptimizableGraph::Vertex*) j;
+        OptimizableGraph::Vertex* vr=dynamic_cast<OptimizableGraph::Vertex*>( j);
         int tj=vr->hessianIndex();
         if (tj==-1)
           continue;

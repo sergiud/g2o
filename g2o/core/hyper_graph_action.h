@@ -189,8 +189,8 @@ namespace g2o {
     void drawCache(CacheContainer* caches, HyperGraphElementAction::Parameters* params_);
     void drawUserData(HyperGraph::Data* data, HyperGraphElementAction::Parameters* params_);
     Parameters* _previousParams;
-    BoolProperty* _show;
-    BoolProperty* _showId;
+    BoolProperty* _show{};
+    BoolProperty* _showId{};
     HyperGraphElementAction* _cacheDrawActions;
   };
 

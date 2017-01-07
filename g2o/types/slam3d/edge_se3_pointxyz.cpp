@@ -55,7 +55,7 @@ namespace g2o {
   bool EdgeSE3PointXYZ::resolveCaches(){
     ParameterVector pv(1);
     pv[0]=offsetParam;
-    resolveCache(cache, (OptimizableGraph::Vertex*)_vertices[0],"CACHE_SE3_OFFSET",pv);
+    resolveCache(cache, dynamic_cast<OptimizableGraph::Vertex*>(_vertices[0]),"CACHE_SE3_OFFSET",pv);
     return cache != nullptr;
   }
 
@@ -99,7 +99,7 @@ namespace g2o {
   void EdgeSE3PointXYZ::computeError() {
     // from cam to point (track)
     //VertexSE3 *cam = static_cast<VertexSE3*>(_vertices[0]);
-    VertexPointXYZ *point = static_cast<VertexPointXYZ*>(_vertices[1]);
+    VertexPointXYZ *point = dynamic_cast<VertexPointXYZ*>(_vertices[1]);
 
     Vector3D perr = cache->w2n() * point->estimate();
 
@@ -111,7 +111,7 @@ namespace g2o {
 
   void EdgeSE3PointXYZ::linearizeOplus() {
     //VertexSE3 *cam = static_cast<VertexSE3 *>(_vertices[0]);
-    VertexPointXYZ *vp = static_cast<VertexPointXYZ *>(_vertices[1]);
+    VertexPointXYZ *vp = dynamic_cast<VertexPointXYZ *>(_vertices[1]);
     
     Vector3D Zcam = cache->w2l() * vp->estimate();
     
@@ -142,7 +142,7 @@ namespace g2o {
 
   bool EdgeSE3PointXYZ::setMeasurementFromState(){
     //VertexSE3 *cam = static_cast<VertexSE3*>(_vertices[0]);
-    VertexPointXYZ *point = static_cast<VertexPointXYZ*>(_vertices[1]);
+    VertexPointXYZ *point = dynamic_cast<VertexPointXYZ*>(_vertices[1]);
 
     // calculate the projection
     const Vector3D &pt = point->estimate();
@@ -187,9 +187,9 @@ namespace g2o {
     if ((_show != nullptr) && !_show->value())
       return this;
 
-    EdgeSE3PointXYZ* e =  static_cast<EdgeSE3PointXYZ*>(element);
-    VertexSE3* fromEdge = static_cast<VertexSE3*>(e->vertex(0));
-    VertexPointXYZ* toEdge   = static_cast<VertexPointXYZ*>(e->vertex(1));
+    EdgeSE3PointXYZ* e =  dynamic_cast<EdgeSE3PointXYZ*>(element);
+    VertexSE3* fromEdge = dynamic_cast<VertexSE3*>(e->vertex(0));
+    VertexPointXYZ* toEdge   = dynamic_cast<VertexPointXYZ*>(e->vertex(1));
     if ((fromEdge == nullptr) || (toEdge == nullptr))
       return this;
     Isometry3D fromTransform=fromEdge->estimate() * e->offsetParameter()->offset();

@@ -44,7 +44,7 @@ namespace g2o {
  */
 struct G2O_SOLVER_CSPARSE_API CSparseExt : public cs
 {
-  CSparseExt()
+  CSparseExt() : cs_di_sparse()
   {
     nzmax = 0;
     m = 0;
@@ -252,7 +252,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
         A.fillBlockStructure(_matrixStructure);
 
         // prepare block structure for the CSparse call
-        cs auxBlock;
+        cs auxBlock{};
         auxBlock.nzmax = _matrixStructure.nzMax();
         auxBlock.m = auxBlock.n = _matrixStructure.n;
         auxBlock.p = _matrixStructure.Ap;

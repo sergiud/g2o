@@ -307,7 +307,7 @@ int main (int argc, char** argv) {
   Vector6d liv;
   liv << 0.0, 0.0, 5.0, 0.0, 1.0, 0.0;
   line = Line3D::fromCartesian(liv);
-  static_cast<VertexLine3D*>(li->vertex())->setEstimate(line);
+  dynamic_cast<VertexLine3D*>(li->vertex())->setEstimate(line);
   li->vertex()->setFixed(fixLines);
   sim->_world.insert(li);
 
@@ -315,7 +315,7 @@ int main (int argc, char** argv) {
   liv << 5.0, 0.0, 0.0, 0.0, 0.0, 1.0;
   line = Line3D::fromCartesian(liv);
   li = new LineItem(g, 2);
-  static_cast<VertexLine3D*>(li->vertex())->setEstimate(line);
+  dynamic_cast<VertexLine3D*>(li->vertex())->setEstimate(line);
   li->vertex()->setFixed(fixLines);
   sim->_world.insert(li);
 
@@ -323,7 +323,7 @@ int main (int argc, char** argv) {
   liv << 0.0, 5.0, 0.0, 1.0, 0.0, 0.0;
   line = Line3D::fromCartesian(liv);
   li = new LineItem(g, 3);
-  static_cast<VertexLine3D*>(li->vertex())->setEstimate(line);
+  dynamic_cast<VertexLine3D*>(li->vertex())->setEstimate(line);
   li->vertex()->setFixed(fixLines);
   sim->_world.insert(li);
 

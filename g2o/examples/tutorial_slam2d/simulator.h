@@ -67,7 +67,7 @@ namespace g2o {
         struct G2O_TUTORIAL_SLAM2D_API GridPose
         {
           EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
-          int id;
+          int id{};
           SE2 truePose;
           SE2 simulatorPose;
           LandmarkPtrVector landmarks;      ///< the landmarks observed by this node
@@ -79,8 +79,8 @@ namespace g2o {
          */
         struct G2O_TUTORIAL_SLAM2D_API GridEdge
         {
-          int from;
-          int to;
+          int from{};
+          int to{};
           SE2 trueTransf;
           SE2 simulatorTransf;
           Eigen::Matrix3d information;
@@ -90,8 +90,8 @@ namespace g2o {
 
         struct G2O_TUTORIAL_SLAM2D_API LandmarkEdge
         {
-          int from;
-          int to;
+          int from{};
+          int to{};
           Eigen::Vector2d trueMeas;
           Eigen::Vector2d simulatorMeas;
           Eigen::Matrix2d information;

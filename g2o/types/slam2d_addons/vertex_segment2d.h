@@ -104,7 +104,7 @@ namespace g2o {
     virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element,
             HyperGraphElementAction::Parameters* params_);
   protected:
-    FloatProperty *_pointSize;
+    FloatProperty *_pointSize{};
     virtual bool refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_);
   };
 #endif

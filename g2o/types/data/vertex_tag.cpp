@@ -92,7 +92,7 @@ namespace g2o {
     if (_previousParams == nullptr){
       return this;
     }
-    VertexTag* that = static_cast<VertexTag*>(element);
+    VertexTag* that = dynamic_cast<VertexTag*>(element);
 
     glPushMatrix();
     glColor3f(1.f,0.2f,1.f);

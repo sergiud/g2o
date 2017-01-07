@@ -324,20 +324,20 @@ int main (int argc  , char ** argv){
   Plane3D plane;
   auto* pi =new PlaneItem(g,1);
   plane.fromVector(Eigen::Vector4d(0.,0.,1.,5.));
-  static_cast<VertexPlane*>(pi->vertex())->setEstimate(plane);
+  dynamic_cast<VertexPlane*>(pi->vertex())->setEstimate(plane);
   pi->vertex()->setFixed(fixPlanes);
   sim->_world.insert(pi);
 
   plane.fromVector(Eigen::Vector4d(1.,0.,0.,5.));
   pi =new PlaneItem(g,2);
-  static_cast<VertexPlane*>(pi->vertex())->setEstimate(plane);
+  dynamic_cast<VertexPlane*>(pi->vertex())->setEstimate(plane);
   pi->vertex()->setFixed(fixPlanes);
   sim->_world.insert(pi);
 
   cerr  << "p2" << endl;
   pi =new PlaneItem(g,3);
   plane.fromVector(Eigen::Vector4d(0.,1.,0.,5.));
-  static_cast<VertexPlane*>(pi->vertex())->setEstimate(plane);
+  dynamic_cast<VertexPlane*>(pi->vertex())->setEstimate(plane);
   pi->vertex()->setFixed(fixPlanes);
   sim->_world.insert(pi);
 

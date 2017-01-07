@@ -86,7 +86,7 @@ namespace g2o
     if ((_show != nullptr) && !_show->value())
       return this;
 
-    VertexPlane* that = static_cast<VertexPlane*>(element);
+    VertexPlane* that = dynamic_cast<VertexPlane*>(element);
     double d = that->estimate().distance();
     double azimuth = Plane3D::azimuth(that->estimate().normal());
     double elevation = Plane3D::elevation(that->estimate().normal());

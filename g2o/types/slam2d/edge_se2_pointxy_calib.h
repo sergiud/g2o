@@ -45,9 +45,9 @@ namespace g2o {
 
       void computeError()
       {
-        const VertexSE2* v1     = static_cast<const VertexSE2*>(_vertices[0]);
-        const VertexPointXY* l2 = static_cast<const VertexPointXY*>(_vertices[1]);
-        const VertexSE2* calib  = static_cast<const VertexSE2*>(_vertices[2]);
+        const VertexSE2* v1     = dynamic_cast<const VertexSE2*>(_vertices[0]);
+        const VertexPointXY* l2 = dynamic_cast<const VertexPointXY*>(_vertices[1]);
+        const VertexSE2* calib  = dynamic_cast<const VertexSE2*>(_vertices[2]);
         _error = ((v1->estimate() * calib->estimate()).inverse() * l2->estimate()) - _measurement;
       }
 

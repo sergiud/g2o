@@ -118,8 +118,8 @@ class G2O_TYPES_SBA_API EdgeSE3Expmap : public BaseBinaryEdge<6, SE3Quat, Vertex
     bool write(std::ostream& os) const;
 
     void computeError()  {
-      const VertexSE3Expmap* v1 = static_cast<const VertexSE3Expmap*>(_vertices[0]);
-      const VertexSE3Expmap* v2 = static_cast<const VertexSE3Expmap*>(_vertices[1]);
+      const VertexSE3Expmap* v1 = dynamic_cast<const VertexSE3Expmap*>(_vertices[0]);
+      const VertexSE3Expmap* v2 = dynamic_cast<const VertexSE3Expmap*>(_vertices[1]);
 
       SE3Quat C(_measurement);
       SE3Quat error_= v2->estimate().inverse()*C*v1->estimate();
@@ -141,10 +141,10 @@ class G2O_TYPES_SBA_API EdgeProjectXYZ2UV : public  BaseBinaryEdge<2, Vector2D, 
     bool write(std::ostream& os) const;
 
     void computeError()  {
-      const VertexSE3Expmap* v1 = static_cast<const VertexSE3Expmap*>(_vertices[1]);
-      const VertexSBAPointXYZ* v2 = static_cast<const VertexSBAPointXYZ*>(_vertices[0]);
+      const VertexSE3Expmap* v1 = dynamic_cast<const VertexSE3Expmap*>(_vertices[1]);
+      const VertexSBAPointXYZ* v2 = dynamic_cast<const VertexSBAPointXYZ*>(_vertices[0]);
       const CameraParameters * cam
-        = static_cast<const CameraParameters *>(parameter(0));
+        = dynamic_cast<const CameraParameters *>(parameter(0));
       Vector2D obs(_measurement);
       _error = obs-cam->cam_map(v1->estimate().map(v2->estimate()));
     }
@@ -169,7 +169,7 @@ public:
   virtual bool write (std::ostream& os) const;
   void computeError  ();
   virtual void linearizeOplus ();
-  CameraParameters * _cam;
+  CameraParameters * _cam{};
 };
 
 
@@ -189,10 +189,10 @@ class G2O_TYPES_SBA_API EdgeProjectXYZ2UVU : public  BaseBinaryEdge<3, Vector3D,
     bool write(std::ostream& os) const;
 
     void computeError(){
-      const VertexSE3Expmap* v1 = static_cast<const VertexSE3Expmap*>(_vertices[1]);
-      const VertexSBAPointXYZ* v2 = static_cast<const VertexSBAPointXYZ*>(_vertices[0]);
+      const VertexSE3Expmap* v1 = dynamic_cast<const VertexSE3Expmap*>(_vertices[1]);
+      const VertexSBAPointXYZ* v2 = dynamic_cast<const VertexSBAPointXYZ*>(_vertices[0]);
       const CameraParameters * cam
-        = static_cast<const CameraParameters *>(parameter(0));
+        = dynamic_cast<const CameraParameters *>(parameter(0));
       Vector3D obs(_measurement);
       _error = obs-cam->stereocam_uvu_map(v1->estimate().map(v2->estimate()));
     }

@@ -166,8 +166,8 @@ namespace g2o {
 
   void EdgeSBACam::initialEstimate(const OptimizableGraph::VertexSet& from_, OptimizableGraph::Vertex* /*to_*/)
   {
-    VertexCam* from = static_cast<VertexCam*>(_vertices[0]);
-    VertexCam* to = static_cast<VertexCam*>(_vertices[1]);
+    VertexCam* from = dynamic_cast<VertexCam*>(_vertices[0]);
+    VertexCam* to = dynamic_cast<VertexCam*>(_vertices[1]);
     if (from_.count(from) > 0)
       to->setEstimate((SE3Quat) from->estimate() * _measurement);
     else
@@ -250,10 +250,10 @@ namespace g2o {
  */
   void EdgeProjectP2SC::linearizeOplus()
   {
-    VertexCam *vc = static_cast<VertexCam *>(_vertices[1]);
+    VertexCam *vc = dynamic_cast<VertexCam *>(_vertices[1]);
     const SBACam &cam = vc->estimate();
 
-    VertexSBAPointXYZ *vp = static_cast<VertexSBAPointXYZ *>(_vertices[0]);
+    VertexSBAPointXYZ *vp = dynamic_cast<VertexSBAPointXYZ *>(_vertices[0]);
     Vector4D pt, trans;
     pt.head<3>() = vp->estimate();
     pt(3) = 1.0;
@@ -335,10 +335,10 @@ namespace g2o {
  */
   void EdgeProjectP2MC::linearizeOplus()
   {
-    VertexCam *vc = static_cast<VertexCam *>(_vertices[1]);
+    VertexCam *vc = dynamic_cast<VertexCam *>(_vertices[1]);
     const SBACam &cam = vc->estimate();
 
-    VertexSBAPointXYZ *vp = static_cast<VertexSBAPointXYZ *>(_vertices[0]);
+    VertexSBAPointXYZ *vp = dynamic_cast<VertexSBAPointXYZ *>(_vertices[0]);
     Vector4D pt, trans;
     pt.head<3>() = vp->estimate();
     pt(3) = 1.0;
@@ -422,10 +422,10 @@ namespace g2o {
     _jacobianOplus[0].resize(2,3);
     _jacobianOplus[1].resize(2,6);
     _jacobianOplus[2].resize(2,4);
-    VertexCam *vc = static_cast<VertexCam *>(_vertices[1]);
+    VertexCam *vc = dynamic_cast<VertexCam *>(_vertices[1]);
     const SBACam &cam = vc->estimate();
 
-    VertexSBAPointXYZ *vp = static_cast<VertexSBAPointXYZ *>(_vertices[0]);
+    VertexSBAPointXYZ *vp = dynamic_cast<VertexSBAPointXYZ *>(_vertices[0]);
 
     //VertexIntrinsics *intr = static_cast<VertexIntrinsics *>(_vertices[2]);
 

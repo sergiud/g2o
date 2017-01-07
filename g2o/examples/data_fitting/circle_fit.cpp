@@ -116,7 +116,7 @@ class EdgePointOnCircle : public g2o::BaseUnaryEdge<1, Eigen::Vector2d, VertexCi
 
     void computeError()
     {
-      const VertexCircle* circle = static_cast<const VertexCircle*>(vertex(0));
+      const VertexCircle* circle = dynamic_cast<const VertexCircle*>(vertex(0));
 
       const Eigen::Vector2d& center = circle->estimate().head<2>();
       const double& radius = circle->estimate()(2);

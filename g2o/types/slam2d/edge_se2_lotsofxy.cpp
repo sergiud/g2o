@@ -12,10 +12,10 @@ namespace g2o{
   }
 
   void EdgeSE2LotsOfXY::computeError(){
-    VertexSE2 * pose = static_cast<VertexSE2 *> (_vertices[0]);
+    VertexSE2 * pose = dynamic_cast<VertexSE2 *> (_vertices[0]);
 
     for(unsigned int i=0; i<_observedPoints; i++){
-      VertexPointXY * xy = static_cast<VertexPointXY *> (_vertices[1+i]);
+      VertexPointXY * xy = dynamic_cast<VertexPointXY *> (_vertices[1+i]);
       Vector2D m = pose->estimate().inverse() * xy->estimate();
 
       unsigned int index = 2*i;
@@ -73,7 +73,7 @@ namespace g2o{
 
 
   void EdgeSE2LotsOfXY::linearizeOplus(){
-    const VertexSE2* vi     = static_cast<const VertexSE2*>(_vertices[0]);
+    const VertexSE2* vi     = dynamic_cast<const VertexSE2*>(_vertices[0]);
     const double& x1        = vi->estimate().translation()[0];
     const double& y1        = vi->estimate().translation()[1];
     const double& th1       = vi->estimate().rotation().angle();
@@ -94,7 +94,7 @@ namespace g2o{
 
 
     for(unsigned int i=1; i<_vertices.size(); i++){
-      g2o::VertexPointXY * point = (g2o::VertexPointXY *) (_vertices[i]);
+      g2o::VertexPointXY * point = dynamic_cast<g2o::VertexPointXY *> (_vertices[i]);
 
       const double& x2        = point->estimate()[0];
       const double& y2        = point->estimate()[1];
@@ -123,7 +123,7 @@ namespace g2o{
 
     assert(initialEstimatePossible(fixed, toEstimate) && "Bad vertices specified");
 
-    VertexSE2 * pose = static_cast<VertexSE2 *>(_vertices[0]);
+    VertexSE2 * pose = dynamic_cast<VertexSE2 *>(_vertices[0]);
 
 #ifdef _MSC_VER
 	std::vector<bool> estimate_this(_observedPoints, true);
@@ -136,7 +136,7 @@ namespace g2o{
 
     for(auto it : fixed){
       for(unsigned int i=1; i<_vertices.size(); i++){
-        VertexPointXY * vert = static_cast<VertexPointXY *>(_vertices[i]);
+        VertexPointXY * vert = dynamic_cast<VertexPointXY *>(_vertices[i]);
         if(vert->id() == it->id()) estimate_this[i-1] = false;
       }
     }
@@ -145,7 +145,7 @@ namespace g2o{
       if(estimate_this[i-1]){
         unsigned int index = 2*(i-1);
         Vector2D submeas(_measurement[index], _measurement[index+1]);
-        VertexPointXY * vert = static_cast<VertexPointXY *>(_vertices[i]);
+        VertexPointXY * vert = dynamic_cast<VertexPointXY *>(_vertices[i]);
         vert->setEstimate(pose->estimate() * submeas);
       }
     }
@@ -166,10 +166,10 @@ namespace g2o{
 
 
   bool EdgeSE2LotsOfXY::setMeasurementFromState(){
-    VertexSE2 * pose = static_cast<VertexSE2 *> (_vertices[0]);
+    VertexSE2 * pose = dynamic_cast<VertexSE2 *> (_vertices[0]);
 
     for(unsigned int i=0; i<_observedPoints; i++){
-      VertexPointXY * xy = static_cast<VertexPointXY *> (_vertices[1+i]);
+      VertexPointXY * xy = dynamic_cast<VertexPointXY *> (_vertices[1+i]);
       Vector2D m = pose->estimate().inverse() * xy->estimate();
 
       unsigned int index = 2*i;

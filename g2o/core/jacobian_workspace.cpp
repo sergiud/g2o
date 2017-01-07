@@ -57,12 +57,12 @@ bool JacobianWorkspace::allocate()
 
 void JacobianWorkspace::updateSize(const HyperGraph::Edge* e_)
 {
-  const OptimizableGraph::Edge* e = static_cast<const OptimizableGraph::Edge*>(e_);
+  const OptimizableGraph::Edge* e = dynamic_cast<const OptimizableGraph::Edge*>(e_);
   int errorDimension = e->dimension();
   int numVertices = e->vertices().size();
   int maxDimensionForEdge = -1;
   for (int i = 0; i < numVertices; ++i) {
-    const OptimizableGraph::Vertex* v = static_cast<const OptimizableGraph::Vertex*>(e->vertex(i));
+    const OptimizableGraph::Vertex* v = dynamic_cast<const OptimizableGraph::Vertex*>(e->vertex(i));
     assert(v && "Edge has no vertex assigned");
     maxDimensionForEdge = max(v->dimension() * errorDimension, maxDimensionForEdge);
   }
@@ -74,7 +74,7 @@ void JacobianWorkspace::updateSize(const HyperGraph::Edge* e_)
 void JacobianWorkspace::updateSize(const OptimizableGraph& graph)
 {
   for (auto it : graph.edges()) {
-    const OptimizableGraph::Edge* e = static_cast<const OptimizableGraph::Edge*>(it);
+    const OptimizableGraph::Edge* e = dynamic_cast<const OptimizableGraph::Edge*>(it);
     updateSize(e);
   }
 }

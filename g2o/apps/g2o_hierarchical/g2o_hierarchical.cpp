@@ -412,14 +412,14 @@ int main(int argc, char** argv)
     }
 
     for (auto _starEdge : s->_starEdges){
-      OptimizableGraph::Edge* e= (OptimizableGraph::Edge*) _starEdge;
+      OptimizableGraph::Edge* e= dynamic_cast<OptimizableGraph::Edge*>( _starEdge);
       eset.insert(e);
       for (auto & i : e->vertices()){
         vset.insert(i);
       }
     }
     for (auto iit : s->starFrontierEdges()){
-      OptimizableGraph::Edge* e= (OptimizableGraph::Edge*) iit;
+      OptimizableGraph::Edge* e= dynamic_cast<OptimizableGraph::Edge*>( iit);
       heset.insert(e);
     }
   }
@@ -526,7 +526,7 @@ int main(int argc, char** argv)
     int nPoses=0;
     int maxDim = *vertexDimensions.rbegin();
     for (auto & it : optimizer.vertices()){
-      OptimizableGraph::Vertex* v=static_cast<OptimizableGraph::Vertex*>(it.second);
+      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second);
       if (v->dimension() != maxDim) {
 	nLandmarks++;
       } else

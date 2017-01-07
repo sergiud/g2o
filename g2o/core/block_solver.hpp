@@ -182,13 +182,13 @@ bool BlockSolver<Traits>::buildStructure(bool zeroBlocks)
   // create the structure in Hpp, Hll and in Hpl
   for (auto e : _optimizer->activeEdges()){
     for (size_t viIdx = 0; viIdx < e->vertices().size(); ++viIdx) {
-      OptimizableGraph::Vertex* v1 = (OptimizableGraph::Vertex*) e->vertex(viIdx);
+      OptimizableGraph::Vertex* v1 = dynamic_cast<OptimizableGraph::Vertex*>( e->vertex(viIdx));
       int ind1 = v1->hessianIndex();
       if (ind1 == -1)
         continue;
       int indexV1Bak = ind1;
       for (size_t vjIdx = viIdx + 1; vjIdx < e->vertices().size(); ++vjIdx) {
-        OptimizableGraph::Vertex* v2 = (OptimizableGraph::Vertex*) e->vertex(vjIdx);
+        OptimizableGraph::Vertex* v2 = dynamic_cast<OptimizableGraph::Vertex*>( e->vertex(vjIdx));
         int ind2 = v2->hessianIndex();
         if (ind2 == -1)
           continue;
@@ -242,13 +242,13 @@ bool BlockSolver<Traits>::buildStructure(bool zeroBlocks)
       for (auto it1=vedges.begin(); it1!=vedges.end(); ++it1){
         for (size_t i=0; i<(*it1)->vertices().size(); ++i)
         {
-          OptimizableGraph::Vertex* v1= (OptimizableGraph::Vertex*) (*it1)->vertex(i);
+          OptimizableGraph::Vertex* v1= dynamic_cast<OptimizableGraph::Vertex*>( (*it1)->vertex(i));
           if (v1->hessianIndex()==-1 || v1==v)
             continue;
           for  (auto vedge : vedges){
             for (size_t j=0; j<vedge->vertices().size(); ++j)
             {
-              OptimizableGraph::Vertex* v2= (OptimizableGraph::Vertex*) vedge->vertex(j);
+              OptimizableGraph::Vertex* v2= dynamic_cast<OptimizableGraph::Vertex*>( vedge->vertex(j));
               if (v2->hessianIndex()==-1 || v2==v)
                 continue;
               int i1=v1->hessianIndex();
@@ -274,7 +274,7 @@ template <typename Traits>
 bool BlockSolver<Traits>::updateStructure(const std::vector<HyperGraph::Vertex*>& vset, const HyperGraph::EdgeSet& edges)
 {
   for (auto vit : vset) {
-    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(vit);
+    OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(vit);
     int dim = v->dimension();
     if (! v->marginalized()){
       v->setColInHessian(_sizePoses);
@@ -294,16 +294,16 @@ bool BlockSolver<Traits>::updateStructure(const std::vector<HyperGraph::Vertex*>
   resizeVector(_sizePoses + _sizeLandmarks);
 
   for (auto edge : edges) {
-    OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(edge);
+    OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(edge);
 
     for (size_t viIdx = 0; viIdx < e->vertices().size(); ++viIdx) {
-      OptimizableGraph::Vertex* v1 = (OptimizableGraph::Vertex*) e->vertex(viIdx);
+      OptimizableGraph::Vertex* v1 = dynamic_cast<OptimizableGraph::Vertex*>( e->vertex(viIdx));
       int ind1 = v1->hessianIndex();
       int indexV1Bak = ind1;
       if (ind1 == -1)
         continue;
       for (size_t vjIdx = viIdx + 1; vjIdx < e->vertices().size(); ++vjIdx) {
-        OptimizableGraph::Vertex* v2 = (OptimizableGraph::Vertex*) e->vertex(vjIdx);
+        OptimizableGraph::Vertex* v2 = dynamic_cast<OptimizableGraph::Vertex*>( e->vertex(vjIdx));
         int ind2 = v2->hessianIndex();
         if (ind2 == -1)
           continue;

@@ -88,7 +88,7 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>, public Linear
       double t=get_monotonic_time();
 
       // setting up b for calling cholmod
-      cholmod_dense bcholmod;
+      cholmod_dense bcholmod{};
       bcholmod.nrow  = bcholmod.d = _cholmodSparse->nrow;
       bcholmod.ncol  = 1;
       bcholmod.x     = b;
@@ -147,7 +147,7 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>, public Linear
     bool solve(double* x, double* b)
     {
       // setting up b for calling cholmod
-      cholmod_dense bcholmod;
+      cholmod_dense bcholmod{};
       bcholmod.nrow  = bcholmod.d = _cholmodSparse->nrow;
       bcholmod.ncol  = 1;
       bcholmod.x     = b;
@@ -162,10 +162,10 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>, public Linear
 
   protected:
     // temp used for cholesky with cholmod
-    cholmod_common _cholmodCommon;
+    cholmod_common _cholmodCommon{};
     CholmodExt* _cholmodSparse;
     cholmod_factor* _cholmodFactor;
-    bool _blockOrdering;
+    bool _blockOrdering{};
     MatrixStructure _matrixStructure;
     Eigen::VectorXi _scalarPermutation, _blockPermutation;
 

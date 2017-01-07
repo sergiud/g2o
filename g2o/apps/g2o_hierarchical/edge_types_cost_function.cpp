@@ -12,7 +12,7 @@ namespace g2o {
   {}
 
   double EdgeTypesCostFunction::operator() (HyperGraph::Edge* e_, HyperGraph::Vertex* from, HyperGraph::Vertex* to){
-    OptimizableGraph::Edge*e =(OptimizableGraph::Edge*)(e_);
+    OptimizableGraph::Edge*e =dynamic_cast<OptimizableGraph::Edge*>(e_);
     if (e->level()==_level && _factory->tag(e)==_edgeTag && _factory->tag(from)==_vertexTag && _factory->tag(to)==_vertexTag) {
       return 1.;
     }

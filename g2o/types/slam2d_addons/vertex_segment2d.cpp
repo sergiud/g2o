@@ -66,13 +66,13 @@ namespace g2o {
     if (typeid(*element).name()!=_typeName)
       return nullptr;
 
-    WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
+    WriteGnuplotAction::Parameters* params=dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
     if (params->os == nullptr){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified" << std::endl;
       return nullptr;
     }
 
-    VertexSegment2D* v =  static_cast<VertexSegment2D*>(element);
+    VertexSegment2D* v =  dynamic_cast<VertexSegment2D*>(element);
     *(params->os) << v->estimateP1().x() << " " << v->estimateP1().y() << std::endl;
     *(params->os) << v->estimateP2().x() << " " << v->estimateP2().y() << std::endl;
     *(params->os) << std::endl;
@@ -107,7 +107,7 @@ namespace g2o {
       return this;
 
 
-    VertexSegment2D* that = static_cast<VertexSegment2D*>(element);
+    VertexSegment2D* that = dynamic_cast<VertexSegment2D*>(element);
     glColor3f(0.8f,0.5f,0.3f);
     if (_pointSize != nullptr) {
       glPointSize(_pointSize->value());

@@ -50,9 +50,9 @@ namespace g2o {
 
     ParameterVector pv(2);
     pv[0]=_offsetFrom;
-    resolveCache(_cacheFrom, (OptimizableGraph::Vertex*)_vertices[0],"CACHE_SE3_OFFSET",pv);
+    resolveCache(_cacheFrom, dynamic_cast<OptimizableGraph::Vertex*>(_vertices[0]),"CACHE_SE3_OFFSET",pv);
     pv[1]=_offsetTo;
-    resolveCache(_cacheTo, (OptimizableGraph::Vertex*)_vertices[1],"CACHE_SE3_OFFSET",pv);
+    resolveCache(_cacheTo, dynamic_cast<OptimizableGraph::Vertex*>(_vertices[1]),"CACHE_SE3_OFFSET",pv);
     return ((_cacheFrom != nullptr) && (_cacheTo != nullptr));
   }
 
@@ -113,8 +113,8 @@ namespace g2o {
   void EdgeSE3Offset::linearizeOplus(){
     //BaseBinaryEdge<6, SE3Quat, VertexSE3, VertexSE3>::linearizeOplus();
 
-    VertexSE3 *from = static_cast<VertexSE3*>(_vertices[0]);
-    VertexSE3 *to   = static_cast<VertexSE3*>(_vertices[1]);
+    VertexSE3 *from = dynamic_cast<VertexSE3*>(_vertices[0]);
+    VertexSE3 *to   = dynamic_cast<VertexSE3*>(_vertices[1]);
     Isometry3D E;
     const Isometry3D& Xi=from->estimate();
     const Isometry3D& Xj=to->estimate();
@@ -132,8 +132,8 @@ namespace g2o {
   }
 
   void EdgeSE3Offset::initialEstimate(const OptimizableGraph::VertexSet& from_, OptimizableGraph::Vertex* /*to_*/) {
-    VertexSE3 *from = static_cast<VertexSE3*>(_vertices[0]);
-    VertexSE3 *to   = static_cast<VertexSE3*>(_vertices[1]);
+    VertexSE3 *from = dynamic_cast<VertexSE3*>(_vertices[0]);
+    VertexSE3 *to   = dynamic_cast<VertexSE3*>(_vertices[1]);
 
     Isometry3D virtualMeasurement = _cacheFrom->offsetParam()->offset() * measurement() * _cacheTo->offsetParam()->offset().inverse();
 

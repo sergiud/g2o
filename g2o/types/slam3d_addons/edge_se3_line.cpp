@@ -71,8 +71,8 @@ namespace g2o {
   }
 
   void EdgeSE3Line3D::computeError() {
-    const VertexSE3* se3Vertex = static_cast<const VertexSE3*>(_vertices[0]);
-    const VertexLine3D* lineVertex = static_cast<const VertexLine3D*>(_vertices[1]);
+    const VertexSE3* se3Vertex = dynamic_cast<const VertexSE3*>(_vertices[0]);
+    const VertexLine3D* lineVertex = dynamic_cast<const VertexLine3D*>(_vertices[1]);
     const Line3D& line = lineVertex->estimate();
     Line3D localLine = se3Vertex->estimate().inverse() * line;
     _error = localLine.ominus(_measurement);    
@@ -81,7 +81,7 @@ namespace g2o {
   bool EdgeSE3Line3D::resolveCaches() {
     ParameterVector pv(1);
     pv[0] = offsetParam;
-    resolveCache(cache, (OptimizableGraph::Vertex*)_vertices[0], "CACHE_SE3_OFFSET", pv);
+    resolveCache(cache, dynamic_cast<OptimizableGraph::Vertex*>(_vertices[0]), "CACHE_SE3_OFFSET", pv);
     return cache != nullptr;
   }
 

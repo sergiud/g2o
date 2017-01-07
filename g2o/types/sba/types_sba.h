@@ -168,8 +168,8 @@ class G2O_TYPES_SBA_API VertexIntrinsics : public BaseVertex<4, Eigen::Matrix<do
     void computeError()
     {
       // from <Point> to <Cam>
-      const VertexSBAPointXYZ *point = static_cast<const VertexSBAPointXYZ*>(_vertices[0]);
-      const VertexCam *cam = static_cast<const VertexCam*>(_vertices[1]);
+      const VertexSBAPointXYZ *point = dynamic_cast<const VertexSBAPointXYZ*>(_vertices[0]);
+      const VertexCam *cam = dynamic_cast<const VertexCam*>(_vertices[1]);
 
       // calculate the projection
       const Vector3D &pt = point->estimate();
@@ -207,8 +207,8 @@ class G2O_TYPES_SBA_API VertexIntrinsics : public BaseVertex<4, Eigen::Matrix<do
     void computeError()
     {
       // from <Point> to <Cam>
-      const VertexSBAPointXYZ *point = static_cast<const VertexSBAPointXYZ*>(_vertices[0]);
-      VertexCam *cam = static_cast<VertexCam*>(_vertices[1]);
+      const VertexSBAPointXYZ *point = dynamic_cast<const VertexSBAPointXYZ*>(_vertices[0]);
+      VertexCam *cam = dynamic_cast<VertexCam*>(_vertices[1]);
 
       // calculate the projection
       Vector3D kp;
@@ -263,8 +263,8 @@ class G2O_TYPES_SBA_API VertexIntrinsics : public BaseVertex<4, Eigen::Matrix<do
     void computeError()
     {
       // from <Point> to <Cam>, the intrinsics in KCam should be already set!
-      const VertexSBAPointXYZ *point = static_cast<const VertexSBAPointXYZ*>(_vertices[0]);
-      VertexCam *cam = static_cast<VertexCam*>(_vertices[1]);
+      const VertexSBAPointXYZ *point = dynamic_cast<const VertexSBAPointXYZ*>(_vertices[0]);
+      VertexCam *cam = dynamic_cast<VertexCam*>(_vertices[1]);
       // calculate the projection
       const Vector3D &pt = point->estimate();
       Vector4D ppt(pt(0),pt(1),pt(2),1.0);

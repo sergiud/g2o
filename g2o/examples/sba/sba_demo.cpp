@@ -347,7 +347,7 @@ int main(int argc, const char* argv[])
     g2o::StructureOnlySolver<3> structure_only_ba;
     g2o::OptimizableGraph::VertexContainer points;
     for (g2o::OptimizableGraph::VertexIDMap::const_iterator it = optimizer.vertices().begin(); it != optimizer.vertices().end(); ++it) {
-      g2o::OptimizableGraph::Vertex* v = static_cast<g2o::OptimizableGraph::Vertex*>(it->second);
+      g2o::OptimizableGraph::Vertex* v = dynamic_cast<g2o::OptimizableGraph::Vertex*>(it->second);
       if (v->dimension() == 3)
         points.push_back(v);
     }

@@ -104,7 +104,7 @@ namespace g2o {
       return this;
 
 
-    VertexLine2D* that = static_cast<VertexLine2D*>(element);
+    VertexLine2D* that = dynamic_cast<VertexLine2D*>(element);
     glPushAttrib(GL_CURRENT_BIT | GL_BLEND);
     if (_pointSize != nullptr) {
       glPointSize(_pointSize->value());

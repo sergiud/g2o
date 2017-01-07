@@ -363,14 +363,14 @@ namespace SlamParser {
     int yyerrstatus_ = 0;
 
     /// Semantic value of the lookahead.
-    semantic_type yylval;
+    semantic_type yylval{};
     /// Location of the lookahead.
     location_type yylloc;
     /// The locations where the error started and ended.
     location_type yyerror_range[2];
 
     /// $$.
-    semantic_type yyval;
+    semantic_type yyval{};
     /// @$.
     location_type yyloc;
 

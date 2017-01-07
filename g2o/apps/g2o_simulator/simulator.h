@@ -49,7 +49,7 @@ class G2O_SIMULATOR_API BaseWorldObject{
     OptimizableGraph::Vertex* vertex() {return _vertex;}
     virtual void setVertex(OptimizableGraph::Vertex* vertex_);
   protected:
-    OptimizableGraph* _graph;
+    OptimizableGraph* _graph{};
     OptimizableGraph::Vertex* _vertex;
     World* _world;
 };
@@ -136,7 +136,7 @@ class G2O_SIMULATOR_API BaseSensor{
  protected:
   std::string _name;
   std::vector<Parameter*> _parameters;
-  BaseRobot* _robot;
+  BaseRobot* _robot{};
 };
 
 template <class RobotType_, class EdgeType_>

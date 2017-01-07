@@ -82,7 +82,7 @@ public:
   
   void computeError()
   {
-    const VertexPosition3D* v = static_cast<const VertexPosition3D*>(_vertices[0]);
+    const VertexPosition3D* v = dynamic_cast<const VertexPosition3D*>(_vertices[0]);
     _error = v->estimate() - _measurement;
   }
   

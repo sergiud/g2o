@@ -291,7 +291,7 @@ bool MainWindow::prepare()
   if (_currentOptimizationAlgorithmProperty.requiresMarginalize) {
     cerr << "Marginalizing Landmarks" << endl;
     for (SparseOptimizer::VertexIDMap::const_iterator it = optimizer->vertices().begin(); it != optimizer->vertices().end(); ++it) {
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it->second);
+      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it->second);
       int vdim = v->dimension();
       v->setMarginalized((vdim == _currentOptimizationAlgorithmProperty.landmarkDim));
     }
@@ -299,7 +299,7 @@ bool MainWindow::prepare()
   else {
     cerr << "Preparing (no marginalization of Landmarks)" << endl;
     for (SparseOptimizer::VertexIDMap::const_iterator it = optimizer->vertices().begin(); it != optimizer->vertices().end(); ++it) {
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it->second);
+      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it->second);
       v->setMarginalized(false);
     }
   }
@@ -324,7 +324,7 @@ void MainWindow::setRobustKernel()
       return;
     }
     for (auto it : optimizer->edges()) {
-      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(it);
+      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
       if (onlyLoop) {
         if (e->vertices().size() >= 2 && std::abs(e->vertex(0)->id() - e->vertex(1)->id()) != 1) {
           e->setRobustKernel(creator->construct());
@@ -337,7 +337,7 @@ void MainWindow::setRobustKernel()
     }    
   } else {
     for (auto it : optimizer->edges()) {
-      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(it);
+      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
       e->setRobustKernel(nullptr);
     }
   }

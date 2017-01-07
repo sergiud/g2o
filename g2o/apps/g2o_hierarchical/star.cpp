@@ -12,7 +12,7 @@ namespace g2o {
     std::set<OptimizableGraph::Vertex*> vset;
     for (auto e : _lowLevelEdges){
       for (auto & i : e->vertices()){
-        OptimizableGraph::Vertex* v=(OptimizableGraph::Vertex*)i;
+        OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(i);
         v->setFixed(false);
         vset.insert(v);
       }
@@ -24,7 +24,7 @@ namespace g2o {
     // fix all vertices in the gauge
     //cerr << "fixing gauge: ";
     for (auto it : _gauge){
-      OptimizableGraph::Vertex* v=(OptimizableGraph::Vertex*)it;
+      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it);
       //cerr << v->id() << " ";
       v->setFixed(true);
     }
@@ -43,7 +43,7 @@ namespace g2o {
         cerr << "star size=" << _lowLevelEdges.size() << endl;
         cerr << "gauge: ";
         for (auto it : _gauge){
-          OptimizableGraph::Vertex* v = (OptimizableGraph::Vertex*)it;
+          OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it);
           cerr << "[" << v->id() << " " << v->hessianIndex() << "] ";
         }
         cerr << endl;
@@ -67,7 +67,7 @@ namespace g2o {
 
     std::set<OptimizableGraph::Edge*> star;
     for(auto _starEdge : _starEdges){
-      star.insert((OptimizableGraph::Edge*)_starEdge);
+      star.insert(dynamic_cast<OptimizableGraph::Edge*>(_starEdge));
     }
     if (ok) {
       int result = labeler->labelEdges(star);
@@ -79,7 +79,7 @@ namespace g2o {
       v->pop();
     }
     for (auto it : _gauge){
-      OptimizableGraph::Vertex* v=(OptimizableGraph::Vertex*)it;
+      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it);
       v->setFixed(false);
     }
 

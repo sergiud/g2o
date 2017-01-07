@@ -115,7 +115,7 @@ std::string changeFileExtension(const std::string& filename, const std::string& 
 
 bool fileExists(const char* filename)
 {
-  struct stat statInfo;
+  struct stat statInfo{};
   return (stat(filename, &statInfo) == 0);
 }
 
@@ -136,7 +136,7 @@ std::vector<std::string> getFilesByPattern(const char* pattern)
   
 #elif (defined (UNIX) || defined (CYGWIN)) && !defined(ANDROID)
 
-  wordexp_t p;
+  wordexp_t p{};
   wordexp(pattern, &p, 0);
 
   // For some reason, wordexp sometimes fails on an APPLE machine to

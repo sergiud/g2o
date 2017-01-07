@@ -64,8 +64,8 @@ namespace g2o {
   {
     assert(from.size() == 1 && from.count(_vertices[0]) == 1 && "Can not initialize VertexSE2 position by VertexLine2D");
 
-    VertexSE2* vi     = static_cast<VertexSE2*>(_vertices[0]);
-    VertexLine2D* vj = static_cast<VertexLine2D*>(_vertices[1]);
+    VertexSE2* vi     = dynamic_cast<VertexSE2*>(_vertices[0]);
+    VertexLine2D* vj = dynamic_cast<VertexLine2D*>(_vertices[1]);
     if (from.count(vi) > 0 && to == vj) {
       SE2 T=vi->estimate();
       Vector2D est=_measurement;

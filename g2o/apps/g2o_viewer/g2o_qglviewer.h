@@ -53,7 +53,7 @@ namespace g2o {
     protected:
       HyperGraphElementAction* _drawActions;
       GLuint _drawList;
-      bool _updateDisplay;
+      bool _updateDisplay{};
       DrawAction::Parameters* _drawActionParameters;
   };
 

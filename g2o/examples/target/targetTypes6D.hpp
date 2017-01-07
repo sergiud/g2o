@@ -105,8 +105,8 @@ public:
   /** set the estimate of the to vertex, based on the estimate of the from vertex in the edge. */
   virtual void initialEstimate(const g2o::OptimizableGraph::VertexSet& from, g2o::OptimizableGraph::Vertex* to){
     assert(from.size() == 1);
-    const VertexPositionVelocity3D* vi = static_cast<const VertexPositionVelocity3D*>(*from.begin());
-    VertexPositionVelocity3D* vj = static_cast<VertexPositionVelocity3D*>(to);
+    const VertexPositionVelocity3D* vi = dynamic_cast<const VertexPositionVelocity3D*>(*from.begin());
+    VertexPositionVelocity3D* vj = dynamic_cast<VertexPositionVelocity3D*>(to);
     Vector6d viEst=vi->estimate();
     Vector6d vjEst=viEst;
 
@@ -125,15 +125,15 @@ public:
   /** override in your class if it's not possible to initialize the vertices in certain combinations */
   virtual double initialEstimatePossible(const g2o::OptimizableGraph::VertexSet& from, g2o::OptimizableGraph::Vertex* to) {
     //only works on sequential vertices
-    const VertexPositionVelocity3D* vi = static_cast<const VertexPositionVelocity3D*>(*from.begin());
+    const VertexPositionVelocity3D* vi = dynamic_cast<const VertexPositionVelocity3D*>(*from.begin());
     return (to->id() - vi->id() == 1) ? 1.0 : -1.0;
   }
 
 
   void computeError()
   {
-    const VertexPositionVelocity3D* vi = static_cast<const VertexPositionVelocity3D*>(_vertices[0]);
-    const VertexPositionVelocity3D* vj = static_cast<const VertexPositionVelocity3D*>(_vertices[1]);
+    const VertexPositionVelocity3D* vi = dynamic_cast<const VertexPositionVelocity3D*>(_vertices[0]);
+    const VertexPositionVelocity3D* vj = dynamic_cast<const VertexPositionVelocity3D*>(_vertices[1]);
     
     for (int k = 0; k < 3; k++)
       {
@@ -171,7 +171,7 @@ public:
   
   void computeError()
   {
-    const VertexPositionVelocity3D* v = static_cast<const VertexPositionVelocity3D*>(_vertices[0]);
+    const VertexPositionVelocity3D* v = dynamic_cast<const VertexPositionVelocity3D*>(_vertices[0]);
     for (int k = 0; k < 3; k++)
       {
         _error[k] = v->estimate()[k] - _measurement[k];

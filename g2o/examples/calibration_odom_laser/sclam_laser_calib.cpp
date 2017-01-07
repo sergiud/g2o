@@ -131,7 +131,7 @@ int main(int argc, char** argv)
     cerr << "vertices: " << optimizer.vertices().size() << endl;
     if (1)
     for (SparseOptimizer::VertexIDMap::const_iterator it = optimizer.vertices().begin(); it != optimizer.vertices().end(); ++it) {
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it->second);
+      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it->second);
       if (d.visited().count(v) == 0) {
         cerr << "\t unvisited vertex " << it->first << " " << (void*)v << endl;
         v->setFixed(true);

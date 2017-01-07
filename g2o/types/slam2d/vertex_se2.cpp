@@ -59,13 +59,13 @@ namespace g2o {
   HyperGraphElementAction* VertexSE2WriteGnuplotAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
       return nullptr;
-    WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
+    WriteGnuplotAction::Parameters* params=dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
     if ((params == nullptr) || (params->os == nullptr)){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, no valid output stream specified" << std::endl;
       return nullptr;
     }
 
-    VertexSE2* v =  static_cast<VertexSE2*>(element);
+    VertexSE2* v =  dynamic_cast<VertexSE2*>(element);
     *(params->os) << v->estimate().translation().x() << " " << v->estimate().translation().y()
       << " " << v->estimate().rotation().angle() << std::endl;
     return this;
@@ -103,7 +103,7 @@ namespace g2o {
     if ((_show != nullptr) && !_show->value())
       return this;
 
-    VertexSE2* that = static_cast<VertexSE2*>(element);
+    VertexSE2* that = dynamic_cast<VertexSE2*>(element);
 
     glColor3f(POSE_VERTEX_COLOR);
     glPushMatrix();

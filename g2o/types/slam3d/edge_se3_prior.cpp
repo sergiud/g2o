@@ -46,7 +46,7 @@ namespace g2o {
     assert(_offsetParam);
     ParameterVector pv(1);
     pv[0]=_offsetParam;
-    resolveCache(_cache, (OptimizableGraph::Vertex*)_vertices[0],"CACHE_SE3_OFFSET",pv);
+    resolveCache(_cache, dynamic_cast<OptimizableGraph::Vertex*>(_vertices[0]),"CACHE_SE3_OFFSET",pv);
     return _cache != nullptr;
   }
 
@@ -97,7 +97,7 @@ namespace g2o {
   }
 
   void EdgeSE3Prior::linearizeOplus(){
-    VertexSE3 *from = static_cast<VertexSE3*>(_vertices[0]);
+    VertexSE3 *from = dynamic_cast<VertexSE3*>(_vertices[0]);
     Isometry3D E;
     Isometry3D Z, X, P;
     X=from->estimate();
@@ -114,7 +114,7 @@ namespace g2o {
 
 
   void EdgeSE3Prior::initialEstimate(const OptimizableGraph::VertexSet& /*from_*/, OptimizableGraph::Vertex* /*to_*/) {
-    VertexSE3 *v = static_cast<VertexSE3*>(_vertices[0]);
+    VertexSE3 *v = dynamic_cast<VertexSE3*>(_vertices[0]);
     assert(v && "Vertex for the Prior edge is not set");
 
     Isometry3D newEstimate = _offsetParam->offset().inverse() * measurement();

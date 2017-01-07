@@ -72,8 +72,8 @@ namespace g2o {
   {
     assert(from.size() == 1 && from.count(_vertices[0]) == 1 && "Can not initialize VertexSE2 position by VertexSegment2D. I could if i wanted. Not now");
 
-    VertexSE2* vi     = static_cast<VertexSE2*>(_vertices[0]);
-    VertexSegment2D* vj = static_cast<VertexSegment2D*>(_vertices[1]);
+    VertexSE2* vi     = dynamic_cast<VertexSE2*>(_vertices[0]);
+    VertexSegment2D* vj = dynamic_cast<VertexSegment2D*>(_vertices[1]);
     if (from.count(vi) > 0 && to == vj) {
       vj->setEstimateP1(vi->estimate() * measurementP1());
       vj->setEstimateP2(vi->estimate() * measurementP2());

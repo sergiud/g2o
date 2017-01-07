@@ -44,9 +44,9 @@ namespace g2o {
 
       void computeError()
       {
-        const VertexSE2* v1          = static_cast<const VertexSE2*>(_vertices[0]);
-        const VertexSE2* v2          = static_cast<const VertexSE2*>(_vertices[1]);
-        const VertexSE2* laserOffset = static_cast<const VertexSE2*>(_vertices[2]);
+        const VertexSE2* v1          = dynamic_cast<const VertexSE2*>(_vertices[0]);
+        const VertexSE2* v2          = dynamic_cast<const VertexSE2*>(_vertices[1]);
+        const VertexSE2* laserOffset = dynamic_cast<const VertexSE2*>(_vertices[2]);
         const SE2& x1 = v1->estimate();
         const SE2& x2 = v2->estimate();
         SE2 delta = _inverseMeasurement * ((x1 * laserOffset->estimate()).inverse() * x2 * laserOffset->estimate());

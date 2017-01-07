@@ -52,8 +52,8 @@ namespace g2o {
 
       void computeError()
       {
-        const VertexSE2* v1 = static_cast<const VertexSE2*>(_vertices[0]);
-        const VertexSegment2D* l2 = static_cast<const VertexSegment2D*>(_vertices[1]);
+        const VertexSE2* v1 = dynamic_cast<const VertexSE2*>(_vertices[0]);
+        const VertexSegment2D* l2 = dynamic_cast<const VertexSegment2D*>(_vertices[1]);
         SE2 iEst=v1->estimate().inverse();
         Vector2D predP1 = iEst * l2->estimateP1();
         Vector2D predP2 = iEst * l2->estimateP2();
@@ -82,8 +82,8 @@ namespace g2o {
       virtual int measurementDimension() const {return 3;}
 
       virtual bool setMeasurementFromState(){
-        const VertexSE2* v1 = static_cast<const VertexSE2*>(_vertices[0]);
-        const VertexSegment2D* l2 = static_cast<const VertexSegment2D*>(_vertices[1]);
+        const VertexSE2* v1 = dynamic_cast<const VertexSE2*>(_vertices[0]);
+        const VertexSegment2D* l2 = dynamic_cast<const VertexSegment2D*>(_vertices[1]);
         SE2 iEst=v1->estimate().inverse();
         Vector2D predP1 = iEst * l2->estimateP1();
         Vector2D predP2 = iEst * l2->estimateP2();

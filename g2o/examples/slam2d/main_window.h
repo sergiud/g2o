@@ -32,8 +32,8 @@ class MainWindow : public QMainWindow, public Ui::BaseMainWindow
     MainWindow(QWidget * parent = nullptr, Qt::WindowFlags flags = nullptr);
     ~MainWindow();
 
-    g2o::OptimizationAlgorithm* solverGaussNewton;
-    g2o::OptimizationAlgorithm* solverLevenberg;
+    g2o::OptimizationAlgorithm* solverGaussNewton{};
+    g2o::OptimizationAlgorithm* solverLevenberg{};
 
   public slots:
     void on_actionLoad_triggered(bool);

@@ -67,7 +67,7 @@ namespace g2o {
   {
     for (OptimizableGraph::VertexIDMap::const_iterator it=_graph->vertices().begin(); it!=_graph->vertices().end(); ++it){
       AdjacencyMapEntry entry;
-      entry._child = static_cast<OptimizableGraph::Vertex*>(it->second);
+      entry._child = dynamic_cast<OptimizableGraph::Vertex*>(it->second);
       _adjacencyMap.insert(make_pair(entry.child(), entry));
     }
   }
@@ -75,7 +75,7 @@ namespace g2o {
   void EstimatePropagator::reset()
   {
     for (auto it : _visited){
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it);
+      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it);
       auto at = _adjacencyMap.find(v);
       assert(at != _adjacencyMap.end());
       at->second.reset();
@@ -104,7 +104,7 @@ namespace g2o {
 
     PriorityQueue frontier;
     for (auto vit : vset){
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(vit);
+      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(vit);
       auto it = _adjacencyMap.find(v);
       assert(it != _adjacencyMap.end());
       it->second._distance = 0.;
@@ -127,13 +127,13 @@ namespace g2o {
       /* std::pair< OptimizableGraph::VertexSet::iterator, bool> insertResult = */ _visited.insert(u);
       auto et = u->edges().begin();
       while (et != u->edges().end()){
-        OptimizableGraph::Edge* edge = static_cast<OptimizableGraph::Edge*>(*et);
+        OptimizableGraph::Edge* edge = dynamic_cast<OptimizableGraph::Edge*>(*et);
         ++et;
 
         int maxFrontier = -1;
         OptimizableGraph::VertexSet initializedVertices;
         for (size_t i = 0; i < edge->vertices().size(); ++i) {
-          OptimizableGraph::Vertex* z = static_cast<OptimizableGraph::Vertex*>(edge->vertex(i));
+          OptimizableGraph::Vertex* z = dynamic_cast<OptimizableGraph::Vertex*>(edge->vertex(i));
 	  if (z == nullptr)
 	    continue;
           auto ot = _adjacencyMap.find(z);
@@ -145,7 +145,7 @@ namespace g2o {
         assert(maxFrontier >= 0);
 
         for (size_t i = 0; i < edge->vertices().size(); ++i) {
-          OptimizableGraph::Vertex* z = static_cast<OptimizableGraph::Vertex*>(edge->vertex(i));
+          OptimizableGraph::Vertex* z = dynamic_cast<OptimizableGraph::Vertex*>(edge->vertex(i));
 	  if (z == nullptr)
 	    continue;
           if (z == u)

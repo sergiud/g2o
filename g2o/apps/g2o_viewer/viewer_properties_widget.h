@@ -36,7 +36,7 @@ class G2O_VIEWER_API ViewerPropertiesWidget : public PropertiesWidget
     void setViewer(g2o::G2oQGLViewer* viewer);
 
   protected:
-    g2o::G2oQGLViewer* _viewer;
+    g2o::G2oQGLViewer* _viewer{};
 
     virtual void applyProperties();
     virtual std::string humanReadablePropName(const std::string& probName) const;

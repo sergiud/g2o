@@ -122,7 +122,7 @@ namespace g2o {
                  HyperGraphElementAction::Parameters* params){
     if (typeid(*element).name()!=_typeName)
       return nullptr;
-    CacheCamera* that = static_cast<CacheCamera*>(element);
+    CacheCamera* that = dynamic_cast<CacheCamera*>(element);
     refreshPropertyPtrs(params);
     if (_previousParams == nullptr)
       return this;

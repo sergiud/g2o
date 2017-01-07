@@ -12,7 +12,7 @@ namespace g2o {
   class G2O_TYPES_SLAM2D_API EdgeSE2LotsOfXY : public BaseMultiEdge<-1,VectorXD>
   {
     protected:
-      unsigned int _observedPoints;
+      unsigned int _observedPoints{};
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW;

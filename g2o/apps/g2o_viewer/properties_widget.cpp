@@ -68,7 +68,7 @@ void PropertiesWidget::updateDisplayedProperties()
     _propNames.push_back(it->first);
 
     if (dynamic_cast<Property<bool>*>(it->second) != nullptr) {
-      Property<bool>* prop = static_cast<Property<bool>*>(it->second);
+      Property<bool>* prop = dynamic_cast<Property<bool>*>(it->second);
       auto* checkItem = new QTableWidgetItem;
       checkItem->setText("enabled");
       checkItem->setFlags(checkItem->flags() | Qt::ItemIsUserCheckable);
@@ -107,7 +107,7 @@ void PropertiesWidget::applyProperties()
       continue;
 
     if (dynamic_cast<Property<bool>*>(baseProp) != nullptr) {
-      Property<bool>* prop = static_cast<Property<bool>*>(baseProp);
+      Property<bool>* prop = dynamic_cast<Property<bool>*>(baseProp);
       QTableWidgetItem* checkItem = tableWidget->item(r, 1);
       prop->setValue(checkItem->checkState() == Qt::Checked);
     } else {

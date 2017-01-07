@@ -116,13 +116,13 @@ namespace g2o{
 
     int maxDim=0;
     for (auto & it : vertices()){
-      OptimizableGraph::Vertex* v=static_cast<OptimizableGraph::Vertex*>(it.second); 
+      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second); 
       maxDim=std::max(maxDim,v->dimension());
     }
     
     OptimizableGraph::Vertex* rut=nullptr;
     for (auto & it : vertices()){
-      OptimizableGraph::Vertex* v=static_cast<OptimizableGraph::Vertex*>(it.second);
+      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second);
       if (v->dimension()==maxDim){
         rut=v;
         break;
@@ -138,12 +138,12 @@ namespace g2o{
 
     int maxDim=0;
     for (auto & it : vertices()){
-      OptimizableGraph::Vertex* v=static_cast<OptimizableGraph::Vertex*>(it.second); 
+      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second); 
       maxDim = std::max(maxDim,v->dimension());
     }
 
     for (auto & it : vertices()){
-      OptimizableGraph::Vertex* v=static_cast<OptimizableGraph::Vertex*>(it.second);
+      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second);
       if (v->dimension() == maxDim) {
         // test for fixed vertex
         if (v->fixed()) {
@@ -151,7 +151,7 @@ namespace g2o{
         }
         // test for full dimension prior
         for (auto eit : v->edges()) {
-          OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(eit);
+          OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(eit);
           if (e->vertices().size() == 1 && e->dimension() == maxDim)
             return false;
         }
@@ -213,7 +213,7 @@ namespace g2o{
     _activeEdges.clear();
     set<Edge*> auxEdgeSet; // temporary structure to avoid duplicates
     for (auto it=vset.begin(); it!=vset.end(); ++it){
-      OptimizableGraph::Vertex* v= (OptimizableGraph::Vertex*) *it;
+      OptimizableGraph::Vertex* v= dynamic_cast<OptimizableGraph::Vertex*>( *it);
       const OptimizableGraph::EdgeSet& vEdges=v->edges();
       // count if there are edges in that level. If not remove from the pool
       int levelEdges=0;
@@ -275,11 +275,11 @@ namespace g2o{
     _activeEdges.reserve(eset.size());
     set<Vertex*> auxVertexSet; // temporary structure to avoid duplicates
     for (auto it : eset){
-      OptimizableGraph::Edge* e=(OptimizableGraph::Edge*)it;
+      OptimizableGraph::Edge* e=dynamic_cast<OptimizableGraph::Edge*>(it);
       if (e->numUndefinedVertices() != 0)
 	continue;
       for (vector<HyperGraph::Vertex*>::const_iterator vit = e->vertices().begin(); vit != e->vertices().end(); ++vit) {
-        auxVertexSet.insert(static_cast<OptimizableGraph::Vertex*>(*vit));
+        auxVertexSet.insert(dynamic_cast<OptimizableGraph::Vertex*>(*vit));
       }
       _activeEdges.push_back(reinterpret_cast<OptimizableGraph::Edge*>(it));
     }
@@ -296,7 +296,7 @@ namespace g2o{
 
   void SparseOptimizer::setToOrigin(){
     for (auto & it : vertices()) {
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it.second);
+      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it.second);
       v->setToOrigin();
     }
   }
@@ -314,14 +314,14 @@ namespace g2o{
     HyperGraph::VertexSet fixedVertices; // these are the root nodes where to start the initialization
     for (auto e : _activeEdges) {
       for (size_t i = 0; i < e->vertices().size(); ++i) {
-        OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(e->vertex(i));
+        OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(e->vertex(i));
 	if (v == nullptr)
 	  continue;
         if (v->fixed())
           fixedVertices.insert(v);
         else { // check for having a prior which is able to fully initialize a vertex
           for (auto vedgeIt = v->edges().begin(); vedgeIt != v->edges().end(); ++vedgeIt) {
-            OptimizableGraph::Edge* vedge = static_cast<OptimizableGraph::Edge*>(*vedgeIt);
+            OptimizableGraph::Edge* vedge = dynamic_cast<OptimizableGraph::Edge*>(*vedgeIt);
             if (vedge->vertices().size() == 1 && vedge->initialEstimatePossible(emptySet, v) > 0.) {
               //cerr << "Initialize with prior for " << v->id() << endl;
               vedge->initialEstimate(emptySet, v);
@@ -453,14 +453,14 @@ namespace g2o{
     _activeVertices.reserve(_activeVertices.size() + vset.size());
     _activeEdges.reserve(_activeEdges.size() + eset.size());
     for (auto it : eset) {
-      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(it);
+      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
       if (!e->allVerticesFixed()) _activeEdges.push_back(e);
     }
     
     // update the index mapping
     size_t next = _ivMap.size();
     for (auto it : vset) {
-      OptimizableGraph::Vertex* v=static_cast<OptimizableGraph::Vertex*>(it);
+      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it);
       if (! v->fixed()){
         if (! v->marginalized()){
           v->setHessianIndex(next);
@@ -581,7 +581,7 @@ namespace g2o{
 
   bool SparseOptimizer::removeVertex(HyperGraph::Vertex* v, bool detach)
   {
-    OptimizableGraph::Vertex* vv = static_cast<OptimizableGraph::Vertex*>(v);
+    OptimizableGraph::Vertex* vv = dynamic_cast<OptimizableGraph::Vertex*>(v);
     if (vv->hessianIndex() >= 0) {
       clearIndexMapping();
       _ivMap.clear();

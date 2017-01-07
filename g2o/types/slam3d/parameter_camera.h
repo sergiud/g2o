@@ -67,7 +67,7 @@ namespace g2o {
     virtual void updateImpl();
     virtual bool resolveDependancies();
     Affine3D _w2i; ///< world to image transform
-    ParameterCamera* params;
+    ParameterCamera* params{};
   };
 
 
@@ -78,7 +78,7 @@ namespace g2o {
       virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_ );
     protected:
       virtual bool refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_);
-      FloatProperty* _cameraZ, *_cameraSide;
+      FloatProperty* _cameraZ{}, *_cameraSide{};
   };
 #endif
 

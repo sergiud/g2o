@@ -43,7 +43,7 @@ namespace g2o {
 bool edgeAllVertsSameDim(OptimizableGraph::Edge* e, int dim)
 {
   for (auto & i : e->vertices()) {
-    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(i);
+    OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(i);
     if (v->dimension() != dim)
       return false;
   }
@@ -67,12 +67,12 @@ bool saveGnuplot(const std::string& gnudump, const HyperGraph::VertexSet& vertic
     cerr << __PRETTY_FUNCTION__ << ": no action \"writeGnuplot\" registered" << endl;
     return false;
   }
-  WriteGnuplotAction::Parameters params;
+  WriteGnuplotAction::Parameters params{};
 
   int maxDim = -1;
   int minDim = numeric_limits<int>::max();
   for (auto vertice : vertices){
-    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(vertice);
+    OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(vertice);
     int vdim = v->dimension();
     maxDim = (std::max)(vdim, maxDim);
     minDim = (std::min)(vdim, minDim);
@@ -87,7 +87,7 @@ bool saveGnuplot(const std::string& gnudump, const HyperGraph::VertexSet& vertic
   bool hasOdomEdge = false;
   bool hasLandmarkEdge = false;
   for (auto edge : edges) {
-    OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(edge);
+    OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(edge);
     if (e->vertices().size() == 2) {
       if (edgeAllVertsSameDim(e, maxDim))
         hasOdomEdge = true;
@@ -111,7 +111,7 @@ bool saveGnuplot(const std::string& gnudump, const HyperGraph::VertexSet& vertic
 
     // writing odometry edges
     for (auto edge : edges) {
-      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(edge);
+      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(edge);
       if (e->vertices().size() != 2 || ! edgeAllVertsSameDim(e, maxDim))
         continue;
       (*saveGnuplot)(e, &params);
@@ -131,7 +131,7 @@ bool saveGnuplot(const std::string& gnudump, const HyperGraph::VertexSet& vertic
 
     // writing landmark edges
     for (auto edge : edges) {
-      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(edge);
+      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(edge);
       if (e->vertices().size() != 2 || edgeAllVertsSameDim(e, maxDim))
         continue;
       (*saveGnuplot)(e, &params);
@@ -151,7 +151,7 @@ bool saveGnuplot(const std::string& gnudump, const HyperGraph::VertexSet& vertic
 
     // writing all edges
     for (auto edge : edges) {
-      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(edge);
+      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(edge);
       (*saveGnuplot)(e, &params);
     }
     cerr << "done." << endl;
@@ -168,7 +168,7 @@ bool saveGnuplot(const std::string& gnudump, const HyperGraph::VertexSet& vertic
     params.os = &fout;
 
     for (auto vertice : vertices){
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(vertice);
+      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(vertice);
       (*saveGnuplot)(v, &params);
     }
     cerr << "done." << endl;
@@ -185,7 +185,7 @@ bool dumpEdges(std::ostream& os, const OptimizableGraph& optimizer)
     cerr << __PRETTY_FUNCTION__ << ": no action \"writeGnuplot\" registered" << endl;
     return false;
   }
-  WriteGnuplotAction::Parameters params;
+  WriteGnuplotAction::Parameters params{};
   params.os = &os;
 
   // writing all edges
@@ -193,7 +193,7 @@ bool dumpEdges(std::ostream& os, const OptimizableGraph& optimizer)
   os << "set size ratio -1" << endl;
   os << "plot \"-\" w l" << endl;
   for (auto it : optimizer.edges()) {
-    OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(it);
+    OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
     (*saveGnuplot)(e, &params);
   }
   os << "e" << endl;

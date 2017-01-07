@@ -50,15 +50,15 @@ namespace g2o {
   }
 
   void EdgeSE3::computeError() {
-    VertexSE3 *from = static_cast<VertexSE3*>(_vertices[0]);
-    VertexSE3 *to   = static_cast<VertexSE3*>(_vertices[1]);
+    VertexSE3 *from = dynamic_cast<VertexSE3*>(_vertices[0]);
+    VertexSE3 *to   = dynamic_cast<VertexSE3*>(_vertices[1]);
     Isometry3D delta=_inverseMeasurement * from->estimate().inverse() * to->estimate();
     _error=internal::toVectorMQT(delta);
   }
 
   bool EdgeSE3::setMeasurementFromState(){
-    VertexSE3 *from = static_cast<VertexSE3*>(_vertices[0]);
-    VertexSE3 *to   = static_cast<VertexSE3*>(_vertices[1]);
+    VertexSE3 *from = dynamic_cast<VertexSE3*>(_vertices[0]);
+    VertexSE3 *to   = dynamic_cast<VertexSE3*>(_vertices[1]);
     Isometry3D delta = from->estimate().inverse() * to->estimate();
     setMeasurement(delta);
     return true;
@@ -69,8 +69,8 @@ namespace g2o {
     // BaseBinaryEdge<6, Isometry3D, VertexSE3, VertexSE3>::linearizeOplus();
     // return;
 
-    VertexSE3 *from = static_cast<VertexSE3*>(_vertices[0]);
-    VertexSE3 *to   = static_cast<VertexSE3*>(_vertices[1]);
+    VertexSE3 *from = dynamic_cast<VertexSE3*>(_vertices[0]);
+    VertexSE3 *to   = dynamic_cast<VertexSE3*>(_vertices[1]);
     Isometry3D E;
     const Isometry3D& Xi=from->estimate();
     const Isometry3D& Xj=to->estimate();
@@ -79,8 +79,8 @@ namespace g2o {
   }
 
   void EdgeSE3::initialEstimate(const OptimizableGraph::VertexSet& from_, OptimizableGraph::Vertex* /*to_*/) {
-    VertexSE3 *from = static_cast<VertexSE3*>(_vertices[0]);
-    VertexSE3 *to   = static_cast<VertexSE3*>(_vertices[1]);
+    VertexSE3 *from = dynamic_cast<VertexSE3*>(_vertices[0]);
+    VertexSE3 *to   = dynamic_cast<VertexSE3*>(_vertices[1]);
 
     if (from_.count(from) > 0) {
       to->setEstimate(from->estimate() * _measurement);
@@ -94,15 +94,15 @@ namespace g2o {
   HyperGraphElementAction* EdgeSE3WriteGnuplotAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
       return nullptr;
-    WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
+    WriteGnuplotAction::Parameters* params=dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
     if (params->os == nullptr){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified" << std::endl;
       return nullptr;
     }
 
-    EdgeSE3* e =  static_cast<EdgeSE3*>(element);
-    VertexSE3* fromEdge = static_cast<VertexSE3*>(e->vertices()[0]);
-    VertexSE3* toEdge   = static_cast<VertexSE3*>(e->vertices()[1]);
+    EdgeSE3* e =  dynamic_cast<EdgeSE3*>(element);
+    VertexSE3* fromEdge = dynamic_cast<VertexSE3*>(e->vertices()[0]);
+    VertexSE3* toEdge   = dynamic_cast<VertexSE3*>(e->vertices()[1]);
     Vector6d fromV, toV;
     fromV=internal::toVectorMQT(fromEdge->estimate());
     toV=internal::toVectorMQT(toEdge->estimate());
@@ -130,9 +130,9 @@ namespace g2o {
     if ((_show != nullptr) && !_show->value())
       return this;
     
-    EdgeSE3* e =  static_cast<EdgeSE3*>(element);
-    VertexSE3* fromEdge = static_cast<VertexSE3*>(e->vertices()[0]);
-    VertexSE3* toEdge   = static_cast<VertexSE3*>(e->vertices()[1]);
+    EdgeSE3* e =  dynamic_cast<EdgeSE3*>(element);
+    VertexSE3* fromEdge = dynamic_cast<VertexSE3*>(e->vertices()[0]);
+    VertexSE3* toEdge   = dynamic_cast<VertexSE3*>(e->vertices()[1]);
     if ((fromEdge == nullptr) || (toEdge == nullptr))
       return this;
     glColor3f(POSE_EDGE_COLOR);

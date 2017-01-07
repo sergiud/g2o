@@ -186,8 +186,8 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension, in
     _edgesAdded.insert(e);
 
     if (doInit != 0) {
-      OptimizableGraph::Vertex* from = static_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
-      OptimizableGraph::Vertex* to   = static_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
+      OptimizableGraph::Vertex* from = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
+      OptimizableGraph::Vertex* to   = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
       switch (doInit){
         case 1: // initialize v1 from v2
           {
@@ -289,8 +289,8 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension, in
     _edgesAdded.insert(e);
 
     if (doInit != 0) {
-      OptimizableGraph::Vertex* from = static_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
-      OptimizableGraph::Vertex* to   = static_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
+      OptimizableGraph::Vertex* from = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
+      OptimizableGraph::Vertex* to   = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
       switch (doInit){
         case 1: // initialize v1 from v2
           {
@@ -344,7 +344,7 @@ bool G2oSlamInterface::queryState(const std::vector<int>& nodes)
 #if 1
   if (nodes.empty()) {
     for (OptimizableGraph::VertexIDMap::const_iterator it = _optimizer->vertices().begin(); it != _optimizer->vertices().end(); ++it) {
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it->second);
+      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it->second);
       printVertex(v);
     }
   } else {
@@ -391,7 +391,7 @@ bool G2oSlamInterface::printVertex(OptimizableGraph::Vertex* v)
   int vdim = v->dimension();
   if (vdim == 3) {
     char* s = buffer;
-    OnlineVertexSE2* v2 = static_cast<OnlineVertexSE2*>(v);
+    OnlineVertexSE2* v2 = dynamic_cast<OnlineVertexSE2*>(v);
     memcpy(s, "VERTEX_XYT ", 11);
     s += 11;
     s += modp_itoa10(v->id(), s);
@@ -407,7 +407,7 @@ bool G2oSlamInterface::printVertex(OptimizableGraph::Vertex* v)
   }
   else if (vdim == 6) {
     char* s = buffer;
-    OnlineVertexSE3* v3 = static_cast<OnlineVertexSE3*>(v);
+    OnlineVertexSE3* v3 = dynamic_cast<OnlineVertexSE3*>(v);
     Vector3d eulerAngles = internal::toEuler(v3->updatedEstimate.matrix().topLeftCorner<3,3>());
     const double& roll = eulerAngles(0);
     const double& pitch = eulerAngles(1);

@@ -101,7 +101,7 @@ class EdgePointOnCurve : public g2o::BaseUnaryEdge<1, Eigen::Vector2d, VertexPar
 
     void computeError()
     {
-      const VertexParams* params = static_cast<const VertexParams*>(vertex(0));
+      const VertexParams* params = dynamic_cast<const VertexParams*>(vertex(0));
       const double& a = params->estimate()(0);
       const double& b = params->estimate()(1);
       const double& lambda = params->estimate()(2);

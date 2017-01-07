@@ -43,8 +43,8 @@ public:
 
     void computeError()
     {
-        const VertexPlane* v1 = static_cast<const VertexPlane*>(_vertices[0]);
-        const VertexPlane* v2 = static_cast<const VertexPlane*>(_vertices[1]);
+        const VertexPlane* v1 = dynamic_cast<const VertexPlane*>(_vertices[0]);
+        const VertexPlane* v2 = dynamic_cast<const VertexPlane*>(_vertices[1]);
         _error = (v2->estimate().toVector() - v1->estimate().toVector() ) - _measurement;
     }
     virtual bool read(std::istream& is);
@@ -70,8 +70,8 @@ public:
 
     virtual bool setMeasurementFromState() {
 
-        const VertexPlane* v1 = static_cast<const VertexPlane*>(_vertices[0]);
-        const VertexPlane* v2 = static_cast<const VertexPlane*>(_vertices[1]);
+        const VertexPlane* v1 = dynamic_cast<const VertexPlane*>(_vertices[0]);
+        const VertexPlane* v2 = dynamic_cast<const VertexPlane*>(_vertices[1]);
         _measurement = (v2->estimate().toVector())-v1->estimate().toVector();
 
         return true;

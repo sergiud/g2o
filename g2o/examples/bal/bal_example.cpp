@@ -245,8 +245,8 @@ class EdgeObservationBAL : public BaseBinaryEdge<2, Vector2d, VertexCameraBAL, V
 
     void computeError()
     {
-      const VertexCameraBAL* cam = static_cast<const VertexCameraBAL*>(vertex(0));
-      const VertexPointBAL* point = static_cast<const VertexPointBAL*>(vertex(1));
+      const VertexCameraBAL* cam = dynamic_cast<const VertexCameraBAL*>(vertex(0));
+      const VertexPointBAL* point = dynamic_cast<const VertexPointBAL*>(vertex(1));
 
       (*this)(cam->estimate().data(), point->estimate().data(), _error.data());
     }
@@ -257,8 +257,8 @@ class EdgeObservationBAL : public BaseBinaryEdge<2, Vector2d, VertexCameraBAL, V
       //BaseBinaryEdge<2, Vector2d, VertexCameraBAL, VertexPointBAL>::linearizeOplus();
       //return;
 
-      const VertexCameraBAL* cam = static_cast<const VertexCameraBAL*>(vertex(0));
-      const VertexPointBAL* point = static_cast<const VertexPointBAL*>(vertex(1));
+      const VertexCameraBAL* cam = dynamic_cast<const VertexCameraBAL*>(vertex(0));
+      const VertexPointBAL* point = dynamic_cast<const VertexPointBAL*>(vertex(1));
       typedef ceres::internal::AutoDiff<EdgeObservationBAL, double, VertexCameraBAL::Dimension, VertexPointBAL::Dimension> BalAutoDiff;
 
       Matrix<double, Dimension, VertexCameraBAL::Dimension, Eigen::RowMajor> dError_dCamera;

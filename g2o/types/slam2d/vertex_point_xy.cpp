@@ -61,13 +61,13 @@ namespace g2o {
     if (typeid(*element).name()!=_typeName)
       return nullptr;
 
-    WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
+    WriteGnuplotAction::Parameters* params=dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
     if (params->os == nullptr){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified" << std::endl;
       return nullptr;
     }
          
-    VertexPointXY* v =  static_cast<VertexPointXY*>(element);
+    VertexPointXY* v =  dynamic_cast<VertexPointXY*>(element);
     *(params->os) << v->estimate().x() << " " << v->estimate().y() << std::endl;
     return this;
   }
@@ -98,7 +98,7 @@ namespace g2o {
 
     if ((_show != nullptr) && !_show->value())
       return this;
-    VertexPointXY* that = static_cast<VertexPointXY*>(element);
+    VertexPointXY* that = dynamic_cast<VertexPointXY*>(element);
 
     glPushMatrix();
     glPushAttrib(GL_ENABLE_BIT | GL_POINT_BIT);

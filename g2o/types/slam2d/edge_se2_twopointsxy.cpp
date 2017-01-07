@@ -13,9 +13,9 @@ namespace g2o{
   }
 
   void EdgeSE2TwoPointsXY::computeError(){
-    VertexSE2 * pose = static_cast<VertexSE2 *> (_vertices[0]);
-    VertexPointXY * xy1 = static_cast<VertexPointXY *> (_vertices[1]);
-    VertexPointXY * xy2 = static_cast<VertexPointXY *> (_vertices[2]);
+    VertexSE2 * pose = dynamic_cast<VertexSE2 *> (_vertices[0]);
+    VertexPointXY * xy1 = dynamic_cast<VertexPointXY *> (_vertices[1]);
+    VertexPointXY * xy2 = dynamic_cast<VertexPointXY *> (_vertices[2]);
 
 
     Vector2D m1 = pose->estimate().inverse() * xy1->estimate();
@@ -51,9 +51,9 @@ namespace g2o{
 
     assert(initialEstimatePossible(fixed, toEstimate) && "Bad vertices specified");
 
-    VertexSE2 * pose = static_cast<VertexSE2 *>(_vertices[0]);
-    VertexPointXY * v1 = static_cast<VertexPointXY *>(_vertices[1]);
-    VertexPointXY * v2 = static_cast<VertexPointXY *>(_vertices[2]);
+    VertexSE2 * pose = dynamic_cast<VertexSE2 *>(_vertices[0]);
+    VertexPointXY * v1 = dynamic_cast<VertexPointXY *>(_vertices[1]);
+    VertexPointXY * v2 = dynamic_cast<VertexPointXY *>(_vertices[2]);
 
     bool estimatev1 = true;
     bool estimatev2 = true;
@@ -92,9 +92,9 @@ namespace g2o{
 
 
   bool EdgeSE2TwoPointsXY::setMeasurementFromState(){
-    VertexSE2 * pose = static_cast<VertexSE2 *> (_vertices[0]);
-    VertexPointXY * xy1 = static_cast<VertexPointXY *> (_vertices[1]);
-    VertexPointXY * xy2 = static_cast<VertexPointXY *> (_vertices[2]);
+    VertexSE2 * pose = dynamic_cast<VertexSE2 *> (_vertices[0]);
+    VertexPointXY * xy1 = dynamic_cast<VertexPointXY *> (_vertices[1]);
+    VertexPointXY * xy2 = dynamic_cast<VertexPointXY *> (_vertices[2]);
 
 
     Vector2D m1 = pose->estimate().inverse() * xy1->estimate();

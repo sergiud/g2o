@@ -65,7 +65,7 @@ namespace g2o {
         virtual void updateImpl();
         virtual bool resolveDependancies();
 
-        ParameterSE2Offset* _offsetParam;
+        ParameterSE2Offset* _offsetParam{};
         SE2 _w2n, _n2w; 
     };
 

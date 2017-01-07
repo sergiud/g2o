@@ -52,7 +52,7 @@ namespace g2o {
   bool EdgeSE3PointXYZDisparity::resolveCaches(){
     ParameterVector pv(1);
     pv[0]=params;
-    resolveCache(cache, (OptimizableGraph::Vertex*)_vertices[0],"CACHE_CAMERA",pv);
+    resolveCache(cache, dynamic_cast<OptimizableGraph::Vertex*>(_vertices[0]),"CACHE_CAMERA",pv);
     return cache != nullptr;
   }
 
@@ -96,7 +96,7 @@ namespace g2o {
 
   void EdgeSE3PointXYZDisparity::computeError() {
     //VertexSE3 *cam = static_cast<VertexSE3*>(_vertices[0]);
-    VertexPointXYZ *point = static_cast<VertexPointXYZ*>(_vertices[1]);
+    VertexPointXYZ *point = dynamic_cast<VertexPointXYZ*>(_vertices[1]);
     const Vector3D& pt = point->estimate();
     //Vector4D ppt(pt(0),pt(1),pt(2),1.0);
 
@@ -125,7 +125,7 @@ namespace g2o {
 
   void EdgeSE3PointXYZDisparity::linearizeOplus() {
     //VertexSE3 *cam = static_cast<VertexSE3 *>(_vertices[0]);
-    VertexPointXYZ *vp = static_cast<VertexPointXYZ *>(_vertices[1]);
+    VertexPointXYZ *vp = dynamic_cast<VertexPointXYZ *>(_vertices[1]);
 
     // VertexCameraCache* vcache = (VertexCameraCache*)cam->getCache(_cacheIds[0]);
     // if (! vcache){
@@ -172,7 +172,7 @@ namespace g2o {
 
   bool EdgeSE3PointXYZDisparity::setMeasurementFromState(){
     //VertexSE3 *cam = static_cast< VertexSE3*>(_vertices[0]);
-    VertexPointXYZ *point = static_cast<VertexPointXYZ*>(_vertices[1]);
+    VertexPointXYZ *point = dynamic_cast<VertexPointXYZ*>(_vertices[1]);
     const Vector3D &pt = point->estimate();
 
     // VertexCameraCache* vcache = (VertexCameraCache*) cam->getCache(_cacheIds[0]);
@@ -228,9 +228,9 @@ namespace g2o {
 
     if ((_show != nullptr) && !_show->value())
       return this;
-    EdgeSE3PointXYZDisparity* e =  static_cast<EdgeSE3PointXYZDisparity*>(element);
-    VertexSE3* fromEdge = static_cast<VertexSE3*>(e->vertices()[0]);
-    VertexPointXYZ* toEdge   = static_cast<VertexPointXYZ*>(e->vertices()[1]);
+    EdgeSE3PointXYZDisparity* e =  dynamic_cast<EdgeSE3PointXYZDisparity*>(element);
+    VertexSE3* fromEdge = dynamic_cast<VertexSE3*>(e->vertices()[0]);
+    VertexPointXYZ* toEdge   = dynamic_cast<VertexPointXYZ*>(e->vertices()[1]);
     if ((fromEdge == nullptr) || (toEdge == nullptr))
       return this;
     Isometry3D fromTransform=fromEdge->estimate() * e->cameraParameter()->offset();

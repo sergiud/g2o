@@ -84,7 +84,7 @@ namespace g2o {
       return this;
     }
 
-    VertexLine3D* that = static_cast<VertexLine3D*>(element);
+    VertexLine3D* that = dynamic_cast<VertexLine3D*>(element);
     Line3D line = that->estimate();
     line.normalize();
     Eigen::Vector3d direction = line.d();

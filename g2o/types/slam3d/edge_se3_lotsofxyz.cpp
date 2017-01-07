@@ -7,12 +7,12 @@ namespace g2o{
   }
 
   bool EdgeSE3LotsOfXYZ::setMeasurementFromState(){
-    VertexSE3 * pose = static_cast<VertexSE3 *> (_vertices[0]);
+    VertexSE3 * pose = dynamic_cast<VertexSE3 *> (_vertices[0]);
 
     Eigen::Transform<double, 3, 1> poseinv = pose->estimate().inverse();
 
     for(unsigned int i=0; i<_observedPoints; i++){
-      VertexPointXYZ * xyz = static_cast<VertexPointXYZ *> (_vertices[1+i]);
+      VertexPointXYZ * xyz = dynamic_cast<VertexPointXYZ *> (_vertices[1+i]);
       //      const Vector3D &pt = xyz->estimate();
       Vector3D m = poseinv * xyz->estimate();
 
@@ -25,10 +25,10 @@ namespace g2o{
   }
 
   void EdgeSE3LotsOfXYZ::computeError(){
-    VertexSE3 * pose = static_cast<VertexSE3 *> (_vertices[0]);
+    VertexSE3 * pose = dynamic_cast<VertexSE3 *> (_vertices[0]);
 
     for(unsigned int i=0; i<_observedPoints; i++){
-      VertexPointXYZ * xyz = static_cast<VertexPointXYZ *> (_vertices[1+i]);
+      VertexPointXYZ * xyz = dynamic_cast<VertexPointXYZ *> (_vertices[1+i]);
       Vector3D m = pose->estimate().inverse() * xyz->estimate();
 
       unsigned int index = 3*i;
@@ -39,7 +39,7 @@ namespace g2o{
   }
 
   void EdgeSE3LotsOfXYZ::linearizeOplus(){
-    g2o::VertexSE3 * pose = (g2o::VertexSE3 *) (_vertices[0]);
+    g2o::VertexSE3 * pose = dynamic_cast<g2o::VertexSE3 *> (_vertices[0]);
 
     // initialize Ji matrix
     MatrixXD Ji;
@@ -50,7 +50,7 @@ namespace g2o{
     Matrix3D poseRot = pose->estimate().inverse().rotation();
 
     for(unsigned int i=1; i<_vertices.size(); i++){
-      g2o::VertexPointXYZ * point = (g2o::VertexPointXYZ *) (_vertices[i]);
+      g2o::VertexPointXYZ * point = dynamic_cast<g2o::VertexPointXYZ *> (_vertices[i]);
       Vector3D Zcam = pose->estimate().inverse() * point->estimate();
 
       unsigned int index=3*(i-1);
@@ -137,7 +137,7 @@ namespace g2o{
 
     assert(initialEstimatePossible(fixed, toEstimate) && "Bad vertices specified");
 
-    VertexSE3 * pose = static_cast<VertexSE3 *>(_vertices[0]);
+    VertexSE3 * pose = dynamic_cast<VertexSE3 *>(_vertices[0]);
 
 #ifdef _MSC_VER
 	std::vector<bool> estimate_this(_observedPoints, true);
@@ -150,7 +150,7 @@ namespace g2o{
 
     for(auto it : fixed){
       for(unsigned int i=1; i<_vertices.size(); i++){
-	VertexPointXYZ * vert = static_cast<VertexPointXYZ *>(_vertices[i]);
+	VertexPointXYZ * vert = dynamic_cast<VertexPointXYZ *>(_vertices[i]);
 	if(vert->id() == it->id()) estimate_this[i-1] = false;
       }
     }
@@ -159,7 +159,7 @@ namespace g2o{
       if(estimate_this[i-1]){
 	unsigned int index = 3*(i-1);
 	Vector3D submeas(_measurement[index], _measurement[index+1], _measurement[index+2]);
-	VertexPointXYZ * vert = static_cast<VertexPointXYZ *>(_vertices[i]);
+	VertexPointXYZ * vert = dynamic_cast<VertexPointXYZ *>(_vertices[i]);
 	vert->setEstimate(pose->estimate() * submeas);
       }
     }

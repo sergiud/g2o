@@ -65,7 +65,7 @@ namespace g2o {
       
     virtual void computeError()
     {
-      const VertexSE2* v = static_cast<const VertexSE2*>(_vertices[0]);
+      const VertexSE2* v = dynamic_cast<const VertexSE2*>(_vertices[0]);
       _error = v->estimate().translation() - _measurement;
     }
   };

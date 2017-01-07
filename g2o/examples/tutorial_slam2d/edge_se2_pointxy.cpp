@@ -61,7 +61,7 @@ namespace g2o {
 
     void EdgeSE2PointXY::computeError()
     {
-      const VertexPointXY* l2 = static_cast<const VertexPointXY*>(_vertices[1]);
+      const VertexPointXY* l2 = dynamic_cast<const VertexPointXY*>(_vertices[1]);
       _error = (_sensorCache->w2n() * l2->estimate()) - _measurement;
     }
 
@@ -69,7 +69,7 @@ namespace g2o {
     {
       ParameterVector pv(1);
       pv[0] = _sensorOffset;
-      resolveCache(_sensorCache, static_cast<OptimizableGraph::Vertex*>(_vertices[0]), "TUTORIAL_CACHE_SE2_OFFSET", pv);
+      resolveCache(_sensorCache, dynamic_cast<OptimizableGraph::Vertex*>(_vertices[0]), "TUTORIAL_CACHE_SE2_OFFSET", pv);
       return _sensorCache != nullptr;
     }
 

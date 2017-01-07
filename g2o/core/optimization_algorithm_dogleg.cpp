@@ -59,7 +59,7 @@ namespace g2o {
     assert(_solver->optimizer() == _optimizer && "underlying linear solver operates on different graph");
     assert(dynamic_cast<BlockSolverBase*>(_solver) && "underlying linear solver is not a block solver");
 
-    BlockSolverBase* blockSolver = static_cast<BlockSolverBase*>(_solver);
+    BlockSolverBase* blockSolver = dynamic_cast<BlockSolverBase*>(_solver);
 
     if (iteration == 0 && !online) { // built up the CCS structure, here due to easy time measure
       bool ok = _solver->buildStructure();

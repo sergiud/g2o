@@ -44,7 +44,7 @@ namespace g2o {
   bool EdgeSE2PointXYOffset::resolveCaches(){
     ParameterVector pv(1);
     pv[0]=offsetParam;
-    resolveCache(cache, (OptimizableGraph::Vertex*)_vertices[0],"CACHE_SE2_OFFSET",pv);
+    resolveCache(cache, dynamic_cast<OptimizableGraph::Vertex*>(_vertices[0]),"CACHE_SE2_OFFSET",pv);
     return cache != nullptr;
   }
 
@@ -89,7 +89,7 @@ namespace g2o {
   void EdgeSE2PointXYOffset::computeError() {
     // from cam to point (track)
     // VertexSE2 *rob = static_cast<VertexSE2*>(_vertices[0]);
-    VertexPointXY *point = static_cast<VertexPointXY*>(_vertices[1]);
+    VertexPointXY *point = dynamic_cast<VertexPointXY*>(_vertices[1]);
 
     Vector2D perr = cache->w2lMatrix() * point->estimate();
 
@@ -100,8 +100,8 @@ namespace g2o {
   }
 
   void EdgeSE2PointXYOffset::linearizeOplus() {
-    VertexSE2 *rob = static_cast<VertexSE2*>(_vertices[0]);
-    VertexPointXY *point = static_cast<VertexPointXY*>(_vertices[1]);
+    VertexSE2 *rob = dynamic_cast<VertexSE2*>(_vertices[0]);
+    VertexPointXY *point = dynamic_cast<VertexPointXY*>(_vertices[1]);
     _jacobianOplusXi.block<2,2>(0,0) = - cache->RpInverseRInverseMatrix();
     _jacobianOplusXi.block<2,1>(0,2) = cache->RpInverseRInversePrimeMatrix()*(point->estimate()-rob->estimate().translation()); 
     _jacobianOplusXj = cache->RpInverseRInverseMatrix();
@@ -109,7 +109,7 @@ namespace g2o {
 
 
   bool EdgeSE2PointXYOffset::setMeasurementFromState(){
-    VertexPointXY *point = static_cast<VertexPointXY*>(_vertices[1]);
+    VertexPointXY *point = dynamic_cast<VertexPointXY*>(_vertices[1]);
 
     const Vector2D &pt = point->estimate();
 

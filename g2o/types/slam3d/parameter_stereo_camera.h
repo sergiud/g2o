@@ -46,7 +46,7 @@ namespace g2o {
       void  setBaseline(double baseline_) { _baseline = baseline_;}
       double baseline() const {return _baseline;}
     protected:
-      double _baseline;
+      double _baseline{};
   };
 } // namespace g2o
 

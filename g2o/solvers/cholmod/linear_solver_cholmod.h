@@ -105,7 +105,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
       double t=get_monotonic_time();
 
       // setting up b for calling cholmod
-      cholmod_dense bcholmod;
+      cholmod_dense bcholmod{};
       bcholmod.nrow  = bcholmod.d = _cholmodSparse->nrow;
       bcholmod.ncol  = 1;
       bcholmod.x     = b;
@@ -241,7 +241,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
 
   protected:
     // temp used for cholesky with cholmod
-    cholmod_common _cholmodCommon;
+    cholmod_common _cholmodCommon{};
     std::unique_ptr<CholmodExt> _cholmodSparse;
     cholmod_factor* _cholmodFactor;
     bool _blockOrdering;
@@ -268,7 +268,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
           _blockPermutation.resize(2*_matrixStructure.n);
 
         // prepare AMD call via CHOLMOD
-        cholmod_sparse auxCholmodSparse;
+        cholmod_sparse auxCholmodSparse{};
         auxCholmodSparse.nzmax = _matrixStructure.nzMax();
         auxCholmodSparse.nrow = auxCholmodSparse.ncol = _matrixStructure.n;
         auxCholmodSparse.p = _matrixStructure.Ap;

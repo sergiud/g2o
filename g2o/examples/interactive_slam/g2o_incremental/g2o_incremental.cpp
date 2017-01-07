@@ -39,8 +39,8 @@ using namespace g2o;
  */
 struct EdgeInformation
 {
-  int fromId;
-  int toId;
+  int fromId{};
+  int toId{};
   std::vector<double> measurement;
   std::vector<double> information;
 };

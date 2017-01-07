@@ -74,7 +74,7 @@ namespace g2o {
   }
 
   void CacheSE2Offset::updateImpl(){
-    const VertexSE2* v = static_cast<const VertexSE2*>(vertex());
+    const VertexSE2* v = dynamic_cast<const VertexSE2*>(vertex());
     _se2_n2w = v->estimate() * _offsetParam->offset();
 
     _n2w = _se2_n2w.rotation().toRotationMatrix();

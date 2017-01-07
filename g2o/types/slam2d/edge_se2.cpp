@@ -65,8 +65,8 @@ namespace g2o {
 
   void EdgeSE2::initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* /* to */)
   {
-    VertexSE2* fromEdge = static_cast<VertexSE2*>(_vertices[0]);
-    VertexSE2* toEdge   = static_cast<VertexSE2*>(_vertices[1]);
+    VertexSE2* fromEdge = dynamic_cast<VertexSE2*>(_vertices[0]);
+    VertexSE2* toEdge   = dynamic_cast<VertexSE2*>(_vertices[1]);
     if (from.count(fromEdge) > 0)
       toEdge->setEstimate(fromEdge->estimate() * _measurement);
     else
@@ -76,8 +76,8 @@ namespace g2o {
 #ifndef NUMERIC_JACOBIAN_TWO_D_TYPES
   void EdgeSE2::linearizeOplus()
   {
-    const VertexSE2* vi = static_cast<const VertexSE2*>(_vertices[0]);
-    const VertexSE2* vj = static_cast<const VertexSE2*>(_vertices[1]);
+    const VertexSE2* vi = dynamic_cast<const VertexSE2*>(_vertices[0]);
+    const VertexSE2* vj = dynamic_cast<const VertexSE2*>(_vertices[1]);
     double thetai = vi->estimate().rotation().angle();
 
     Vector2D dt = vj->estimate().translation() - vi->estimate().translation();
@@ -105,15 +105,15 @@ namespace g2o {
   HyperGraphElementAction* EdgeSE2WriteGnuplotAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
       return nullptr;
-    WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
+    WriteGnuplotAction::Parameters* params=dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
     if (params->os == nullptr){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified" << std::endl;
       return nullptr;
     }
 
-    EdgeSE2* e =  static_cast<EdgeSE2*>(element);
-    VertexSE2* fromEdge = static_cast<VertexSE2*>(e->vertex(0));
-    VertexSE2* toEdge   = static_cast<VertexSE2*>(e->vertex(1));
+    EdgeSE2* e =  dynamic_cast<EdgeSE2*>(element);
+    VertexSE2* fromEdge = dynamic_cast<VertexSE2*>(e->vertex(0));
+    VertexSE2* toEdge   = dynamic_cast<VertexSE2*>(e->vertex(1));
     *(params->os) << fromEdge->estimate().translation().x() << " " << fromEdge->estimate().translation().y()
       << " " << fromEdge->estimate().rotation().angle() << std::endl;
     *(params->os) << toEdge->estimate().translation().x() << " " << toEdge->estimate().translation().y()
@@ -150,9 +150,9 @@ namespace g2o {
     if ((_show != nullptr) && !_show->value())
       return this;
 
-    EdgeSE2* e =  static_cast<EdgeSE2*>(element);
-    VertexSE2* from = static_cast<VertexSE2*>(e->vertex(0));
-    VertexSE2* to   = static_cast<VertexSE2*>(e->vertex(1));
+    EdgeSE2* e =  dynamic_cast<EdgeSE2*>(element);
+    VertexSE2* from = dynamic_cast<VertexSE2*>(e->vertex(0));
+    VertexSE2* to   = dynamic_cast<VertexSE2*>(e->vertex(1));
     if ((from == nullptr) && (to == nullptr))
       return this;
     SE2 fromTransform;

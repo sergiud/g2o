@@ -105,13 +105,13 @@ int SparseOptimizerOnline::optimize(int iterations, bool online)
     // copy over the updated estimate as new linearization point
     if (slamDimension == 3) {
       for (auto i : indexMapping()) {
-        OnlineVertexSE2* v = static_cast<OnlineVertexSE2*>(i);
+        OnlineVertexSE2* v = dynamic_cast<OnlineVertexSE2*>(i);
         v->setEstimate(v->updatedEstimate);
       }
     }
     else if (slamDimension == 6) {
       for (auto i : indexMapping()) {
-        OnlineVertexSE3* v = static_cast<OnlineVertexSE3*>(i);
+        OnlineVertexSE3* v = dynamic_cast<OnlineVertexSE3*>(i);
         v->setEstimate(v->updatedEstimate);
       }
     }
@@ -124,12 +124,12 @@ int SparseOptimizerOnline::optimize(int iterations, bool online)
     //cerr << "UPDATE" << endl;
     // compute the active errors for the required edges
     for (auto newEdge : *newEdges) {
-      OptimizableGraph::Edge * e = static_cast<OptimizableGraph::Edge*>(newEdge);
+      OptimizableGraph::Edge * e = dynamic_cast<OptimizableGraph::Edge*>(newEdge);
       e->computeError();
     }
     // linearize the constraints and update the Hessian
     for (auto newEdge : *newEdges) {
-      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(newEdge);
+      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(newEdge);
       e->linearizeOplus(jacobianWorkspace());
       e->constructQuadraticForm();
     }
@@ -165,14 +165,14 @@ void SparseOptimizerOnline::update(double* update)
 {
   if (slamDimension == 3) {
     for (auto & i : _ivMap) {
-      OnlineVertexSE2* v= static_cast<OnlineVertexSE2*>(i);
+      OnlineVertexSE2* v= dynamic_cast<OnlineVertexSE2*>(i);
       v->oplusUpdatedEstimate(update);
       update += 3;
     }
   }
   else if (slamDimension == 6) {
     for (auto & i : _ivMap) {
-      OnlineVertexSE3* v= static_cast<OnlineVertexSE3*>(i);
+      OnlineVertexSE3* v= dynamic_cast<OnlineVertexSE3*>(i);
       v->oplusUpdatedEstimate(update);
       update += 6;
     }
@@ -184,7 +184,7 @@ bool SparseOptimizerOnline::updateInitialization(HyperGraph::VertexSet& vset, Hy
   newEdges = &eset;
   bool result = SparseOptimizer::updateInitialization(vset, eset);
   for (auto it : vset) {
-    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it);
+    OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it);
     v->clearQuadraticForm(); // be sure that b is zero for this vertex
   }
   return result;
@@ -251,9 +251,9 @@ void SparseOptimizerOnline::gnuplotVisualization()
     }
     fprintf(_gnuplot, "plot \"-\" w l\n");
     for (auto it : edges()) {
-      OnlineEdgeSE2* e = (OnlineEdgeSE2*) it;
-      OnlineVertexSE2* v1 = (OnlineVertexSE2*) e->vertices()[0];
-      OnlineVertexSE2* v2 = (OnlineVertexSE2*) e->vertices()[1];
+      OnlineEdgeSE2* e = dynamic_cast<OnlineEdgeSE2*>( it);
+      OnlineVertexSE2* v1 = dynamic_cast<OnlineVertexSE2*>( e->vertices()[0]);
+      OnlineVertexSE2* v2 = dynamic_cast<OnlineVertexSE2*>( e->vertices()[1]);
       fprintf(_gnuplot, "%f %f\n", v1->updatedEstimate.translation().x(), v1->updatedEstimate.translation().y());
       fprintf(_gnuplot, "%f %f\n\n", v2->updatedEstimate.translation().x(), v2->updatedEstimate.translation().y());
     }
@@ -272,9 +272,9 @@ void SparseOptimizerOnline::gnuplotVisualization()
     }
     fprintf(_gnuplot, "splot \"-\" w l\n");
     for (auto it : edges()) {
-      OnlineEdgeSE3* e = (OnlineEdgeSE3*) it;
-      OnlineVertexSE3* v1 = (OnlineVertexSE3*) e->vertices()[0];
-      OnlineVertexSE3* v2 = (OnlineVertexSE3*) e->vertices()[1];
+      OnlineEdgeSE3* e = dynamic_cast<OnlineEdgeSE3*>( it);
+      OnlineVertexSE3* v1 = dynamic_cast<OnlineVertexSE3*>( e->vertices()[0]);
+      OnlineVertexSE3* v2 = dynamic_cast<OnlineVertexSE3*>( e->vertices()[1]);
       fprintf(_gnuplot, "%f %f %f\n", v1->updatedEstimate.translation().x(), v1->updatedEstimate.translation().y(), v1->updatedEstimate.translation().z());
       fprintf(_gnuplot, "%f %f %f \n\n\n", v2->updatedEstimate.translation().x(), v2->updatedEstimate.translation().y(), v2->updatedEstimate.translation().z());
     }

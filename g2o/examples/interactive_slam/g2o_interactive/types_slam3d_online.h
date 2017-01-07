@@ -64,8 +64,8 @@ namespace g2o {
 
       void initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* /* to */)
       {
-        OnlineVertexSE3* fromEdge = static_cast<OnlineVertexSE3*>(_vertices[0]);
-        OnlineVertexSE3* toEdge   = static_cast<OnlineVertexSE3*>(_vertices[1]);
+        OnlineVertexSE3* fromEdge = dynamic_cast<OnlineVertexSE3*>(_vertices[0]);
+        OnlineVertexSE3* toEdge   = dynamic_cast<OnlineVertexSE3*>(_vertices[1]);
         if (from.count(fromEdge) > 0) {
           toEdge->updatedEstimate = fromEdge->updatedEstimate * _measurement;
           toEdge->setEstimate(toEdge->updatedEstimate);
@@ -77,8 +77,8 @@ namespace g2o {
 
       double chi2() const
       {
-        OnlineVertexSE3 *from = static_cast<OnlineVertexSE3*>(_vertices[0]);
-        OnlineVertexSE3 *to   = static_cast<OnlineVertexSE3*>(_vertices[1]);
+        OnlineVertexSE3 *from = dynamic_cast<OnlineVertexSE3*>(_vertices[0]);
+        OnlineVertexSE3 *to   = dynamic_cast<OnlineVertexSE3*>(_vertices[1]);
         Eigen::Isometry3d delta = _inverseMeasurement * from->estimate().inverse() * to->estimate();
         Vector6d error = internal::toVectorMQT(delta);
         return error.dot(information() * error);

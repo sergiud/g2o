@@ -42,8 +42,8 @@ namespace g2o {
 
       void computeError()
       {
-        const VertexLine2D* v1 = static_cast<const VertexLine2D*>(_vertices[0]);
-        const VertexLine2D* v2 = static_cast<const VertexLine2D*>(_vertices[1]);
+        const VertexLine2D* v1 = dynamic_cast<const VertexLine2D*>(_vertices[0]);
+        const VertexLine2D* v2 = dynamic_cast<const VertexLine2D*>(_vertices[1]);
         _error = (v2->estimate()-v1->estimate())-_measurement;
       }
       virtual bool read(std::istream& is);
@@ -72,8 +72,8 @@ namespace g2o {
       virtual int measurementDimension() const {return 2;}
 
       virtual bool setMeasurementFromState() {
-        const VertexLine2D* v1 = static_cast<const VertexLine2D*>(_vertices[0]);
-        const VertexLine2D* v2 = static_cast<const VertexLine2D*>(_vertices[1]);
+        const VertexLine2D* v1 = dynamic_cast<const VertexLine2D*>(_vertices[0]);
+        const VertexLine2D* v2 = dynamic_cast<const VertexLine2D*>(_vertices[1]);
         _measurement = Line2D((Vector2D)(v2->estimate())-(Vector2D)v1->estimate());
         return true;
       }

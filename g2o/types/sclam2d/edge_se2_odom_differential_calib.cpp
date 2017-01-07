@@ -72,9 +72,9 @@ namespace g2o {
   {
     if (typeid(*element).name()!=_typeName)
       return nullptr;
-    EdgeSE2OdomDifferentialCalib* e = static_cast<EdgeSE2OdomDifferentialCalib*>(element);
-    VertexSE2* fromEdge = static_cast<VertexSE2*>(e->vertex(0));
-    VertexSE2* toEdge   = static_cast<VertexSE2*>(e->vertex(1));
+    EdgeSE2OdomDifferentialCalib* e = dynamic_cast<EdgeSE2OdomDifferentialCalib*>(element);
+    VertexSE2* fromEdge = dynamic_cast<VertexSE2*>(e->vertex(0));
+    VertexSE2* toEdge   = dynamic_cast<VertexSE2*>(e->vertex(1));
     glColor3f(0.5f,0.5f,0.5f);
     glPushAttrib(GL_ENABLE_BIT);
     glDisable(GL_LIGHTING);

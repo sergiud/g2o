@@ -74,7 +74,7 @@ class EdgeCalib : public BaseBinaryEdge<3, OdomAndLaserMotion, VertexSE2, Vertex
 
     void computeError()
     {
-      const VertexSE2* laserOffset = static_cast<const VertexSE2*>(_vertices[0]);
+      const VertexSE2* laserOffset = dynamic_cast<const VertexSE2*>(_vertices[0]);
       const VertexBaseline* odomParams = dynamic_cast<const VertexBaseline*>(_vertices[1]);
 
       // get the calibrated motion given by the odometry

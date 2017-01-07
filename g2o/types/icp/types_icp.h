@@ -180,8 +180,8 @@ namespace g2o {
     void computeError()
     {
       // from <ViewPoint> to <Point>
-      const VertexSE3 *vp0 = static_cast<const VertexSE3*>(_vertices[0]);
-      const VertexSE3 *vp1 = static_cast<const VertexSE3*>(_vertices[1]);
+      const VertexSE3 *vp0 = dynamic_cast<const VertexSE3*>(_vertices[0]);
+      const VertexSE3 *vp1 = dynamic_cast<const VertexSE3*>(_vertices[1]);
 
       // get vp1 point into vp0 frame
       // could be more efficient if we computed this transform just once
@@ -384,8 +384,8 @@ namespace g2o {
     void computeError()
     {
       // from <Point> to <Cam>
-      const VertexSBAPointXYZ *point = static_cast<const VertexSBAPointXYZ*>(_vertices[0]);
-      VertexSCam *cam = static_cast<VertexSCam*>(_vertices[1]);
+      const VertexSBAPointXYZ *point = dynamic_cast<const VertexSBAPointXYZ*>(_vertices[0]);
+      VertexSCam *cam = dynamic_cast<VertexSCam*>(_vertices[1]);
       //cam->setAll();
 
       // calculate the projection

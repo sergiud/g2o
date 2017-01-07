@@ -53,15 +53,15 @@
 namespace g2o {
 
   typedef  Eigen::Matrix<double, 6, 1> Vector6d;
-  
+
   class G2O_TYPES_SBA_API SBACam: public SE3Quat
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     public:
       // camera matrix and stereo baseline
-      Eigen::Matrix3d Kcam; 
-      double baseline;
+      Eigen::Matrix3d Kcam;
+      double baseline{};
 
       // transformations
       Eigen::Matrix<double,3,4> w2n; // transform from world to node coordinates
@@ -102,10 +102,10 @@ namespace g2o {
         _t += update.head(3);
         // small quaternion update
         Eigen::Quaterniond qr;
-        qr.vec() = update.segment<3>(3); 
+        qr.vec() = update.segment<3>(3);
         qr.w() = sqrt(1.0 - qr.vec().squaredNorm()); // should always be positive
         _r *= qr;                 // post-multiply
-        _r.normalize();    
+        _r.normalize();
         setTransform();
         setProjection();
         setDr();
@@ -114,8 +114,8 @@ namespace g2o {
       }
 
       // transforms
-      static void transformW2F(Eigen::Matrix<double,3,4> &m, 
-          const Eigen::Vector3d &trans, 
+      static void transformW2F(Eigen::Matrix<double,3,4> &m,
+          const Eigen::Vector3d &trans,
           const Eigen::Quaterniond &qrot)
       {
         m.block<3,3>(0,0) = qrot.toRotationMatrix().transpose();
@@ -126,8 +126,8 @@ namespace g2o {
         m.col(3) = -m*tt;
       }
 
-      static void transformF2W(Eigen::Matrix<double,3,4> &m, 
-          const Eigen::Vector3d &trans, 
+      static void transformF2W(Eigen::Matrix<double,3,4> &m,
+          const Eigen::Vector3d &trans,
           const Eigen::Quaterniond &qrot)
       {
         m.block<3,3>(0,0) = qrot.toRotationMatrix();
@@ -136,7 +136,7 @@ namespace g2o {
 
       // set up camera matrix
       void setKcam(double fx, double fy, double cx, double cy, double tx)
-      { 
+      {
         Kcam.setZero();
         Kcam(0,0) = fx;
         Kcam(1,1) = fy;
@@ -161,13 +161,13 @@ namespace g2o {
         // inefficient, just for testing
         // use simple multiplications and additions for production code in calculating dRdx,y,z
         Eigen::Matrix3d dRidx, dRidy, dRidz;
-        dRidx << 0.0,0.0,0.0,  
+        dRidx << 0.0,0.0,0.0,
               0.0,0.0,2.0,
               0.0,-2.0,0.0;
         dRidy  << 0.0,0.0,-2.0,
                0.0,0.0,0.0,
                2.0,0.0,0.0;
-        dRidz  << 0.0,2.0,0.0,  
+        dRidz  << 0.0,2.0,0.0,
                -2.0,0.0,0.0,
                0.0,0.0,0.0;
 
@@ -210,7 +210,7 @@ namespace g2o {
       Eigen::Vector3d normal;
 
       // rotation matrix for normal
-      Eigen::Matrix3d R; 
+      Eigen::Matrix3d R;
 
       // initialize an object
       EdgeNormal()

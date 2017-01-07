@@ -57,8 +57,8 @@ namespace g2o {
   {
     assert(from.size() == 1 && from.count(_vertices[0]) == 1 && "Can not initialize VertexSE2 position by VertexPointXY");
 
-    VertexSE2* vi     = static_cast<VertexSE2*>(_vertices[0]);
-    VertexPointXY* vj = static_cast<VertexPointXY*>(_vertices[1]);
+    VertexSE2* vi     = dynamic_cast<VertexSE2*>(_vertices[0]);
+    VertexPointXY* vj = dynamic_cast<VertexPointXY*>(_vertices[1]);
     if (from.count(vi) > 0 && to == vj) {
       vj->setEstimate(vi->estimate() * _measurement);
     }
@@ -67,8 +67,8 @@ namespace g2o {
 #ifndef NUMERIC_JACOBIAN_TWO_D_TYPES
   void EdgeSE2PointXY::linearizeOplus()
   {
-    const VertexSE2* vi     = static_cast<const VertexSE2*>(_vertices[0]);
-    const VertexPointXY* vj = static_cast<const VertexPointXY*>(_vertices[1]);
+    const VertexSE2* vi     = dynamic_cast<const VertexSE2*>(_vertices[0]);
+    const VertexPointXY* vj = dynamic_cast<const VertexPointXY*>(_vertices[1]);
     const double& x1        = vi->estimate().translation()[0];
     const double& y1        = vi->estimate().translation()[1];
     const double& th1       = vi->estimate().rotation().angle();
@@ -98,17 +98,17 @@ namespace g2o {
   HyperGraphElementAction* EdgeSE2PointXYWriteGnuplotAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
       return nullptr;
-    WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
+    WriteGnuplotAction::Parameters* params=dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
     if (params->os == nullptr){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified" << std::endl;
       return nullptr;
     }
 
-    EdgeSE2PointXY* e =  static_cast<EdgeSE2PointXY*>(element);
+    EdgeSE2PointXY* e =  dynamic_cast<EdgeSE2PointXY*>(element);
     if (e->numUndefinedVertices() != 0)
       return this;
-    VertexSE2* fromEdge = static_cast<VertexSE2*>(e->vertex(0));
-    VertexPointXY* toEdge   = static_cast<VertexPointXY*>(e->vertex(1));
+    VertexSE2* fromEdge = dynamic_cast<VertexSE2*>(e->vertex(0));
+    VertexPointXY* toEdge   = dynamic_cast<VertexPointXY*>(e->vertex(1));
     *(params->os) << fromEdge->estimate().translation().x() << " " << fromEdge->estimate().translation().y()
       << " " << fromEdge->estimate().rotation().angle() << std::endl;
     *(params->os) << toEdge->estimate().x() << " " << toEdge->estimate().y() << std::endl;
@@ -132,9 +132,9 @@ namespace g2o {
       return this;
 
 
-    EdgeSE2PointXY* e =  static_cast<EdgeSE2PointXY*>(element);
-    VertexSE2* fromEdge = static_cast<VertexSE2*>(e->vertex(0));
-    VertexPointXY* toEdge   = static_cast<VertexPointXY*>(e->vertex(1));
+    EdgeSE2PointXY* e =  dynamic_cast<EdgeSE2PointXY*>(element);
+    VertexSE2* fromEdge = dynamic_cast<VertexSE2*>(e->vertex(0));
+    VertexPointXY* toEdge   = dynamic_cast<VertexPointXY*>(e->vertex(1));
     if (fromEdge == nullptr)
       return this;
     Vector2D p=e->measurement();

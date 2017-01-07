@@ -74,7 +74,7 @@ namespace g2o {
   }
 
   void CacheSE3Offset::updateImpl(){
-    const VertexSE3* v = static_cast<const VertexSE3*>(vertex());
+    const VertexSE3* v = dynamic_cast<const VertexSE3*>(vertex());
     _n2w = v->estimate() * _offsetParam->offset();
     _w2n = _n2w.inverse();
     _w2l = v->estimate().inverse();
@@ -107,7 +107,7 @@ namespace g2o {
                 HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
       return nullptr;
-    CacheSE3Offset* that = static_cast<CacheSE3Offset*>(element);
+    CacheSE3Offset* that = dynamic_cast<CacheSE3Offset*>(element);
     refreshPropertyPtrs(params_);
     if (_previousParams == nullptr)
       return this;

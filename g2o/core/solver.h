@@ -133,12 +133,12 @@ namespace g2o {
       virtual bool saveHessian(const std::string& /*fileName*/) const = 0;
 
     protected:
-      SparseOptimizer* _optimizer;
-      double* _x;
-      double* _b;
-      size_t _xSize, _maxXSize;
-      bool _isLevenberg; ///< the system we gonna solve is a Levenberg-Marquardt system
-      size_t _additionalVectorSpace;
+      SparseOptimizer* _optimizer{};
+      double* _x{};
+      double* _b{};
+      size_t _xSize{}, _maxXSize{};
+      bool _isLevenberg{}; ///< the system we gonna solve is a Levenberg-Marquardt system
+      size_t _additionalVectorSpace{};
 
       void resizeVector(size_t sx);
 

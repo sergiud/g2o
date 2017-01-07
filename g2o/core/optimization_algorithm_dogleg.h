@@ -78,11 +78,11 @@ namespace g2o {
       VectorXD _hdl;         ///< final dogleg step
       VectorXD _auxVector;   ///< auxilary vector used to perform multiplications or other stuff
 
-      double _currentLambda;        ///< the damping factor to force positive definite matrix
+      double _currentLambda{};        ///< the damping factor to force positive definite matrix
       double _delta;                ///< trust region
       int _lastStep;                ///< type of the step taken by the algorithm
       bool _wasPDInAllIterations;   ///< the matrix we solve was positive definite in all iterations -> if not apply damping
-      int _lastNumTries;
+      int _lastNumTries{};
   };
 
 } // namespace g2o

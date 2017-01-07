@@ -109,13 +109,13 @@ namespace g2o {
       // copy over the updated estimate as new linearization point
       if (slamDimension == 3) {
         for (auto i : indexMapping()) {
-          OnlineVertexSE2* v = static_cast<OnlineVertexSE2*>(i);
+          OnlineVertexSE2* v = dynamic_cast<OnlineVertexSE2*>(i);
           v->setEstimate(v->updatedEstimate);
         }
       }
       else if (slamDimension == 6) {
         for (auto i : indexMapping()) {
-          OnlineVertexSE3* v= static_cast<OnlineVertexSE3*>(i);
+          OnlineVertexSE3* v= dynamic_cast<OnlineVertexSE3*>(i);
           v->setEstimate(v->updatedEstimate);
         }
       }
@@ -134,9 +134,9 @@ namespace g2o {
         for (size_t i = _ivMap.size() - 20; i < _ivMap.size(); ++i) {
           const HyperGraph::EdgeSet& eset = _ivMap[i]->edges();
           for (auto it : eset) {
-            OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(it);
-            OptimizableGraph::Vertex* v1 = static_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
-            OptimizableGraph::Vertex* v2 = static_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
+            OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
+            OptimizableGraph::Vertex* v1 = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
+            OptimizableGraph::Vertex* v2 = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
             if (v1->hessianIndex() >= 0)
               _cmember(v1->hessianIndex()) = 1;
             if (v2->hessianIndex() >= 0)
@@ -161,7 +161,7 @@ namespace g2o {
     else {
       // update the b vector
       for (auto _touchedVertice : _touchedVertices) {
-        OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(_touchedVertice);
+        OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(_touchedVertice);
         int iBase = v->colInHessian();
         v->copyB(_underlyingSolver->b() + iBase);
       }
@@ -199,16 +199,16 @@ namespace g2o {
     }
 
     for (auto it : vset) {
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it);
+      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it);
       v->clearQuadraticForm(); // be sure that b is zero for this vertex
     }
 
     // get the touched vertices
     _touchedVertices.clear();
     for (auto it : eset) {
-      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(it);
-      OptimizableGraph::Vertex* v1 = static_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
-      OptimizableGraph::Vertex* v2 = static_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
+      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
+      OptimizableGraph::Vertex* v1 = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
+      OptimizableGraph::Vertex* v2 = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
       if (! v1->fixed())
         _touchedVertices.insert(v1);
       if (! v2->fixed())
@@ -222,13 +222,13 @@ namespace g2o {
     _activeVertices.reserve(_activeVertices.size() + vset.size());
     _activeEdges.reserve(_activeEdges.size() + eset.size());
     for (auto it : eset)
-      _activeEdges.push_back(static_cast<OptimizableGraph::Edge*>(it));
+      _activeEdges.push_back(dynamic_cast<OptimizableGraph::Edge*>(it));
     //cerr << "updating internal done." << endl;
 
     // update the index mapping
     size_t next = _ivMap.size();
     for (auto it : vset) {
-      OptimizableGraph::Vertex* v=static_cast<OptimizableGraph::Vertex*>(it);
+      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it);
       if (! v->fixed()){
         if (! v->marginalized()){
           v->setHessianIndex(next);
@@ -255,7 +255,7 @@ namespace g2o {
     memset(backupIdx, 0, sizeof(VertexBackup) * _touchedVertices.size());
     int idx = 0;
     for (auto _touchedVertice : _touchedVertices) {
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(_touchedVertice);
+      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(_touchedVertice);
       backupIdx[idx].hessianIndex = v->hessianIndex();
       backupIdx[idx].vertex = v;
       backupIdx[idx].hessianData = v->hessianData();
@@ -295,9 +295,9 @@ namespace g2o {
 
 
     for (auto it : eset) {
-      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(it);
-      OptimizableGraph::Vertex* v1 = (OptimizableGraph::Vertex*) e->vertices()[0];
-      OptimizableGraph::Vertex* v2 = (OptimizableGraph::Vertex*) e->vertices()[1];
+      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
+      OptimizableGraph::Vertex* v1 = dynamic_cast<OptimizableGraph::Vertex*>( e->vertices()[0]);
+      OptimizableGraph::Vertex* v2 = dynamic_cast<OptimizableGraph::Vertex*>( e->vertices()[1]);
 
       int ind1 = v1->hessianIndex();
       if (ind1 == -1)
@@ -315,11 +315,11 @@ namespace g2o {
 
     // build the system into _updateMat
     for (auto it : eset) {
-      OptimizableGraph::Edge * e = static_cast<OptimizableGraph::Edge*>(it);
+      OptimizableGraph::Edge * e = dynamic_cast<OptimizableGraph::Edge*>(it);
       e->computeError();
     }
     for (auto it : eset) {
-      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(it);
+      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
       e->linearizeOplus(jacobianWorkspace());
       e->constructQuadraticForm();
     }

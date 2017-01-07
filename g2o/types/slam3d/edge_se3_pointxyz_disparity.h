@@ -88,8 +88,8 @@ namespace g2o {
   private:
     Eigen::Matrix<double,3,9,Eigen::ColMajor> J; // jacobian before projection
     virtual bool resolveCaches();
-    ParameterCamera* params;
-    CacheCamera* cache;
+    ParameterCamera* params{};
+    CacheCamera* cache{};
   };
 
 

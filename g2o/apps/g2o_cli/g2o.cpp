@@ -65,8 +65,8 @@ using namespace Eigen;
 struct IncrementalEdgesCompare {
   bool operator()(SparseOptimizer::Edge* const & e1, SparseOptimizer::Edge* const & e2)
   {
-    const SparseOptimizer::Vertex* to1 = static_cast<const SparseOptimizer::Vertex*>(e1->vertices()[1]);
-    const SparseOptimizer::Vertex* to2 = static_cast<const SparseOptimizer::Vertex*>(e2->vertices()[1]);
+    const SparseOptimizer::Vertex* to1 = dynamic_cast<const SparseOptimizer::Vertex*>(e1->vertices()[1]);
+    const SparseOptimizer::Vertex* to2 = dynamic_cast<const SparseOptimizer::Vertex*>(e2->vertices()[1]);
 
     int i11 = e1->vertices()[0]->id(), i12 = e1->vertices()[1]->id();
     if (i11 > i12){
@@ -319,7 +319,7 @@ int main(int argc, char** argv)
     if (maxDim != minDim) {
       cerr << "# Preparing Marginalization of the Landmarks ... ";
       for (auto & it : optimizer.vertices()){
-        OptimizableGraph::Vertex* v=static_cast<OptimizableGraph::Vertex*>(it.second);
+        OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second);
         if (v->dimension() != maxDim) {
           v->setMarginalized(true);
         }
@@ -384,7 +384,7 @@ int main(int argc, char** argv)
 
     SparseOptimizer::VertexIDMap vertices = optimizer.vertices();
     for (SparseOptimizer::VertexIDMap::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
-      const SparseOptimizer::Vertex* v = static_cast<const SparseOptimizer::Vertex*>(it->second);
+      const SparseOptimizer::Vertex* v = dynamic_cast<const SparseOptimizer::Vertex*>(it->second);
       maxDim = max(maxDim, v->dimension());
     }
 
@@ -451,8 +451,8 @@ int main(int argc, char** argv)
         }
 
         if (doInit != 0) {
-          OptimizableGraph::Vertex* from = static_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
-          OptimizableGraph::Vertex* to   = static_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
+          OptimizableGraph::Vertex* from = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
+          OptimizableGraph::Vertex* to   = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
           switch (doInit){
             case 1: // initialize v1 from v2
               {
@@ -615,7 +615,7 @@ int main(int argc, char** argv)
       int nPoses=0;
       int maxDim = *vertexDimensions.rbegin();
       for (auto & it : optimizer.vertices()){
-	OptimizableGraph::Vertex* v=static_cast<OptimizableGraph::Vertex*>(it.second);
+	OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second);
 	if (v->dimension() != maxDim) {
 	  nLandmarks++;
 	} else

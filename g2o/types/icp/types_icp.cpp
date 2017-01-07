@@ -175,8 +175,8 @@ namespace g2o {
   //    df/dx1 = [R0, T01 * d[dR1]/dq1 * p1]
   void Edge_V_V_GICP::linearizeOplus()
   {
-    VertexSE3* vp0 = static_cast<VertexSE3*>(_vertices[0]);
-    VertexSE3* vp1 = static_cast<VertexSE3*>(_vertices[1]);
+    VertexSE3* vp0 = dynamic_cast<VertexSE3*>(_vertices[0]);
+    VertexSE3* vp1 = dynamic_cast<VertexSE3*>(_vertices[1]);
 
     // topLeftCorner<3,3>() is the rotation matrix
     Matrix3D R0T = vp0->estimate().matrix().topLeftCorner<3,3>().transpose();

@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <g2o/types/slam3d/vertex_pointxyz.h>
-#include <stdio.h>
+#include <cstdio>
 
 #ifdef G2O_HAVE_OPENGL
 #include <g2o/stuff/opengl_primitives.h>
@@ -81,7 +81,7 @@ namespace g2o {
     
     if ((_show != nullptr) && !_show->value())
       return this;
-    VertexPointXYZ* that = static_cast<VertexPointXYZ*>(element);
+    VertexPointXYZ* that = dynamic_cast<VertexPointXYZ*>(element);
     
 
     glPushMatrix();
@@ -108,13 +108,13 @@ namespace g2o {
   {
     if (typeid(*element).name()!=_typeName)
       return nullptr;
-    WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
+    WriteGnuplotAction::Parameters* params=dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
     if (params->os == nullptr){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, no valid os specified" << std::endl;
       return nullptr;
     }
 
-    VertexPointXYZ* v = static_cast<VertexPointXYZ*>(element);
+    VertexPointXYZ* v = dynamic_cast<VertexPointXYZ*>(element);
     *(params->os) << v->estimate().x() << " " << v->estimate().y() << " " << v->estimate().z() << " " << std::endl;
     return this;
   }

@@ -94,8 +94,8 @@ namespace g2o {
     virtual bool write(std::ostream& os) const;
     void computeError()
     {
-      const VertexSim3Expmap* v1 = static_cast<const VertexSim3Expmap*>(_vertices[0]);
-      const VertexSim3Expmap* v2 = static_cast<const VertexSim3Expmap*>(_vertices[1]);
+      const VertexSim3Expmap* v1 = dynamic_cast<const VertexSim3Expmap*>(_vertices[0]);
+      const VertexSim3Expmap* v2 = dynamic_cast<const VertexSim3Expmap*>(_vertices[1]);
 
       Sim3 C(_measurement);
       Sim3 error_=C*v1->estimate()*v2->estimate().inverse();
@@ -105,8 +105,8 @@ namespace g2o {
     virtual double initialEstimatePossible(const OptimizableGraph::VertexSet& , OptimizableGraph::Vertex* ) { return 1.;}
     virtual void initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* /*to*/)
     {
-      VertexSim3Expmap* v1 = static_cast<VertexSim3Expmap*>(_vertices[0]);
-      VertexSim3Expmap* v2 = static_cast<VertexSim3Expmap*>(_vertices[1]);
+      VertexSim3Expmap* v1 = dynamic_cast<VertexSim3Expmap*>(_vertices[0]);
+      VertexSim3Expmap* v2 = dynamic_cast<VertexSim3Expmap*>(_vertices[1]);
       if (from.count(v1) > 0)
   v2->setEstimate(measurement()*v1->estimate());
       else
@@ -126,8 +126,8 @@ class G2O_TYPES_SIM3_API EdgeSim3ProjectXYZ : public  BaseBinaryEdge<2, Vector2D
 
     void computeError()
     {
-      const VertexSim3Expmap* v1 = static_cast<const VertexSim3Expmap*>(_vertices[1]);
-      const VertexSBAPointXYZ* v2 = static_cast<const VertexSBAPointXYZ*>(_vertices[0]);
+      const VertexSim3Expmap* v1 = dynamic_cast<const VertexSim3Expmap*>(_vertices[1]);
+      const VertexSBAPointXYZ* v2 = dynamic_cast<const VertexSBAPointXYZ*>(_vertices[0]);
 
       Vector2D obs(_measurement);
       _error = obs-v1->cam_map(project(v1->estimate().map(v2->estimate())));

@@ -125,7 +125,7 @@ std::string strExpandFilename(const std::string& filename)
 {
 #if (defined (UNIX) || defined(CYGWIN)) && !defined(ANDROID)
   string result = filename;
-  wordexp_t p;
+  wordexp_t p{};
 
   wordexp(filename.c_str(), &p, 0);
   if(p.we_wordc > 0) {

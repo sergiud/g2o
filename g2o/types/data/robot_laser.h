@@ -68,9 +68,9 @@ namespace g2o {
             HyperGraphElementAction::Parameters* params_ );
   protected:
     virtual bool refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_);
-    IntProperty* _beamsDownsampling;
-    FloatProperty* _pointSize;
-    FloatProperty* _maxRange;
+    IntProperty* _beamsDownsampling{};
+    FloatProperty* _pointSize{};
+    FloatProperty* _maxRange{};
   };
 #endif
 

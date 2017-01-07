@@ -191,8 +191,8 @@ int main (int argc, char** argv)
   // concatenate all the odometry constraints to compute the initial state
   for (size_t i =0; i < odometryEdges.size(); ++i) {
     EdgeSE3* e = edges[i];
-    VertexSE3* from = static_cast<VertexSE3*>(e->vertex(0));
-    VertexSE3* to = static_cast<VertexSE3*>(e->vertex(1));
+    VertexSE3* from = dynamic_cast<VertexSE3*>(e->vertex(0));
+    VertexSE3* to = dynamic_cast<VertexSE3*>(e->vertex(1));
     HyperGraph::VertexSet aux; aux.insert(from);
     e->initialEstimate(aux, to);
   }
@@ -217,8 +217,8 @@ int main (int argc, char** argv)
   }
 
   for (auto e : edges) {
-    VertexSE3* from = static_cast<VertexSE3*>(e->vertex(0));
-    VertexSE3* to = static_cast<VertexSE3*>(e->vertex(1));
+    VertexSE3* from = dynamic_cast<VertexSE3*>(e->vertex(0));
+    VertexSE3* to = dynamic_cast<VertexSE3*>(e->vertex(1));
     fout << edgeTag << " " << from->id() << " " << to->id() << " ";
     e->write(fout);
     fout << endl;

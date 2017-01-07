@@ -326,9 +326,9 @@ namespace g2o {
         int _hessianIndex;
         bool _fixed;
         bool _marginalized;
-        int _dimension;
+        int _dimension{};
         int _colInHessian;
-        OpenMPMutex _quadraticFormMutex;
+        OpenMPMutex _quadraticFormMutex{};
 
         CacheContainer* _cacheContainer;
 
@@ -475,7 +475,7 @@ namespace g2o {
 	int _dimension;
         int _level;
         RobustKernel* _robustKernel;
-        long long _internalId;
+        long long _internalId{};
         std::vector<int> _cacheIds;
 
         template <typename ParameterType>

@@ -20,7 +20,7 @@ namespace g2o {
     _vsMmap.clear();
     _freeEdges.clear();
     for (auto it : _optimizer->edges()){
-      OptimizableGraph::Edge* e = (OptimizableGraph::Edge*)it;
+      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
       if (e->level()==_level) {
   _freeEdges.insert(e);
       }
@@ -54,7 +54,7 @@ namespace g2o {
 
 
   void  BackBoneTreeAction::addToMap(Star* s, HyperGraph::Vertex* v_){
-    OptimizableGraph::Vertex* v= (OptimizableGraph::Vertex*)v_;
+    OptimizableGraph::Vertex* v= dynamic_cast<OptimizableGraph::Vertex*>(v_);
     auto it=_vsMap.find(v);
     if (it!=_vsMap.end())
       it->second = s;
@@ -65,7 +65,7 @@ namespace g2o {
   }
 
   Star* BackBoneTreeAction::getStar(HyperGraph::Vertex* v_){
-    OptimizableGraph::Vertex* v= (OptimizableGraph::Vertex*)v_;
+    OptimizableGraph::Vertex* v= dynamic_cast<OptimizableGraph::Vertex*>(v_);
     auto it=_vsMap.find(v);
     if (it==_vsMap.end())
       return nullptr;
@@ -73,7 +73,7 @@ namespace g2o {
   }
 
   bool BackBoneTreeAction::fillStar(Star* s, HyperGraph::Edge* e_){
-    OptimizableGraph::Edge* e = (OptimizableGraph::Edge*) e_;
+    OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>( e_);
     auto it=_freeEdges.find(e);
     if (it!=_freeEdges.end()) {
       _freeEdges.erase(it);

@@ -113,7 +113,7 @@ class StructureOnlySolver : public OptimizationAlgorithm
               bool remember_fix_status[e->vertices().size()];
 #endif
               for (size_t k = 0; k < e->vertices().size(); ++k) {
-                OptimizableGraph::Vertex* otherV = static_cast<OptimizableGraph::Vertex*>(e->vertex(k));
+                OptimizableGraph::Vertex* otherV = dynamic_cast<OptimizableGraph::Vertex*>(e->vertex(k));
                 if (otherV != v) {
                   remember_fix_status[k] = otherV->fixed();
                   otherV->setFixed(true);
@@ -127,7 +127,7 @@ class StructureOnlySolver : public OptimizationAlgorithm
 
               // Restore frame's initial fixed() values
               for (size_t k = 0; k < e->vertices().size(); ++k) {
-                OptimizableGraph::Vertex* otherV = static_cast<g2o::OptimizableGraph::Vertex*>(e->vertex(k));
+                OptimizableGraph::Vertex* otherV = dynamic_cast<g2o::OptimizableGraph::Vertex*>(e->vertex(k));
                 if (otherV != v) {
                   otherV->setFixed(remember_fix_status[k]);
                 }

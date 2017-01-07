@@ -147,7 +147,7 @@ namespace g2o {
     }
     if ((_show != nullptr) && !_show->value())
       return this;
-    RobotLaser* that = static_cast<RobotLaser*>(element);
+    RobotLaser* that = dynamic_cast<RobotLaser*>(element);
 
     RawLaser::Point2DVector points=that->cartesian();
     if ((_maxRange != nullptr) && _maxRange->value() >=0 ) {

@@ -166,7 +166,7 @@ namespace g2o {
     Factory* factory = Factory::instance();
 
     for (const auto & it : optimizer.vertices()) {
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it.second);
+      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it.second);
       fout << "VERTEX2 " << v->id() << " ";
       v->write(fout);
       fout << endl;
@@ -183,7 +183,7 @@ namespace g2o {
 
     OptimizableGraph::EdgeContainer edgesToSave; // sorting edges to have them in the order of insertion again
     for (auto it : optimizer.edges()) {
-      const OptimizableGraph::Edge* e = static_cast<const OptimizableGraph::Edge*>(it);
+      const OptimizableGraph::Edge* e = dynamic_cast<const OptimizableGraph::Edge*>(it);
       edgesToSave.push_back(const_cast<OptimizableGraph::Edge*>(e));
     }
     sort(edgesToSave.begin(), edgesToSave.end(), OptimizableGraph::EdgeIDCompare());

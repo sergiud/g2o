@@ -86,7 +86,7 @@ class G2O_VIEWER_API MainWindow : public QMainWindow, public Ui::BaseMainWindow
 
     std::vector<g2o::OptimizationAlgorithmProperty> _knownSolvers;
     int _lastSolver;
-    bool _forceStopFlag;
+    bool _forceStopFlag{};
     g2o::OptimizationAlgorithmProperty _currentOptimizationAlgorithmProperty;
     g2o::OptimizationAlgorithm* _currentSolver;
 

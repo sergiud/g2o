@@ -42,7 +42,7 @@ namespace g2o {
   bool EdgeSE3PointXYZDepth::resolveCaches(){
     ParameterVector pv(1);
     pv[0]=params;
-    resolveCache(cache, (OptimizableGraph::Vertex*)_vertices[0],"CACHE_CAMERA",pv);
+    resolveCache(cache, dynamic_cast<OptimizableGraph::Vertex*>(_vertices[0]),"CACHE_CAMERA",pv);
     return cache != nullptr;
   }
 
@@ -91,7 +91,7 @@ namespace g2o {
   void EdgeSE3PointXYZDepth::computeError() {
     // from cam to point (track)
     //VertexSE3 *cam = static_cast<VertexSE3*>(_vertices[0]);
-    VertexPointXYZ *point = static_cast<VertexPointXYZ*>(_vertices[1]);
+    VertexPointXYZ *point = dynamic_cast<VertexPointXYZ*>(_vertices[1]);
 
     Vector3D p = cache->w2i() * point->estimate();
     Vector3D perr;
@@ -106,7 +106,7 @@ namespace g2o {
 
   void EdgeSE3PointXYZDepth::linearizeOplus() {
     //VertexSE3 *cam = static_cast<VertexSE3 *>(_vertices[0]);
-    VertexPointXYZ *vp = static_cast<VertexPointXYZ *>(_vertices[1]);
+    VertexPointXYZ *vp = dynamic_cast<VertexPointXYZ *>(_vertices[1]);
 
     const Vector3D& pt = vp->estimate();
 
@@ -140,7 +140,7 @@ namespace g2o {
 
   bool EdgeSE3PointXYZDepth::setMeasurementFromState(){
     //VertexSE3 *cam = static_cast<VertexSE3*>(_vertices[0]);
-    VertexPointXYZ *point = static_cast<VertexPointXYZ*>(_vertices[1]);
+    VertexPointXYZ *point = dynamic_cast<VertexPointXYZ*>(_vertices[1]);
 
     // calculate the projection
     const Vector3D& pt = point->estimate();

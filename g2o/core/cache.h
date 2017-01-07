@@ -116,7 +116,7 @@ namespace g2o {
       void update();
     protected:
       OptimizableGraph::Vertex* _vertex;
-      bool _updateNeeded;
+      bool _updateNeeded{};
   };
 
 

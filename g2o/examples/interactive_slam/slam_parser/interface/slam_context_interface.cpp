@@ -51,12 +51,12 @@ namespace SlamParser {
     switch (commandNode->commandType()) {
       case CT_ADD_NODE:
         {
-          AddNode* c = static_cast<AddNode*>(commandNode);
+          AddNode* c = dynamic_cast<AddNode*>(commandNode);
           return _slam->addNode(c->tag(), c->id(), c->dimension(), c->values());
         }
       case CT_ADD_EDGE:
         {
-          AddEdge* c = static_cast<AddEdge*>(commandNode);
+          AddEdge* c = dynamic_cast<AddEdge*>(commandNode);
           return _slam->addEdge(c->tag(), c->id(), c->dimension(), c->id1(), c->id2(), c->values(), c->information());
         }
       case CT_SOLVE_STATE:
@@ -66,12 +66,12 @@ namespace SlamParser {
         }
       case CT_QUERY_STATE:
         {
-          QueryState* c = static_cast<QueryState*>(commandNode);
+          QueryState* c = dynamic_cast<QueryState*>(commandNode);
           return _slam->queryState(c->ids());
         }
       case CT_FIX:
         {
-          FixNode* c = static_cast<FixNode*>(commandNode);
+          FixNode* c = dynamic_cast<FixNode*>(commandNode);
           return _slam->fixNode(c->ids());
         }
     }

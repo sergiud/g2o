@@ -71,7 +71,7 @@ void starsInVertex(StarSet& stars, HyperGraph::Vertex* v, EdgeStarMap& esmap){
 
 void starsInEdge(StarSet& stars, HyperGraph::Edge* e, EdgeStarMap& esmap, HyperGraph::VertexSet& gauge){
   for (auto & i : e->vertices()){
-    OptimizableGraph::Vertex* v=(OptimizableGraph::Vertex*)i;
+    OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(i);
     if (gauge.find(v)==gauge.end())
       starsInVertex(stars, v, esmap);
   }
@@ -83,11 +83,11 @@ void assignHierarchicalEdges(StarSet& stars, EdgeStarMap& esmap, EdgeLabeler* la
   for (auto s : stars){
     cerr << "STAR# " << starNum << endl;
     std::vector<OptimizableGraph::Vertex*> vertices(2);
-    vertices[0]= (OptimizableGraph::Vertex*) *s->_gauge.begin();
+    vertices[0]= dynamic_cast<OptimizableGraph::Vertex*>( *s->_gauge.begin());
     cerr << "eIs"  << endl;
     HyperGraph::VertexSet vNew =s->lowLevelVertices();
     for (auto vit=s->_lowLevelVertices.begin(); vit!=s->_lowLevelVertices.end(); vit++){
-      OptimizableGraph::Vertex* v=(OptimizableGraph::Vertex*)*vit;
+      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(*vit);
       vertices[1]=v;
       if (v==vertices[0])
         continue;
@@ -146,7 +146,7 @@ void computeBorder(StarSet& stars, EdgeStarMap& hesmap){
   cerr << "computing edges on the border" << endl;
   for (auto s : stars){
     for (auto iit=s->_starEdges.begin(); iit!=s->_starEdges.end(); iit++){
-      OptimizableGraph::Edge* e= (OptimizableGraph::Edge*) *iit;
+      OptimizableGraph::Edge* e= dynamic_cast<OptimizableGraph::Edge*>( *iit);
       StarSet sset;
       starsInEdge(sset, e, hesmap, s->gauge());
       //cerr << "e: " << e << " l:" << e->level() << " sset.size()=" << sset.size() << endl;
@@ -259,13 +259,13 @@ void computeBorder(StarSet& stars, EdgeStarMap& hesmap){
       for (auto bit=backboneVertices.begin(); bit!=backboneVertices.end(); bit++){
 	HyperGraph::Vertex* v=*bit;
 	for (auto eit : v->edges()){
-	  OptimizableGraph::Edge* e = (OptimizableGraph::Edge*) eit;
+	  OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>( eit);
 	  auto feit=bact.freeEdges().find(e);
 	  if (feit!=bact.freeEdges().end()){ // edge is admissible
 	    otherEdges.insert(e);
 	    bact.freeEdges().erase(feit);
 	    for (size_t i=0; i<e->vertices().size(); i++){
-	      OptimizableGraph::Vertex* ve= (OptimizableGraph::Vertex*)e->vertices()[i];
+	      OptimizableGraph::Vertex* ve= dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[i]);
 	      if (backboneVertices.find(ve)==backboneVertices.end()){
 		otherVertices.insert(ve);
 		vemap.insert(make_pair(ve,e));
@@ -302,14 +302,14 @@ void computeBorder(StarSet& stars, EdgeStarMap& hesmap){
 
       // // then optimize the vertices one at a time to check if a solution is good
       for (auto otherVertice : otherVertices){
-        OptimizableGraph::Vertex* v=(OptimizableGraph::Vertex*)otherVertice;
+        OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(otherVertice);
         v->solveDirect();
         // cerr << " " << d;
         // if  a solution is found, add a vertex and all the edges in
         //othervertices that are pointing to that edge to the star
         s->_lowLevelVertices.insert(v);
         for (auto eit : v->edges()){
-          OptimizableGraph::Edge* e = (OptimizableGraph::Edge*) eit;
+          OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>( eit);
           if (otherEdges.find(e)!=otherEdges.end())
             s->_lowLevelEdges.insert(e);
         }
@@ -350,7 +350,7 @@ void computeBorder(StarSet& stars, EdgeStarMap& hesmap){
 	  //discard the vertices whose error is too big
 
 
-          OptimizableGraph::Vertex* v=(OptimizableGraph::Vertex*)otherVertice;
+          OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(otherVertice);
           MatrixXd h(v->dimension(), v->dimension());
           for (int i=0; i<v->dimension(); i++){
             for (int j=0; j<v->dimension(); j++)
@@ -375,7 +375,7 @@ void computeBorder(StarSet& stars, EdgeStarMap& hesmap){
 	  //othervertices that are pointing to that edge to the star
             prunedStarVertices.insert(v);
             for (auto eit : v->edges()){
-              OptimizableGraph::Edge* e = (OptimizableGraph::Edge*) eit;
+              OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>( eit);
               if (otherEdges.find(e)!=otherEdges.end())
                 prunedStarEdges.insert(e);
             }
@@ -393,10 +393,10 @@ void computeBorder(StarSet& stars, EdgeStarMap& hesmap){
 	//cerr << "addHedges" << endl;
 	//now add to the star the hierarchical edges
 	std::vector<OptimizableGraph::Vertex*> vertices(2);
-	vertices[0]= (OptimizableGraph::Vertex*) *s->_gauge.begin();
+	vertices[0]= dynamic_cast<OptimizableGraph::Vertex*>( *s->_gauge.begin());
 
 	for (auto vit=s->_lowLevelVertices.begin(); vit!=s->_lowLevelVertices.end(); vit++){
-	  OptimizableGraph::Vertex* v=(OptimizableGraph::Vertex*)*vit;
+	  OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(*vit);
 	  vertices[1]=v;
 	  if (v==vertices[0])
 	    continue;

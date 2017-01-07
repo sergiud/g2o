@@ -39,9 +39,9 @@ namespace g2o {
   void EdgeSE2SensorCalib::initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* to)
   {
     (void) to;
-    VertexSE2* vi = static_cast<VertexSE2*>(_vertices[0]);
-    VertexSE2* vj = static_cast<VertexSE2*>(_vertices[1]);
-    VertexSE2* l  = static_cast<VertexSE2*>(_vertices[2]);
+    VertexSE2* vi = dynamic_cast<VertexSE2*>(_vertices[0]);
+    VertexSE2* vj = dynamic_cast<VertexSE2*>(_vertices[1]);
+    VertexSE2* l  = dynamic_cast<VertexSE2*>(_vertices[2]);
     if (from.count(l) == 0)
       return;
     if (from.count(vi) == 1) {
@@ -86,9 +86,9 @@ namespace g2o {
   {
     if (typeid(*element).name()!=_typeName)
       return nullptr;
-    EdgeSE2SensorCalib* e = static_cast<EdgeSE2SensorCalib*>(element);
-    VertexSE2* fromEdge = static_cast<VertexSE2*>(e->vertex(0));
-    VertexSE2* toEdge   = static_cast<VertexSE2*>(e->vertex(1));
+    EdgeSE2SensorCalib* e = dynamic_cast<EdgeSE2SensorCalib*>(element);
+    VertexSE2* fromEdge = dynamic_cast<VertexSE2*>(e->vertex(0));
+    VertexSE2* toEdge   = dynamic_cast<VertexSE2*>(e->vertex(1));
     glColor3f(0.5,0.5,1.0);
     glPushAttrib(GL_ENABLE_BIT);
     glDisable(GL_LIGHTING);

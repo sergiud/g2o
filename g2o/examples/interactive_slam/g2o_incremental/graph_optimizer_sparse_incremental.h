@@ -41,7 +41,7 @@ namespace g2o {
 
     protected:
       SparseBlockMatrix<Eigen::MatrixXd> _updateMat;
-      cholmod_common _cholmodCommon;
+      cholmod_common _cholmodCommon{};
       CholmodExt* _cholmodSparse;
       cholmod_factor* _cholmodFactor;
       cholmod_triplet* _permutedUpdate;

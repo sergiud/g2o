@@ -40,7 +40,7 @@ namespace g2o {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     SE2 laserMotion;
     SE2 odomMotion;
-    double timeInterval;
+    double timeInterval{};
   };
 
   typedef std::vector<MotionInformation, Eigen::aligned_allocator<MotionInformation> >     MotionInformationVector;

@@ -174,10 +174,10 @@ bool EdgeProjectPSI2UV::read(std::istream& is) {
 }
 
 void EdgeProjectPSI2UV::computeError(){
-  const VertexSBAPointXYZ * psi = static_cast<const VertexSBAPointXYZ*>(_vertices[0]);
-  const VertexSE3Expmap * T_p_from_world = static_cast<const VertexSE3Expmap*>(_vertices[1]);
-  const VertexSE3Expmap * T_anchor_from_world = static_cast<const VertexSE3Expmap*>(_vertices[2]);
-  const CameraParameters * cam = static_cast<const CameraParameters *>(parameter(0));
+  const VertexSBAPointXYZ * psi = dynamic_cast<const VertexSBAPointXYZ*>(_vertices[0]);
+  const VertexSE3Expmap * T_p_from_world = dynamic_cast<const VertexSE3Expmap*>(_vertices[1]);
+  const VertexSE3Expmap * T_anchor_from_world = dynamic_cast<const VertexSE3Expmap*>(_vertices[2]);
+  const CameraParameters * cam = dynamic_cast<const CameraParameters *>(parameter(0));
 
   Vector2D obs(_measurement);
   _error = obs - cam->cam_map(T_p_from_world->estimate()
@@ -215,13 +215,13 @@ inline Matrix3D d_Tinvpsi_d_psi(const SE3Quat & T, const Vector3D & psi){
 }
 
 void EdgeProjectPSI2UV::linearizeOplus(){
-  VertexSBAPointXYZ* vpoint = static_cast<VertexSBAPointXYZ*>(_vertices[0]);
+  VertexSBAPointXYZ* vpoint = dynamic_cast<VertexSBAPointXYZ*>(_vertices[0]);
   Vector3D psi_a = vpoint->estimate();
-  VertexSE3Expmap * vpose = static_cast<VertexSE3Expmap *>(_vertices[1]);
+  VertexSE3Expmap * vpose = dynamic_cast<VertexSE3Expmap *>(_vertices[1]);
   SE3Quat T_cw = vpose->estimate();
-  VertexSE3Expmap * vanchor = static_cast<VertexSE3Expmap *>(_vertices[2]);
+  VertexSE3Expmap * vanchor = dynamic_cast<VertexSE3Expmap *>(_vertices[2]);
   const CameraParameters * cam
-      = static_cast<const CameraParameters *>(parameter(0));
+      = dynamic_cast<const CameraParameters *>(parameter(0));
 
   SE3Quat A_aw = vanchor->estimate();
   SE3Quat T_ca = T_cw*A_aw.inverse();
@@ -274,10 +274,10 @@ bool EdgeProjectXYZ2UV::write(std::ostream& os) const {
 }
 
 void EdgeSE3Expmap::linearizeOplus() {
-  VertexSE3Expmap * vi = static_cast<VertexSE3Expmap *>(_vertices[0]);
+  VertexSE3Expmap * vi = dynamic_cast<VertexSE3Expmap *>(_vertices[0]);
   SE3Quat Ti(vi->estimate());
 
-  VertexSE3Expmap * vj = static_cast<VertexSE3Expmap *>(_vertices[1]);
+  VertexSE3Expmap * vj = dynamic_cast<VertexSE3Expmap *>(_vertices[1]);
   SE3Quat Tj(vj->estimate());
 
   const SE3Quat & Tij = _measurement;
@@ -291,9 +291,9 @@ void EdgeSE3Expmap::linearizeOplus() {
 }
 
 void EdgeProjectXYZ2UV::linearizeOplus() {
-  VertexSE3Expmap * vj = static_cast<VertexSE3Expmap *>(_vertices[1]);
+  VertexSE3Expmap * vj = dynamic_cast<VertexSE3Expmap *>(_vertices[1]);
   SE3Quat T(vj->estimate());
-  VertexSBAPointXYZ* vi = static_cast<VertexSBAPointXYZ*>(_vertices[0]);
+  VertexSBAPointXYZ* vi = dynamic_cast<VertexSBAPointXYZ*>(_vertices[0]);
   Vector3D xyz = vi->estimate();
   Vector3D xyz_trans = T.map(xyz);
 
@@ -302,7 +302,7 @@ void EdgeProjectXYZ2UV::linearizeOplus() {
   double z = xyz_trans[2];
   double z_2 = z*z;
 
-  const CameraParameters * cam = static_cast<const CameraParameters *>(parameter(0));
+  const CameraParameters * cam = dynamic_cast<const CameraParameters *>(parameter(0));
 
   Matrix<double,2,3,Eigen::ColMajor> tmp;
   tmp(0,0) = cam->focal_length;
