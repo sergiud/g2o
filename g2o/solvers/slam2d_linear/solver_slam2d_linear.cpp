@@ -60,7 +60,7 @@ namespace g2o {
         assert(to->hessianIndex() >= 0);
         double fromTheta = from->hessianIndex() < 0 ? 0. : _thetaGuess[from->hessianIndex()];
         bool direct      = odom->vertices()[0] == from;
-        if (direct) 
+        if (direct)
           _thetaGuess[to->hessianIndex()] = fromTheta + odom->measurement().rotation().angle();
         else
           _thetaGuess[to->hessianIndex()] = fromTheta - odom->measurement().rotation().angle();
@@ -117,7 +117,7 @@ namespace g2o {
     // off diagonal for each edge
     for (auto it : _optimizer->activeEdges()) {
 #    ifndef NDEBUG
-      EdgeSE2* e = dynamic_cast<EdgeSE2*>(*it);
+      EdgeSE2* e = dynamic_cast<EdgeSE2*>(it);
       assert(e && "Active edges contain non-odometry edge"); //
 #    else
       EdgeSE2* e = static_cast<EdgeSE2*>(it);
@@ -181,7 +181,7 @@ namespace g2o {
             else
               (*H.block(from->hessianIndex(), to->hessianIndex()))(0,0) -= omega;
           }
-        } 
+        }
         if (toNotFixed ) {
           b(to->hessianIndex()) += omega_r;
           (*H.block(to->hessianIndex(), to->hessianIndex()))(0,0) += omega;
