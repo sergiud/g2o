@@ -25,15 +25,12 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <g2o/config.h>
-
 #include <g2o/core/base_vertex.h>
-
-#include <g2o/types/sclam2d/edge_se2_sensor_calib.h>
-#include <g2o/types/sclam2d/edge_se2_odom_differential_calib.h>
-
 #include <g2o/core/factory.h>
 #include <g2o/stuff/macros.h>
-
+#include <g2o/types/sclam2d/edge_se2_odom_differential_calib.h>
+#include <g2o/types/sclam2d/edge_se2_sensor_calib.h>
+#include <g2o/types/slam2d/types_slam2d.h>
 
 namespace g2o {
 

@@ -133,7 +133,7 @@ inline int modp_dtoa(double value, char* str, int prec)
     do {
       --count;
       *wstr++ = (char)(48 + (frac % 10));
-    } while (frac /= 10 != 0u);
+    } while ((frac /= 10) != 0u);
     // add extra 0s
     while (count-- > 0) *wstr++ = '0';
     // add decimal
@@ -143,7 +143,7 @@ inline int modp_dtoa(double value, char* str, int prec)
   // do whole part
   // Take care of sign
   // Conversion. Number is reversed.
-  do *wstr++ = (char)(48 + (whole % 10)); while (whole /= 10 != 0);
+  do *wstr++ = (char)(48 + (whole % 10)); while ((whole /= 10) != 0);
   if (neg != 0) {
     *wstr++ = '-';
   }
@@ -156,7 +156,7 @@ inline int modp_uitoa10(uint32_t value, char* str)
 {
   char* wstr=str;
   // Conversion. Number is reversed.
-  do *wstr++ = (char)(48 + (value % 10)); while (value /= 10 != 0u);
+  do *wstr++ = (char)(48 + (value % 10)); while ((value /= 10) != 0u);
   //*wstr='\0';
   // Reverse string
   strreverse(str, wstr-1);
@@ -169,7 +169,7 @@ inline int modp_itoa10(int32_t value, char* str)
   // Take care of sign
   unsigned int uvalue = (value < 0) ? -value : value;
   // Conversion. Number is reversed.
-  do *wstr++ = (char)(48 + (uvalue % 10)); while(uvalue /= 10 != 0u);
+  do *wstr++ = (char)(48 + (uvalue % 10)); while((uvalue /= 10) != 0u);
   if (value < 0) *wstr++ = '-';
   *wstr='\0';
 

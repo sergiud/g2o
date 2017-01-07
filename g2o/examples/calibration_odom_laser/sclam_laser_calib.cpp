@@ -24,32 +24,31 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <iostream>
-#include <map>
 #include <csignal>
 #include <fstream>
+#include <iostream>
+#include <map>
 
-#include <g2o/types/sclam2d/types_sclam2d.h>
-#include <g2o/types/data/types_data.h>
 #include "gm2dl_io.h"
 
-#include <g2o/stuff/color_macros.h>
-#include <g2o/stuff/command_args.h>
-#include <g2o/stuff/macros.h>
-#include <g2o/stuff/filesys_tools.h>
-#include <g2o/stuff/string_tools.h>
-#include <g2o/stuff/timeutil.h>
-
-#include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/factory.h>
 #include <g2o/core/hyper_dijkstra.h>
 #include <g2o/core/optimization_algorithm_factory.h>
-#include <g2o/core/factory.h>
+#include <g2o/core/sparse_optimizer.h>
+#include <g2o/stuff/color_macros.h>
+#include <g2o/stuff/command_args.h>
+#include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/macros.h>
+#include <g2o/stuff/string_tools.h>
+#include <g2o/stuff/timeutil.h>
+#include <g2o/types/data/types_data.h>
+#include <g2o/types/sclam2d/types_sclam2d.h>
+#include <g2o/types/slam2d/types_slam2d.h>
 
 using namespace std;
 using namespace g2o;
 
 static bool hasToStop = false;
-
 
 G2O_USE_OPTIMIZATION_LIBRARY(csparse);
 G2O_USE_TYPE_GROUP(slam2d);

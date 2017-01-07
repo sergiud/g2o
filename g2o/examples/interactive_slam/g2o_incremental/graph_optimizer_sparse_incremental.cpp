@@ -67,7 +67,7 @@ namespace g2o {
     _cholmodCommon.supernodal = CHOLMOD_SIMPLICIAL;
 
     _permutedUpdate = cholmod_allocate_triplet(1000, 1000, 1024, 0, CHOLMOD_REAL, &_cholmodCommon);
-    _L = nullptr;
+    L_ = nullptr;
     _cholmodFactor = nullptr;
     _solverInterface = nullptr;
 
@@ -150,11 +150,11 @@ namespace g2o {
       ok = _underlyingSolver->solve();
 
       // get the current cholesky factor along with the permutation
-      _L = _solverInterface->L();
-      if (_perm.size() < (int)_L->n)
-        _perm.resize(2*_L->n);
-      int* p = (int*)_L->Perm;
-      for (size_t i = 0; i < _L->n; ++i)
+      L_ = _solverInterface->L();
+      if (_perm.size() < (int)L_->n)
+        _perm.resize(2*L_->n);
+      int* p = (int*)L_->Perm;
+      for (size_t i = 0; i < L_->n; ++i)
         _perm[p[i]] = i;
 
     }
@@ -347,7 +347,7 @@ namespace g2o {
       cholmod_reallocate_triplet(updateAsSparseFactor->nzmax, _permutedUpdate, &_cholmodCommon);
     }
     _permutedUpdate->nnz = 0;
-    _permutedUpdate->nrow = _permutedUpdate->ncol = _L->n;
+    _permutedUpdate->nrow = _permutedUpdate->ncol = L_->n;
     {
       int* Ap = (int*)updateAsSparseFactor->p;
       int* Ai = (int*)updateAsSparseFactor->i;

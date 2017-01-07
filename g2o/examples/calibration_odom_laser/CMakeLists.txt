@@ -15,7 +15,8 @@ target_include_directories (calibration_odom_laser_library PUBLIC
 )
 
 SET_TARGET_PROPERTIES(calibration_odom_laser_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}calibration_odom_laser)
-TARGET_LINK_LIBRARIES(calibration_odom_laser_library core solver_csparse types_sclam2d types_data)
+TARGET_LINK_LIBRARIES(calibration_odom_laser_library core solver_csparse
+  types_slam2d types_sclam2d types_data)
 
 ADD_EXECUTABLE(sclam_odom_laser
   sclam_odom_laser.cpp

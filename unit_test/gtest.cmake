@@ -35,6 +35,8 @@ ExternalProject_Get_Property(googletest binary_dir)
 set(GTEST_LIBRARY google::gtest)
 add_library(google::gtest STATIC IMPORTED)
 set_property(TARGET google::gtest PROPERTY IMPORTED_LOCATION ${GTEST_LIBRARY_PATH})
+set_property (TARGET google::gtest PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+  ${GTEST_INCLUDE_DIR})
 add_dependencies (google::gtest googletest)
 
 # some dependencies for linking

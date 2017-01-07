@@ -24,15 +24,13 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <g2o/solvers/pcg/linear_solver_pcg.h>
-
 #include <g2o/core/block_solver.h>
 #include <g2o/core/optimization_algorithm_factory.h>
-#include <g2o/core/solver.h>
-#include <g2o/stuff/macros.h>
-
 #include <g2o/core/optimization_algorithm_gauss_newton.h>
 #include <g2o/core/optimization_algorithm_levenberg.h>
+#include <g2o/core/solver.h>
+#include <g2o/solvers/pcg/linear_solver_pcg.h>
+#include <g2o/stuff/macros.h>
 
 #define DIM_TO_SOLVER(p, l) BlockSolver< BlockSolverTraits<p, l> >
 

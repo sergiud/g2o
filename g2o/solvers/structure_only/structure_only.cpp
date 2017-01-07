@@ -24,11 +24,11 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "structure_only_solver.h"
 #include <g2o/config.h>
 #include <g2o/core/creators.h>
 #include <g2o/core/optimization_algorithm.h>
 #include <g2o/core/optimization_algorithm_factory.h>
+#include <g2o/solvers/structure_only/structure_only_solver.h>
 #include <g2o/stuff/macros.h>
 
 namespace g2o {

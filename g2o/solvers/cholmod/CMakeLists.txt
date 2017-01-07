@@ -3,7 +3,7 @@ ADD_LIBRARY(solver_cholmod
   linear_solver_cholmod.h
 )
 
-generate_export_header (core PREFIX_NAME G2O_ EXPORT_FILE_NAME
+generate_export_header (solver_cholmod PREFIX_NAME G2O_ EXPORT_FILE_NAME
   ${CMAKE_BINARY_DIR}/include/g2o/solvers/cholmod/g2o_solver_cholmod_api.h
   EXPORT_MACRO_NAME SOLVER_CHOLMOD_API)
 

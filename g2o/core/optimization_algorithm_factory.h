@@ -27,8 +27,7 @@
 #ifndef G2O_OPTMIZATION_ALGORITHM_PROPERTY_H
 #define G2O_OPTMIZATION_ALGORITHM_PROPERTY_H
 
-#include <g2o/core/optimization_algorithm_factory.h>
-#include <g2o/core/optimization_algorithm_factory.h>
+#include <g2o/config.h>
 #include <g2o/core/optimization_algorithm_property.h>
 #include <g2o/stuff/misc.h>
 

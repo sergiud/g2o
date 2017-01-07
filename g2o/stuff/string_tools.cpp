@@ -24,6 +24,12 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#if defined(__CYGWIN__)
+#if !defined(_GNU_SOURCE)
+#define _GNU_SOURCE
+#endif // !defined(_GNU_SOURCE)
+#endif // defined(__CYGWIN__)
+
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/os_specific.h>
 #include <g2o/stuff/macros.h>

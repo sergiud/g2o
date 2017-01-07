@@ -37,12 +37,20 @@ set (CPACK_PACKAGE_VERSION_MINOR ${MINOR_VERSION})
 set (CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
 set (CPACK_PACKAGE_VERSION ${SHORT_VERSION})
 
+include (CheckCXXCompilerFlag)
 include (CMakeDependentOption)
 include (CMakePackageConfigHelpers)
 include (CPack)
 include (CTest)
 include (GenerateExportHeader)
 include (GNUInstallDirs)
+
+# GCC compiler flags
+check_cxx_compiler_flag (-Wa,-mbig-obj HAVE_AR_BIGOBJ)
+
+if (HAVE_AR_BIGOBJ)
+  add_compile_options (-Wa,-mbig-obj)
+endif (HAVE_AR_BIGOBJ)
 
 set (_g2o_CMake_Base_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR})
 set (_g2o_CMake_BINDIR ${CMAKE_INSTALL_BINDIR})
