@@ -28,9 +28,9 @@
 
 #include "rand.h"
 
-#include <map>
 #include <iostream>
 #include <cmath>
+#include <map>
 using namespace std;
 
 namespace g2o {

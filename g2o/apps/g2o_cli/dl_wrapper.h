@@ -27,8 +27,8 @@
 #ifndef G2O_DL_WRAPPER_H
 #define G2O_DL_WRAPPER_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #ifdef WINDOWS
 #include <windows.h>

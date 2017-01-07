@@ -32,8 +32,8 @@
 
 #include <Eigen/StdVector>
 
-#include <vector>
 #include <map>
+#include <vector>
 
 namespace g2o {
   namespace tutorial {

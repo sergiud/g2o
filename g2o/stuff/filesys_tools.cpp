@@ -36,8 +36,8 @@
 #include <sys/stat.h>
 #include <ctime>
 #include <cstdio>
-#include <sys/types.h>
 #include <iostream>
+#include <sys/types.h>
 
 #ifdef WINDOWS
 #include <windows.h>

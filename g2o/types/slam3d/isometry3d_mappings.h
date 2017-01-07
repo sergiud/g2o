@@ -27,10 +27,10 @@
 #ifndef G2O_ISOMETRY3D_MAPPINGS_H_
 #define G2O_ISOMETRY3D_MAPPINGS_H_
 
-#include <g2o/types/slam3d/se3quat.h>
 #include <Eigen/Core>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#include <g2o/types/slam3d/se3quat.h>
 
 namespace g2o {
 

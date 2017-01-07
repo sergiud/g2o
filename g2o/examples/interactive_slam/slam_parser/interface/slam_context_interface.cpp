@@ -29,7 +29,7 @@
 #include "abstract_slam_interface.h"
 #include "slam_parser/parser/commands.h"
 
-#include <iostream>
+#include <vector>
 using namespace std;
 
 namespace SlamParser {

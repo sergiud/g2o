@@ -26,7 +26,7 @@
 
 #include "draw_helpers.h"
 
-#include <g2o/stuff/misc.h>
+#include <cmath>
 
 #include <cmath>
 

@@ -27,9 +27,10 @@
 #ifndef G2O_TUTORIAL_EDGE_SE2_H
 #define G2O_TUTORIAL_EDGE_SE2_H
 
-#include "vertex_se2.h"
-#include <g2o/examples/tutorial_slam2d/g2o_tutorial_slam2d_api.h>
 #include <g2o/core/base_binary_edge.h>
+#include <g2o/examples/tutorial_slam2d/g2o_tutorial_slam2d_api.h>
+#include <g2o/examples/tutorial_slam2d/vertex_se2.h>
+#include <g2o/examples/tutorial_slam2d/se2.h>
 
 namespace g2o {
 
@@ -51,7 +52,7 @@ namespace g2o {
           SE2 delta = _inverseMeasurement * (v1->estimate().inverse()*v2->estimate());
           _error = delta.toVector();
         }
-  
+
         void setMeasurement(const SE2& m){
           _measurement = m;
           _inverseMeasurement = m.inverse();

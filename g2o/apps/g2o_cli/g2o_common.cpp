@@ -26,12 +26,12 @@
 
 #include "g2o_common.h"
 #include "dl_wrapper.h"
-#include <g2o/stuff/string_tools.h>
+#include <cstdlib>
 #include <g2o/stuff/filesys_tools.h>
 
-#include <vector>
 #include <iostream>
 #include <cstdlib>
+#include <vector>
 using namespace ::std;
 
 /*

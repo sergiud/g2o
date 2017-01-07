@@ -32,8 +32,8 @@
 #include <g2o/stuff/macros.h>
 
 #include <g2o/core/solver.h>
-#include <cstddef>
-#include <g2o/core/g2o_core_api.h>
+#include <g2o/core/solver.h>
+#include <g2o/core/sparse_block_matrix.h>
 #include <g2o/core/sparse_optimizer.h>
 
 using namespace std;

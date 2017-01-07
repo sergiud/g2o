@@ -44,8 +44,8 @@
  * \brief utility functions for handling files, directory on Linux/Unix
  */
 
-#include <string>
-#include <vector>
+#include <g2o/stuff/macros.h>
+#include <g2o/stuff/string_tools.h>
 
 namespace g2o {
 

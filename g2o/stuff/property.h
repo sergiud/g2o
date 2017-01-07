@@ -31,8 +31,8 @@
 #include <sstream>
 #include <string>
 
-#include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/g2o_stuff_api.h>
+#include <g2o/stuff/string_tools.h>
 
 namespace g2o {
 

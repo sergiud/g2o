@@ -41,8 +41,8 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include <g2o/stuff/misc.h>
 #include <g2o/stuff/macros.h>
+#include <g2o/stuff/misc.h>
 #include <g2o/types/slam3d/se3quat.h>
 
 #include <g2o/types/sba/g2o_types_sba_api.h>

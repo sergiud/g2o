@@ -15,6 +15,8 @@ target_include_directories (csparse_extension PUBLIC
 
 SET_TARGET_PROPERTIES(csparse_extension PROPERTIES OUTPUT_NAME ${LIB_PREFIX}csparse_extension)
 
+target_link_libraries (csparse_extension PUBLIC core)
+
 IF(BUILD_CSPARSE)
   TARGET_LINK_LIBRARIES(csparse_extension PUBLIC csparse)
 ELSE()

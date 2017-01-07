@@ -27,7 +27,6 @@
 #ifndef G2O_AIS_OPTIMIZABLE_GRAPH_HH_
 #define G2O_AIS_OPTIMIZABLE_GRAPH_HH_
 
-#include <cmath>
 #include <iostream>
 #include <limits>
 #include <list>
@@ -107,9 +106,9 @@ namespace g2o {
     };
 
     //! vector container for vertices
-    typedef std::vector<OptimizableGraph::Vertex*>      VertexContainer;
+    typedef std::vector<Vertex*>      VertexContainer;
     //! vector container for edges
-    typedef std::vector<OptimizableGraph::Edge*>        EdgeContainer;
+    typedef std::vector<Edge*>        EdgeContainer;
 
     /**
      * \brief A general case Vertex for optimization
@@ -274,10 +273,10 @@ namespace g2o {
 
         //! temporary index of this node in the parameter vector obtained from linearization
         int hessianIndex() const { return _hessianIndex;}
-        int G2O_ATTRIBUTE_DEPRECATED(tempIndex() const) { return hessianIndex();}
+        G2O_CORE_DEPRECATED int tempIndex() const { return hessianIndex();}
         //! set the temporary index of the vertex in the parameter blocks
         void setHessianIndex(int ti) { _hessianIndex = ti;}
-        void G2O_ATTRIBUTE_DEPRECATED(setTempIndex(int ti)) { setHessianIndex(ti);}
+        G2O_CORE_DEPRECATED void setTempIndex(int ti) { setHessianIndex(ti);}
 
         //! true => this node is fixed during the optimization
         bool fixed() const {return _fixed;}
@@ -449,8 +448,8 @@ namespace g2o {
         //! returns the dimensions of the error function
         int dimension() const { return _dimension;}
 
-        G2O_ATTRIBUTE_DEPRECATED(virtual Vertex* createFrom()) {return nullptr;}
-	G2O_ATTRIBUTE_DEPRECATED(virtual Vertex* createTo())   {return nullptr;}
+        G2O_CORE_DEPRECATED virtual Vertex* createFrom() {return nullptr;}
+	G2O_CORE_DEPRECATED virtual Vertex* createTo()   {return nullptr;}
 	virtual Vertex* createVertex(int) {return nullptr;}
 
         //! read the vertex from a stream, i.e., the internal state of the vertex

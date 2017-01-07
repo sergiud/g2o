@@ -29,13 +29,13 @@
 
 #include "simulator2d_base.h"
 #include "sensor_odometry2d.h"
-#include "sensor_pose2d.h"
-#include "sensor_pointxy.h"
-#include "sensor_pointxy_bearing.h"
 #include "sensor_pointxy_offset.h"
-#include "sensor_segment2d.h"
-#include "sensor_segment2d_line.h"
-#include "sensor_segment2d_pointline.h"
+#include "simulator2d_base.h"
+#include <g2o/apps/g2o_simulator/pointsensorparameters.h>
+#include <g2o/simulator/g2o_simulator_api.h>
+#include <g2o/simulator/g2o_simulator_api.h>
+#include <g2o/simulator/g2o_simulator_api.h>
+#include <g2o/types/slam2d_addons/types_slam2d_addons.h>
 
 
 

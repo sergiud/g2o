@@ -31,8 +31,8 @@
 #include <algorithm>
 
 #include "dl_wrapper.h"
-#include <g2o/stuff/macros.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/macros.h>
 
 #if defined (UNIX) || defined(CYGWIN)
 #include <dlfcn.h>

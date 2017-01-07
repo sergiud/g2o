@@ -27,8 +27,8 @@
 #ifndef G2O_TUTORIAL_PARAMETER_SE2_OFFSET_H
 #define G2O_TUTORIAL_PARAMETER_SE2_OFFSET_H
 
-#include <g2o/core/cache.h>
 #include "se2.h"
+#include <g2o/core/cache.h>
 #include <g2o/examples/tutorial_slam2d/g2o_tutorial_slam2d_api.h>
 
 namespace g2o {

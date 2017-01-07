@@ -1,8 +1,8 @@
 #ifndef G2O_EDGE_LABELER_
 #define G2O_EDGE_LABELER_
 
-#include <g2o/core/sparse_optimizer.h>
 #include <Eigen/Core>
+#include <g2o/core/sparse_optimizer.h>
 
 #include <g2o/hierarchical/g2o_hierarchical_api.h>
 

@@ -33,7 +33,7 @@
 #include "vertex_point_xy.h"
 #include "edge_se2.h"
 #include "edge_se2_pointxy.h"
-#include "types_tutorial_slam2d.h"
+#include <g2o/core/base_binary_edge.h>
 
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/core/block_solver.h>

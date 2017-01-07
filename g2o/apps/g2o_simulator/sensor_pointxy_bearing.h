@@ -27,8 +27,8 @@
 #ifndef G2O_SENSOR_POINTXY_BEARING_H_
 #define G2O_SENSOR_POINTXY_BEARING_H_
 
-#include "simulator2d_base.h"
 #include "pointsensorparameters.h"
+#include "simulator2d_base.h"
 #include <g2o/simulator/g2o_simulator_api.h>
 
 namespace g2o {

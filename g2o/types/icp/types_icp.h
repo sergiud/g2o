@@ -38,7 +38,7 @@
 #include <g2o/types/slam3d/vertex_se3.h>
 
 #include <Eigen/Geometry>
-#include <iostream>
+#include <g2o/solvers/structure_only/structure_only_solver.h>
 
 namespace g2o {
 

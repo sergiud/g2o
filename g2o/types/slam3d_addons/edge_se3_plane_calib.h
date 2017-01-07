@@ -28,9 +28,9 @@
 #define G2O_EDGE_SE3_PLANE_CALIB_H
 
 #include <g2o/config.h>
-#include <g2o/types/slam3d_addons/vertex_plane.h>
 #include <g2o/core/base_multi_edge.h>
 #include <g2o/types/slam3d/vertex_se3.h>
+#include <g2o/types/slam3d_addons/vertex_plane.h>
 
 namespace g2o {
   /**

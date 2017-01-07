@@ -31,11 +31,11 @@
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/stuff/misc.h>
 
+#include <iostream>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <memory>
 
 namespace g2o {
 

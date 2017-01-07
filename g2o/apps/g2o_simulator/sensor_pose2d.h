@@ -27,9 +27,9 @@
 #ifndef G2O_SENSOR_POSE2D_H_
 #define G2O_SENSOR_POSE2D_H_
 
-#include "simulator2d_base.h"
 #include "pointsensorparameters.h"
-#include <g2o/simulator/g2o_simulator_api.h>
+#include "sensor_pointxy.h"
+#include "simulator2d_base.h"
 
 namespace g2o {
 

@@ -31,6 +31,8 @@
 
 #include <g2o/slam_parser/g2o_slam_parser_api.h>
 
+#include "scanner.h"
+
 namespace SlamParser {
 
 class CommandNode;

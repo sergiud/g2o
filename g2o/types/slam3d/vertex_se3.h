@@ -28,8 +28,8 @@
 #define G2O_VERTEX_SE3_
 
 #include <g2o/config.h>
-#include <g2o/types/slam3d/isometry3d_mappings.h>
 #include <g2o/core/base_vertex.h>
+#include <g2o/types/slam3d/isometry3d_mappings.h>
 #include <g2o/core/hyper_graph_action.h>
 #include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 

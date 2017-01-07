@@ -27,9 +27,9 @@
 #ifndef G2O_VERTEX_ELLIPSE_H
 #define G2O_VERTEX_ELLIPSE_H
 
-#include <g2o/types/data/robot_data.h>
 #include <g2o/core/factory.h>
 #include <g2o/core/hyper_graph_action.h>
+#include <g2o/types/data/robot_data.h>
 
 namespace g2o {
 

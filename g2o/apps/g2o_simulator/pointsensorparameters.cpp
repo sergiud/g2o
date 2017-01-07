@@ -26,7 +26,7 @@
 
 #include "pointsensorparameters.h"
 
-#include <g2o/stuff/misc.h> // for M_PI
+#include <cmath>
 
 // Robot2D
 namespace g2o {

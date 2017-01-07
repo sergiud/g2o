@@ -34,9 +34,9 @@
 
 #include <cstddef>
 
-#include "jet.h"
 #include "eigen.h"
 #include "fixed_array.h"
+#include "jet.h"
 
 namespace ceres {
 namespace internal {

@@ -27,10 +27,10 @@
 #ifndef G2O_OUTPUT_HELPER_H
 #define G2O_OUTPUT_HELPER_H
 
-#include <string>
-#include <iosfwd>
 #include <g2o/core/hyper_graph.h>
 #include <g2o/cli/g2o_cli_api.h>
+#include <iosfwd>
+#include <string>
 
 namespace g2o {
 

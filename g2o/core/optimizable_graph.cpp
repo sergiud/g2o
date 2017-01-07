@@ -29,8 +29,8 @@
 #include <cassert>
 #include <iomanip>
 #include <fstream>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 
 #include <Eigen/Dense>
 

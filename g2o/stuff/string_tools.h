@@ -27,13 +27,13 @@
 #ifndef G2O_STRING_TOOLS_H
 #define G2O_STRING_TOOLS_H
 
-#include <cstdlib>
+#include <g2o/stuff/string_tools.h>
 #include <sstream>
 #include <string>
 #include <vector>
 
-#include <g2o/stuff/macros.h>
 #include <g2o/stuff/g2o_stuff_api.h>
+#include <g2o/stuff/macros.h>
 
 namespace g2o {
 

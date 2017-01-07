@@ -26,18 +26,16 @@
 
 #include "gm2dl_io.h"
 
-#include <g2o/types/data/data_queue.h>
-
-#include <g2o/core/sparse_optimizer.h>
 #include <g2o/core/factory.h>
-
-#include <g2o/types/sclam2d/edge_se2_sensor_calib.h>
-#include <g2o/types/data/robot_laser.h>
-
+#include <g2o/core/sparse_optimizer.h>
 #include <g2o/stuff/string_tools.h>
+#include <g2o/types/data/data_queue.h>
+#include <g2o/types/data/robot_laser.h>
+#include <g2o/types/sclam2d/edge_se2_sensor_calib.h>
 
 #include <fstream>
 #include <iostream>
+
 using namespace std;
 
 namespace g2o {
@@ -83,7 +81,7 @@ namespace g2o {
           delete v;
           v = dynamic_cast<VertexSE2*>(optimizer.vertex(id));
           assert(v);
-        } 
+        }
         v->setEstimate(p);
         previousVertex = v;
 
@@ -112,12 +110,12 @@ namespace g2o {
         VertexSE2* v1 = dynamic_cast<VertexSE2*>(optimizer.vertex(id1));
         VertexSE2* v2 = dynamic_cast<VertexSE2*>(optimizer.vertex(id2));
         if (! v1) {
-          cerr << "vertex " << id1 << " is not existing, cannot add edge (" << id1 << "," << id2 << ")" << endl; 
+          cerr << "vertex " << id1 << " is not existing, cannot add edge (" << id1 << "," << id2 << ")" << endl;
           delete e;
           continue;
         }
         if (! v2) {
-          cerr << "vertex " << id2 << " is not existing, cannot add edge (" << id1 << "," << id2 << ")" << endl; 
+          cerr << "vertex " << id2 << " is not existing, cannot add edge (" << id1 << "," << id2 << ")" << endl;
           delete e;
           continue;
         }

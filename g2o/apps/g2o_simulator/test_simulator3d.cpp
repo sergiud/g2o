@@ -26,11 +26,11 @@
 
 #include <cstdlib>
 #include <g2o/stuff/command_args.h>
-#include <g2o/stuff/sampler.h>
+#include <Eigen/Core>
 #include "simulator3d.h"
+#include <fstream>
 #include <g2o/core/optimizable_graph.h>
 #include <iostream>
-#include <fstream>
 
 //#define _POSE_SENSOR_OFFSET
 //#define _POSE_PRIOR_SENSOR

@@ -33,9 +33,8 @@
 #include <limits>
 #include <map>
 #include <set>
-#include <vector>
-
 #include <unordered_map>
+#include <vector>
 
 #include <g2o/core/eigen_types.h>
 #include <g2o/core/g2o_core_api.h>

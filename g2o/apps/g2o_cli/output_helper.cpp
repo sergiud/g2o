@@ -26,7 +26,7 @@
 
 #include "output_helper.h"
 
-#include <g2o/core/optimizable_graph.h>
+#include <cmath>
 #include <g2o/core/hyper_graph_action.h>
 
 #include <g2o/stuff/filesys_tools.h>
@@ -34,8 +34,8 @@
 
 #include <Eigen/Core>
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 using namespace std;
 
 namespace g2o {

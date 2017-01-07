@@ -2,10 +2,10 @@
 #define G2O_SE3_LOTSOF_XYZ
 
 #include <g2o/config.h>
-#include <g2o/types/slam3d/vertex_pointxyz.h>
-#include <g2o/types/slam3d/vertex_se3.h>
 #include <g2o/core/base_multi_edge.h>
 #include <g2o/types/slam3d/g2o_types_slam3d_api.h>
+#include <g2o/types/slam3d/vertex_pointxyz.h>
+#include <g2o/types/slam3d/vertex_se3.h>
 
 namespace g2o{
 

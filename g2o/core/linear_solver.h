@@ -26,8 +26,11 @@
 
 #ifndef G2O_LINEAR_SOLVER_H
 #define G2O_LINEAR_SOLVER_H
-#include <g2o/core/sparse_block_matrix.h>
-#include <g2o/core/sparse_block_matrix_ccs.h>
+
+#include <cassert>
+
+#include <g2o/core/marginal_covariance_cholesky.h>
+#include <g2o/core/batch_stats.h>
 
 namespace g2o {
 

@@ -89,7 +89,7 @@ G2O_STUFF_API int gettimeofday(struct timeval *tv, struct timezone *tz);
 /**
  * return the current time in seconds since 1. Jan 1970
  */
-inline double get_time() 
+inline double get_time()
 {
   struct timeval ts;
   gettimeofday(&ts,nullptr);
@@ -113,7 +113,7 @@ G2O_STUFF_API double get_monotonic_time();
  * just create and instance at the beginning of the function.
  */
 class G2O_STUFF_API ScopeTime {
-  public: 
+  public:
     ScopeTime(const char* title);
     ~ScopeTime();
   private:

@@ -24,14 +24,15 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "closed_form_calibration.h"
-
-#include <g2o/types/sclam2d/odometry_measurement.h>
+#include <Eigen/Core>
+#include <Eigen/SVD>
 
 #include <iostream>
 #include <limits>
 
-#include <Eigen/SVD>
+#include <g2o/examples/calibration_odom_laser/closed_form_calibration.h>
+#include <g2o/types/sclam2d/odometry_measurement.h>
+
 
 #define SQR(X)		( std::pow(X,2) )
 #define CUBE(X)		( std::pow(X,3) )
@@ -91,12 +92,12 @@ bool ClosedFormCalibration::calibrate(const MotionInformationVector& measurement
     L(0, 0) = -c_x;
     L(0, 1) = 1 - cos(o_theta_k);
     L(0, 2) = sin(o_theta_k);
-    L(0, 3) = laserMotion.translation().x(); 
+    L(0, 3) = laserMotion.translation().x();
     L(0, 4) = -laserMotion.translation().y();
     L(1, 0) = -c_y;
     L(1, 1) = - sin(o_theta_k);
     L(1, 2) = 1 - cos(o_theta_k);
-    L(1, 3) = laserMotion.translation().y(); 
+    L(1, 3) = laserMotion.translation().y();
     L(1, 4) = laserMotion.translation().x();
     M.noalias() += L.transpose() * L;
   }
@@ -111,11 +112,11 @@ bool ClosedFormCalibration::calibrate(const MotionInformationVector& measurement
   double m22 = M(1,1);
   double m34 = M(2,3);
   double m35 = M(2,4);
-  double m44 = M(3,3); 
+  double m44 = M(3,3);
 
   double a = m11 * SQR(m22) - m22 * SQR(m13);
-  double b = 2*m11 * SQR(m22) * m44 - SQR(m22) * SQR(m14) - 2*m22 * SQR(m13) * m44 - 2*m11 * m22 * SQR(m34) 
-    - 2*m11 * m22 * SQR(m35) - SQR(m22) * SQR(m15) + 2*m13 * m22 * m34 * m14 + SQR(m13) * SQR(m34) 
+  double b = 2*m11 * SQR(m22) * m44 - SQR(m22) * SQR(m14) - 2*m22 * SQR(m13) * m44 - 2*m11 * m22 * SQR(m34)
+    - 2*m11 * m22 * SQR(m35) - SQR(m22) * SQR(m15) + 2*m13 * m22 * m34 * m14 + SQR(m13) * SQR(m34)
     + 2*m13 * m22 * m35 * m15 + SQR(m13) * SQR(m35);
   double c = - 2*m13 * CUBE(m35) * m15 - m22 * SQR(m13) * SQR(m44) + m11 * SQR(m22) * SQR(m44) + SQR(m13) * SQR(m35) * m44
     + 2*m13 * m22 * m34 * m14 * m44 + SQR(m13) * SQR(m34) * m44 - 2*m11 * m22 * SQR(m34) * m44 - 2 * m13 * CUBE(m34) * m14

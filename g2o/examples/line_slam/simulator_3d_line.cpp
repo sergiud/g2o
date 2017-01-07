@@ -8,8 +8,8 @@
 #include <g2o/types/slam3d/types_slam3d.h>
 #include <g2o/types/slam3d_addons/types_slam3d_addons.h>
 #include <g2o/solvers/pcg/linear_solver_pcg.h>
-#include <g2o/stuff/macros.h>
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/macros.h>
 
 using namespace g2o;
 using namespace std;

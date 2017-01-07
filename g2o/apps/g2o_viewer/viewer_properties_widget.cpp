@@ -23,8 +23,8 @@
 
 #include <QLineEdit>
 
-#include <iostream>
 #include <cassert>
+#include <iostream>
 
 #ifdef __GNUC__
   #include <cxxabi.h>

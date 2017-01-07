@@ -33,9 +33,9 @@
 #include <g2o/types/data/types_data.h>
 #include "gm2dl_io.h"
 
-#include <g2o/stuff/macros.h>
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/macros.h>
 #include <g2o/stuff/filesys_tools.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>

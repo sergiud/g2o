@@ -39,9 +39,9 @@
 #include <g2o/core/hyper_graph.h>
 #include <g2o/core/sparse_block_matrix.h>
 #include <g2o/stuff/timeutil.h>
+#include <g2o/config.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/misc.h>
-#include <g2o/config.h>
 
 namespace g2o{
   using namespace std;

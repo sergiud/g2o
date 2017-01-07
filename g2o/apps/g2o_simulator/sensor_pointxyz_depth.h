@@ -26,8 +26,8 @@
 
 #ifndef G2O_SENSOR_POINTXYZ_DEPTH_H_
 #define G2O_SENSOR_POINTXYZ_DEPTH_H_
-#include "simulator3d_base.h"
 #include "pointsensorparameters.h"
+#include "simulator3d_base.h"
 #include <g2o/simulator/g2o_simulator_api.h>
 
 namespace g2o {

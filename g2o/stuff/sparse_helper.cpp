@@ -27,8 +27,8 @@
 #include <g2o/stuff/sparse_helper.h>
 
 #include <fstream>
-#include <string>
 #include <iomanip>
+#include <string>
 #include <vector>
 #include <algorithm>
 

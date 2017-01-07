@@ -17,10 +17,10 @@
 #ifndef G2O_STREAM_REDIRECT_H
 #define G2O_STREAM_REDIRECT_H
 
+#include <QMutex>
 #include <iostream>
 #include <streambuf>
 #include <string>
-#include <QMutex>
 
 #include <g2o/viewer/g2o_viewer_api.h>
 

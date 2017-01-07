@@ -27,7 +27,7 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-#include <vector>
+#include <iostream>
 #include <string>
 
 namespace SlamParser {

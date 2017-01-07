@@ -26,9 +26,9 @@
 
 #ifndef G2O_SENSOR_POSE3D_H_
 #define G2O_SENSOR_POSE3D_H_
-#include "simulator3d_base.h"
 #include "pointsensorparameters.h"
-#include <g2o/simulator/g2o_simulator_api.h>
+#include "sensor_pointxyz.h"
+#include "simulator3d_base.h"
 
 namespace g2o {
 

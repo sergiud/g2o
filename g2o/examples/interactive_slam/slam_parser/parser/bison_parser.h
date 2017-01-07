@@ -39,9 +39,9 @@
 
 
 
-#include <string>
-#include <iostream>
 #include "stack.hh"
+#include <iostream>
+#include <string>
 
 
 /* Line 35 of lalr1.cc  */

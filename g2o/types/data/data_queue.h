@@ -27,8 +27,8 @@
 #ifndef G2O_DATA_QUEUE_H
 #define G2O_DATA_QUEUE_H
 
-#include <map>
 #include <g2o/types/data/g2o_types_data_api.h>
+#include <map>
 
 namespace g2o {
 

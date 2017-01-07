@@ -26,11 +26,11 @@
 
 #include <cstdlib>
 #include <g2o/stuff/command_args.h>
-#include <g2o/stuff/sampler.h>
+#include <Eigen/Cholesky>
 #include "simulator2d.h"
+#include <fstream>
 #include <g2o/core/optimizable_graph.h>
 #include <iostream>
-#include <fstream>
 #include <sstream>
 
 using namespace g2o;

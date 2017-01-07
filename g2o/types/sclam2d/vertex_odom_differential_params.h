@@ -28,6 +28,7 @@
 #define G2O_VERTEX_ODOM_DIFFERENTIAL_PARAMS_H
 
 #include <g2o/core/base_vertex.h>
+#include <g2o/types/sclam2d/edge_se2_sensor_calib.h>
 #include <g2o/types/sclam2d/g2o_types_sclam2d_api.h>
 
 namespace g2o {

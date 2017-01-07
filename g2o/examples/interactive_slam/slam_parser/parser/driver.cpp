@@ -30,7 +30,7 @@
 #include <sstream>
 
 #include "slam_context.h"
-#include "scanner.h"
+#include <g2o/slam_parser/g2o_slam_parser_api.h>
 
 namespace SlamParser {
 

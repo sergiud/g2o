@@ -27,10 +27,10 @@
 #ifndef G2O_COMMAND_ARGS_H
 #define G2O_COMMAND_ARGS_H
 
-#include <string>
-#include <vector>
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <vector>
 
 #include <g2o/stuff/g2o_stuff_api.h>
 

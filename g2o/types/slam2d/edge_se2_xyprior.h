@@ -27,9 +27,9 @@
 #ifndef G2O_EDGE_SE2_PRIOR_XY_H
 #define G2O_EDGE_SE2_PRIOR_XY_H
 
-#include <g2o/types/slam2d/vertex_se2.h>
 #include <g2o/core/base_unary_edge.h>
 #include <g2o/types/slam2d/g2o_types_slam2d_api.h>
+#include <g2o/types/slam2d/vertex_se2.h>
 
 namespace g2o {
 

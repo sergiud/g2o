@@ -28,7 +28,7 @@
 #define G2O_STUFF_MISC_H
 
 #include <g2o/stuff/macros.h>
-#include <cmath>
+#include <g2o/stuff/misc.h> // for M_PI
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -95,7 +95,7 @@ inline double normalize_theta(double theta)
 {
   if (theta >= -M_PI && theta < M_PI)
     return theta;
-  
+
   double multiplier = floor(theta / (2*M_PI));
   theta = theta - multiplier*2*M_PI;
   if (theta >= M_PI)
@@ -148,7 +148,7 @@ inline int sign(T x)
  * clamp x to the interval [l, u]
  */
 template <typename T>
-inline T clamp(T l, T x, T u) 
+inline T clamp(T l, T x, T u)
 {
   if (x < l)
     return l;
@@ -161,7 +161,7 @@ inline T clamp(T l, T x, T u)
  * wrap x to be in the interval [l, u]
  */
 template <typename T>
-inline T wrap(T l, T x, T u) 
+inline T wrap(T l, T x, T u)
 {
   T intervalWidth = u - l;
   while (x < l)

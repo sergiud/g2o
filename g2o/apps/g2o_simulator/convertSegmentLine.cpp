@@ -36,8 +36,8 @@
 #include <g2o/apps/g2o_simulator/simutils.h>
 #include <g2o/core/batch_stats.h>
 #include <g2o/core/estimate_propagator.h>
-#include <g2o/core/factory.h>
 #include <g2o/core/hyper_dijkstra.h>
+#include <unordered_map>
 #include <g2o/core/hyper_graph_action.h>
 #include <g2o/core/optimization_algorithm.h>
 #include <g2o/core/optimization_algorithm_factory.h>
@@ -46,10 +46,10 @@
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/command_args.h>
 #include <g2o/stuff/filesys_tools.h>
-#include <g2o/stuff/macros.h>
-#include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>
 #include <g2o/types/slam2d_addons/types_slam2d_addons.h>
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace g2o;

@@ -25,7 +25,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "parameter_se2_offset.h"
-
 #include "vertex_se2.h"
 
 namespace g2o {

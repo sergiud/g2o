@@ -29,8 +29,8 @@
 
 #include "sensor_odometry3d.h"
 #include "sensor_pose3d.h"
-#include "sensor_pointxyz.h"
-#include "sensor_pointxyz_disparity.h"
+#include <g2o/simulator/g2o_simulator_api.h>
+#include <g2o/simulator/g2o_simulator_api.h>
 #include "sensor_pointxyz_depth.h"
 #include "sensor_pose3d_offset.h"
 #include "sensor_se3_prior.h"

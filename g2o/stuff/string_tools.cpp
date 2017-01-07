@@ -30,9 +30,9 @@
 
 #include <cctype>
 #include <cstdarg>
-#include <string>
 #include <cstring>
 #include <algorithm>
+#include <string>
 #include <cstdio>
 #include <iostream>
 #include <iterator>

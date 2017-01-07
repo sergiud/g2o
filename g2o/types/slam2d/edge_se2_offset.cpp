@@ -24,8 +24,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <g2o/core/optimizable_graph.h>
 #include <g2o/types/slam2d/edge_se2_offset.h>
-
 #include <g2o/types/slam2d/parameter_se2_offset.h>
 
 #include <iostream>
@@ -79,7 +79,7 @@ namespace g2o {
     if (is.bad()) {
       //  we overwrite the information matrix with the Identity
       information().setIdentity();
-    } 
+    }
     return true;
   }
 
@@ -110,7 +110,7 @@ namespace g2o {
     VertexSE2 *to   = static_cast<VertexSE2*>(_vertices[1]);
 
     SE2 virtualMeasurement = _cacheFrom->offsetParam()->offset() * measurement() * _cacheTo->offsetParam()->offset().inverse();
-    
+
     if (from_.count(from) > 0) {
       to->setEstimate(from->estimate() * virtualMeasurement);
     } else

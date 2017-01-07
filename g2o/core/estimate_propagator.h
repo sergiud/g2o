@@ -27,15 +27,15 @@
 #ifndef G2O_ESTIMATE_PROPAGATOR_H
 #define G2O_ESTIMATE_PROPAGATOR_H
 
+#include <g2o/core/g2o_core_api.h>
 #include <g2o/core/optimizable_graph.h>
 #include <g2o/core/sparse_optimizer.h>
-#include <g2o/core/g2o_core_api.h>
 
 #include <limits>
 #include <map>
 #include <set>
 
-#include <unordered_map>
+#include <g2o/core/factory.h>
 
 namespace g2o {
 

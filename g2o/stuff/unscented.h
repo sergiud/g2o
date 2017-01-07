@@ -27,8 +27,8 @@
 #ifndef G2O_UNSCENTED_
 #define G2O_UNSCENTED_
 
-#include <Eigen/Core>
 #include <Eigen/Cholesky>
+#include <Eigen/Core>
 #include<Eigen/StdVector>
 
 namespace g2o {

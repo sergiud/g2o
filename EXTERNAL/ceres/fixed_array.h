@@ -32,10 +32,10 @@
 #ifndef CERES_PUBLIC_INTERNAL_FIXED_ARRAY_H_
 #define CERES_PUBLIC_INTERNAL_FIXED_ARRAY_H_
 
-#include <cstddef>
 #include "Eigen/Core"
 #include "macros.h"
 #include "manual_constructor.h"
+#include <cstddef>
 
 namespace ceres {
 namespace internal {

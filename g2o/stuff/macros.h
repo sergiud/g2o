@@ -27,6 +27,9 @@
 #ifndef G2O_MACROS_H
 #define G2O_MACROS_H
 
+#include <cmath>
+#include <cmath>
+
 #ifndef DEG2RAD
 #define DEG2RAD(x) ((x) * 0.01745329251994329575)
 #endif
@@ -95,7 +98,6 @@ Modified by Mark Pupilli from:
 #  define G2O_ATTRIBUTE_WARNING(func) func
 #  define G2O_ATTRIBUTE_DEPRECATED(func) func
 
-#include <math.h>
 #define g2o_isnan(x)    isnan(x)
 #define g2o_isinf(x)    isinf(x)
 #define g2o_isfinite(x) isfinite(x)

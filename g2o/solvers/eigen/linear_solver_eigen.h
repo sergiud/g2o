@@ -31,7 +31,7 @@
 #include <Eigen/SparseCholesky>
 
 #include <g2o/core/linear_solver.h>
-#include <g2o/core/batch_stats.h>
+#include <g2o/core/sparse_block_matrix.h>
 #include <g2o/stuff/timeutil.h>
 
 #include <iostream>

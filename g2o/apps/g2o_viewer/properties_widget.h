@@ -19,13 +19,13 @@
 #ifndef G2O_PROPERTIES_WINDOW_H
 #define G2O_PROPERTIES_WINDOW_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include <QDialog>
 
-#include <g2o/viewer/g2o_viewer_api.h>
 #include "ui_base_properties_widget.h"
+#include <g2o/viewer/g2o_viewer_api.h>
 
 namespace g2o
 {

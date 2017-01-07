@@ -27,9 +27,9 @@
 #ifndef G2O_SPARSE_BLOCK_MATRIX_
 #define G2O_SPARSE_BLOCK_MATRIX_
 
-#include <cassert>
 #include <Eigen/Core>
 #include <fstream>
+#include <g2o/core/sparse_block_matrix.h>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -38,8 +38,8 @@
 #include <g2o/core/sparse_block_matrix_ccs.h>
 #include <g2o/core/matrix_structure.h>
 #include <g2o/config.h>
-#include <g2o/core/matrix_operations.h>
 #include <g2o/core/eigen_types.h>
+#include <g2o/core/matrix_operations.h>
 
 namespace g2o {
 /**

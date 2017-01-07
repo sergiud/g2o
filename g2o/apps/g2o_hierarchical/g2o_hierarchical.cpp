@@ -17,28 +17,28 @@
 #include <csignal>
 #include <iostream>
 #include <iomanip>
-#include <string>
 #include <fstream>
 #include <sstream>
+#include <string>
 #include <algorithm>
 #include <cassert>
-#include <sstream>
 #include <g2o/apps/g2o_cli/dl_wrapper.h>
 #include <g2o/apps/g2o_cli/output_helper.h>
+#include <sstream>
 #include <g2o/apps/g2o_cli/g2o_common.h>
 
 #include <g2o/core/estimate_propagator.h>
-#include <g2o/core/sparse_optimizer.h>
 #include <g2o/core/factory.h>
 #include <g2o/core/optimization_algorithm_factory.h>
 #include <g2o/core/hyper_dijkstra.h>
+#include <g2o/core/sparse_optimizer.h>
 #include <g2o/core/robust_kernel.h>
 #include <g2o/core/robust_kernel_factory.h>
 
-#include <g2o/stuff/macros.h>
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/command_args.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/macros.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>
 

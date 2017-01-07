@@ -27,8 +27,8 @@
 #ifndef G2O_SENSOR_ODOMETRY2D_H_
 #define G2O_SENSOR_ODOMETRY2D_H_
 
-#include <g2o/simulator/g2o_simulator_api.h>
-#include "simulator2d_base.h"
+#include "sensor_pose2d.h"
+#include "sensor_pointxy_bearing.h"
 
 namespace g2o {
   class G2O_SIMULATOR_API SensorOdometry2D: public BinarySensor<Robot2D, EdgeSE2, WorldObjectSE2 > {

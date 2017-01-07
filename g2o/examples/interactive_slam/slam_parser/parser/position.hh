@@ -39,9 +39,9 @@
 #ifndef BISON_POSITION_HH
 # define BISON_POSITION_HH
 
+# include <algorithm>
 # include <iostream>
 # include <string>
-# include <algorithm>
 
 
 /* Line 38 of location.cc  */

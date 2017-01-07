@@ -19,8 +19,8 @@
 #include "main_window.h"
 #include "viewer_properties_widget.h"
 
-#include <g2o/core/optimization_algorithm_property.h>
 #include <g2o/core/optimization_algorithm_factory.h>
+#include <g2o/core/optimization_algorithm_property.h>
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/core/estimate_propagator.h>
 #include <g2o/core/optimization_algorithm.h>
@@ -32,9 +32,9 @@
 #include <QDoubleValidator>
 #include <QComboBox>
 
+#include <cassert>
 #include <fstream>
 #include <iostream>
-#include <cassert>
 using namespace std;
 using namespace g2o;
 

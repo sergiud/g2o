@@ -38,7 +38,7 @@
 #include <string>
 
 #include <g2o/core/creators.h>
-#include <g2o/core/g2o_core_api.h>
+#include <g2o/core/factory.h>
 
 // define to get some verbose output
 //#define G2O_DEBUG_FACTORY

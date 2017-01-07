@@ -27,11 +27,11 @@
 #ifndef G2O_MOTION_INFORMATION_H
 #define G2O_MOTION_INFORMATION_H
 
-#include <vector>
 #include <Eigen/StdVector>
+#include <vector>
 
-#include <g2o/types/slam2d/se2.h>
 #include <g2o/examples/calibration_odom_laser/g2o_calibration_odom_laser_api.h>
+#include <g2o/types/slam2d/se2.h>
 
 namespace g2o {
 
