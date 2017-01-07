@@ -251,7 +251,7 @@ namespace g2o {
      * Linearizes the system by computing the Jacobians for the nodes
      * and edges in the graph
      */
-    G2O_ATTRIBUTE_DEPRECATED(void linearizeSystem())
+    G2O_CORE_DEPRECATED void linearizeSystem()
     {
       // nothing needed, linearization is now done inside the solver
     }

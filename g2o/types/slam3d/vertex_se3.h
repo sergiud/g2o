@@ -43,7 +43,7 @@ namespace g2o {
  * matrices. Hence, no scaling or projection.  To avoid that the rotational
  * part of the Isometry3D gets numerically unstable we compute the nearest
  * orthogonal matrix after a large number of calls to the oplus method.
- * 
+ *
  * The parameterization for the increments constructed is a 6d vector
  * (x,y,z,qx,qy,qz) (note that we leave out the w part of the quaternion.
  */
@@ -114,9 +114,9 @@ namespace g2o {
       }
 
       //! wrapper function to use the old SE3 type
-      SE3Quat G2O_ATTRIBUTE_DEPRECATED(estimateAsSE3Quat() const) { return internal::toSE3Quat(estimate());}
+      G2O_TYPES_SLAM3D_DEPRECATED SE3Quat estimateAsSE3Quat() const { return internal::toSE3Quat(estimate());}
       //! wrapper function to use the old SE3 type
-      void G2O_ATTRIBUTE_DEPRECATED(setEstimateFromSE3Quat(const SE3Quat& se3)) { setEstimate(internal::fromSE3Quat(se3));}
+      G2O_TYPES_SLAM3D_DEPRECATED void setEstimateFromSE3Quat(const SE3Quat& se3) { setEstimate(internal::fromSE3Quat(se3));}
 
     protected:
       int _numOplusCalls;     ///< store how often opluse was called to trigger orthogonaliation of the rotation matrix
@@ -128,7 +128,7 @@ namespace g2o {
   class VertexSE3WriteGnuplotAction: public WriteGnuplotAction {
     public:
       VertexSE3WriteGnuplotAction();
-      virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element, 
+      virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element,
           HyperGraphElementAction::Parameters* params_ );
   };
 
