@@ -59,13 +59,13 @@ namespace g2o {
 
 
   OptimizableGraph::Vertex* Cache::vertex() { 
-    if (container() ) 
+    if (container() != nullptr ) 
       return container()->vertex(); 
     return nullptr; 
   }
 
   OptimizableGraph* Cache::graph() {
-    if (container())
+    if (container() != nullptr)
       return container()->graph();
     return nullptr;
   }
@@ -87,8 +87,8 @@ namespace g2o {
   void Cache::update(){
     if (! _updateNeeded)
       return;
-    for(std::vector<Cache*>::iterator it=_parentCaches.begin(); it!=_parentCaches.end(); it++){
-      (*it)->update();
+    for(auto & _parentCache : _parentCaches){
+      _parentCache->update();
     }
     updateImpl();
     _updateNeeded=false;
@@ -102,13 +102,13 @@ namespace g2o {
       pv[i]=_parameters[ parameterIndices[i] ];
     }
     CacheKey k(type_, pv);
-    if (!container())
+    if (container() == nullptr)
       return nullptr;
     Cache* c=container()->findCache(k);
-    if (!c) {
+    if (c == nullptr) {
       c = container()->createCache(k);
     }
-    if (c)
+    if (c != nullptr)
       _parentCaches.push_back(c);
     return c;
   }
@@ -122,7 +122,7 @@ namespace g2o {
   }
 
   Cache* CacheContainer::findCache(const Cache::CacheKey& key) {
-    iterator it=find(key);
+    auto it=find(key);
     if (it==end())
       return nullptr;
     return it->second;
@@ -131,13 +131,13 @@ namespace g2o {
   Cache* CacheContainer::createCache(const Cache::CacheKey& key){
     Factory* f = Factory::instance();
     HyperGraph::HyperGraphElement* e = f->construct(key.type());
-    if (!e) {
+    if (e == nullptr) {
       cerr << __PRETTY_FUNCTION__ << endl;
       cerr << "fatal error in creating cache of type " << key.type() << endl;
       return nullptr;
     }
     Cache* c = dynamic_cast<Cache*>(e);
-    if (! c){
+    if (c == nullptr){
       cerr << __PRETTY_FUNCTION__ << endl;
       cerr << "fatal error in creating cache of type " << key.type() << endl;
       return nullptr;
@@ -157,28 +157,28 @@ namespace g2o {
   }
 
   OptimizableGraph* CacheContainer::graph(){
-    if (_vertex)
+    if (_vertex != nullptr)
       return _vertex->graph();
     return nullptr;
   }
 
   void CacheContainer::update() {
-    for (iterator it=begin(); it!=end(); it++){
-      (it->second)->update();
+    for (auto & it : *this){
+      (it.second)->update();
     }
     _updateNeeded=false;
   }
 
   void CacheContainer::setUpdateNeeded(bool needUpdate) {
     _updateNeeded=needUpdate;
-    for (iterator it=begin(); it!=end(); ++it){
-      (it->second)->_updateNeeded = needUpdate;
+    for (auto & it : *this){
+      (it.second)->_updateNeeded = needUpdate;
     }
   }
 
   CacheContainer::~CacheContainer(){
-    for (iterator it=begin(); it!=end(); ++it){
-      delete (it->second);
+    for (auto & it : *this){
+      delete (it.second);
     }
   }
 

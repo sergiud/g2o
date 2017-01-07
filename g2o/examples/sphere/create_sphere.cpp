@@ -61,25 +61,25 @@ int main (int argc, char** argv)
   arg.param("randomSeed", randomSeed, false, "use a randomized seed for generating the sphere");
   arg.parseArgs(argc, argv);
 
-  if (noiseTranslation.size() == 0) {
+  if (noiseTranslation.empty()) {
     cerr << "using default noise for the translation" << endl;
     noiseTranslation.push_back(0.01);
     noiseTranslation.push_back(0.01);
     noiseTranslation.push_back(0.01);
   }
   cerr << "Noise for the translation:";
-  for (size_t i = 0; i < noiseTranslation.size(); ++i)
-    cerr << " " << noiseTranslation[i];
+  for (double i : noiseTranslation)
+    cerr << " " << i;
   cerr << endl;
-  if (noiseRotation.size() == 0) {
+  if (noiseRotation.empty()) {
     cerr << "using default noise for the rotation" << endl;
     noiseRotation.push_back(0.005);
     noiseRotation.push_back(0.005);
     noiseRotation.push_back(0.005);
   }
   cerr << "Noise for the rotation:";
-  for (size_t i = 0; i < noiseRotation.size(); ++i)
-    cerr << " " << noiseRotation[i];
+  for (double i : noiseRotation)
+    cerr << " " << i;
   cerr << endl;
 
   Eigen::Matrix3d transNoise = Eigen::Matrix3d::Zero();
@@ -100,7 +100,7 @@ int main (int argc, char** argv)
   int id = 0;
   for (int f = 0; f < numLaps; ++f){
     for (int n = 0; n < nodesPerLevel; ++n) {
-      VertexSE3* v = new VertexSE3;
+      auto* v = new VertexSE3;
       v->setId(id++);
 
       Eigen::AngleAxisd rotz(-M_PI + 2*n*M_PI / nodesPerLevel, Eigen::Vector3d::UnitZ());
@@ -120,7 +120,7 @@ int main (int argc, char** argv)
     VertexSE3* prev = vertices[i-1];
     VertexSE3* cur  = vertices[i];
     Eigen::Isometry3d t = prev->estimate().inverse() * cur->estimate();
-    EdgeSE3* e = new EdgeSE3;
+    auto* e = new EdgeSE3;
     e->setVertex(0, prev);
     e->setVertex(1, cur);
     e->setMeasurement(t);
@@ -138,7 +138,7 @@ int main (int argc, char** argv)
           continue;
         VertexSE3* to   = vertices[f*nodesPerLevel + nn + n];
         Eigen::Isometry3d t = from->estimate().inverse() * to->estimate();
-        EdgeSE3* e = new EdgeSE3;
+        auto* e = new EdgeSE3;
         e->setVertex(0, from);
         e->setVertex(1, to);
         e->setMeasurement(t);
@@ -159,16 +159,15 @@ int main (int argc, char** argv)
     vector<int> seeds(2);
     seedSeq.generate(seeds.begin(), seeds.end());
     cerr << "using seeds:";
-    for (size_t i = 0; i < seeds.size(); ++i)
-      cerr << " " << seeds[i];
+    for (int seed : seeds)
+      cerr << " " << seed;
     cerr << endl;
     transSampler.seed(seeds[0]);
     rotSampler.seed(seeds[1]);
   }
 
   // noise for all the edges
-  for (size_t i = 0; i < edges.size(); ++i) {
-    EdgeSE3* e = edges[i];
+  for (auto e : edges) {
     Eigen::Quaterniond gtQuat = (Eigen::Quaterniond)e->measurement().linear();
     Eigen::Vector3d gtTrans = e->measurement().translation();
 
@@ -211,15 +210,13 @@ int main (int argc, char** argv)
   string edgeTag = Factory::instance()->tag(edges[0]);
 
   ostream& fout = outFilename != "-" ? fileOutputStream : cout;
-  for (size_t i = 0; i < vertices.size(); ++i) {
-    VertexSE3* v = vertices[i];
+  for (auto v : vertices) {
     fout << vertexTag << " " << v->id() << " ";
     v->write(fout);
     fout << endl;
   }
 
-  for (size_t i = 0; i < edges.size(); ++i) {
-    EdgeSE3* e = edges[i];
+  for (auto e : edges) {
     VertexSE3* from = static_cast<VertexSE3*>(e->vertex(0));
     VertexSE3* to = static_cast<VertexSE3*>(e->vertex(1));
     fout << edgeTag << " " << from->id() << " " << to->id() << " ";

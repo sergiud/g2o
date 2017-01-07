@@ -44,8 +44,7 @@ namespace g2o {
   }
 
   VertexTag::~VertexTag()
-  {
-  }
+  = default;
 
   bool VertexTag::read(std::istream& is)
   {
@@ -76,7 +75,7 @@ namespace g2o {
   bool VertexTagDrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
     if (!DrawAction::refreshPropertyPtrs(params_))
       return false;
-    if (_previousParams){
+    if (_previousParams != nullptr){
       _textSize = _previousParams->makeProperty<DoubleProperty>(_typeName + "::TEXT_SIZE", 1);
     } else {
       _textSize = nullptr;
@@ -90,7 +89,7 @@ namespace g2o {
       return nullptr;
 
     refreshPropertyPtrs(params_);
-    if (! _previousParams){
+    if (_previousParams == nullptr){
       return this;
     }
     VertexTag* that = static_cast<VertexTag*>(element);
@@ -99,7 +98,7 @@ namespace g2o {
     glColor3f(1.f,0.2f,1.f);
     glTranslatef(that->position().x(), that->position().y(), that->position().z());
     float textSize = 1;
-    if (_textSize )
+    if (_textSize != nullptr )
       textSize = (float)_textSize->value();
     opengl::drawBox(0.1f*textSize, 0.1f*textSize, 0.1f*textSize);
     glTranslatef(0.2f*textSize, 0.f, 0.f);

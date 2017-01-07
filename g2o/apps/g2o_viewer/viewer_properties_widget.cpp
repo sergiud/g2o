@@ -73,8 +73,7 @@ ViewerPropertiesWidget::ViewerPropertiesWidget(QWidget * parent, Qt::WindowFlags
 }
 
 ViewerPropertiesWidget::~ViewerPropertiesWidget()
-{
-}
+= default;
 
 void ViewerPropertiesWidget::applyProperties()
 {

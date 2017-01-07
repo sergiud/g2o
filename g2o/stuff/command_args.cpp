@@ -66,7 +66,7 @@ std::istream& operator>>(std::istream& is, std::vector<int>& v){
 }
 
 std::ostream& operator<<(std::ostream& os, const std::vector<int>& v){
-  if (v.size()){
+  if (!v.empty() != 0u){
     os << v[0];
   }
   for (size_t i=1; i<v.size(); i++){
@@ -105,8 +105,7 @@ CommandArgs::CommandArgs()
 }
 
 CommandArgs::~CommandArgs()
-{
-}
+= default;
 
 bool CommandArgs::parseArgs(int argc, char** argv, bool exitOnError)
 {
@@ -139,7 +138,7 @@ bool CommandArgs::parseArgs(int argc, char** argv, bool exitOnError)
     }
     else {
       // command line argument parsing
-      std::vector<CommandArgument>::iterator it = _args.begin();
+      auto it = _args.begin();
       for ( ; it != _args.end(); ++it) {
         if (it->name == name) {
           if (it->type == CAT_BOOL) {
@@ -280,18 +279,18 @@ void CommandArgs::param(const std::string& name, std::vector<double>& p, const s
 
 void CommandArgs::printHelp(std::ostream& os)
 {
-  if (_banner.size())
+  if (!_banner.empty() != 0u)
     os << _banner << endl;
-  os << "Usage: " << _progName << (_args.size()>0?" [options] ":" ");
-  if (_leftOvers.size() > 0) {
+  os << "Usage: " << _progName << (!_args.empty()?" [options] ":" ");
+  if (!_leftOvers.empty()) {
     for (size_t i = 0; i < _leftOvers.size(); ++i) {
       if (i > 0)
         os << " ";
       os << _leftOvers[i].name;
     }
   }
-  if (_leftOversOptional.size() > 0) {
-    if (_leftOvers.size() > 0)
+  if (!_leftOversOptional.empty()) {
+    if (!_leftOvers.empty())
       os << " ";
     for (size_t i = 0; i < _leftOversOptional.size(); ++i) {
       if (i > 0)
@@ -303,31 +302,31 @@ void CommandArgs::printHelp(std::ostream& os)
   os << "General options:" << endl;
   os << "-------------------------------------------" << endl;
   os << "-help / -h           Displays this help." << endl << endl;
-  if (_args.size() > 0) {
+  if (!_args.empty()) {
     os << "Program Options:" << endl;
     os << "-------------------------------------------" << endl;
     // build up option string to print as table
     vector<pair<string, string> > tableStrings;
     tableStrings.reserve(_args.size());
     size_t maxArgLen = 0;
-    for (size_t i = 0; i < _args.size(); ++i) {
-      if (_args[i].type != CAT_BOOL) {
-        string defaultValueStr = arg2str(_args[i]);
+    for (auto & _arg : _args) {
+      if (_arg.type != CAT_BOOL) {
+        string defaultValueStr = arg2str(_arg);
         if (! defaultValueStr.empty())
-          tableStrings.push_back(make_pair(_args[i].name + " " + type2str(_args[i].type), _args[i].description + " (default: " + defaultValueStr + ")"));
+          tableStrings.push_back(make_pair(_arg.name + " " + type2str(_arg.type), _arg.description + " (default: " + defaultValueStr + ")"));
         else
-          tableStrings.push_back(make_pair(_args[i].name + " " + type2str(_args[i].type), _args[i].description));
+          tableStrings.push_back(make_pair(_arg.name + " " + type2str(_arg.type), _arg.description));
       } else
-        tableStrings.push_back(make_pair(_args[i].name, _args[i].description));
+        tableStrings.push_back(make_pair(_arg.name, _arg.description));
       maxArgLen = (std::max)(maxArgLen, tableStrings.back().first.size());
     }
     sort(tableStrings.begin(), tableStrings.end(), CmpPairFirst<string,string>());
     maxArgLen += 3;
-    for (size_t i = 0; i < tableStrings.size(); ++i) {
-      os << "-" << tableStrings[i].first;
-      for (size_t l = tableStrings[i].first.size(); l < maxArgLen; ++l)
+    for (auto & tableString : tableStrings) {
+      os << "-" << tableString.first;
+      for (size_t l = tableString.first.size(); l < maxArgLen; ++l)
         os << " ";
-      os << tableStrings[i].second << endl;
+      os << tableString.second << endl;
     }
     // TODO should output description for leftOver params?
   }
@@ -538,7 +537,7 @@ std::istream& operator>>(std::istream& is, std::vector<double>& v){
 
 std::ostream& operator<<(std::ostream& os, const std::vector<double>& v)
 {
-  if (v.size())
+  if (!v.empty() != 0u)
     os << v[0];
   for (size_t i=1; i<v.size(); i++)
     os << ";" << v[i];
@@ -547,7 +546,7 @@ std::ostream& operator<<(std::ostream& os, const std::vector<double>& v)
 
 bool CommandArgs::parsedParam(const std::string& param) const
 {
-  std::vector<CommandArgument>::const_iterator it = _args.begin();
+  auto it = _args.begin();
   for ( ; it != _args.end(); ++it) {
     if (it->name == param) {
       return it->parsed;

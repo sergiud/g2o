@@ -50,8 +50,7 @@ namespace g2o {
   }
 
   VertexEllipse::~VertexEllipse()
-  {
-  }
+  = default;
 
   void VertexEllipse::_updateSVD() const{
     Eigen::SelfAdjointEigenSolver<Matrix2F> eigenSolver(_covariance.block<2,2>(0,0));
@@ -93,8 +92,8 @@ namespace g2o {
        << _covariance(1,1) << " " << _covariance(1,2) << " " << _covariance(2,2) << " ";
 
     os << _matchingVertices.size() << " " ;
-    for (size_t i=0 ; i< _matchingVertices.size(); i++){
-      os << _matchingVertices[i].x() << " " << _matchingVertices[i].y() << " ";
+    for (const auto & _matchingVertice : _matchingVertices){
+      os << _matchingVertice.x() << " " << _matchingVertice.y() << " ";
     }
 
     return os.good();
@@ -110,7 +109,7 @@ namespace g2o {
   bool VertexEllipseDrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
     if (!DrawAction::refreshPropertyPtrs(params_))
       return false;
-    if (_previousParams){
+    if (_previousParams != nullptr){
       _scaleFactor = _previousParams->makeProperty<DoubleProperty>(_typeName + "::", 1);
     } else {
       _scaleFactor = nullptr;
@@ -124,10 +123,10 @@ namespace g2o {
       return nullptr;
 
     refreshPropertyPtrs(params_);
-    if (! _previousParams){
+    if (_previousParams == nullptr){
       return this;
     }
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
 
     VertexEllipse* that = dynamic_cast<VertexEllipse*>(element);
@@ -146,10 +145,10 @@ namespace g2o {
     glEnd();
 
     glColor3f(0.f,1.f,0.f);
-    for (size_t i=0; i< that->matchingVertices().size(); i++){
+    for (const auto & i : that->matchingVertices()){
       glBegin(GL_LINES);
       glVertex3f(0,0,0);
-      glVertex3f(that->matchingVertices()[i].x(),that->matchingVertices()[i].y(),0);
+      glVertex3f(i.x(),i.y(),0);
       glEnd();
     }
 

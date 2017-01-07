@@ -39,8 +39,7 @@ namespace g2o {
   }
 
   RawLaser::~RawLaser()
-  {
-  }
+  = default;
 
   bool RawLaser::write(std::ostream& /*os*/) const
   {

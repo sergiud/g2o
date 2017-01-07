@@ -78,7 +78,7 @@ OutputIterator readInts(const char* str, OutputIterator out)
 {
   char* cl  = (char*)str;
   char* cle = cl;
-  while (1) {
+  while (true) {
     long int id = strtol(cl, &cle, 10);
     if (cl == cle)
       break;
@@ -97,7 +97,7 @@ OutputIterator readFloats(const char* str, OutputIterator out)
 {
   char* cl  = (char*)str;
   char* cle = cl;
-  while (1) {
+  while (true) {
     double val = strtod(cl, &cle);
     if (cl == cle)
       break;

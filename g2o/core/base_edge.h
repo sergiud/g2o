@@ -51,7 +51,7 @@ namespace g2o {
         _dimension = D;
       }
 
-      virtual ~BaseEdge() {}
+      virtual ~BaseEdge() = default;
 
       virtual double chi2() const
       {
@@ -118,7 +118,7 @@ namespace g2o {
 
       }
 
-      virtual ~BaseEdge() {}
+      virtual ~BaseEdge() = default;
 
       virtual double chi2() const
       {

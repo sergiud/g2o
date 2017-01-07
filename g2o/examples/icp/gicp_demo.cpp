@@ -95,8 +95,8 @@ int main()
 
   // variable-size block solver
   BlockSolverX::LinearSolverType * linearSolver = new LinearSolverDense<g2o::BlockSolverX::PoseMatrixType>();
-  BlockSolverX * solver_ptr = new BlockSolverX(linearSolver);
-  g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+  auto * solver_ptr = new BlockSolverX(linearSolver);
+  auto* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
 
   optimizer.setAlgorithm(solver);
 
@@ -123,7 +123,7 @@ int main()
     cam.translation() = t;
 
     // set up node
-    VertexSE3 *vc = new VertexSE3();
+    auto *vc = new VertexSE3();
     vc->setEstimate(cam);
 
     vc->setId(vertex_id);      // vertex id
@@ -170,7 +170,7 @@ int main()
     nm0.normalize();
     nm1.normalize();
 
-    Edge_V_V_GICP * e           // new edge with correct cohort for caching
+    auto * e           // new edge with correct cohort for caching
         = new Edge_V_V_GICP(); 
 
     e->setVertex(0, vp0);      // first viewpoint

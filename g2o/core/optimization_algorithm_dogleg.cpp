@@ -51,8 +51,7 @@ namespace g2o {
   }
 
   OptimizationAlgorithmDogleg::~OptimizationAlgorithmDogleg()
-  {
-  }
+  = default;
 
   OptimizationAlgorithm::SolverResult OptimizationAlgorithmDogleg::solve(int iteration, bool online)
   {
@@ -81,7 +80,7 @@ namespace g2o {
     double t=get_monotonic_time();
     _optimizer->computeActiveErrors();
     G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-    if (globalStats) {
+    if (globalStats != nullptr) {
       globalStats->timeResiduals = get_monotonic_time()-t;
       t=get_monotonic_time();
     }
@@ -89,7 +88,7 @@ namespace g2o {
     double currentChi = _optimizer->activeRobustChi2();
 
     _solver->buildSystem();
-    if (globalStats) {
+    if (globalStats != nullptr) {
       globalStats->timeQuadraticForm = get_monotonic_time()-t;
     }
 

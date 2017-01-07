@@ -41,12 +41,11 @@ namespace SlamParser {
   }
 
   SlamContextInterface::~SlamContextInterface()
-  {
-  }
+  = default;
 
   bool SlamContextInterface::process(CommandNode* commandNode)
   {
-    if (! _slam) {
+    if (_slam == nullptr) {
       return true;
     }
     switch (commandNode->commandType()) {

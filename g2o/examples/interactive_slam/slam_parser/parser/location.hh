@@ -148,8 +148,8 @@ namespace SlamParser {
   {
     position last = loc.end - 1;
     ostr << loc.begin;
-    if (last.filename
-  && (!loc.begin.filename
+    if ((last.filename != nullptr)
+  && ((loc.begin.filename == nullptr)
       || *loc.begin.filename != *last.filename))
       ostr << '-' << last;
     else if (loc.begin.line != last.line)

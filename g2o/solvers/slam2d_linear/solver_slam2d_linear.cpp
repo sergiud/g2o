@@ -52,7 +52,7 @@ namespace g2o {
       ThetaTreeAction(double* theta) : HyperDijkstra::TreeAction(), _thetaGuess(theta) {}
       virtual double perform(HyperGraph::Vertex* v, HyperGraph::Vertex* vParent, HyperGraph::Edge* e)
       {
-        if (! vParent)
+        if (vParent == nullptr)
           return 0.;
         EdgeSE2* odom    = static_cast<EdgeSE2*>(e);
         VertexSE2* from  = static_cast<VertexSE2*>(vParent);
@@ -76,8 +76,7 @@ namespace g2o {
   }
 
   SolverSLAM2DLinear::~SolverSLAM2DLinear()
-  {
-  }
+  = default;
 
   OptimizationAlgorithm::SolverResult SolverSLAM2DLinear::solve(int iteration, bool online)
   {
@@ -107,8 +106,7 @@ namespace g2o {
     SparseBlockMatrix<ScalarMatrix> H(blockIndeces.get(), blockIndeces.get(), _optimizer->indexMapping().size(), _optimizer->indexMapping().size());
 
     // building the structure, diagonal for each active vertex
-    for (size_t i = 0; i < _optimizer->indexMapping().size(); ++i) {
-      OptimizableGraph::Vertex* v = _optimizer->indexMapping()[i];
+    for (auto v : _optimizer->indexMapping()) {
       int poseIdx = v->hessianIndex();
       ScalarMatrix* m = H.block(poseIdx, poseIdx, true);
       m->setZero();
@@ -117,12 +115,12 @@ namespace g2o {
     HyperGraph::VertexSet fixedSet;
 
     // off diagonal for each edge
-    for (SparseOptimizer::EdgeContainer::const_iterator it = _optimizer->activeEdges().begin(); it != _optimizer->activeEdges().end(); ++it) {
+    for (auto it : _optimizer->activeEdges()) {
 #    ifndef NDEBUG
       EdgeSE2* e = dynamic_cast<EdgeSE2*>(*it);
       assert(e && "Active edges contain non-odometry edge"); //
 #    else
-      EdgeSE2* e = static_cast<EdgeSE2*>(*it);
+      EdgeSE2* e = static_cast<EdgeSE2*>(it);
 #    endif
       OptimizableGraph::Vertex* from = static_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
       OptimizableGraph::Vertex* to   = static_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
@@ -158,8 +156,8 @@ namespace g2o {
     HyperDijkstra::visitAdjacencyMap(hyperDijkstra.adjacencyMap(), &thetaTreeAction);
 
     // construct for the orientation
-    for (SparseOptimizer::EdgeContainer::const_iterator it = _optimizer->activeEdges().begin(); it != _optimizer->activeEdges().end(); ++it) {
-      EdgeSE2* e = static_cast<EdgeSE2*>(*it);
+    for (auto it : _optimizer->activeEdges()) {
+      EdgeSE2* e = static_cast<EdgeSE2*>(it);
       VertexSE2* from = static_cast<VertexSE2*>(e->vertices()[0]);
       VertexSE2* to   = static_cast<VertexSE2*>(e->vertices()[1]);
 
@@ -203,8 +201,8 @@ namespace g2o {
 
     // update the orientation of the 2D poses and set translation to 0, GN shall solve that
     root->setToOrigin();
-    for (size_t i = 0; i < _optimizer->indexMapping().size(); ++i) {
-      VertexSE2* v = static_cast<VertexSE2*>(_optimizer->indexMapping()[i]);
+    for (auto i : _optimizer->indexMapping()) {
+      VertexSE2* v = static_cast<VertexSE2*>(i);
       int poseIdx = v->hessianIndex();
       SE2 poseUpdate(0, 0, normalize_theta(thetaGuess(poseIdx) + x(poseIdx)));
       v->setEstimate(poseUpdate);

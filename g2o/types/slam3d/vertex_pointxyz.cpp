@@ -60,7 +60,7 @@ namespace g2o {
   bool VertexPointXYZDrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
     if (! DrawAction::refreshPropertyPtrs(params_))
       return false;
-    if (_previousParams){
+    if (_previousParams != nullptr){
       _pointSize = _previousParams->makeProperty<FloatProperty>(_typeName + "::POINT_SIZE", 1.);
     } else {
       _pointSize = nullptr;
@@ -76,10 +76,10 @@ namespace g2o {
       return nullptr;
     initializeDrawActionsCache();
     refreshPropertyPtrs(params);
-    if (! _previousParams)
+    if (_previousParams == nullptr)
       return this;
     
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
     VertexPointXYZ* that = static_cast<VertexPointXYZ*>(element);
     
@@ -88,7 +88,7 @@ namespace g2o {
     glPushAttrib(GL_ENABLE_BIT | GL_POINT_BIT);
     glDisable(GL_LIGHTING);
     glColor3f(LANDMARK_VERTEX_COLOR);
-    float ps = _pointSize ? _pointSize->value() :  1.f;
+    float ps = _pointSize != nullptr ? _pointSize->value() :  1.f;
     glTranslatef((float)that->estimate()(0),(float)that->estimate()(1),(float)that->estimate()(2));
     opengl::drawPoint(ps);
     glPopAttrib();
@@ -109,7 +109,7 @@ namespace g2o {
     if (typeid(*element).name()!=_typeName)
       return nullptr;
     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
-    if (!params->os){
+    if (params->os == nullptr){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, no valid os specified" << std::endl;
       return nullptr;
     }

@@ -49,7 +49,7 @@ void RobustKernelScaleDelta::setKernel(RobustKernelPtr&& ptr)
 
 void RobustKernelScaleDelta::robustify(double error, Vector3D& rho) const
 {
-  if (_kernel.get()) {
+  if (_kernel.get() != nullptr) {
     double dsqr = _delta * _delta;
     double dsqrReci = 1. / dsqr;
     _kernel->robustify(dsqrReci * error, rho);

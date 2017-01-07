@@ -134,10 +134,10 @@ namespace g2o{
     }
 #endif
 
-    for(std::set<HyperGraph::Vertex*>::iterator it=fixed.begin(); it!=fixed.end(); it++){
+    for(auto it : fixed){
       for(unsigned int i=1; i<_vertices.size(); i++){
         VertexPointXY * vert = static_cast<VertexPointXY *>(_vertices[i]);
-        if(vert->id() == (*it)->id()) estimate_this[i-1] = false;
+        if(vert->id() == it->id()) estimate_this[i-1] = false;
       }
     }
 
@@ -155,8 +155,8 @@ namespace g2o{
   double EdgeSE2LotsOfXY::initialEstimatePossible(const OptimizableGraph::VertexSet& fixed, OptimizableGraph::Vertex* toEstimate){
     (void) toEstimate;
 
-    for(std::set<HyperGraph::Vertex *>::iterator it=fixed.begin(); it!=fixed.end(); it++){
-      if(_vertices[0]->id() == (*it)->id()){
+    for(auto it : fixed){
+      if(_vertices[0]->id() == it->id()){
         return 1.0;
       }
     }

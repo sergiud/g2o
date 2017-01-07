@@ -55,8 +55,7 @@ namespace g2o {
     assert(_solver && "Solver not set");
     _solver->setWriteDebug(_writeDebug->value());
     bool useSchur=false;
-    for (OptimizableGraph::VertexContainer::const_iterator it=_optimizer->activeVertices().begin(); it!=_optimizer->activeVertices().end(); ++it) {
-      OptimizableGraph::Vertex* v= *it;
+    for (auto v : _optimizer->activeVertices()) {
       if (v->marginalized()){
         useSchur=true;
         break;
@@ -76,23 +75,23 @@ namespace g2o {
 
   bool OptimizationAlgorithmWithHessian::computeMarginals(SparseBlockMatrix<MatrixXD>& spinv, const std::vector<std::pair<int, int> >& blockIndices)
   {
-    return _solver ? _solver->computeMarginals(spinv, blockIndices) : false;
+    return _solver != nullptr ? _solver->computeMarginals(spinv, blockIndices) : false;
   }
 
   bool OptimizationAlgorithmWithHessian::buildLinearStructure()
   {
-    return _solver ? _solver->buildStructure() : false;
+    return _solver != nullptr ? _solver->buildStructure() : false;
   }
 
   void OptimizationAlgorithmWithHessian::updateLinearSystem()
   {
-    if (_solver)
+    if (_solver != nullptr)
       _solver->buildSystem();
   }
 
   bool OptimizationAlgorithmWithHessian::updateStructure(const std::vector<HyperGraph::Vertex*>& vset, const HyperGraph::EdgeSet& edges)
   {
-    return _solver ? _solver->updateStructure(vset, edges) : false;
+    return _solver != nullptr ? _solver->updateStructure(vset, edges) : false;
   }
 
   void OptimizationAlgorithmWithHessian::setWriteDebug(bool writeDebug)

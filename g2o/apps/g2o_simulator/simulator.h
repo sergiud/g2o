@@ -70,7 +70,7 @@ class WorldObject: public BaseWorldObject, VertexType_{
     }
 
     VertexType* vertex() {
-      if (! _vertex) return nullptr;
+      if (_vertex == nullptr) return nullptr;
       return dynamic_cast<VertexType*>(_vertex);
     }
 };
@@ -109,7 +109,7 @@ class Robot: public BaseRobot{
     virtual void move(const PoseType& pose_) {
       _pose=pose_;
       if (world()) {
-        PoseObject* po=new PoseObject();
+        auto* po=new PoseObject();
         po->vertex()->setEstimate(_pose);
         world()->addWorldObject(po);
         _trajectory.push_back(po);
@@ -192,7 +192,7 @@ class UnarySensor: public BaseSensor {
 
     EdgeType* mkEdge(){
       PoseVertexType* robotVertex = (PoseVertexType*)_robotPoseObject->vertex();
-      EdgeType* e = new EdgeType();
+      auto* e = new EdgeType();
       e->vertices()[0]=robotVertex;
       e->information().setIdentity();
       return e;
@@ -242,7 +242,7 @@ class BinarySensor: public BaseSensor {
         return;
 
       // naive search. just for initial testing
-      for(std::set<BaseWorldObject*>::iterator it=world()->objects().begin(); it!=world()->objects().end(); it++){
+      for(auto it=world()->objects().begin(); it!=world()->objects().end(); it++){
         WorldObjectType * wo = dynamic_cast<WorldObjectType*>(*it);
         if (wo){
           EdgeType* e=mkEdge(wo);
@@ -262,7 +262,7 @@ class BinarySensor: public BaseSensor {
 
     EdgeType* mkEdge(WorldObjectType* object){
       PoseVertexType* robotVertex = (PoseVertexType*)_robotPoseObject->vertex();
-      EdgeType* e = new EdgeType();
+      auto* e = new EdgeType();
       e->vertices()[0]=robotVertex;
       e->vertices()[1]=object->vertex();
       e->information().setIdentity();

@@ -64,7 +64,7 @@ int RunG2OViewer::run(int argc, char** argv, CommandArgs& arg)
   StreamRedirect redirect(std::cerr, mw.plainTextEdit);
 
   // setting up the optimizer
-  SparseOptimizer* optimizer = new SparseOptimizer();
+  auto* optimizer = new SparseOptimizer();
   mw.viewer->graph = optimizer;
 
   // set up the GUI action
@@ -73,14 +73,14 @@ int RunG2OViewer::run(int argc, char** argv, CommandArgs& arg)
   //optimizer->addPostIterationAction(&guiHyperGraphAction);
   optimizer->addPreIterationAction(&guiHyperGraphAction);
 
-  if (inputFilename.size() > 0) {
+  if (!inputFilename.empty()) {
     mw.loadFromFile(QString::fromStdString(inputFilename));
   }
 
   QCoreApplication* myapp = QApplication::instance();
   while (mw.isVisible()) {
     guiHyperGraphAction.dumpScreenshots = mw.actionDump_Images->isChecked();
-    if (myapp)
+    if (myapp != nullptr)
       myapp->processEvents();
     SleepThread::msleep(10);
   }

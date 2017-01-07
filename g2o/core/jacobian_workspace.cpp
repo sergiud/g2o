@@ -40,8 +40,7 @@ JacobianWorkspace::JacobianWorkspace() :
 }
 
 JacobianWorkspace::~JacobianWorkspace()
-{
-}
+= default;
 
 bool JacobianWorkspace::allocate()
 {
@@ -49,9 +48,9 @@ bool JacobianWorkspace::allocate()
   if (_maxNumVertices <=0 || _maxDimension <= 0)
     return false;
   _workspace.resize(_maxNumVertices);
-  for (WorkspaceVector::iterator it = _workspace.begin(); it != _workspace.end(); ++it) {
-    it->resize(_maxDimension);
-    it->setZero();
+  for (auto & it : _workspace) {
+    it.resize(_maxDimension);
+    it.setZero();
   }
   return true;
 }
@@ -74,8 +73,8 @@ void JacobianWorkspace::updateSize(const HyperGraph::Edge* e_)
 
 void JacobianWorkspace::updateSize(const OptimizableGraph& graph)
 {
-  for (OptimizableGraph::EdgeSet::const_iterator it = graph.edges().begin(); it != graph.edges().end(); ++it) {
-    const OptimizableGraph::Edge* e = static_cast<const OptimizableGraph::Edge*>(*it);
+  for (auto it : graph.edges()) {
+    const OptimizableGraph::Edge* e = static_cast<const OptimizableGraph::Edge*>(it);
     updateSize(e);
   }
 }

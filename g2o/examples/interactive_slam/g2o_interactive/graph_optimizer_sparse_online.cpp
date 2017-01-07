@@ -68,7 +68,7 @@ SparseOptimizerOnline::SparseOptimizerOnline(bool pcg) :
 
 SparseOptimizerOnline::~SparseOptimizerOnline()
 {
-  if (_gnuplot) {
+  if (_gnuplot != nullptr) {
 #ifdef WINDOWS
     _pclose(_gnuplot);
 #else
@@ -104,14 +104,14 @@ int SparseOptimizerOnline::optimize(int iterations, bool online)
     //_underlyingSolver->buildStructure();
     // copy over the updated estimate as new linearization point
     if (slamDimension == 3) {
-      for (size_t i = 0; i < indexMapping().size(); ++i) {
-        OnlineVertexSE2* v = static_cast<OnlineVertexSE2*>(indexMapping()[i]);
+      for (auto i : indexMapping()) {
+        OnlineVertexSE2* v = static_cast<OnlineVertexSE2*>(i);
         v->setEstimate(v->updatedEstimate);
       }
     }
     else if (slamDimension == 6) {
-      for (size_t i=0; i < indexMapping().size(); ++i) {
-        OnlineVertexSE3* v = static_cast<OnlineVertexSE3*>(indexMapping()[i]);
+      for (auto i : indexMapping()) {
+        OnlineVertexSE3* v = static_cast<OnlineVertexSE3*>(i);
         v->setEstimate(v->updatedEstimate);
       }
     }
@@ -123,19 +123,18 @@ int SparseOptimizerOnline::optimize(int iterations, bool online)
   else {
     //cerr << "UPDATE" << endl;
     // compute the active errors for the required edges
-    for (HyperGraph::EdgeSet::iterator it = newEdges->begin(); it != newEdges->end(); ++it) {
-      OptimizableGraph::Edge * e = static_cast<OptimizableGraph::Edge*>(*it);
+    for (auto newEdge : *newEdges) {
+      OptimizableGraph::Edge * e = static_cast<OptimizableGraph::Edge*>(newEdge);
       e->computeError();
     }
     // linearize the constraints and update the Hessian
-    for (HyperGraph::EdgeSet::iterator it = newEdges->begin(); it != newEdges->end(); ++it) {
-      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(*it);
+    for (auto newEdge : *newEdges) {
+      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(newEdge);
       e->linearizeOplus(jacobianWorkspace());
       e->constructQuadraticForm();
     }
     // update the b vector
-    for (int i = 0; i < static_cast<int>(indexMapping().size()); ++i) {
-      OptimizableGraph::Vertex* v = indexMapping()[i];
+    for (auto v : indexMapping()) {
       int iBase = v->colInHessian();
       v->copyB(_underlyingSolver->b() + iBase);
     }
@@ -165,15 +164,15 @@ int SparseOptimizerOnline::optimize(int iterations, bool online)
 void SparseOptimizerOnline::update(double* update)
 {
   if (slamDimension == 3) {
-    for (size_t i=0; i < _ivMap.size(); ++i) {
-      OnlineVertexSE2* v= static_cast<OnlineVertexSE2*>(_ivMap[i]);
+    for (auto & i : _ivMap) {
+      OnlineVertexSE2* v= static_cast<OnlineVertexSE2*>(i);
       v->oplusUpdatedEstimate(update);
       update += 3;
     }
   }
   else if (slamDimension == 6) {
-    for (size_t i=0; i < _ivMap.size(); ++i) {
-      OnlineVertexSE3* v= static_cast<OnlineVertexSE3*>(_ivMap[i]);
+    for (auto & i : _ivMap) {
+      OnlineVertexSE3* v= static_cast<OnlineVertexSE3*>(i);
       v->oplusUpdatedEstimate(update);
       update += 6;
     }
@@ -184,8 +183,8 @@ bool SparseOptimizerOnline::updateInitialization(HyperGraph::VertexSet& vset, Hy
 {
   newEdges = &eset;
   bool result = SparseOptimizer::updateInitialization(vset, eset);
-  for (HyperGraph::VertexSet::iterator it = vset.begin(); it != vset.end(); ++it) {
-    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(*it);
+  for (auto it : vset) {
+    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it);
     v->clearQuadraticForm(); // be sure that b is zero for this vertex
   }
   return result;
@@ -215,7 +214,7 @@ bool SparseOptimizerOnline::initSolver(int dimension, int /*batchEveryN*/)
     } else {
       s = createSolver("pcg6_3");
     }
-    OptimizationAlgorithmGaussNewton* gaussNewton = new OptimizationAlgorithmGaussNewton(s);
+    auto* gaussNewton = new OptimizationAlgorithmGaussNewton(s);
     setAlgorithm(gaussNewton);
   }
   else {
@@ -229,7 +228,7 @@ bool SparseOptimizerOnline::initSolver(int dimension, int /*batchEveryN*/)
   OptimizationAlgorithmGaussNewton* gaussNewton = dynamic_cast<OptimizationAlgorithmGaussNewton*>(solver());
   _underlyingSolver = gaussNewton->solver();
 
-  if (! solver()) {
+  if (solver() == nullptr) {
     cerr << "Error allocating solver. Allocating CHOLMOD solver failed!" << endl;
     return false;
   }
@@ -239,7 +238,7 @@ bool SparseOptimizerOnline::initSolver(int dimension, int /*batchEveryN*/)
 void SparseOptimizerOnline::gnuplotVisualization()
 {
   if (slamDimension == 3) {
-    if (! _gnuplot) {
+    if (_gnuplot == nullptr) {
 #ifdef WINDOWS
       _gnuplot = _popen("gnuplot -persistent", "w");
 #else
@@ -251,8 +250,8 @@ void SparseOptimizerOnline::gnuplotVisualization()
       fprintf(_gnuplot, "set size ratio -1\n");
     }
     fprintf(_gnuplot, "plot \"-\" w l\n");
-    for (EdgeSet::iterator it = edges().begin(); it != edges().end(); ++it) {
-      OnlineEdgeSE2* e = (OnlineEdgeSE2*) *it;
+    for (auto it : edges()) {
+      OnlineEdgeSE2* e = (OnlineEdgeSE2*) it;
       OnlineVertexSE2* v1 = (OnlineVertexSE2*) e->vertices()[0];
       OnlineVertexSE2* v2 = (OnlineVertexSE2*) e->vertices()[1];
       fprintf(_gnuplot, "%f %f\n", v1->updatedEstimate.translation().x(), v1->updatedEstimate.translation().y());
@@ -261,7 +260,7 @@ void SparseOptimizerOnline::gnuplotVisualization()
     fprintf(_gnuplot, "e\n");
   }
   if (slamDimension == 6) {
-    if (! _gnuplot) {
+    if (_gnuplot == nullptr) {
 #ifdef WINDOWS
       _gnuplot = _popen("gnuplot -persistent", "w");
 #else
@@ -272,8 +271,8 @@ void SparseOptimizerOnline::gnuplotVisualization()
       fprintf(_gnuplot, "set terminal X11 noraise\n");
     }
     fprintf(_gnuplot, "splot \"-\" w l\n");
-    for (EdgeSet::iterator it = edges().begin(); it != edges().end(); ++it) {
-      OnlineEdgeSE3* e = (OnlineEdgeSE3*) *it;
+    for (auto it : edges()) {
+      OnlineEdgeSE3* e = (OnlineEdgeSE3*) it;
       OnlineVertexSE3* v1 = (OnlineVertexSE3*) e->vertices()[0];
       OnlineVertexSE3* v2 = (OnlineVertexSE3*) e->vertices()[1];
       fprintf(_gnuplot, "%f %f %f\n", v1->updatedEstimate.translation().x(), v1->updatedEstimate.translation().y(), v1->updatedEstimate.translation().z());

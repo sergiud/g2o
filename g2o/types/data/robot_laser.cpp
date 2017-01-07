@@ -44,8 +44,7 @@ namespace g2o {
   }
 
   RobotLaser::~RobotLaser()
-  {
-  }
+  = default;
 
   bool RobotLaser::read(std::istream& is)
   {
@@ -90,11 +89,11 @@ namespace g2o {
       << _laserParams.angularStep << " " << _laserParams.maxRange << " " << _laserParams.accuracy << " "
       << _laserParams.remissionMode << " ";
     os << ranges().size();
-    for (size_t i = 0; i < ranges().size(); ++i)
-      os << " " << ranges()[i];
+    for (double i : ranges())
+      os << " " << i;
     os << " " << _remissions.size();
-    for (size_t i = 0; i < _remissions.size(); ++i)
-      os << " " << _remissions[i];
+    for (double _remission : _remissions)
+      os << " " << _remission;
 
     // odometry pose
     Vector3D p = (_odomPose * _laserParams.laserPose).toVector();
@@ -125,7 +124,7 @@ namespace g2o {
   bool RobotLaserDrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
     if (!DrawAction::refreshPropertyPtrs(params_))
       return false;
-    if (_previousParams){
+    if (_previousParams != nullptr){
       _beamsDownsampling = _previousParams->makeProperty<IntProperty>(_typeName + "::BEAMS_DOWNSAMPLING", 1);
       _pointSize = _previousParams->makeProperty<FloatProperty>(_typeName + "::POINT_SIZE", 1.0f);
       _maxRange = _previousParams->makeProperty<FloatProperty>(_typeName + "::MAX_RANGE", -1.);
@@ -143,25 +142,25 @@ namespace g2o {
       return nullptr;
 
     refreshPropertyPtrs(params_);
-    if (! _previousParams){
+    if (_previousParams == nullptr){
       return this;
     }
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
     RobotLaser* that = static_cast<RobotLaser*>(element);
 
     RawLaser::Point2DVector points=that->cartesian();
-    if (_maxRange && _maxRange->value() >=0 ) {
+    if ((_maxRange != nullptr) && _maxRange->value() >=0 ) {
       // prune the cartesian points;
       RawLaser::Point2DVector npoints(points.size());
       int k = 0;
       float r2=_maxRange->value();
       r2 *= r2;
-      for (size_t i=0; i<points.size(); i++){
-	double x = points[i].x();
-	double y = points[i].y();
+      for (auto & point : points){
+	double x = point.x();
+	double y = point.y();
 	if (x*x + y*y < r2)
-	  npoints[k++] = points[i];
+	  npoints[k++] = point;
       }
       points = npoints;
       npoints.resize(k);
@@ -173,9 +172,9 @@ namespace g2o {
     glRotatef((float)RAD2DEG(laserPose.rotation().angle()),0.f,0.f,1.f);
     glColor4f(1.f,0.f,0.f,0.5f);
     int step = 1;
-    if (_beamsDownsampling )
+    if (_beamsDownsampling != nullptr )
       step = _beamsDownsampling->value();
-    if (_pointSize) {
+    if (_pointSize != nullptr) {
       glPointSize(_pointSize->value());
     }
 

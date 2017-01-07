@@ -317,15 +317,15 @@ int main(int argc, char** argv)
     linearSolver = new BalLinearSolverPCG();
   } else {
     cout << "Using Cholesky: " << choleskySolverName << endl;
-    BalLinearSolver* cholesky = new BalLinearSolver();
+    auto* cholesky = new BalLinearSolver();
     cholesky->setBlockOrdering(true);
     linearSolver = cholesky;
   }
-  BalBlockSolver* solver_ptr = new BalBlockSolver(linearSolver);
-  g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+  auto* solver_ptr = new BalBlockSolver(linearSolver);
+  auto* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
   //solver->setUserLambdaInit(1);
   optimizer.setAlgorithm(solver);
-  if (statsFilename.size() > 0){
+  if (!statsFilename.empty()){
     optimizer.setComputeBatchStatistics(true);
   }
 
@@ -344,7 +344,7 @@ int main(int argc, char** argv)
     int id = 0;
     cameras.reserve(numCameras);
     for (int i = 0; i < numCameras; ++i, ++id) {
-      VertexCameraBAL* cam = new VertexCameraBAL;
+      auto* cam = new VertexCameraBAL;
       cam->setId(id);
       optimizer.addVertex(cam);
       cameras.push_back(cam);
@@ -352,7 +352,7 @@ int main(int argc, char** argv)
 
     points.reserve(numPoints);
     for (int i = 0; i < numPoints; ++i, ++id) {
-      VertexPointBAL* p = new VertexPointBAL;
+      auto* p = new VertexPointBAL;
       p->setId(id);
       p->setMarginalized(true);
       bool addedVertex = optimizer.addVertex(p);
@@ -373,7 +373,7 @@ int main(int argc, char** argv)
       assert(pointIndex >= 0 && (size_t)pointIndex < points.size() && "Index out of bounds");
       VertexPointBAL* point = points[pointIndex];
 
-      EdgeObservationBAL* e = new EdgeObservationBAL;
+      auto* e = new EdgeObservationBAL;
       e->setVertex(0, cam);
       e->setVertex(1, point);
       e->setInformation(Eigen::Matrix2d::Identity());
@@ -416,13 +416,13 @@ int main(int argc, char** argv)
     cerr << "writing stats to file \"" << statsFilename << "\" ... ";
     ofstream fout(statsFilename.c_str());
     const BatchStatisticsContainer& bsc = optimizer.batchStatistics();
-    for (size_t i=0; i<bsc.size(); i++)
-      fout << bsc[i] << endl;
+    for (const auto & i : bsc)
+      fout << i << endl;
     cerr << "done." << endl;
   }
 
   // dump the points
-  if (outputFilename.size() > 0) {
+  if (!outputFilename.empty()) {
     ofstream fout(outputFilename.c_str()); // loadable with meshlab
     fout 
       << "#VRML V2.0 utf8\n"

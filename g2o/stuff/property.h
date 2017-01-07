@@ -98,7 +98,7 @@ namespace g2o {
       template <typename P>
       P* getProperty(const std::string& name_)
       {
-        PropertyMapIterator it=find(name_);
+        auto it=find(name_);
         if (it==end())
           return nullptr;
         return dynamic_cast<P*>(it->second);
@@ -106,7 +106,7 @@ namespace g2o {
       template <typename P>
       const P* getProperty(const std::string& name_) const
       {
-        PropertyMapConstIterator it=find(name_);
+        auto it=find(name_);
         if (it==end())
           return 0;
         return dynamic_cast<P*>(it->second);
@@ -118,9 +118,9 @@ namespace g2o {
       template <typename P>
       P* makeProperty(const std::string& name_, const typename P::ValueType& v)
       {
-        PropertyMapIterator it=find(name_);
+        auto it=find(name_);
         if (it==end()){
-          P* p=new P(name_, v);
+          auto* p=new P(name_, v);
           addProperty(p);
           return p;
         } else

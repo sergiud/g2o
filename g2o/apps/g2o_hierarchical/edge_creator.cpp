@@ -7,7 +7,7 @@ namespace g2o {
 
   bool EdgeCreator::addAssociation(const std::string& vertexTypes, const std::string& edgeType, const std::vector<int>& parameterIds) {
 
-    EntryMap::iterator it = _vertexToEdgeMap.find(vertexTypes);
+    auto it = _vertexToEdgeMap.find(vertexTypes);
     if (it!=_vertexToEdgeMap.end())
       it->second = edgeType;
     else
@@ -20,7 +20,7 @@ namespace g2o {
   }
 
   bool EdgeCreator::removeAssociation(std::string vertexTypes){
-    EntryMap::iterator it = _vertexToEdgeMap.find(vertexTypes);
+    auto it = _vertexToEdgeMap.find(vertexTypes);
     if (it==_vertexToEdgeMap.end())
       return false;
     _vertexToEdgeMap.erase(it);
@@ -31,16 +31,16 @@ namespace g2o {
   OptimizableGraph::Edge* EdgeCreator::createEdge(std::vector<OptimizableGraph::Vertex*>& vertices ){
     std::stringstream key;
     Factory* factory=Factory::instance();
-    for (size_t i=0; i<vertices.size(); i++){
-      key << factory->tag(vertices[i]) << ";";
+    for (auto & vertice : vertices){
+      key << factory->tag(vertice) << ";";
     }
-    EntryMap::iterator it=_vertexToEdgeMap.find(key.str());
+    auto it=_vertexToEdgeMap.find(key.str());
     if (it==_vertexToEdgeMap.end()){
       cerr << "no thing in factory: " << key.str() << endl;
       return nullptr;
     }
     HyperGraph::HyperGraphElement* element=factory->construct(it->second._edgeTypeName);
-    if (! element) {
+    if (element == nullptr) {
       cerr << "no thing can be created" << endl;
       return nullptr;
     }

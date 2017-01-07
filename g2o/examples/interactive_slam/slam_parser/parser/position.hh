@@ -133,7 +133,7 @@ namespace SlamParser {
   {
     return
       (pos1.filename == pos2.filename
-       || (pos1.filename && pos2.filename && *pos1.filename == *pos2.filename))
+       || ((pos1.filename != nullptr) && (pos2.filename != nullptr) && *pos1.filename == *pos2.filename))
       && pos1.line == pos2.line && pos1.column == pos2.column;
   }
 
@@ -151,7 +151,7 @@ namespace SlamParser {
   inline std::ostream&
   operator<< (std::ostream& ostr, const position& pos)
   {
-    if (pos.filename)
+    if (pos.filename != nullptr)
       ostr << *pos.filename << ':';
     return ostr << pos.line << '.' << pos.column;
   }

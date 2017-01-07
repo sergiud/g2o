@@ -85,7 +85,7 @@ namespace g2o {
   class BlockSolverBase : public Solver
   {
     public:
-      virtual ~BlockSolverBase() {}
+      virtual ~BlockSolverBase() = default;
       /**
        * compute dest = H * src
        */

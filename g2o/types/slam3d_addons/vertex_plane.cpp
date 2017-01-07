@@ -63,7 +63,7 @@ namespace g2o
   {
     if (!DrawAction::refreshPropertyPtrs(params_))
       return false;
-    if (_previousParams){
+    if (_previousParams != nullptr){
       _planeWidth = _previousParams->makeProperty<FloatProperty>(_typeName + "::PLANE_WIDTH", 3);
       _planeHeight = _previousParams->makeProperty<FloatProperty>(_typeName + "::PLANE_HEIGHT", 3);
     } else {
@@ -80,10 +80,10 @@ namespace g2o
       return nullptr;
 
     refreshPropertyPtrs(params_);
-    if (! _previousParams)
+    if (_previousParams == nullptr)
       return this;
     
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
 
     VertexPlane* that = static_cast<VertexPlane*>(element);
@@ -96,7 +96,7 @@ namespace g2o
     glRotatef(float(RAD2DEG(elevation)), 0.f, -1.f, 0.f);
     glTranslatef(float(d), 0.f ,0.f);
     
-    if (_planeWidth && _planeHeight){
+    if ((_planeWidth != nullptr) && (_planeHeight != nullptr)){
       glBegin(GL_QUADS);
       glNormal3f(-1.f, 0.f, 0.f);
       glVertex3f(0.f, -_planeWidth->value(), -_planeHeight->value());

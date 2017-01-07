@@ -66,9 +66,9 @@ class SparseBlockMatrix {
     typedef MatrixType SparseMatrixBlock;
 
     //! columns of the matrix
-    inline int cols() const {return _colBlockIndices.size() ? _colBlockIndices.back() : 0;}
+    inline int cols() const {return !_colBlockIndices.empty() ? _colBlockIndices.back() : 0;}
     //! rows of the matrix
-    inline int rows() const {return _rowBlockIndices.size() ? _rowBlockIndices.back() : 0;}
+    inline int rows() const {return !_rowBlockIndices.empty() ? _rowBlockIndices.back() : 0;}
 
     typedef std::map<int, SparseMatrixBlock*> IntBlockMap;
 
@@ -99,16 +99,16 @@ class SparseBlockMatrix {
     const SparseMatrixBlock* block(int r, int c) const;
 
     //! how many rows does the block at block-row r has?
-    inline int rowsOfBlock(int r) const { return r ? _rowBlockIndices[r] - _rowBlockIndices[r-1] : _rowBlockIndices[0] ; }
+    inline int rowsOfBlock(int r) const { return r != 0 ? _rowBlockIndices[r] - _rowBlockIndices[r-1] : _rowBlockIndices[0] ; }
 
     //! how many cols does the block at block-col c has?
-    inline int colsOfBlock(int c) const { return c ? _colBlockIndices[c] - _colBlockIndices[c-1] : _colBlockIndices[0]; }
+    inline int colsOfBlock(int c) const { return c != 0 ? _colBlockIndices[c] - _colBlockIndices[c-1] : _colBlockIndices[0]; }
 
     //! where does the row at block-row r starts?
-    inline int rowBaseOfBlock(int r) const { return r ? _rowBlockIndices[r-1] : 0 ; }
+    inline int rowBaseOfBlock(int r) const { return r != 0 ? _rowBlockIndices[r-1] : 0 ; }
 
     //! where does the col at block-col r starts?
-    inline int colBaseOfBlock(int c) const { return c ? _colBlockIndices[c-1] : 0 ; }
+    inline int colBaseOfBlock(int c) const { return c != 0 ? _colBlockIndices[c-1] : 0 ; }
 
     //! number of non-zero elements
     size_t nonZeros() const;

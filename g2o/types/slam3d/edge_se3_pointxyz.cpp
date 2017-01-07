@@ -181,16 +181,16 @@ namespace g2o {
     if (typeid(*element).name()!=_typeName)
       return nullptr;
     refreshPropertyPtrs(params_);
-    if (! _previousParams)
+    if (_previousParams == nullptr)
       return this;
 
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
 
     EdgeSE3PointXYZ* e =  static_cast<EdgeSE3PointXYZ*>(element);
     VertexSE3* fromEdge = static_cast<VertexSE3*>(e->vertex(0));
     VertexPointXYZ* toEdge   = static_cast<VertexPointXYZ*>(e->vertex(1));
-    if (! fromEdge || ! toEdge)
+    if ((fromEdge == nullptr) || (toEdge == nullptr))
       return this;
     Isometry3D fromTransform=fromEdge->estimate() * e->offsetParameter()->offset();
     glColor3f(LANDMARK_EDGE_COLOR);

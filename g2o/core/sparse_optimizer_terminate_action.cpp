@@ -63,7 +63,7 @@ namespace g2o {
 
   void SparseOptimizerTerminateAction::setOptimizerStopFlag(const SparseOptimizer* optimizer, bool stop)
   {
-    if (optimizer->forceStopFlag()) {
+    if (optimizer->forceStopFlag() != nullptr) {
       *(optimizer->forceStopFlag()) = stop;
     } else {
       _auxTerminateFlag = stop;

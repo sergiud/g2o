@@ -17,8 +17,8 @@ namespace g2o {
     // assume the system is "solved"
     // compute the sparse pattern of the inverse
     std::set<std::pair<int, int> > pattern;
-    for (std::set<OptimizableGraph::Edge*>::iterator it=edges.begin(); it!=edges.end(); it++){
-      augmentSparsePattern(pattern, *it);
+    for (auto edge : edges){
+      augmentSparsePattern(pattern, edge);
     }
 
 
@@ -32,8 +32,8 @@ namespace g2o {
       return -1;
     }
     int count=0;
-    for (std::set<OptimizableGraph::Edge*>::iterator it=edges.begin(); it!=edges.end(); it++){
-      count += labelEdge(spInv, *it) ? 1 : 0;
+    for (auto edge : edges){
+      count += labelEdge(spInv, edge) ? 1 : 0;
     }
     return count;
   }
@@ -62,8 +62,8 @@ namespace g2o {
     //std::copy(pattern.begin(),pattern.end(),blockIndices.begin());
 
     int k=0;
-    for(std::set<std::pair<int, int> >::const_iterator it= pattern.begin(); it!=pattern.end(); it++){
-      blockIndices[k++]=*it;
+    for(const auto & it : pattern){
+      blockIndices[k++]=it;
     }
 
     //cerr << "sparse pattern contains " << blockIndices.size() << " blocks" << endl;
@@ -77,8 +77,8 @@ namespace g2o {
     // cerr << info << endl;
 
     int maxDim=0;
-    for (size_t i=0; i<e->vertices().size(); i++){
-      const OptimizableGraph::Vertex* v=(const OptimizableGraph::Vertex*) e->vertices()[i];
+    for (auto & i : e->vertices()){
+      const OptimizableGraph::Vertex* v=(const OptimizableGraph::Vertex*) i;
       int ti=v->hessianIndex();
       if (ti==-1)
 	continue;
@@ -94,8 +94,8 @@ namespace g2o {
       int ti=vr->hessianIndex();
       if (ti>-1) {
 	int cumCol=0;
-	for (size_t j=0; j<e->vertices().size(); j++){
-	  const OptimizableGraph::Vertex* vc=(const OptimizableGraph::Vertex*) e->vertices()[j];
+	for (auto & j : e->vertices()){
+	  const OptimizableGraph::Vertex* vc=(const OptimizableGraph::Vertex*) j;
 	  int tj = vc->hessianIndex();
 	  if (tj>-1){
 	    // cerr << "ti=" << ti << " tj=" << tj
@@ -153,16 +153,16 @@ namespace g2o {
       //VectorXd globalPoint(maxDim);
 
       // push all the "active" state variables
-      for (size_t j=0; j<e->vertices().size(); j++){
-        OptimizableGraph::Vertex* vr=(OptimizableGraph::Vertex*) e->vertices()[j];
+      for (auto & j : e->vertices()){
+        OptimizableGraph::Vertex* vr=(OptimizableGraph::Vertex*) j;
         int tj=vr->hessianIndex();
         if (tj==-1)
           continue;
         vr->push();
       }
 
-      for (size_t j=0; j<e->vertices().size(); j++){
-        OptimizableGraph::Vertex* vr=(OptimizableGraph::Vertex*) e->vertices()[j];
+      for (auto & j : e->vertices()){
+        OptimizableGraph::Vertex* vr=(OptimizableGraph::Vertex*) j;
         int tj=vr->hessianIndex();
         if (tj==-1)
           continue;
@@ -185,8 +185,8 @@ namespace g2o {
       errorPoints[i]._wp=incrementPoints[i]._wp;
 
       // pop all the "active" state variables
-      for (size_t j=0; j<e->vertices().size(); j++){
-        OptimizableGraph::Vertex* vr=(OptimizableGraph::Vertex*) e->vertices()[j];
+      for (auto & j : e->vertices()){
+        OptimizableGraph::Vertex* vr=(OptimizableGraph::Vertex*) j;
         int tj=vr->hessianIndex();
         if (tj==-1)
           continue;

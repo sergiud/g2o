@@ -67,7 +67,7 @@ namespace g2o {
       return nullptr;
 
     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
-    if (!params->os){
+    if (params->os == nullptr){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified" << std::endl;
       return nullptr;
     }
@@ -85,7 +85,7 @@ namespace g2o {
   bool VertexSegment2DDrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
     if (! DrawAction::refreshPropertyPtrs(params_))
       return false;
-    if (_previousParams){
+    if (_previousParams != nullptr){
       _pointSize = _previousParams->makeProperty<FloatProperty>(_typeName + "::POINT_SIZE", 1.);
     } else {
       _pointSize = nullptr;
@@ -100,16 +100,16 @@ namespace g2o {
       return nullptr;
 
     refreshPropertyPtrs(params_);
-    if (! _previousParams)
+    if (_previousParams == nullptr)
       return this;
 
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
 
 
     VertexSegment2D* that = static_cast<VertexSegment2D*>(element);
     glColor3f(0.8f,0.5f,0.3f);
-    if (_pointSize) {
+    if (_pointSize != nullptr) {
       glPointSize(_pointSize->value());
     }
     glBegin(GL_LINES);

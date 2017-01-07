@@ -53,8 +53,7 @@ namespace g2o {
       }
 
       virtual ~LinearSolverDense()
-      {
-      }
+      = default;
 
       virtual bool init()
       {
@@ -84,7 +83,7 @@ namespace g2o {
           assert(c_idx == A.colBaseOfBlock(i) && "mismatch in block indices");
 
           const typename SparseBlockMatrix<MatrixType>::IntBlockMap& col = A.blockCols()[i];
-          if (col.size() > 0) {
+          if (!col.empty()) {
             typename SparseBlockMatrix<MatrixType>::IntBlockMap::const_iterator it;
             for (it = col.begin(); it != col.end(); ++it) {
               int r_idx = A.rowBaseOfBlock(it->first);

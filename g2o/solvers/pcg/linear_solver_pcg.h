@@ -27,16 +27,14 @@
 #ifndef G2O_LINEAR_SOLVER_PCG_H
 #define G2O_LINEAR_SOLVER_PCG_H
 
+#include <Eigen/Core>
+#include <Eigen/StdVector>
+
+#include <utility>
+#include <vector>
+
 #include <g2o/core/batch_stats.h>
 #include <g2o/core/linear_solver.h>
-
-#include <Eigen/Core>
-#include <utility>
-#include<vector>
-//#ifndef EIGEN_USE_NEW_STDVECTOR
-//#define EIGEN_USE_NEW_STDVECTOR
-//#endif
-#include<Eigen/StdVector>
 
 namespace g2o {
 
@@ -57,9 +55,7 @@ namespace g2o {
         _maxIter = -1;
       }
 
-      virtual ~LinearSolverPCG()
-      {
-      }
+      virtual ~LinearSolverPCG() = default;
 
       virtual bool init()
       {

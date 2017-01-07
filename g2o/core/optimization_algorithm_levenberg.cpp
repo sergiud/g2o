@@ -51,8 +51,7 @@ namespace g2o {
   }
 
   OptimizationAlgorithmLevenberg::~OptimizationAlgorithmLevenberg()
-  {
-  }
+  = default;
 
   OptimizationAlgorithm::SolverResult OptimizationAlgorithmLevenberg::solve(int iteration, bool online)
   {
@@ -70,7 +69,7 @@ namespace g2o {
     double t=get_monotonic_time();
     _optimizer->computeActiveErrors();
     G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-    if (globalStats) {
+    if (globalStats != nullptr) {
       globalStats->timeResiduals = get_monotonic_time()-t;
       t=get_monotonic_time();
     }
@@ -78,7 +77,7 @@ namespace g2o {
     double currentChi = _optimizer->activeRobustChi2();
 
     _solver->buildSystem();
-    if (globalStats) {
+    if (globalStats != nullptr) {
       globalStats->timeQuadraticForm = get_monotonic_time()-t;
     }
 
@@ -93,19 +92,19 @@ namespace g2o {
     qmax = 0;
     do {
       _optimizer->push();
-      if (globalStats) {
+      if (globalStats != nullptr) {
         globalStats->levenbergIterations++;
         t=get_monotonic_time();
       }
       // update the diagonal of the system matrix
       _solver->setLambda(_currentLambda, true);
       bool ok2 = _solver->solve();
-      if (globalStats) {
+      if (globalStats != nullptr) {
         globalStats->timeLinearSolution+=get_monotonic_time()-t;
         t=get_monotonic_time();
       }
       _optimizer->update(_solver->x());
-      if (globalStats) {
+      if (globalStats != nullptr) {
         globalStats->timeUpdate = get_monotonic_time()-t;
       }
 
@@ -150,8 +149,7 @@ namespace g2o {
     if (_userLambdaInit->value() > 0)
       return _userLambdaInit->value();
     double maxDiagonal=0.;
-    for (size_t k = 0; k < _optimizer->indexMapping().size(); k++) {
-      OptimizableGraph::Vertex* v = _optimizer->indexMapping()[k];
+    for (auto v : _optimizer->indexMapping()) {
       assert(v);
       int dim = v->dimension();
       for (int j = 0; j < dim; ++j){

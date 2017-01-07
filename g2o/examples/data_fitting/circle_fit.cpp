@@ -141,7 +141,7 @@ int main(int argc, char** argv)
   // generate random data
   Eigen::Vector2d center(4.0, 2.0);
   double radius = 2.0;
-  Eigen::Vector2d* points = new Eigen::Vector2d[numPoints];
+  auto* points = new Eigen::Vector2d[numPoints];
 
   g2o::Sampler::seedRand();
   for (int i = 0; i < numPoints; ++i) {
@@ -158,21 +158,21 @@ int main(int argc, char** argv)
   // setup the solver
   g2o::SparseOptimizer optimizer;
   optimizer.setVerbose(false);
-  MyLinearSolver* linearSolver = new MyLinearSolver();
-  MyBlockSolver* solver_ptr = new MyBlockSolver(linearSolver);
-  g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+  auto* linearSolver = new MyLinearSolver();
+  auto* solver_ptr = new MyBlockSolver(linearSolver);
+  auto* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
   //g2o::OptimizationAlgorithmGaussNewton* solver = new g2o::OptimizationAlgorithmGaussNewton(solver_ptr);
   optimizer.setAlgorithm(solver);
 
   // build the optimization problem given the points
   // 1. add the circle vertex
-  VertexCircle* circle = new VertexCircle();
+  auto* circle = new VertexCircle();
   circle->setId(0);
   circle->setEstimate(Eigen::Vector3d(3.0, 3.0, 3.0)); // some initial value for the circle
   optimizer.addVertex(circle);
   // 2. add the points we measured
   for (int i = 0; i < numPoints; ++i) {
-    EdgePointOnCircle* e = new EdgePointOnCircle;
+    auto* e = new EdgePointOnCircle;
     e->setInformation(Eigen::Matrix<double, 1, 1>::Identity());
     e->setVertex(0, circle);
     e->setMeasurement(points[i]);

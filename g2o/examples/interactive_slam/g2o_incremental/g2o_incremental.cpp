@@ -126,7 +126,7 @@ int main(int argc, char** argv)
   cerr << "Updating every " << updateEachN << endl;
   cerr << "Batch step every " << batchEachN << endl;
 
-  if (inputFilename.size() > 0) { // operating on a file
+  if (!inputFilename.empty()) { // operating on a file
     vector<EdgeInformation> edgesFromGraph;
 
     // HACK force tictoc statistics
@@ -148,7 +148,7 @@ int main(int argc, char** argv)
       return 1;
     }
     stringstream currentLine;
-    while (readLine(ifs, currentLine)) {
+    while (readLine(ifs, currentLine) != 0) {
       string token;
       currentLine >> token;
       if (token == "EDGE_SE2") {
@@ -167,11 +167,11 @@ int main(int argc, char** argv)
         EdgeInformation& currentEdge = edgesFromGraph.back();
         currentLine >> currentEdge.fromId >> currentEdge.toId;
         currentEdge.measurement.resize(7);
-        for (size_t i = 0; i < currentEdge.measurement.size(); ++i)
-          currentLine >> currentEdge.measurement[i];
+        for (double & i : currentEdge.measurement)
+          currentLine >> i;
         currentEdge.information.resize(21);
-        for (size_t i = 0; i < currentEdge.information.size(); ++i)
-          currentLine >> currentEdge.information[i];
+        for (double & i : currentEdge.information)
+          currentLine >> i;
       }
     }
     assert(graphDimension > 0);
@@ -202,7 +202,7 @@ int main(int argc, char** argv)
     while (parserInterface.parseCommand(cin)) {}
   }
 
-  if (outputFilename.size() > 0) {
+  if (!outputFilename.empty()) {
     cerr << "Saving " << outputFilename << endl;
     optimizer.save(outputFilename.c_str());
   }

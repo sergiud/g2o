@@ -74,7 +74,7 @@ namespace g2o {
 
   HyperGraphElementAction* HyperGraphElementActionCollection::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params)
   {
-    ActionMap::iterator it=_actionMap.find(typeid(*element).name());
+    auto it=_actionMap.find(typeid(*element).name());
     //cerr << typeid(*element).name() << endl;
     if (it==_actionMap.end())
       return nullptr;
@@ -84,7 +84,7 @@ namespace g2o {
 
   HyperGraphElementAction* HyperGraphElementActionCollection::operator()(const HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params)
   {
-    ActionMap::iterator it=_actionMap.find(typeid(*element).name());
+    auto it=_actionMap.find(typeid(*element).name());
     if (it==_actionMap.end())
       return nullptr;
     HyperGraphElementAction* action=it->second.get();
@@ -127,7 +127,7 @@ namespace g2o {
 
   HyperGraphElementAction* HyperGraphActionLibrary::actionByName(const std::string& name)
   {
-    HyperGraphElementAction::ActionMap::iterator it=_actionMap.find(name);
+    auto it=_actionMap.find(name);
     if (it!=_actionMap.end())
       return it->second.get();
     return nullptr;
@@ -137,14 +137,14 @@ namespace g2o {
   {
     HyperGraphElementAction* oldAction = actionByName(action->name());
     HyperGraphElementActionCollection* collection = nullptr;
-    if (oldAction) {
+    if (oldAction != nullptr) {
       collection = dynamic_cast<HyperGraphElementActionCollection*>(oldAction);
-      if (! collection) {
+      if (collection == nullptr) {
         cerr << __PRETTY_FUNCTION__ << ": fatal error, a collection is not at the first level in the library" << endl;
         return 0;
       }
     }
-    if (! collection) {
+    if (collection == nullptr) {
 #ifdef G2O_DEBUG_ACTIONLIB
       cerr << __PRETTY_FUNCTION__ << ": creating collection for \"" << action->name() << "\"" << endl;
 #endif
@@ -160,13 +160,13 @@ namespace g2o {
     std::list<std::string> collectionDeleteList;
 
     // Search all the collections and delete the registered actions; if a collection becomes empty, schedule it for deletion; note that we can't delete the collections as we go because this will screw up the state of the iterators
-    for (auto it =_actionMap.begin(); it != _actionMap.end(); ++it) {
-      HyperGraphElementActionCollection* collection = dynamic_cast<HyperGraphElementActionCollection*> (it->second.get());
-      if (auto collection = dynamic_cast<HyperGraphElementActionCollection*> (it->second.get())) {
+    for (auto & it : _actionMap) {
+      HyperGraphElementActionCollection* collection = dynamic_cast<HyperGraphElementActionCollection*> (it.second.get());
+      if (auto collection = dynamic_cast<HyperGraphElementActionCollection*> (it.second.get())) {
         collection->unregisterAction(action);
         if (collection->actionMap().empty()) {
-          it->second.reset();
-          collectionDeleteList.push_back(it->first);
+          it.second.reset();
+          collectionDeleteList.push_back(it.first);
         }
       }
     }
@@ -200,7 +200,7 @@ namespace g2o {
     if (_previousParams == params_)
       return false;
     DrawAction::Parameters* p=dynamic_cast<DrawAction::Parameters*>(params_);
-    if (! p){
+    if (p == nullptr){
       _previousParams = nullptr;
       _show = nullptr;
       _showId = nullptr;
@@ -213,22 +213,22 @@ namespace g2o {
   }
 
   void DrawAction::initializeDrawActionsCache() {
-    if (! _cacheDrawActions){
+    if (_cacheDrawActions == nullptr){
       _cacheDrawActions = HyperGraphActionLibrary::instance()->actionByName("draw");
     }
   }
 
   void DrawAction::drawCache(CacheContainer* caches, HyperGraphElementAction::Parameters* params_) {
-    if (caches){
-      for (CacheContainer::iterator it=caches->begin(); it!=caches->end(); it++){
-        Cache* c = it->second;
+    if (caches != nullptr){
+      for (auto & cache : *caches){
+        Cache* c = cache.second;
         (*_cacheDrawActions)(c, params_);
       }
     }
   }
 
   void DrawAction::drawUserData(HyperGraph::Data* data, HyperGraphElementAction::Parameters* params_){
-    while (data && _cacheDrawActions ){
+    while ((data != nullptr) && (_cacheDrawActions != nullptr) ){
       (*_cacheDrawActions)(data, params_);
       data=data->next();
     }
@@ -236,16 +236,14 @@ namespace g2o {
 
   void applyAction(HyperGraph* graph, HyperGraphElementAction* action, HyperGraphElementAction::Parameters* params, const std::string& typeName)
   {
-    for (HyperGraph::VertexIDMap::iterator it=graph->vertices().begin();
-        it!=graph->vertices().end(); ++it){
-      if ( typeName.empty() || typeid(*it->second).name()==typeName){
-        (*action)(it->second, params);
+    for (auto & it : graph->vertices()){
+      if ( typeName.empty() || typeid(*it.second).name()==typeName){
+        (*action)(it.second, params);
       }
     }
-    for (HyperGraph::EdgeSet::iterator it=graph->edges().begin();
-        it!=graph->edges().end(); ++it){
-      if ( typeName.empty() || typeid(**it).name()==typeName)
-        (*action)(*it, params);
+    for (auto it : graph->edges()){
+      if ( typeName.empty() || typeid(*it).name()==typeName)
+        (*action)(it, params);
     }
   }
 

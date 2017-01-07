@@ -44,8 +44,8 @@ template <typename MatrixType>
 class LinearSolver
 {
   public:
-    LinearSolver() {};
-    virtual ~LinearSolver() {}
+    LinearSolver() = default;;
+    virtual ~LinearSolver() = default;
 
     /**
      * init for operating on matrices with a different non-zero pattern like before

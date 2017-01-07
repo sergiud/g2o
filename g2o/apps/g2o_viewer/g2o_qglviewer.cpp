@@ -98,7 +98,7 @@ G2oQGLViewer::~G2oQGLViewer()
 
 void G2oQGLViewer::draw()
 {
-  if (! graph)
+  if (graph == nullptr)
     return;
 
   if (_drawActions == nullptr) {
@@ -106,7 +106,7 @@ void G2oQGLViewer::draw()
     assert(_drawActions);
   }
 
-  if (! _drawActions) // avoid segmentation fault in release build
+  if (_drawActions == nullptr) // avoid segmentation fault in release build
     return;
   if (_updateDisplay) {
     _updateDisplay = false;

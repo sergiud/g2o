@@ -151,21 +151,21 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension, in
     int doInit = 0;
     SparseOptimizer::Vertex* v1 = _optimizer->vertex(v1Id);
     SparseOptimizer::Vertex* v2 = _optimizer->vertex(v2Id);
-    if (! v1) {
+    if (v1 == nullptr) {
       OptimizableGraph::Vertex* v = v1 = addVertex(dimension, v1Id);
       _verticesAdded.insert(v);
       doInit = 1;
       ++_nodesAdded;
     }
 
-    if (! v2) {
+    if (v2 == nullptr) {
       OptimizableGraph::Vertex* v = v2 = addVertex(dimension, v2Id);
       _verticesAdded.insert(v);
       doInit = 2;
       ++_nodesAdded;
     }
 
-    if (_optimizer->edges().size() == 0) {
+    if (_optimizer->edges().empty()) {
       cerr << "FIRST EDGE ";
       if (v1->id() < v2->id()) {
         cerr << "fixing " << v1->id() << endl;
@@ -177,7 +177,7 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension, in
       }
     }
 
-    OnlineEdgeSE2* e = new OnlineEdgeSE2;
+    auto* e = new OnlineEdgeSE2;
     e->vertices()[0] = v1;
     e->vertices()[1] = v2;
     e->setMeasurement(transf);
@@ -185,7 +185,7 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension, in
     _optimizer->addEdge(e);
     _edgesAdded.insert(e);
 
-    if (doInit) {
+    if (doInit != 0) {
       OptimizableGraph::Vertex* from = static_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
       OptimizableGraph::Vertex* to   = static_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
       switch (doInit){
@@ -254,21 +254,21 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension, in
     int doInit = 0;
     SparseOptimizer::Vertex* v1 = _optimizer->vertex(v1Id);
     SparseOptimizer::Vertex* v2 = _optimizer->vertex(v2Id);
-    if (! v1) {
+    if (v1 == nullptr) {
       OptimizableGraph::Vertex* v = v1 = addVertex(dimension, v1Id);
       _verticesAdded.insert(v);
       doInit = 1;
       ++_nodesAdded;
     }
 
-    if (! v2) {
+    if (v2 == nullptr) {
       OptimizableGraph::Vertex* v = v2 = addVertex(dimension, v2Id);
       _verticesAdded.insert(v);
       doInit = 2;
       ++_nodesAdded;
     }
 
-    if (_optimizer->edges().size() == 0) {
+    if (_optimizer->edges().empty()) {
       cerr << "FIRST EDGE ";
       if (v1->id() < v2->id()) {
         cerr << "fixing " << v1->id() << endl;
@@ -280,7 +280,7 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension, in
       }
     }
 
-    OnlineEdgeSE3* e = new OnlineEdgeSE3;
+    auto* e = new OnlineEdgeSE3;
     e->vertices()[0] = v1;
     e->vertices()[1] = v2;
     e->setMeasurement(transf);
@@ -288,7 +288,7 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension, in
     _optimizer->addEdge(e);
     _edgesAdded.insert(e);
 
-    if (doInit) {
+    if (doInit != 0) {
       OptimizableGraph::Vertex* from = static_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
       OptimizableGraph::Vertex* to   = static_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
       switch (doInit){
@@ -329,9 +329,9 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension, in
 
 bool G2oSlamInterface::fixNode(const std::vector<int>& nodes)
 {
-  for (size_t i = 0; i < nodes.size(); ++i) {
-    OptimizableGraph::Vertex* v = _optimizer->vertex(nodes[i]);
-    if (v)
+  for (int node : nodes) {
+    OptimizableGraph::Vertex* v = _optimizer->vertex(node);
+    if (v != nullptr)
       v->setFixed(true);
   }
   return true;
@@ -342,15 +342,15 @@ bool G2oSlamInterface::queryState(const std::vector<int>& nodes)
   //return true;
   cout << "BEGIN" << endl;
 #if 1
-  if (nodes.size() == 0) {
+  if (nodes.empty()) {
     for (OptimizableGraph::VertexIDMap::const_iterator it = _optimizer->vertices().begin(); it != _optimizer->vertices().end(); ++it) {
       OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it->second);
       printVertex(v);
     }
   } else {
-    for (size_t i = 0; i < nodes.size(); ++i) {
-      OptimizableGraph::Vertex* v = _optimizer->vertex(nodes[i]);
-      if (v)
+    for (int node : nodes) {
+      OptimizableGraph::Vertex* v = _optimizer->vertex(node);
+      if (v != nullptr)
         printVertex(v);
     }
   }
@@ -369,13 +369,13 @@ bool G2oSlamInterface::solveState()
 OptimizableGraph::Vertex* G2oSlamInterface::addVertex(int dimension, int id)
 {
   if (dimension == 3) {
-    OnlineVertexSE2* v =  new OnlineVertexSE2;
+    auto* v =  new OnlineVertexSE2;
     v->setId(id); // estimate will be set later when the edge is added
     _optimizer->addVertex(v);
     return v;
   }
   else if (dimension == 6) {
-    OnlineVertexSE3* v =  new OnlineVertexSE3;
+    auto* v =  new OnlineVertexSE3;
     v->setId(id); // estimate will be set later when the edge is added
     _optimizer->addVertex(v);
     return v;

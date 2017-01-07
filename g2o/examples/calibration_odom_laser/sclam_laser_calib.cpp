@@ -101,14 +101,14 @@ int main(int argc, char** argv)
 
   VertexSE2* laserOffset = dynamic_cast<VertexSE2*>(optimizer.vertex(numeric_limits<int>::max()));
   //laserOffset->setEstimate(SE2()); // set to Identity
-  if (laserOffset) {
+  if (laserOffset != nullptr) {
     cerr << "Initial laser offset " << laserOffset->estimate().toVector().transpose() << endl;
   }
   bool gaugeFreedom = optimizer.gaugeFreedom();
 
   OptimizableGraph::Vertex* gauge = optimizer.findGauge();
   if (gaugeFreedom) {
-    if (! gauge) {
+    if (gauge == nullptr) {
       cerr <<  "# cannot find a vertex to fix in this thing" << endl;
       return 2;
     } else {
@@ -149,22 +149,22 @@ int main(int argc, char** argv)
   signal(SIGINT, sigquit_handler);
 
   int i=optimizer.optimize(maxIterations);
-  if (maxIterations > 0 && !i){
+  if (maxIterations > 0 && (i == 0)){
     cerr << "optimize failed, result might be invalid" << endl;
   }
 
-  if (laserOffset) {
+  if (laserOffset != nullptr) {
     cerr << "Calibrated laser offset " << laserOffset->estimate().toVector().transpose() << endl;
   }
 
-  if (outputfilename.size() > 0) {
+  if (!outputfilename.empty()) {
     Gm2dlIO::updateLaserData(optimizer);
     cerr << "Writing " << outputfilename << " ... ";
     bool writeStatus = Gm2dlIO::writeGm2dl(outputfilename, optimizer);
     cerr << (writeStatus ? "done." : "failed") << endl;
   }
 
-  if (gnudump.size() > 0) {
+  if (!gnudump.empty()) {
     ofstream fout(gnudump.c_str());
     for (SparseOptimizer::VertexIDMap::const_iterator it = optimizer.vertices().begin(); it != optimizer.vertices().end(); ++it) {
       VertexSE2* v = dynamic_cast<VertexSE2*>(it->second);
@@ -172,5 +172,5 @@ int main(int argc, char** argv)
     }
   }
 
-  return true;
+  return 1;
 }

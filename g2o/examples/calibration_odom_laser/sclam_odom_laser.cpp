@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 
   OptimizableGraph::Vertex* gauge = optimizer.findGauge();
   if (gaugeFreedom) {
-    if (! gauge) {
+    if (gauge == nullptr) {
       cerr <<  "# cannot find a vertex to fix in this thing" << endl;
       return 2;
     } else {
@@ -166,29 +166,29 @@ int main(int argc, char** argv)
   cerr << "Initial chi2 = " << FIXED(optimizer.chi2()) << endl;
 
   int i=optimizer.optimize(maxIterations);
-  if (maxIterations > 0 && !i){
+  if (maxIterations > 0 && (i == 0)){
     cerr << "optimize failed, result might be invalid" << endl;
   }
 
-  if (laserOffset) {
+  if (laserOffset != nullptr) {
     cerr << "Calibrated laser offset (x, y, theta):" << laserOffset->estimate().toVector().transpose() << endl;
   }
 
-  if (odomParamsVertex) {
+  if (odomParamsVertex != nullptr) {
     cerr << "Odometry parameters (scaling factors (v_l, v_r, b)): " << odomParamsVertex->estimate().transpose() << endl;
   }
 
   cerr << "vertices: " << optimizer.vertices().size() << endl;
   cerr << "edges: " << optimizer.edges().size() << endl;
 
-  if (dumpGraphFilename.size() > 0) {
+  if (!dumpGraphFilename.empty()) {
     cerr << "Writing " << dumpGraphFilename << " ... ";
     optimizer.save(dumpGraphFilename.c_str());
     cerr << "done." << endl;
   }
 
   // optional input of a seperate file for applying the odometry calibration
-  if (odomTestFilename.size() > 0) {
+  if (!odomTestFilename.empty()) {
 
     DataQueue testRobotLaserQueue;
     int numTestOdom = Gm2dlIO::readRobotLaser(odomTestFilename, testRobotLaserQueue);
@@ -198,12 +198,12 @@ int main(int argc, char** argv)
 
       ofstream rawStream("odometry_raw.txt");
       ofstream calibratedStream("odometry_calibrated.txt");
-      const Vector3d& odomCalib = odomParamsVertex ? odomParamsVertex->estimate() : Vector3d::Ones();
+      const Vector3d& odomCalib = odomParamsVertex != nullptr ? odomParamsVertex->estimate() : Vector3d::Ones();
       RobotLaser* prev = dynamic_cast<RobotLaser*>(testRobotLaserQueue.buffer().begin()->second);
       SE2 prevCalibratedPose = prev->odomPose();
 
-      for (DataQueue::Buffer::const_iterator it = testRobotLaserQueue.buffer().begin(); it != testRobotLaserQueue.buffer().end(); ++it) {
-        RobotLaser* cur = dynamic_cast<RobotLaser*>(it->second);
+      for (const auto & it : testRobotLaserQueue.buffer()) {
+        RobotLaser* cur = dynamic_cast<RobotLaser*>(it.second);
         assert(cur);
 
         double dt = cur->timestamp() - prev->timestamp();
@@ -235,7 +235,7 @@ int main(int argc, char** argv)
 
   }
 
-  if (outputfilename.size() > 0) {
+  if (!outputfilename.empty()) {
     Gm2dlIO::updateLaserData(optimizer);
     cerr << "Writing " << outputfilename << " ... ";
     bool writeStatus = Gm2dlIO::writeGm2dl(outputfilename, optimizer);

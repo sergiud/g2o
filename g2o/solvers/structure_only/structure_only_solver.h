@@ -75,9 +75,9 @@ class StructureOnlySolver : public OptimizationAlgorithm
       auxWorkspace.updateSize(2, 50);
       auxWorkspace.allocate();
 
-      for (OptimizableGraph::VertexContainer::iterator it_v=vertices.begin(); it_v!=vertices.end(); ++it_v) {
+      for (auto & vertice : vertices) {
         bool stop = false;
-        g2o::OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(*it_v);
+        g2o::OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(vertice);
         assert(v->dimension() == PointDoF);
         g2o::HyperGraph::EdgeSet& track = v->edges();
         assert(track.size()>=2);
@@ -86,8 +86,8 @@ class StructureOnlySolver : public OptimizationAlgorithm
         double mu = 0.01;
         double nu = 2;
 
-        for (g2o::HyperGraph::EdgeSet::iterator it_t=track.begin(); it_t!=track.end(); ++it_t) {
-          g2o::OptimizableGraph::Edge* e = dynamic_cast<g2o::OptimizableGraph::Edge *>(*it_t);
+        for (auto it_t : track) {
+          g2o::OptimizableGraph::Edge* e = dynamic_cast<g2o::OptimizableGraph::Edge *>(it_t);
           e->computeError();
           chi2 += e->chi2();
         }
@@ -103,8 +103,8 @@ class StructureOnlySolver : public OptimizationAlgorithm
             g2o::HyperGraph::EdgeSet& track = v->edges();
             assert(track.size()>=1);
 
-            for (g2o::HyperGraph::EdgeSet::iterator it_t=track.begin(); it_t!=track.end(); ++it_t) {
-              g2o::OptimizableGraph::Edge* e = dynamic_cast<g2o::OptimizableGraph::Edge *>(*it_t);
+            for (auto it_t : track) {
+              g2o::OptimizableGraph::Edge* e = dynamic_cast<g2o::OptimizableGraph::Edge *>(it_t);
 
               // fix all the other vertices and remember their fix value
 #ifdef WINDOWS
@@ -152,8 +152,8 @@ class StructureOnlySolver : public OptimizationAlgorithm
                 v->push();
                 v->oplus(delta_p.data());
                 double new_chi2 = 0.;
-                for (g2o::HyperGraph::EdgeSet::iterator it_t=track.begin(); it_t!=track.end(); ++it_t) {
-                  g2o::OptimizableGraph::Edge* e = dynamic_cast<g2o::OptimizableGraph::Edge *>(*it_t);
+                for (auto it_t : track) {
+                  g2o::OptimizableGraph::Edge* e = dynamic_cast<g2o::OptimizableGraph::Edge *>(it_t);
                   e->computeError();
                   new_chi2 += e->chi2();
                 }
@@ -197,7 +197,7 @@ class StructureOnlySolver : public OptimizationAlgorithm
     { 
       // collect the vertices
       _points.clear();
-      for (OptimizableGraph::VertexContainer::const_iterator it =  optimizer()->activeVertices().begin(); it != optimizer()->activeVertices().end(); ++it) {
+      for (auto it =  optimizer()->activeVertices().begin(); it != optimizer()->activeVertices().end(); ++it) {
         OptimizableGraph::Vertex* v = *it;
         if (v->marginalized()) {
           _points.push_back(v);

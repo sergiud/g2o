@@ -129,7 +129,7 @@ int main(int argc, char** argv)
   double a = 2.;
   double b = 0.4;
   double lambda = 0.2;
-  Eigen::Vector2d* points = new Eigen::Vector2d[numPoints];
+  auto* points = new Eigen::Vector2d[numPoints];
   for (int i = 0; i < numPoints; ++i) {
     double x = g2o::Sampler::uniformRand(0, 10);
     double y = a * exp(-lambda * x) + b;
@@ -139,7 +139,7 @@ int main(int argc, char** argv)
     points[i].y() = y;
   }
 
-  if (dumpFilename.size() > 0) {
+  if (!dumpFilename.empty()) {
     ofstream fout(dumpFilename.c_str());
     for (int i = 0; i < numPoints; ++i)
       fout << points[i].transpose() << endl;
@@ -152,20 +152,20 @@ int main(int argc, char** argv)
   // setup the solver
   g2o::SparseOptimizer optimizer;
   optimizer.setVerbose(false);
-  MyLinearSolver* linearSolver = new MyLinearSolver();
-  MyBlockSolver* solver_ptr = new MyBlockSolver(linearSolver);
-  g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+  auto* linearSolver = new MyLinearSolver();
+  auto* solver_ptr = new MyBlockSolver(linearSolver);
+  auto* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
   optimizer.setAlgorithm(solver);
 
   // build the optimization problem given the points
   // 1. add the parameter vertex
-  VertexParams* params = new VertexParams();
+  auto* params = new VertexParams();
   params->setId(0);
   params->setEstimate(Eigen::Vector3d(1,1,1)); // some initial value for the params
   optimizer.addVertex(params);
   // 2. add the points we measured to be on the curve
   for (int i = 0; i < numPoints; ++i) {
-    EdgePointOnCurve* e = new EdgePointOnCurve;
+    auto* e = new EdgePointOnCurve;
     e->setInformation(Eigen::Matrix<double, 1, 1>::Identity());
     e->setVertex(0, params);
     e->setMeasurement(points[i]);

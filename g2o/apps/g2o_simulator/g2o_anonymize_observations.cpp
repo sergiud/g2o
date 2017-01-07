@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
   arg.parseArgs(argc, argv);
   OptimizableGraph graph;
 
-  if (inputFilename.size() == 0) {
+  if (inputFilename.empty()) {
     cerr << "No input data specified" << endl;
     return 0;
   } else if (inputFilename == "-") {
@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  for (HyperGraph::EdgeSet::iterator it = graph.edges().begin(); it!=graph.edges().end(); it++){
+  for (auto it = graph.edges().begin(); it!=graph.edges().end(); it++){
     HyperGraph::Edge* e = *it;
     if (anonymizeLandmarkEdge<EdgeSE2PointXY>(e, graph)) continue;
     if (anonymizeLandmarkEdge<EdgeSE2PointXYOffset>(e, graph)) continue;

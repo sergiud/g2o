@@ -80,7 +80,7 @@ namespace g2o {
         return;
       }
 
-      if (tictocElements.size() > 0) {
+      if (!tictocElements.empty()) {
         int longestName = 0;
         // sort the elements according to the total time and print a table
         std::vector<TicTocElement> sortedElements;
@@ -123,7 +123,7 @@ namespace g2o {
     double now = get_monotonic_time();
 
     double dt = 0.;
-    TicTocMap::iterator foundIt = tictocElements.find(algorithmPart);
+    auto foundIt = tictocElements.find(algorithmPart);
     if (foundIt == tictocElements.end()) {
       // insert element
       TicTocElement e;

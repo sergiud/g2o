@@ -44,9 +44,9 @@ namespace g2o {
 bool ClosedFormCalibration::calibrate(const MotionInformationVector& measurements, SE2& laserOffset, Eigen::Vector3d& odomParams)
 {
   std::vector<VelocityMeasurement, Eigen::aligned_allocator<VelocityMeasurement> > velMeasurements;
-  for (size_t i = 0; i < measurements.size(); ++i) {
-    const SE2& odomMotion = measurements[i].odomMotion;
-    const double& timeInterval = measurements[i].timeInterval;
+  for (const auto & measurement : measurements) {
+    const SE2& odomMotion = measurement.odomMotion;
+    const double& timeInterval = measurement.timeInterval;
     MotionMeasurement mm(odomMotion.translation().x(), odomMotion.translation().y(), odomMotion.rotation().angle(), timeInterval);
     VelocityMeasurement velMeas = OdomConvert::convertToVelocity(mm);
     velMeasurements.push_back(velMeas);

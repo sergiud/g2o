@@ -43,7 +43,7 @@ namespace g2o {
 
     void init()
     {
-      if (types_icp::initialized)
+      if (types_icp::initialized != 0)
         return;
       //cerr << "Calling " << __FILE__ << " " << __PRETTY_FUNCTION__ << endl;
 

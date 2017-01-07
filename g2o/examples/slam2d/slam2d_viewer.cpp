@@ -135,20 +135,19 @@ Slam2DViewer::Slam2DViewer(QWidget* parent, const QGLWidget* shareWidget, Qt::Wi
 }
 
 Slam2DViewer::~Slam2DViewer()
-{
-}
+= default;
 
 void Slam2DViewer::draw()
 {
-  if (! graph)
+  if (graph == nullptr)
     return;
 
   // drawing the graph
   glColor4f(0.00f, 0.67f, 1.00f, 1.f);
   glBegin(GL_TRIANGLES);
-  for (SparseOptimizer::VertexIDMap::iterator it = graph->vertices().begin(); it != graph->vertices().end(); ++it) {
-    VertexSE2* v = dynamic_cast<VertexSE2*>(it->second);
-    if (v) {
+  for (auto & it : graph->vertices()) {
+    VertexSE2* v = dynamic_cast<VertexSE2*>(it.second);
+    if (v != nullptr) {
       drawSE2(v);
     }
   }
@@ -157,9 +156,9 @@ void Slam2DViewer::draw()
   glColor4f(1.00f, 0.67f, 0.00f, 1.f);
   glPointSize(2.f);
   glBegin(GL_POINTS);
-  for (SparseOptimizer::VertexIDMap::iterator it = graph->vertices().begin(); it != graph->vertices().end(); ++it) {
-    VertexPointXY* v = dynamic_cast<VertexPointXY*>(it->second);
-    if (v) {
+  for (auto & it : graph->vertices()) {
+    VertexPointXY* v = dynamic_cast<VertexPointXY*>(it.second);
+    if (v != nullptr) {
       glVertex3f(v->estimate()(0), v->estimate()(1), 0.f);
     }
   }
@@ -167,9 +166,9 @@ void Slam2DViewer::draw()
   glPointSize(1.f);
 
   if (drawCovariance) {
-    for (SparseOptimizer::VertexIDMap::iterator it = graph->vertices().begin(); it != graph->vertices().end(); ++it) {
-      VertexSE2* v = dynamic_cast<VertexSE2*>(it->second);
-      if (v) {
+    for (auto & it : graph->vertices()) {
+      VertexSE2* v = dynamic_cast<VertexSE2*>(it.second);
+      if (v != nullptr) {
         // TODO
         //drawCov(v->estimate().translation(), v->uncertainty());
       }

@@ -48,8 +48,7 @@ MarginalCovarianceCholesky::MarginalCovarianceCholesky() :
 }
 
 MarginalCovarianceCholesky::~MarginalCovarianceCholesky()
-{
-}
+= default;
 
 void MarginalCovarianceCholesky::setCholeskyFactor(int n, int* Lp, int* Li, double* Lx, int* permInv)
 {
@@ -104,13 +103,12 @@ void MarginalCovarianceCholesky::computeCovariance(double** covBlocks, const std
   _map.clear();
   int base = 0;
   vector<MatrixElem> elemsToCompute;
-  for (size_t i = 0; i < blockIndices.size(); ++i) {
-    int nbase = blockIndices[i];
+  for (int nbase : blockIndices) {
     int vdim = nbase - base;
     for (int rr = 0; rr < vdim; ++rr)
       for (int cc = rr; cc < vdim; ++cc) {
-        int r = _perm ? _perm[rr + base] : rr + base; // apply permutation
-        int c = _perm ? _perm[cc + base] : cc + base;
+        int r = _perm != nullptr ? _perm[rr + base] : rr + base; // apply permutation
+        int c = _perm != nullptr ? _perm[cc + base] : cc + base;
         if (r > c) // make sure it's still upper triangular after applying the permutation
           swap(r, c);
         elemsToCompute.emplace_back(r, c);
@@ -122,8 +120,7 @@ void MarginalCovarianceCholesky::computeCovariance(double** covBlocks, const std
   sort(elemsToCompute.begin(), elemsToCompute.end());
 
   // compute the inverse elements we need
-  for (size_t i = 0; i < elemsToCompute.size(); ++i) {
-    const MatrixElem& me = elemsToCompute[i];
+  for (auto & me : elemsToCompute) {
     computeEntry(me.r, me.c);
   }
 
@@ -135,8 +132,8 @@ void MarginalCovarianceCholesky::computeCovariance(double** covBlocks, const std
     double* cov = covBlocks[i];
     for (int rr = 0; rr < vdim; ++rr)
       for (int cc = rr; cc < vdim; ++cc) {
-        int r = _perm ? _perm[rr + base] : rr + base; // apply permutation
-        int c = _perm ? _perm[cc + base] : cc + base;
+        int r = _perm != nullptr ? _perm[rr + base] : rr + base; // apply permutation
+        int c = _perm != nullptr ? _perm[cc + base] : cc + base;
         if (r > c) // upper triangle
           swap(r, c);
         int idx = computeIndex(r, c);
@@ -160,9 +157,9 @@ void MarginalCovarianceCholesky::computeCovariance(SparseBlockMatrix<MatrixXD>& 
               rowBlockIndices.size(), true);
   _map.clear();
   vector<MatrixElem> elemsToCompute;
-  for (size_t i = 0; i < blockIndices.size(); ++i) {
-    int blockRow=blockIndices[i].first;    
-    int blockCol=blockIndices[i].second;
+  for (const auto & blockIndice : blockIndices) {
+    int blockRow=blockIndice.first;    
+    int blockCol=blockIndice.second;
     assert(blockRow>=0);
     assert(blockRow < (int)rowBlockIndices.size());
     assert(blockCol>=0);
@@ -177,8 +174,8 @@ void MarginalCovarianceCholesky::computeCovariance(SparseBlockMatrix<MatrixXD>& 
       for (int iCol=0; iCol<block->cols(); ++iCol){
         int rr=rowBase+iRow;
         int cc=colBase+iCol;
-        int r = _perm ? _perm[rr] : rr; // apply permutation
-        int c = _perm ? _perm[cc] : cc;
+        int r = _perm != nullptr ? _perm[rr] : rr; // apply permutation
+        int c = _perm != nullptr ? _perm[cc] : cc;
         if (r > c)
           swap(r, c);
         elemsToCompute.emplace_back(r, c);
@@ -189,15 +186,14 @@ void MarginalCovarianceCholesky::computeCovariance(SparseBlockMatrix<MatrixXD>& 
   sort(elemsToCompute.begin(), elemsToCompute.end());
 
   // compute the inverse elements we need
-  for (size_t i = 0; i < elemsToCompute.size(); ++i) {
-    const MatrixElem& me = elemsToCompute[i];
+  for (auto & me : elemsToCompute) {
     computeEntry(me.r, me.c);
   }
 
   // set the marginal covariance 
-  for (size_t i = 0; i < blockIndices.size(); ++i) {
-    int blockRow=blockIndices[i].first;    
-    int blockCol=blockIndices[i].second;
+  for (const auto & blockIndice : blockIndices) {
+    int blockRow=blockIndice.first;    
+    int blockCol=blockIndice.second;
     int rowBase=spinv.rowBaseOfBlock(blockRow);
     int colBase=spinv.colBaseOfBlock(blockCol);
     
@@ -207,8 +203,8 @@ void MarginalCovarianceCholesky::computeCovariance(SparseBlockMatrix<MatrixXD>& 
       for (int iCol=0; iCol<block->cols(); ++iCol){
         int rr=rowBase+iRow;
         int cc=colBase+iCol;
-        int r = _perm ? _perm[rr] : rr; // apply permutation
-        int c = _perm ? _perm[cc] : cc;
+        int r = _perm != nullptr ? _perm[rr] : rr; // apply permutation
+        int c = _perm != nullptr ? _perm[cc] : cc;
         if (r > c)
           swap(r, c);
         int idx = computeIndex(r, c);

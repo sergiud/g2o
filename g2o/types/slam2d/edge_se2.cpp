@@ -106,7 +106,7 @@ namespace g2o {
     if (typeid(*element).name()!=_typeName)
       return nullptr;
     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
-    if (!params->os){
+    if (params->os == nullptr){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified" << std::endl;
       return nullptr;
     }
@@ -128,7 +128,7 @@ namespace g2o {
   bool EdgeSE2DrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
     if (!DrawAction::refreshPropertyPtrs(params_))
       return false;
-    if (_previousParams){
+    if (_previousParams != nullptr){
       _triangleX = _previousParams->makeProperty<FloatProperty>(_typeName + "::GHOST_TRIANGLE_X", .2f);
       _triangleY = _previousParams->makeProperty<FloatProperty>(_typeName + "::GHOST_TRIANGLE_Y", .05f);
     } else {
@@ -144,22 +144,22 @@ namespace g2o {
       return nullptr;
 
     refreshPropertyPtrs(params_);
-    if (! _previousParams)
+    if (_previousParams == nullptr)
       return this;
     
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
 
     EdgeSE2* e =  static_cast<EdgeSE2*>(element);
     VertexSE2* from = static_cast<VertexSE2*>(e->vertex(0));
     VertexSE2* to   = static_cast<VertexSE2*>(e->vertex(1));
-    if (! from && ! to)
+    if ((from == nullptr) && (to == nullptr))
       return this;
     SE2 fromTransform;
     SE2 toTransform;
     glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING | GL_COLOR);
     glDisable(GL_LIGHTING);
-    if (! from) {
+    if (from == nullptr) {
       glColor3f(POSE_EDGE_GHOST_COLOR);
       toTransform = to->estimate();
       fromTransform = to->estimate()*e->measurement().inverse();
@@ -169,7 +169,7 @@ namespace g2o {
       glRotatef((float)RAD2DEG(fromTransform.rotation().angle()),0.f,0.f,1.f);
       opengl::drawArrow2D((float)_triangleX->value(), (float)_triangleY->value(), (float)_triangleX->value()*.3f);
       glPopMatrix();
-    } else if (! to){
+    } else if (to == nullptr){
       glColor3f(POSE_EDGE_GHOST_COLOR);
       fromTransform = from->estimate();
       toTransform = from->estimate()*e->measurement();

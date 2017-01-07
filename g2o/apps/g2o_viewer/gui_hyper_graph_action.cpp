@@ -31,19 +31,18 @@ GuiHyperGraphAction::GuiHyperGraphAction() :
 }
 
 GuiHyperGraphAction::~GuiHyperGraphAction()
-{
-}
+= default;
 
 HyperGraphAction* GuiHyperGraphAction::operator()(const HyperGraph* graph, Parameters* parameters)
 {
   (void) graph;
-  if (viewer) {
+  if (viewer != nullptr) {
     viewer->setUpdateDisplay(true);
     viewer->updateGL();
 
     if (dumpScreenshots) {
       ParametersIteration* p = dynamic_cast<ParametersIteration*>(parameters);
-      if (p) {
+      if (p != nullptr) {
         viewer->setSnapshotFormat(QString("PNG"));
         viewer->setSnapshotQuality(-1);
         viewer->saveSnapshot(QString().sprintf("g2o%.6d.png", p->iteration), true);

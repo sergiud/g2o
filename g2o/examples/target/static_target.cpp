@@ -30,9 +30,9 @@ int main()
   typedef BlockSolver<BlockSolverTraits<3, 3> > BlockSolver_3_3;
   BlockSolver_3_3::LinearSolverType* linearSolver
       = new LinearSolverCholmod<BlockSolver_3_3::PoseMatrixType>();
-  BlockSolver_3_3* blockSolver
+  auto* blockSolver
       = new BlockSolver_3_3(linearSolver);
-  OptimizationAlgorithmGaussNewton* solver
+  auto* solver
     = new OptimizationAlgorithmGaussNewton(blockSolver);
   optimizer.setAlgorithm(solver);
 
@@ -42,7 +42,7 @@ int main()
                      sampleUniform(-500, 500));
 
   // Construct vertex which corresponds to the actual point of the target
-  VertexPosition3D* position = new VertexPosition3D();
+  auto* position = new VertexPosition3D();
   position->setId(0);
   optimizer.addVertex(position);
 
@@ -60,7 +60,7 @@ int main()
         Vector3d(sampleUniform(-0.5, 0.5) * noiseLimit,
                  sampleUniform(-0.5, 0.5) * noiseLimit,
                  sampleUniform(-0.5, 0.5) * noiseLimit);
-      GPSObservationPosition3DEdge* goe = new GPSObservationPosition3DEdge();
+      auto* goe = new GPSObservationPosition3DEdge();
       goe->setVertex(0, position);
       goe->setMeasurement(measurement);
       goe->setInformation(Matrix3d::Identity() / noiseSigma);

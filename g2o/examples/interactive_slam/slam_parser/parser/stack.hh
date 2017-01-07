@@ -87,7 +87,7 @@ namespace SlamParser {
     void
     pop (unsigned int n = 1)
     {
-      for (; n; --n)
+      for (; n != 0u; --n)
   seq_.pop_front ();
     }
 

@@ -92,7 +92,7 @@ namespace g2o {
     if(!DrawAction::refreshPropertyPtrs(params_)) {
       return false;
     }
-    if(_previousParams) {
+    if(_previousParams != nullptr) {
       _lineLength = _previousParams->makeProperty<FloatProperty>(_typeName + "::LINE_LENGTH", 4.0f);
       _lineWidth = _previousParams->makeProperty<FloatProperty>(_typeName + "::LINE_WIDTH", 2.0f);
     }
@@ -110,24 +110,24 @@ namespace g2o {
     }
 
     refreshPropertyPtrs(params_);
-    if(!_previousParams) {
+    if(_previousParams == nullptr) {
       return this;
     }
     
-    if(_show && !_show->value()) {
+    if((_show != nullptr) && !_show->value()) {
       return this;
     }
     
     EdgeSE3Line3D* that = dynamic_cast<EdgeSE3Line3D*>(element);
 
-    if(!that) {
+    if(that == nullptr) {
       return this;
     }
     
     const VertexSE3* robot  = dynamic_cast<const VertexSE3*>(that->vertex(0));
     const VertexLine3D* landmark = dynamic_cast<const VertexLine3D*>(that->vertex(1));
 
-    if(!robot || !landmark) {
+    if((robot == nullptr) || (landmark == nullptr)) {
       return nullptr;
     }
 
@@ -139,7 +139,7 @@ namespace g2o {
     glPushMatrix();
     glMultMatrixd(robot->estimate().matrix().data());
     glColor3f(float(that->color(0)), float(that->color(1)), float(that->color(2)));
-    if(_lineLength && _lineWidth) {
+    if((_lineLength != nullptr) && (_lineWidth != nullptr)) {
       glLineWidth(float(_lineWidth->value())); 
       glBegin(GL_LINES);
       glNormal3f(float(npoint.x()), float(npoint.y()), float(npoint.z()));

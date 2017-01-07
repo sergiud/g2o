@@ -82,7 +82,7 @@ namespace g2o {
        * base hyper graph element, specialized in vertex and edge
        */
       struct G2O_CORE_API HyperGraphElement {
-        virtual ~HyperGraphElement() {}
+        virtual ~HyperGraphElement() = default;
         /**
          * returns the type of the graph element, see HyperGraphElementType
          */
@@ -126,7 +126,7 @@ namespace g2o {
           const Data* userData() const { return _userData; }
           Data* userData() { return _userData; }
           void setUserData(Data* obs) { _userData = obs;}
-          void addUserData(Data* obs) { if (obs) { obs->setNext(_userData); _userData=obs; } }
+          void addUserData(Data* obs) { if (obs != nullptr) { obs->setNext(_userData); _userData=obs; } }
         protected:
           Data* _userData;
       };

@@ -73,7 +73,7 @@ namespace g2o {
     if (typeid(*element).name()!=_typeName)
       return nullptr;
     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
-    if (!params->os){
+    if (params->os == nullptr){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified" << std::endl;
       return nullptr;
     }
@@ -96,23 +96,23 @@ namespace g2o {
       return nullptr;
 
     refreshPropertyPtrs(params_);
-    if (! _previousParams)
+    if (_previousParams == nullptr)
       return this;
     
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
 
     EdgeSE2PointXYBearing* e =  static_cast<EdgeSE2PointXYBearing*>(element);
     VertexSE2* from = static_cast<VertexSE2*>(e->vertex(0));
     VertexPointXY* to   = static_cast<VertexPointXY*>(e->vertex(1));
-    if (! from)
+    if (from == nullptr)
       return this;
     double guessRange=5;
     double theta = e->measurement();
     Vector2D p(cos(theta)*guessRange, sin(theta)*guessRange);
     glPushAttrib(GL_ENABLE_BIT|GL_LIGHTING|GL_COLOR);
     glDisable(GL_LIGHTING);
-    if (!to){
+    if (to == nullptr){
       p=from->estimate()*p;
       glColor3f(LANDMARK_EDGE_GHOST_COLOR);
       glPushAttrib(GL_POINT_SIZE);

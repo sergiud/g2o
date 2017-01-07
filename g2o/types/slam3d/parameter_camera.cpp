@@ -107,7 +107,7 @@ namespace g2o {
   bool CacheCameraDrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
     if (! DrawAction::refreshPropertyPtrs(params_))
       return false;
-    if (_previousParams){
+    if (_previousParams != nullptr){
       _cameraZ = _previousParams->makeProperty<FloatProperty>(_typeName + "::CAMERA_Z", .05f);
       _cameraSide = _previousParams->makeProperty<FloatProperty>(_typeName + "::CAMERA_SIDE", .05f);
       
@@ -124,10 +124,10 @@ namespace g2o {
       return nullptr;
     CacheCamera* that = static_cast<CacheCamera*>(element);
     refreshPropertyPtrs(params);
-    if (! _previousParams)
+    if (_previousParams == nullptr)
       return this;
     
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
 
     glPushAttrib(GL_COLOR);

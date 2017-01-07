@@ -57,7 +57,7 @@ Vector4d sample_noise_from_line(const Vector4d& cov) {
 struct SimulatorItem {
   SimulatorItem(OptimizableGraph* graph_): _graph(graph_) {}
   OptimizableGraph* graph() { return _graph;}
-  virtual ~SimulatorItem(){}
+  virtual ~SimulatorItem()= default;
 protected:
   OptimizableGraph* _graph;
 };
@@ -80,7 +80,7 @@ struct Sensor {
   Robot* robot() {return _robot;}
   virtual bool isVisible(const WorldItem* ) const {return false;}
   virtual bool sense(WorldItem* , const Isometry3d& ) {return false;}
-  virtual ~Sensor(){};
+  virtual ~Sensor()= default;;
 protected:
   Robot* _robot;
 };
@@ -97,13 +97,13 @@ struct Robot: public WorldItem {
   void move(const Isometry3d& newPosition, int& id) {
     Isometry3d delta = _position.inverse() * newPosition;
     _position = newPosition;
-    VertexSE3* v = new VertexSE3();
+    auto* v = new VertexSE3();
     v->setId(id);
     id++;
     graph()->addVertex(v);
     if(_planarMotion) {
       // add a singleton constraint that locks the position of the robot on the plane
-      EdgeSE3Prior* planeConstraint=new EdgeSE3Prior();
+      auto* planeConstraint=new EdgeSE3Prior();
       Matrix6d pinfo = Matrix6d::Zero();
       pinfo(2, 2) = 1e9;
       planeConstraint->setInformation(pinfo);
@@ -112,9 +112,9 @@ struct Robot: public WorldItem {
       planeConstraint->setParameterId(0, 0);
       graph()->addEdge(planeConstraint);
     }
-    if(vertex()) {
+    if(vertex() != nullptr) {
       VertexSE3* oldV = dynamic_cast<VertexSE3*>(vertex());
-      EdgeSE3* e = new EdgeSE3();
+      auto* e = new EdgeSE3();
       Isometry3d noise = sample_noise_from_se3(_nmovecov);
       e->setMeasurement(delta * noise);
       Matrix6d m = Matrix6d::Identity();
@@ -139,8 +139,7 @@ struct Robot: public WorldItem {
   }
 
   void sense(WorldItem* wi = nullptr) {
-    for(size_t i = 0; i < _sensors.size(); ++i) {
-      Sensor* s = _sensors[i];
+    for(auto s : _sensors) {
       s->sense(wi, _position);
     }
   }
@@ -157,8 +156,7 @@ struct Simulator : public SimulatorItem {
   Simulator(OptimizableGraph* graph_) : SimulatorItem(graph_), _lastVertexId(0) {}
   void sense(int robotIndex) {
     Robot* r = _robots[robotIndex];
-    for(WorldItemSet::iterator it = _world.begin(); it != _world.end(); ++it) {
-      WorldItem* item = *it;
+    for(auto item : _world) {
       r->sense(item);
     }
   }
@@ -180,7 +178,7 @@ struct Simulator : public SimulatorItem {
 
 struct LineItem : public WorldItem {
   LineItem(OptimizableGraph* graph_, int id) : WorldItem(graph_) {
-    VertexLine3D* l = new VertexLine3D();
+    auto* l = new VertexLine3D();
     l->setId(id);
     graph()->addVertex(l);
     setVertex(l);
@@ -197,30 +195,30 @@ struct LineSensor : public Sensor {
   };
 
   virtual bool isVisible(const WorldItem* wi) const {
-    if(!wi) {
+    if(wi == nullptr) {
       return false;
     }
     const LineItem* li = dynamic_cast<const LineItem*>(wi);
-    if(!li) {
+    if(li == nullptr) {
       return false;
     }
     return true;
   }
 
   virtual bool sense(WorldItem* wi, const Isometry3d& position) {
-    if(!wi) {
+    if(wi == nullptr) {
       return false;
     }
     LineItem* li = dynamic_cast<LineItem*>(wi);
-    if(!li) {
+    if(li == nullptr) {
       return false;
     }
     OptimizableGraph::Vertex* rv = robot()->vertex();
-    if(!rv) {
+    if(rv == nullptr) {
       return false;
     }
     VertexSE3* robotVertex = dynamic_cast<VertexSE3*>(rv);
-    if(!robotVertex) {
+    if(robotVertex == nullptr) {
       return false;
     }
     const Isometry3d& robotPose = position;
@@ -230,7 +228,7 @@ struct LineSensor : public Sensor {
 
     Line3D measuredLine = sensorPose.inverse() * worldLine;
 
-    EdgeSE3Line3D* e = new EdgeSE3Line3D();
+    auto* e = new EdgeSE3Line3D();
     e->vertices()[0] = robotVertex;
     e->vertices()[1] = lineVertex;
     Vector4d noise = sample_noise_from_line(_nline);
@@ -267,8 +265,8 @@ int main (int argc, char** argv) {
   arg.param("listSolvers", listSolvers, false, "list the solvers");
   arg.parseArgs(argc, argv);
 
-  SparseOptimizer* g = new SparseOptimizer();
-  ParameterSE3Offset* odomOffset = new ParameterSE3Offset();
+  auto* g = new SparseOptimizer();
+  auto* odomOffset = new ParameterSE3Offset();
   odomOffset->setId(0);
   g->addParameter(odomOffset);
 
@@ -281,7 +279,7 @@ int main (int argc, char** argv) {
     return 0;
   }
 
-  if(!g->solver()) {
+  if(g->solver() == nullptr) {
     std::cout << "Error allocating solver. Allocating \"" << strSolver << "\" failed!" << std::endl;
     std::cout << "Available solvers: " << std::endl;
     solverFactory->listSolvers(std::cout);
@@ -290,14 +288,14 @@ int main (int argc, char** argv) {
   }
 
   std::cout << "Creating simulator" << std::endl;
-  Simulator* sim = new Simulator(g);
+  auto* sim = new Simulator(g);
 
   std::cout << "Creating robot" << std::endl;
-  Robot* r = new Robot(g);
+  auto* r = new Robot(g);
 
   std::cout << "Creating line sensor" << std::endl;
   Isometry3d sensorPose = Isometry3d::Identity();
-  LineSensor* ls = new LineSensor(r, 0, sensorPose);
+  auto* ls = new LineSensor(r, 0, sensorPose);
   ls->_nline << 0.001, 0.001, 0.001, 0.0001;
   // ls->_nline << 1e-9, 1e-9, 1e-9, 1e-9;
   r->_sensors.push_back(ls);
@@ -305,7 +303,7 @@ int main (int argc, char** argv) {
 
   Line3D line;
   std::cout << "Creating landmark line 1" << std::endl;
-  LineItem* li = new LineItem(g, 1);
+  auto* li = new LineItem(g, 1);
   Vector6d liv;
   liv << 0.0, 0.0, 5.0, 0.0, 1.0, 0.0;
   line = Line3D::fromCartesian(liv);
@@ -401,7 +399,7 @@ int main (int argc, char** argv) {
 
   ls->_offsetVertex->setFixed(true);
   OptimizableGraph::Vertex* gauge = g->vertex(4);
-  if(gauge) {
+  if(gauge != nullptr) {
     gauge->setFixed(true);
   }
 

@@ -173,13 +173,13 @@ int main(int argc, char** argv)
     std::vector<std::string> kernels;
     RobustKernelFactory::instance()->fillKnownKernels(kernels);
     cout << "Robust Kernels:" << endl;
-    for (size_t i = 0; i < kernels.size(); ++i) {
-      cout << kernels[i] << endl;
+    for (auto & kernel : kernels) {
+      cout << kernel << endl;
     }
   }
 
   AbstractRobustKernelCreator* kernelCreator=nullptr;
-  if (robustKernel.size() > 0) {
+  if (!robustKernel.empty()) {
     kernelCreator = RobustKernelFactory::instance()->creator(robustKernel);
   }
 
@@ -188,10 +188,10 @@ int main(int argc, char** argv)
   optimizer.setForceStopFlag(&hasToStop);
 
   // Loading the input data
-  if (loadLookup.size() > 0) {
+  if (!loadLookup.empty()) {
     optimizer.setRenamedTypesFromString(loadLookup);
   }
-  if (inputFilename.size() == 0) {
+  if (inputFilename.empty()) {
     cerr << "No input data specified" << endl;
     return 0;
   } else if (inputFilename == "-") {
@@ -218,7 +218,7 @@ int main(int argc, char** argv)
 
   OptimizableGraph::EdgeSet originalEdges=optimizer.edges();
 
-  if (0 && outputfilename.size() > 0) {
+  if (0 && !outputfilename.empty()) {
     cerr << "saving " << outputfilename << " ... ";
     ofstream os(outputfilename.c_str());
     optimizer.save(os);
@@ -233,11 +233,11 @@ int main(int argc, char** argv)
   creator.addAssociation("VERTEX_SE3_NEW;VERTEX_SE3_NEW;","EDGE_SE3_NEW");
 
   Parameter* p0 = optimizer.parameter(0);
-  if (p0){
+  if (p0 != nullptr){
     ParameterSE3Offset* originalParams = dynamic_cast<ParameterSE3Offset*>(p0);
-    if (originalParams) {
+    if (originalParams != nullptr) {
       cerr << "ORIGINAL PARAMS" << endl;
-      ParameterSE3Offset* se3OffsetParam = new ParameterSE3Offset();
+      auto* se3OffsetParam = new ParameterSE3Offset();
       se3OffsetParam->setId(100);
       optimizer.addParameter(se3OffsetParam);
       std::vector<int> depthCamHParamsIds(1);
@@ -248,7 +248,7 @@ int main(int argc, char** argv)
 
   EdgeLabeler labeler(&optimizer);
 
-  if (optimizer.vertices().size() == 0) {
+  if (optimizer.vertices().empty()) {
     cerr << "Graph contains no vertices" << endl;
     return 1;
   }
@@ -257,11 +257,11 @@ int main(int argc, char** argv)
   OptimizationAlgorithmProperty solverProperty, hsolverProperty;
   OptimizationAlgorithm* solver = solverFactory->construct(strSolver, solverProperty);
   OptimizationAlgorithm* hsolver = solverFactory->construct(strHSolver, hsolverProperty);
-  if (! solver) {
+  if (solver == nullptr) {
     cerr << "Error allocating solver. Allocating \"" << strSolver << "\" failed!" << endl;
     return 0;
   }
-  if (! hsolver) {
+  if (hsolver == nullptr) {
     cerr << "Error allocating hsolver. Allocating \"" << strHSolver << "\" failed!" << endl;
     return 0;
   }
@@ -322,7 +322,7 @@ int main(int argc, char** argv)
 
 
   if (gaugeFreedom) {
-    if (! gauge) {
+    if (gauge == nullptr) {
       cerr <<  "# cannot find a vertex to fix in this thing" << endl;
       return 2;
     } else {
@@ -370,9 +370,9 @@ int main(int argc, char** argv)
 
   //  if (robustKernel) {
   //cerr << "# Preparing robust error function ... ";
-    for (SparseOptimizer::EdgeSet::iterator it = optimizer.edges().begin(); it != optimizer.edges().end(); ++it) {
-      SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(*it);
-      if (kernelCreator) {
+    for (auto it : optimizer.edges()) {
+      SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(it);
+      if (kernelCreator != nullptr) {
 	e->setRobustKernel(kernelCreator->construct());
 	if (huberWidth > 0)
 	  e->robustKernel()->setDelta(huberWidth);
@@ -402,26 +402,24 @@ int main(int argc, char** argv)
   OptimizableGraph::EdgeSet   heset;
   OptimizableGraph::VertexSet hvset;
   HyperGraph::VertexSet hgauge;
-  for (StarSet::iterator it=stars.begin(); it!=stars.end(); it++) {
+  for (auto s : stars) {
 
-    Star* s=*it;
     if (hgauge.empty())
       hgauge=s->gauge();
 
-    for (HyperGraph::VertexSet::iterator git=s->gauge().begin();
-	 git != s->gauge().end(); git++) {
-      hvset.insert(*git);
+    for (auto git : s->gauge()) {
+      hvset.insert(git);
     }
 
-    for (HyperGraph::EdgeSet::iterator iit=s->_starEdges.begin(); iit!=s->_starEdges.end(); iit++){
-      OptimizableGraph::Edge* e= (OptimizableGraph::Edge*) *iit;
+    for (auto _starEdge : s->_starEdges){
+      OptimizableGraph::Edge* e= (OptimizableGraph::Edge*) _starEdge;
       eset.insert(e);
-      for (size_t i=0; i<e->vertices().size(); i++){
-        vset.insert(e->vertices()[i]);
+      for (auto & i : e->vertices()){
+        vset.insert(i);
       }
     }
-    for (HyperGraph::EdgeSet::iterator iit=s->starFrontierEdges().begin(); iit!=s->starFrontierEdges().end(); iit++){
-      OptimizableGraph::Edge* e= (OptimizableGraph::Edge*) *iit;
+    for (auto iit : s->starFrontierEdges()){
+      OptimizableGraph::Edge* e= (OptimizableGraph::Edge*) iit;
       heset.insert(e);
     }
   }
@@ -439,8 +437,8 @@ int main(int argc, char** argv)
   cerr << "stars done!" << endl;
 
   cerr << "optimizing the high layer" << endl;
-  for (HyperGraph::VertexSet::iterator it = hgauge.begin(); it!=hgauge.end(); it++){
-    OptimizableGraph::Vertex* g=dynamic_cast<OptimizableGraph::Vertex*>(*it);
+  for (auto it : hgauge){
+    OptimizableGraph::Vertex* g=dynamic_cast<OptimizableGraph::Vertex*>(it);
     g->setFixed(true);
   }
   optimizer.setAlgorithm(hsolver);
@@ -460,10 +458,10 @@ int main(int argc, char** argv)
   cerr << "done" << endl;
 
 
-  if (! kernelCreator) {
+  if (kernelCreator == nullptr) {
     cerr << "# Robust error function disabled ";
-    for (SparseOptimizer::EdgeSet::iterator it = optimizer.edges().begin(); it != optimizer.edges().end(); ++it) {
-      SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(*it);
+    for (auto it : optimizer.edges()) {
+      SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(it);
       e->setRobustKernel(nullptr);
     }
     cerr << "done." << endl;
@@ -472,8 +470,8 @@ int main(int argc, char** argv)
   }
 
   cerr << "fixing the hstructure, and optimizing the floating nodes" << endl;
-  for (OptimizableGraph::VertexSet::iterator it = hvset.begin(); it!=hvset.end(); it++){
-    OptimizableGraph::Vertex* g=dynamic_cast<OptimizableGraph::Vertex*>(*it);
+  for (auto it : hvset){
+    OptimizableGraph::Vertex* g=dynamic_cast<OptimizableGraph::Vertex*>(it);
     g->setFixed(true);
   }
   optimizer.initializeOptimization(eset);
@@ -487,12 +485,12 @@ int main(int argc, char** argv)
 
 
   cerr << "adding the original constraints, locking hierarchical solution and optimizing the free variables" << endl;
-  for (OptimizableGraph::VertexSet::iterator it = vset.begin(); it!=vset.end(); it++){
-    OptimizableGraph::Vertex* g=dynamic_cast<OptimizableGraph::Vertex*>(*it);
+  for (auto it : vset){
+    OptimizableGraph::Vertex* g=dynamic_cast<OptimizableGraph::Vertex*>(it);
     g->setFixed(true);
   }
-  for (HyperGraph::VertexSet::iterator it = hgauge.begin(); it!=hgauge.end(); it++){
-    OptimizableGraph::Vertex* g=dynamic_cast<OptimizableGraph::Vertex*>(*it);
+  for (auto it : hgauge){
+    OptimizableGraph::Vertex* g=dynamic_cast<OptimizableGraph::Vertex*>(it);
     g->setFixed(true);
   }
   optimizer.setAlgorithm(solver);
@@ -502,12 +500,12 @@ int main(int argc, char** argv)
 
 
   cerr << "relaxing the full problem" << endl;
-  for (OptimizableGraph::VertexSet::iterator it = vset.begin(); it!=vset.end(); it++){
-    OptimizableGraph::Vertex* g=dynamic_cast<OptimizableGraph::Vertex*>(*it);
+  for (auto it : vset){
+    OptimizableGraph::Vertex* g=dynamic_cast<OptimizableGraph::Vertex*>(it);
     g->setFixed(false);
   }
-  for (HyperGraph::VertexSet::iterator it = hgauge.begin(); it!=hgauge.end(); it++){
-    OptimizableGraph::Vertex* g=dynamic_cast<OptimizableGraph::Vertex*>(*it);
+  for (auto it : hgauge){
+    OptimizableGraph::Vertex* g=dynamic_cast<OptimizableGraph::Vertex*>(it);
     g->setFixed(true);
   }
   optimizer.setAlgorithm(solver);
@@ -527,8 +525,8 @@ int main(int argc, char** argv)
     int nLandmarks=0;
     int nPoses=0;
     int maxDim = *vertexDimensions.rbegin();
-    for (HyperGraph::VertexIDMap::iterator it=optimizer.vertices().begin(); it!=optimizer.vertices().end(); it++){
-      OptimizableGraph::Vertex* v=static_cast<OptimizableGraph::Vertex*>(it->second);
+    for (auto & it : optimizer.vertices()){
+      OptimizableGraph::Vertex* v=static_cast<OptimizableGraph::Vertex*>(it.second);
       if (v->dimension() != maxDim) {
 	nLandmarks++;
       } else
@@ -537,16 +535,16 @@ int main(int argc, char** argv)
 
     int nEdges=0;
     set<string> edgeTypes;
-    for (HyperGraph::EdgeSet::iterator it=optimizer.edges().begin(); it!=optimizer.edges().end(); it++){
-      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*> (*it);
+    for (auto it : optimizer.edges()){
+      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*> (it);
       if (e->level()==0) {
 	edgeTypes.insert(Factory::instance()->tag(e));
 	nEdges++;
       }
     }
     stringstream edgeTypesString;
-    for (std::set<string>::iterator it=edgeTypes.begin(); it!=edgeTypes.end(); it++){
-      edgeTypesString << *it << " ";
+    for (const auto & edgeType : edgeTypes){
+      edgeTypesString << edgeType << " ";
     }
 
     summary.makeProperty<IntProperty>("n_edges", nEdges);
@@ -573,7 +571,7 @@ int main(int argc, char** argv)
   }
 
 
-  if (outputfilename.size() > 0) {
+  if (!outputfilename.empty()) {
     if (outputfilename == "-") {
       cerr << "saving to stdout";
       optimizer.saveSubset(cout,originalEdges);

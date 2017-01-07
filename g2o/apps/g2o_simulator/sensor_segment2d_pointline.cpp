@@ -40,7 +40,7 @@ namespace g2o{
   }
 
   bool SensorSegment2DPointLine::isVisible(SensorSegment2DPointLine::WorldObjectType* to){
-    if (! _robotPoseObject)
+    if (_robotPoseObject == nullptr)
       return false;
 
     assert(to && to->vertex());
@@ -106,19 +106,19 @@ namespace g2o{
   void SensorSegment2DPointLine::sense() {
     _robotPoseObject=nullptr;
     RobotType* r= dynamic_cast<RobotType*>(robot());
-    std::list<PoseObject*>::reverse_iterator it=r->trajectory().rbegin();
+    auto it=r->trajectory().rbegin();
     int count = 0;
     while (it!=r->trajectory().rend() && count < 1){
-      if (!_robotPoseObject)
+      if (_robotPoseObject == nullptr)
         _robotPoseObject = *it;
       it++;
       count++;
     }
-    for (std::set<BaseWorldObject*>::iterator it=world()->objects().begin(); it!=world()->objects().end(); it++){
-      WorldObjectType* o=dynamic_cast<WorldObjectType*>(*it);
-      if (o && isVisible(o)){
+    for (auto it : world()->objects()){
+      WorldObjectType* o=dynamic_cast<WorldObjectType*>(it);
+      if ((o != nullptr) && isVisible(o)){
         EdgeType* e=mkEdge(o);
-        if (e && graph()) {
+        if ((e != nullptr) && (graph() != nullptr)) {
           e->setPointNum(_visiblePoint);
           e->setMeasurementFromState();
           addNoise(e);

@@ -128,11 +128,10 @@ bool BlockSolver<Traits>::buildStructure(bool zeroBlocks)
   _numLandmarks=0;
   _sizePoses=0;
   _sizeLandmarks=0;
-  int* blockPoseIndices = new int[_optimizer->indexMapping().size()];
-  int* blockLandmarkIndices = new int[_optimizer->indexMapping().size()];
+  auto* blockPoseIndices = new int[_optimizer->indexMapping().size()];
+  auto* blockLandmarkIndices = new int[_optimizer->indexMapping().size()];
 
-  for (size_t i = 0; i < _optimizer->indexMapping().size(); ++i) {
-    OptimizableGraph::Vertex* v = _optimizer->indexMapping()[i];
+  for (auto v : _optimizer->indexMapping()) {
     int dim = v->dimension();
     if (! v->marginalized()){
       v->setColInHessian(_sizePoses);
@@ -154,8 +153,7 @@ bool BlockSolver<Traits>::buildStructure(bool zeroBlocks)
   // allocate the diagonal on Hpp and Hll
   int poseIdx = 0;
   int landmarkIdx = 0;
-  for (size_t i = 0; i < _optimizer->indexMapping().size(); ++i) {
-    OptimizableGraph::Vertex* v = _optimizer->indexMapping()[i];
+  for (auto v : _optimizer->indexMapping()) {
     if (! v->marginalized()){
       //assert(poseIdx == v->hessianIndex());
       PoseMatrixType* m = _Hpp->block(poseIdx, poseIdx, true);
@@ -182,9 +180,7 @@ bool BlockSolver<Traits>::buildStructure(bool zeroBlocks)
 
   // here we assume that the landmark indices start after the pose ones
   // create the structure in Hpp, Hll and in Hpl
-  for (SparseOptimizer::EdgeContainer::const_iterator it=_optimizer->activeEdges().begin(); it!=_optimizer->activeEdges().end(); ++it){
-    OptimizableGraph::Edge* e = *it;
-
+  for (auto e : _optimizer->activeEdges()){
     for (size_t viIdx = 0; viIdx < e->vertices().size(); ++viIdx) {
       OptimizableGraph::Vertex* v1 = (OptimizableGraph::Vertex*) e->vertex(viIdx);
       int ind1 = v1->hessianIndex();
@@ -240,20 +236,19 @@ bool BlockSolver<Traits>::buildStructure(bool zeroBlocks)
   _DInvSchur->diagonal().resize(landmarkIdx);
   _Hpl->fillSparseBlockMatrixCCS(*_HplCCS);
 
-  for (size_t i = 0; i < _optimizer->indexMapping().size(); ++i) {
-    OptimizableGraph::Vertex* v = _optimizer->indexMapping()[i];
+  for (auto v : _optimizer->indexMapping()) {
     if (v->marginalized()){
       const HyperGraph::EdgeSet& vedges=v->edges();
-      for (HyperGraph::EdgeSet::const_iterator it1=vedges.begin(); it1!=vedges.end(); ++it1){
+      for (auto it1=vedges.begin(); it1!=vedges.end(); ++it1){
         for (size_t i=0; i<(*it1)->vertices().size(); ++i)
         {
           OptimizableGraph::Vertex* v1= (OptimizableGraph::Vertex*) (*it1)->vertex(i);
           if (v1->hessianIndex()==-1 || v1==v)
             continue;
-          for  (HyperGraph::EdgeSet::const_iterator it2=vedges.begin(); it2!=vedges.end(); ++it2){
-            for (size_t j=0; j<(*it2)->vertices().size(); ++j)
+          for  (auto vedge : vedges){
+            for (size_t j=0; j<vedge->vertices().size(); ++j)
             {
-              OptimizableGraph::Vertex* v2= (OptimizableGraph::Vertex*) (*it2)->vertex(j);
+              OptimizableGraph::Vertex* v2= (OptimizableGraph::Vertex*) vedge->vertex(j);
               if (v2->hessianIndex()==-1 || v2==v)
                 continue;
               int i1=v1->hessianIndex();
@@ -278,8 +273,8 @@ bool BlockSolver<Traits>::buildStructure(bool zeroBlocks)
 template <typename Traits>
 bool BlockSolver<Traits>::updateStructure(const std::vector<HyperGraph::Vertex*>& vset, const HyperGraph::EdgeSet& edges)
 {
-  for (std::vector<HyperGraph::Vertex*>::const_iterator vit = vset.begin(); vit != vset.end(); ++vit) {
-    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(*vit);
+  for (auto vit : vset) {
+    OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(vit);
     int dim = v->dimension();
     if (! v->marginalized()){
       v->setColInHessian(_sizePoses);
@@ -298,8 +293,8 @@ bool BlockSolver<Traits>::updateStructure(const std::vector<HyperGraph::Vertex*>
   }
   resizeVector(_sizePoses + _sizeLandmarks);
 
-  for (HyperGraph::EdgeSet::const_iterator it = edges.begin(); it != edges.end(); ++it) {
-    OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(*it);
+  for (auto edge : edges) {
+    OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(edge);
 
     for (size_t viIdx = 0; viIdx < e->vertices().size(); ++viIdx) {
       OptimizableGraph::Vertex* v1 = (OptimizableGraph::Vertex*) e->vertex(viIdx);
@@ -338,7 +333,7 @@ bool BlockSolver<Traits>::solve(){
     double t=get_monotonic_time();
     bool ok = _linearSolver->solve(*_Hpp, _x, _b);
     G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-    if (globalStats) {
+    if (globalStats != nullptr) {
       globalStats->timeLinearSolver = get_monotonic_time() - t;
       globalStats->hessianDimension = globalStats->hessianPoseDimension = _Hpp->cols();
     }
@@ -378,7 +373,7 @@ bool BlockSolver<Traits>::solve(){
     assert((size_t)landmarkIndex < _HplCCS->blockCols().size() && "Index out of bounds");
     const typename SparseBlockMatrixCCS<PoseLandmarkMatrixType>::SparseColumn& landmarkColumn = _HplCCS->blockCols()[landmarkIndex];
 
-    for (typename SparseBlockMatrixCCS<PoseLandmarkMatrixType>::SparseColumn::const_iterator it_outer = landmarkColumn.begin();
+    for (auto it_outer = landmarkColumn.begin();
         it_outer != landmarkColumn.end(); ++it_outer) {
       int i1 = it_outer->row;
 
@@ -394,10 +389,10 @@ bool BlockSolver<Traits>::solve(){
       Bb.noalias() += (*Bi)*db;
 
       assert(i1 >= 0 && i1 < static_cast<int>(_HschurTransposedCCS->blockCols().size()) && "Index out of bounds");
-      typename SparseBlockMatrixCCS<PoseMatrixType>::SparseColumn::iterator targetColumnIt = _HschurTransposedCCS->blockCols()[i1].begin();
+      auto targetColumnIt = _HschurTransposedCCS->blockCols()[i1].begin();
 
       typename SparseBlockMatrixCCS<PoseLandmarkMatrixType>::RowBlock aux(i1, nullptr);
-      typename SparseBlockMatrixCCS<PoseLandmarkMatrixType>::SparseColumn::const_iterator it_inner = lower_bound(landmarkColumn.begin(), landmarkColumn.end(), aux);
+      auto it_inner = lower_bound(landmarkColumn.begin(), landmarkColumn.end(), aux);
       for (; it_inner != landmarkColumn.end(); ++it_inner) {
         int i2 = it_inner->row;
         const PoseLandmarkMatrixType* Bj = it_inner->block;
@@ -420,13 +415,13 @@ bool BlockSolver<Traits>::solve(){
   }
 
   G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-  if (globalStats){
+  if (globalStats != nullptr){
     globalStats->timeSchurComplement = get_monotonic_time() - t;
   }
 
   t=get_monotonic_time();
   bool solvedPoses = _linearSolver->solve(*_Hschur, _x, _bschur);
-  if (globalStats) {
+  if (globalStats != nullptr) {
     globalStats->timeLinearSolver = get_monotonic_time() - t;
     globalStats->hessianPoseDimension = _Hpp->cols();
     globalStats->hessianLandmarkDimension = _Hll->cols();
@@ -473,7 +468,7 @@ bool BlockSolver<Traits>::computeMarginals(SparseBlockMatrix<MatrixXD>& spinv, c
   double t = get_monotonic_time();
   bool ok = _linearSolver->solvePattern(spinv, blockIndices, *_Hpp);
   G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-  if (globalStats) {
+  if (globalStats != nullptr) {
     globalStats->timeMarginals = get_monotonic_time() - t;
   }
   return ok;
@@ -486,8 +481,7 @@ bool BlockSolver<Traits>::buildSystem()
 # ifdef G2O_OPENMP
 # pragma omp parallel for default (shared) if (_optimizer->indexMapping().size() > 1000)
 # endif
-  for (int i = 0; i < static_cast<int>(_optimizer->indexMapping().size()); ++i) {
-    OptimizableGraph::Vertex* v=_optimizer->indexMapping()[i];
+  for (auto v : _optimizer->indexMapping()) {
     assert(v);
     v->clearQuadraticForm();
   }
@@ -507,8 +501,7 @@ bool BlockSolver<Traits>::buildSystem()
   JacobianWorkspace jacobianWorkspace = _optimizer->jacobianWorkspace();
 # pragma omp parallel for default (shared) firstprivate(jacobianWorkspace) if (_optimizer->activeEdges().size() > 100)
 # endif
-  for (int k = 0; k < static_cast<int>(_optimizer->activeEdges().size()); ++k) {
-    OptimizableGraph::Edge* e = _optimizer->activeEdges()[k];
+  for (auto e : _optimizer->activeEdges()) {
     e->linearizeOplus(jacobianWorkspace); // jacobian of the nodes' oplus (manifold)
     e->constructQuadraticForm();
 #  ifndef NDEBUG
@@ -529,8 +522,7 @@ bool BlockSolver<Traits>::buildSystem()
 # ifdef G2O_OPENMP
 # pragma omp parallel for default (shared) if (_optimizer->indexMapping().size() > 1000)
 # endif
-  for (int i = 0; i < static_cast<int>(_optimizer->indexMapping().size()); ++i) {
-    OptimizableGraph::Vertex* v=_optimizer->indexMapping()[i];
+  for (auto v : _optimizer->indexMapping()) {
     int iBase = v->colInHessian();
     if (v->marginalized())
       iBase+=_sizePoses;

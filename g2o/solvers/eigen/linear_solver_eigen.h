@@ -80,8 +80,7 @@ class LinearSolverEigen: public LinearSolver<MatrixType>
     }
 
     virtual ~LinearSolverEigen()
-    {
-    }
+    = default;
 
     virtual bool init()
     {
@@ -113,7 +112,7 @@ class LinearSolverEigen: public LinearSolver<MatrixType>
       VectorXD::ConstMapType bb(b, _sparseMatrix.cols());
       xx = _cholesky.solve(bb);
       G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-      if (globalStats) {
+      if (globalStats != nullptr) {
         globalStats->timeNumericDecomposition = get_monotonic_time() - t;
         globalStats->choleskyNNZ = _cholesky.matrixL().nestedExpression().nonZeros() + _sparseMatrix.cols(); // the elements of D
       }
@@ -157,7 +156,7 @@ class LinearSolverEigen: public LinearSolver<MatrixType>
           std::vector<Triplet> triplets;
           for (size_t c = 0; c < A.blockCols().size(); ++c){
             const typename SparseBlockMatrix<MatrixType>::IntBlockMap& column = A.blockCols()[c];
-            for (typename SparseBlockMatrix<MatrixType>::IntBlockMap::const_iterator it = column.begin(); it != column.end(); ++it) {
+            for (auto it = column.begin(); it != column.end(); ++it) {
               const int& r = it->first;
               if (r > static_cast<int>(c)) // only upper triangle
                 break;
@@ -194,7 +193,7 @@ class LinearSolverEigen: public LinearSolver<MatrixType>
 
       }
       G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-      if (globalStats)
+      if (globalStats != nullptr)
         globalStats->timeSymbolicDecomposition = get_monotonic_time() - t;
     }
 
@@ -210,7 +209,7 @@ class LinearSolverEigen: public LinearSolver<MatrixType>
         for (size_t c = 0; c < A.blockCols().size(); ++c) {
           int colBaseOfBlock = A.colBaseOfBlock(c);
           const typename SparseBlockMatrix<MatrixType>::IntBlockMap& column = A.blockCols()[c];
-          for (typename SparseBlockMatrix<MatrixType>::IntBlockMap::const_iterator it = column.begin(); it != column.end(); ++it) {
+          for (auto it = column.begin(); it != column.end(); ++it) {
             int rowBaseOfBlock = A.rowBaseOfBlock(it->first);
             const MatrixType& m = *(it->second);
             for (int cc = 0; cc < m.cols(); ++cc) {

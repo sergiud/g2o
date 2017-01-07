@@ -58,9 +58,9 @@ namespace g2o {
     optimizer.addVertex(odomParamsVertex);
 
     SparseOptimizer::EdgeSet odomCalibEdges;
-    for (SparseOptimizer::EdgeSet::const_iterator it = optimizer.edges().begin(); it != optimizer.edges().end(); ++it) {
-      EdgeSE2SensorCalib* scanmatchEdge = dynamic_cast<EdgeSE2SensorCalib*>(*it);
-      if (! scanmatchEdge)
+    for (auto it : optimizer.edges()) {
+      EdgeSE2SensorCalib* scanmatchEdge = dynamic_cast<EdgeSE2SensorCalib*>(it);
+      if (scanmatchEdge == nullptr)
         continue;
 
       VertexSE2* r1 = dynamic_cast<VertexSE2*>(scanmatchEdge->vertices()[0]);
@@ -86,7 +86,7 @@ namespace g2o {
       //cerr << PVAR(odomMotion.toVector().transpose()) << endl;
       //cerr << PVAR(scanmatchEdge->measurement().toVector().transpose()) << endl;
 
-      EdgeSE2OdomDifferentialCalib* e = new EdgeSE2OdomDifferentialCalib;
+      auto* e = new EdgeSE2OdomDifferentialCalib;
       e->vertices()[0] = r1;
       e->vertices()[1] = r2;
       e->vertices()[2] = odomParamsVertex;
@@ -100,8 +100,8 @@ namespace g2o {
 
     }
 
-    for (SparseOptimizer::EdgeSet::iterator it = odomCalibEdges.begin(); it != odomCalibEdges.end(); ++it)
-      optimizer.addEdge(dynamic_cast<OptimizableGraph::Edge*>(*it));
+    for (auto odomCalibEdge : odomCalibEdges)
+      optimizer.addEdge(dynamic_cast<OptimizableGraph::Edge*>(odomCalibEdge));
 
   }
 
@@ -110,9 +110,9 @@ namespace g2o {
     typedef BlockSolver< BlockSolverTraits<-1, -1> >  SclamBlockSolver;
     typedef LinearSolverCSparse<SclamBlockSolver::PoseMatrixType> SclamLinearSolver;
 
-    SclamLinearSolver* linearSolver = new SclamLinearSolver();
+    auto* linearSolver = new SclamLinearSolver();
     linearSolver->setBlockOrdering(false);
-    SclamBlockSolver* blockSolver = new SclamBlockSolver(linearSolver);
+    auto* blockSolver = new SclamBlockSolver(linearSolver);
     OptimizationAlgorithm* solver = nullptr;
     if (levenberg) {
       solver = new OptimizationAlgorithmLevenberg(blockSolver);

@@ -30,9 +30,9 @@ namespace g2o{
   using namespace std;
 
   // BaseWorldObject
-  BaseWorldObject::~BaseWorldObject() {}
+  BaseWorldObject::~BaseWorldObject() = default;
   OptimizableGraph* BaseWorldObject::graph() {
-    if (_world)
+    if (_world != nullptr)
       return _world-> graph();
     return nullptr;
   }
@@ -43,7 +43,7 @@ namespace g2o{
 
   // BaseRobot
   OptimizableGraph* BaseRobot::graph() {
-    if (_world)
+    if (_world != nullptr)
       return _world-> graph();
     return nullptr;
   }
@@ -59,21 +59,20 @@ namespace g2o{
   }
 
   void BaseRobot::sense() {
-    for (std::set<BaseSensor*>::iterator it=_sensors.begin(); it!=_sensors.end(); it++){
-      BaseSensor* s=*it;
+    for (auto s : _sensors){
       s->sense();
     }
   }
 
   // Sensor
   World* BaseSensor::world() {
-    if (!_robot)
+    if (_robot == nullptr)
       return nullptr;
     return _robot->world();
   }
 
   OptimizableGraph* BaseSensor::graph() {
-    if (!_robot)
+    if (_robot == nullptr)
       return nullptr;
     return _robot->graph();
   }
@@ -92,7 +91,7 @@ namespace g2o{
     if (result.second){
       object->setWorld(this);
     }
-    if (graph() && object->vertex()){
+    if ((graph() != nullptr) && (object->vertex() != nullptr)){
       object->vertex()->setId(_runningId++);
       graph()->addVertex(object->vertex());
     }
@@ -100,7 +99,7 @@ namespace g2o{
   }
 
   bool World::addParameter(Parameter* param){
-    if ( !graph())
+    if ( graph() == nullptr)
       return false;
     param->setId(_paramId);
     graph()->addParameter(param);

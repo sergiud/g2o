@@ -116,7 +116,7 @@ void loadStandardTypes(DlWrapper& dlTypesWrapper, int argc, char** argv)
 
   vector<string> paths = strSplit(typesPath, PATH_SEPARATOR);
   for (vector<string>::const_iterator it = paths.begin(); it != paths.end(); ++it) {
-    if (it->size() > 0)
+    if (!it->empty())
       dlTypesWrapper.openLibraries(*it, TYPES_PATTERN);
   }
 
@@ -152,7 +152,7 @@ void loadStandardSolver(DlWrapper& dlSolverWrapper, int argc, char** argv)
 
   vector<string> paths = strSplit(solversPath, PATH_SEPARATOR);
   for (vector<string>::const_iterator it = paths.begin(); it != paths.end(); ++it) {
-    if (it->size() > 0)
+    if (!it->empty())
       dlSolverWrapper.openLibraries(*it, SOLVERS_PATTERN);
   }
 

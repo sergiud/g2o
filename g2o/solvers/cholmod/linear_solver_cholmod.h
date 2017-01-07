@@ -126,7 +126,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
       cholmod_free_dense(&xcholmod, &_cholmodCommon);
 
       G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-      if (globalStats){
+      if (globalStats != nullptr){
         globalStats->timeNumericDecomposition = get_monotonic_time() - t;
         globalStats->choleskyNNZ = static_cast<size_t>(_cholmodCommon.method[0].lnz);
       }
@@ -144,7 +144,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
         assert(_cholmodFactor && "Symbolic cholesky failed");
       }
 
-      if (! blocks){
+      if (blocks == nullptr){
         blocks=new double*[A.rows()];
         double **block=blocks;
         for (size_t i = 0; i < A.rowBlockIndices().size(); ++i){
@@ -160,7 +160,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
 
       // convert the factorization to LL, simplical, packed, monotonic
       int change_status = cholmod_change_factor(CHOLMOD_REAL, 1, 0, 1, 1, _cholmodFactor, &_cholmodCommon);
-      if (! change_status) {
+      if (change_status == 0) {
         return false;
       }
       assert(_cholmodFactor->is_ll && !_cholmodFactor->is_super && _cholmodFactor->is_monotonic && "Cholesky factor has wrong format");
@@ -178,7 +178,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
       mcc.computeCovariance(blocks, A.rowBlockIndices());
 
       G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-      if (globalStats) {
+      if (globalStats != nullptr) {
         globalStats->choleskyNNZ = static_cast<size_t>(_cholmodCommon.method[_cholmodCommon.selected].lnz);
       }
 
@@ -201,7 +201,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
 
       // convert the factorization to LL, simplical, packed, monotonic
       int change_status = cholmod_change_factor(CHOLMOD_REAL, 1, 0, 1, 1, _cholmodFactor, &_cholmodCommon);
-      if (! change_status) {
+      if (change_status == 0) {
         return false;
       }
       assert(_cholmodFactor->is_ll && !_cholmodFactor->is_super && _cholmodFactor->is_monotonic && "Cholesky factor has wrong format");
@@ -219,7 +219,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
       mcc.computeCovariance(spinv, A.rowBlockIndices(), blockIndices);
 
       G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-      if (globalStats) {
+      if (globalStats != nullptr) {
         globalStats->choleskyNNZ = static_cast<size_t>(_cholmodCommon.method[_cholmodCommon.selected].lnz);
       }
 
@@ -283,7 +283,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
         auxCholmodSparse.sorted = 1;
         auxCholmodSparse.packed = 1;
         int amdStatus = cholmod_amd(&auxCholmodSparse, nullptr, 0, _blockPermutation.data(), &_cholmodCommon);
-        if (! amdStatus) {
+        if (amdStatus == 0) {
           return;
         }
 
@@ -309,7 +309,7 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
 
       }
       G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-      if (globalStats)
+      if (globalStats != nullptr)
         globalStats->timeSymbolicDecomposition = get_monotonic_time() - t;
 
       //const int& bestIdx = _cholmodCommon.selected;

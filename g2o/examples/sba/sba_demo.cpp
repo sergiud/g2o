@@ -165,10 +165,10 @@ int main(int argc, const char* argv[])
   }
 
 
-  g2o::BlockSolver_6_3 * solver_ptr
+  auto * solver_ptr
       = new g2o::BlockSolver_6_3(linearSolver);
 
-  g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+  auto* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
 
   optimizer.setAlgorithm(solver);
 
@@ -210,7 +210,7 @@ int main(int argc, const char* argv[])
     pose.translation() = trans;
 
 
-    g2o::VertexSCam * v_se3
+    auto * v_se3
         = new g2o::VertexSCam();
 
     v_se3->setId(vertex_id);
@@ -236,7 +236,7 @@ int main(int argc, const char* argv[])
   // add point projections to this vertex
   for (size_t i=0; i<true_points.size(); ++i)
   {
-    g2o::VertexSBAPointXYZ * v_p
+    auto * v_p
         = new g2o::VertexSBAPointXYZ();
 
 
@@ -291,7 +291,7 @@ int main(int argc, const char* argv[])
                         Sample::gaussian(PIXEL_NOISE),
                         Sample::gaussian(PIXEL_NOISE/16.0));
 
-          g2o::Edge_XYZ_VSC * e
+          auto * e
               = new g2o::Edge_XYZ_VSC();
 
 
@@ -307,7 +307,7 @@ int main(int argc, const char* argv[])
           e->information() = Matrix3d::Identity();
 
           if (ROBUST_KERNEL) {
-            g2o::RobustKernelHuber* rk = new g2o::RobustKernelHuber;
+            auto* rk = new g2o::RobustKernelHuber;
             e->setRobustKernel(rk);
           }
 
@@ -367,16 +367,15 @@ int main(int argc, const char* argv[])
   sum_diff2 = 0;
 
 
-  for (unordered_map<int,int>::iterator it=pointid_2_trueid.begin();
-       it!=pointid_2_trueid.end(); ++it)
+  for (auto & it : pointid_2_trueid)
   {
 
-    g2o::HyperGraph::VertexIDMap::iterator v_it
-        = optimizer.vertices().find(it->first);
+    auto v_it
+        = optimizer.vertices().find(it.first);
 
     if (v_it==optimizer.vertices().end())
     {
-      cerr << "Vertex " << it->first << " not in graph!" << endl;
+      cerr << "Vertex " << it.first << " not in graph!" << endl;
       exit(-1);
     }
 
@@ -385,13 +384,13 @@ int main(int argc, const char* argv[])
 
     if (v_p==nullptr)
     {
-      cerr << "Vertex " << it->first << "is not a PointXYZ!" << endl;
+      cerr << "Vertex " << it.first << "is not a PointXYZ!" << endl;
       exit(-1);
     }
 
-    Vector3d diff = v_p->estimate()-true_points[it->second];
+    Vector3d diff = v_p->estimate()-true_points[it.second];
 
-    if (inliers.find(it->first)==inliers.end())
+    if (inliers.find(it.first)==inliers.end())
       continue;
 
     sum_diff2 += diff.dot(diff);

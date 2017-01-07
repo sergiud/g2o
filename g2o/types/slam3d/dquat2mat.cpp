@@ -15,7 +15,7 @@ namespace g2o {
 	// qy = (r02 - r20) / S; 
 	// qz = (r10 - r01) / S; 
 	return 0;
-      } else if ((r00 > r11)&(r00 > r22)) { 
+      } else if (static_cast<int>(static_cast<int>(r00 > r11)&static_cast<int>(r00 > r22)) != 0) { 
 	S = sqrt(1.0 + r00 - r11 - r22) * 2; // S=4*qx 
 	qw = (r21 - r12) / S;
 	// qx = 0.25 * S;

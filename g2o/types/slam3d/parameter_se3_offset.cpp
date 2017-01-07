@@ -95,7 +95,7 @@ namespace g2o {
   bool CacheSE3OffsetDrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
     if (! DrawAction::refreshPropertyPtrs(params_))
       return false;
-    if (_previousParams){
+    if (_previousParams != nullptr){
       _cubeSide = _previousParams->makeProperty<FloatProperty>(_typeName + "::CUBE_SIDE", .05f);
     } else {
       _cubeSide = nullptr;
@@ -109,12 +109,12 @@ namespace g2o {
       return nullptr;
     CacheSE3Offset* that = static_cast<CacheSE3Offset*>(element);
     refreshPropertyPtrs(params_);
-    if (! _previousParams)
+    if (_previousParams == nullptr)
       return this;
     
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
-    float cs = _cubeSide ? _cubeSide->value() : 1.0f;
+    float cs = _cubeSide != nullptr ? _cubeSide->value() : 1.0f;
     glPushAttrib(GL_COLOR);
     glColor3f(POSE_PARAMETER_COLOR);
     glPushMatrix();

@@ -73,7 +73,7 @@ namespace g2o {
     }
     bool seed(int s)
     {
-      if (!_generator)
+      if (_generator == nullptr)
         return false;
       _generator->seed(s);
       return true;

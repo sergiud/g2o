@@ -36,7 +36,7 @@ namespace g2o{
   }
 
   bool SensorPose2D::isVisible(SensorPose2D::WorldObjectType* to){
-    if (! _robotPoseObject)
+    if (_robotPoseObject == nullptr)
       return false;
     if (_posesToIgnore.find(to)!=_posesToIgnore.end())
       return false;
@@ -72,22 +72,21 @@ namespace g2o{
   void SensorPose2D::sense() {
     _robotPoseObject=nullptr;
     RobotType* r= dynamic_cast<RobotType*>(robot());
-    std::list<PoseObject*>::reverse_iterator it=r->trajectory().rbegin();
+    auto it=r->trajectory().rbegin();
     _posesToIgnore.clear();
     int count = 0;
     while (it!=r->trajectory().rend() && count < _stepsToIgnore){
-      if (!_robotPoseObject)
+      if (_robotPoseObject == nullptr)
   _robotPoseObject = *it;
       _posesToIgnore.insert(*it);
       it++;
       count++;
     }
-    for (std::set<BaseWorldObject*>::iterator it=world()->objects().begin();
-   it!=world()->objects().end(); it++){
-      WorldObjectType* o=dynamic_cast<WorldObjectType*>(*it);
-      if (o && isVisible(o)){
+    for (auto it : world()->objects()){
+      WorldObjectType* o=dynamic_cast<WorldObjectType*>(it);
+      if ((o != nullptr) && isVisible(o)){
 	EdgeType* e=mkEdge(o);  
-	if (e && graph()) {
+	if ((e != nullptr) && (graph() != nullptr)) {
 	  e->setMeasurementFromState();
 	  addNoise(e);
 	  graph()->addEdge(e);

@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
   OptimizableGraph graph;
   World world(&graph);
   for (int i=0; i<nlandmarks; i++){
-    WorldObjectPointXY * landmark = new WorldObjectPointXY;
+    auto * landmark = new WorldObjectPointXY;
     double x = sampleUniform(-.5,.5, &generator)*(worldSize+5);
     double y = sampleUniform(-.5,.5, &generator)*(worldSize+5);
     landmark->vertex()->setEstimate(Vector2d(x,y));
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
   cerr << "nSegments = " << nSegments << endl;
 
   for (int i=0; i<nSegments; i++){
-    WorldObjectSegment2D * segment = new WorldObjectSegment2D;
+    auto * segment = new WorldObjectSegment2D;
     int ix = sampleUniform(-segmentGridSize,segmentGridSize, &generator);
     int iy = sampleUniform(-segmentGridSize,segmentGridSize, &generator);
     int ith = sampleUniform(0,3, &generator);

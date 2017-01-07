@@ -76,7 +76,7 @@ namespace g2o
   bool EdgeSE3PlaneSensorCalibDrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
     if (!DrawAction::refreshPropertyPtrs(params_))
       return false;
-    if (_previousParams){
+    if (_previousParams != nullptr){
       _planeWidth = _previousParams->makeProperty<FloatProperty>(_typeName + "::PLANE_WIDTH", 3.0f);
       _planeHeight = _previousParams->makeProperty<FloatProperty>(_typeName + "::PLANE_HEIGHT", 3.0f);
     } else {
@@ -93,21 +93,21 @@ namespace g2o
       return nullptr;
 
     refreshPropertyPtrs(params_);
-    if (! _previousParams)
+    if (_previousParams == nullptr)
       return this;
 
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
 
     EdgeSE3PlaneSensorCalib* that = dynamic_cast<EdgeSE3PlaneSensorCalib*>(element);
 
-    if (! that)
+    if (that == nullptr)
       return this;
 
     const VertexSE3* robot  = dynamic_cast<const VertexSE3*>(that->vertex(0));
     const VertexSE3* sensor = dynamic_cast<const VertexSE3*>(that->vertex(2));
 
-    if (! robot|| ! sensor)
+    if ((robot == nullptr)|| (sensor == nullptr))
       return nullptr;
 
     double d=that->measurement().distance();
@@ -129,7 +129,7 @@ namespace g2o
       planeWidth = _planeWidth->value();
       planeHeight = _planeHeight->value();
     }
-    if (_planeWidth && _planeHeight){
+    if ((_planeWidth != nullptr) && (_planeHeight != nullptr)){
       glBegin(GL_QUADS);
       glNormal3f(-1,0,0);
       glVertex3f(0,-planeWidth, -planeHeight);

@@ -82,7 +82,7 @@ namespace g2o {
   bool VertexLine2DDrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
     if (! DrawAction::refreshPropertyPtrs(params_))
       return false;
-    if (_previousParams){
+    if (_previousParams != nullptr){
       _pointSize = _previousParams->makeProperty<FloatProperty>(_typeName + "::POINT_SIZE", 1.);
     } else {
       _pointSize = nullptr;
@@ -97,16 +97,16 @@ namespace g2o {
       return nullptr;
 
     refreshPropertyPtrs(params_);
-    if (! _previousParams)
+    if (_previousParams == nullptr)
       return this;
 
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
 
 
     VertexLine2D* that = static_cast<VertexLine2D*>(element);
     glPushAttrib(GL_CURRENT_BIT | GL_BLEND);
-    if (_pointSize) {
+    if (_pointSize != nullptr) {
       glPointSize(_pointSize->value());
     }
     Vector2D n(cos(that->theta()), sin(that->theta()));
@@ -118,17 +118,17 @@ namespace g2o {
     vp2=dynamic_cast<VertexPointXY*> (that->graph()->vertex(that->p2Id));
 
     glColor4f(0.8f,0.5f,0.3f,0.3f);
-    if (vp1 && vp2) {
+    if ((vp1 != nullptr) && (vp2 != nullptr)) {
       glColor4f(0.8f,0.5f,0.3f,0.7f);
-    } else if (vp1 || vp2){
+    } else if ((vp1 != nullptr) || (vp2 != nullptr)){
       glColor4f(0.8f,0.5f,0.3f,0.5f);
     }
 
-    if (vp1) {
+    if (vp1 != nullptr) {
       glColor4f(0.8f,0.5f,0.3f,0.7f);
       l1 = t.dot(vp1->estimate()-pmiddle);
     }
-    if (vp2) {
+    if (vp2 != nullptr) {
       glColor4f(0.8f,0.5f,0.3f,0.7f);
       l2 = t.dot(vp2->estimate()-pmiddle);
     }

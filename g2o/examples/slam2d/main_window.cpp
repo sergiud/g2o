@@ -35,8 +35,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
 }
 
 MainWindow::~MainWindow()
-{
-}
+= default;
 
 void MainWindow::on_actionLoad_triggered(bool)
 {
@@ -72,7 +71,7 @@ void MainWindow::on_actionQuit_triggered(bool)
 
 void MainWindow::on_btnOptimize_clicked()
 {
-  if (viewer->graph->vertices().size() == 0 || viewer->graph->edges().size() == 0) {
+  if (viewer->graph->vertices().empty() || viewer->graph->edges().empty()) {
     cerr << "Graph has no vertices / egdes" << endl;
     return;
   }
@@ -88,7 +87,7 @@ void MainWindow::on_btnOptimize_clicked()
 
   int maxIterations = spIterations->value();
   int iter = viewer->graph->optimize(maxIterations);
-  if (maxIterations > 0 && !iter){
+  if (maxIterations > 0 && (iter == 0)){
     cerr << "Optimization failed, result might be invalid" << endl;
   }
 
@@ -110,7 +109,7 @@ void MainWindow::on_btnInitialGuess_clicked()
 
 void MainWindow::fixGraph()
 {
-  if (viewer->graph->vertices().size() == 0 || viewer->graph->edges().size() == 0) {
+  if (viewer->graph->vertices().empty() || viewer->graph->edges().empty()) {
     return;
   }
 
@@ -118,7 +117,7 @@ void MainWindow::fixGraph()
   bool gaugeFreedom = viewer->graph->gaugeFreedom();
   g2o::OptimizableGraph::Vertex* gauge = viewer->graph->findGauge();
   if (gaugeFreedom) {
-    if (! gauge) {
+    if (gauge == nullptr) {
       cerr <<  "cannot find a vertex to fix in this thing" << endl;
       return;
     } else {

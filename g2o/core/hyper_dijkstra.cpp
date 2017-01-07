@@ -68,8 +68,8 @@ namespace g2o{
 
   void HyperDijkstra::reset()
   {
-    for (HyperGraph::VertexSet::iterator it=_visited.begin(); it!=_visited.end(); it++){
-      AdjacencyMap::iterator at=_adjacencyMap.find(*it);
+    for (auto it : _visited){
+      auto at=_adjacencyMap.find(it);
       assert(at!=_adjacencyMap.end());
       at->second=AdjacencyMapEntry(at->first,nullptr,nullptr,std::numeric_limits< double >::max());
     }
@@ -88,10 +88,9 @@ namespace g2o{
   {
     reset();
     std::priority_queue< AdjacencyMapEntry > frontier;
-    for (HyperGraph::VertexSet::iterator vit=vset.begin(); vit!=vset.end(); ++vit){
-      HyperGraph::Vertex* v=*vit;
+    for (auto v : vset){
       assert(v!=0);
-      AdjacencyMap::iterator it=_adjacencyMap.find(v);
+      auto it=_adjacencyMap.find(v);
       if (it == _adjacencyMap.end()) {
         cerr << __PRETTY_FUNCTION__ << "Vertex " << v->id() << " is not in the adjacency map" << endl;
       }
@@ -105,7 +104,7 @@ namespace g2o{
       AdjacencyMapEntry entry=frontier.top();
       frontier.pop();
       HyperGraph::Vertex* u=entry.child();
-      AdjacencyMap::iterator ut=_adjacencyMap.find(u);
+      auto ut=_adjacencyMap.find(u);
       if (ut == _adjacencyMap.end()) {
         cerr << __PRETTY_FUNCTION__ << "Vertex " << u->id() << " is not in the adjacency map" << endl;
       }
@@ -113,7 +112,7 @@ namespace g2o{
       double uDistance=ut->second.distance();
 
       std::pair< HyperGraph::VertexSet::iterator, bool> insertResult=_visited.insert(u); (void) insertResult;
-      HyperGraph::EdgeSet::iterator et=u->edges().begin();
+      auto et=u->edges().begin();
       while (et != u->edges().end()){
         HyperGraph::Edge* edge=*et;
         ++et;
@@ -132,7 +131,7 @@ namespace g2o{
           double zDistance=uDistance+edgeDistance;
           //cerr << z->id() << " " << zDistance << endl;
 
-          AdjacencyMap::iterator ot=_adjacencyMap.find(z);
+          auto ot=_adjacencyMap.find(z);
           assert(ot!=_adjacencyMap.end());
 
           if (zDistance+comparisonConditioner<ot->second.distance() && zDistance<maxDistance){
@@ -156,20 +155,20 @@ namespace g2o{
 
   void HyperDijkstra::computeTree(AdjacencyMap& amap)
   {
-    for (AdjacencyMap::iterator it=amap.begin(); it!=amap.end(); ++it){
-      AdjacencyMapEntry& entry(it->second);
+    for (auto & it : amap){
+      AdjacencyMapEntry& entry(it.second);
       entry._children.clear();
     }
-    for (AdjacencyMap::iterator it=amap.begin(); it!=amap.end(); ++it){
+    for (auto it=amap.begin(); it!=amap.end(); ++it){
       AdjacencyMapEntry& entry(it->second);
       HyperGraph::Vertex* parent=entry.parent();
-      if (!parent){
+      if (parent == nullptr){
         continue;
       }
       HyperGraph::Vertex* v=entry.child();
       assert (v==it->first);
 
-      AdjacencyMap::iterator pt=amap.find(parent);
+      auto pt=amap.find(parent);
       assert(pt!=amap.end());
       pt->second._children.insert(v);
     }
@@ -182,11 +181,11 @@ namespace g2o{
     typedef std::deque<HyperGraph::Vertex*> Deque;
     Deque q;
     // scans for the vertices without the parent (whcih are the roots of the trees) and applies the action to them.
-    for (AdjacencyMap::iterator it=amap.begin(); it!=amap.end(); ++it){
-      AdjacencyMapEntry& entry(it->second);
-      if (! entry.parent()) {
-        action->perform(it->first,nullptr,nullptr);
-        q.push_back(it->first);
+    for (auto & it : amap){
+      AdjacencyMapEntry& entry(it.second);
+      if (entry.parent() == nullptr) {
+        action->perform(it.first,nullptr,nullptr);
+        q.push_back(it.first);
       }
     }
 
@@ -196,16 +195,15 @@ namespace g2o{
       HyperGraph::Vertex* parent=q.front();
       q.pop_front();
       ++count;
-      AdjacencyMap::iterator parentIt=amap.find(parent);
+      auto parentIt=amap.find(parent);
       if (parentIt==amap.end()) {
         continue;
       }
       //cerr << "parent= " << parent << " parent id= " << parent->id() << "\t children id =";
       HyperGraph::VertexSet& childs(parentIt->second.children());
-      for (HyperGraph::VertexSet::iterator childsIt=childs.begin(); childsIt!=childs.end(); ++childsIt){
-        HyperGraph::Vertex* child=*childsIt;
+      for (auto child : childs){
         //cerr << child->id();
-        AdjacencyMap::iterator adjacencyIt=amap.find(child);
+        auto adjacencyIt=amap.find(child);
         assert (adjacencyIt!=amap.end());
         HyperGraph::Edge* edge=adjacencyIt->second.edge();  
 
@@ -241,13 +239,13 @@ namespace g2o{
       HyperGraph::Vertex* v0=frontier.front();
       frontier.pop();
       dv.shortestPaths(v0, cost, distance, comparisonConditioner, false, maxEdgeCost);
-      for (HyperGraph::VertexSet::iterator it=dv.visited().begin(); it!=dv.visited().end(); ++it){
-        visited.insert(*it);
-        if (startingSet.find(*it)==startingSet.end())
+      for (auto it : dv.visited()){
+        visited.insert(it);
+        if (startingSet.find(it)==startingSet.end())
           continue;
-        std::pair<HyperGraph::VertexSet::iterator, bool> insertOutcome=connected.insert(*it);
+        std::pair<HyperGraph::VertexSet::iterator, bool> insertOutcome=connected.insert(it);
         if (insertOutcome.second){ // the node was not in the connectedSet;
-          frontier.push(dynamic_cast<HyperGraph::Vertex*>(*it));
+          frontier.push(dynamic_cast<HyperGraph::Vertex*>(it));
         }
       }
     }

@@ -95,7 +95,7 @@ namespace g2o {
     if (typeid(*element).name()!=_typeName)
       return nullptr;
     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
-    if (!params->os){
+    if (params->os == nullptr){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified" << std::endl;
       return nullptr;
     }
@@ -124,16 +124,16 @@ namespace g2o {
     if (typeid(*element).name()!=_typeName)
       return nullptr;
     refreshPropertyPtrs(params_);
-    if (! _previousParams)
+    if (_previousParams == nullptr)
       return this;
     
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
     
     EdgeSE3* e =  static_cast<EdgeSE3*>(element);
     VertexSE3* fromEdge = static_cast<VertexSE3*>(e->vertices()[0]);
     VertexSE3* toEdge   = static_cast<VertexSE3*>(e->vertices()[1]);
-    if (! fromEdge || ! toEdge)
+    if ((fromEdge == nullptr) || (toEdge == nullptr))
       return this;
     glColor3f(POSE_EDGE_COLOR);
     glPushAttrib(GL_ENABLE_BIT);

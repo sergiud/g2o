@@ -150,8 +150,8 @@ namespace g2o {
      */
     bool computeMarginals(SparseBlockMatrix<MatrixXD>& spinv, const VertexContainer& vertices) {
       std::vector<std::pair<int, int> > indices;
-      for (VertexContainer::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
-        indices.emplace_back((*it)->hessianIndex(),(*it)->hessianIndex());
+      for (auto vertice : vertices) {
+        indices.emplace_back(vertice->hessianIndex(),vertice->hessianIndex());
       }
       return computeMarginals(spinv, indices);
     }
@@ -183,7 +183,7 @@ namespace g2o {
     bool* forceStopFlag() const { return _forceStopFlag;};
 
     //! if external stop flag is given, return its state. False otherwise
-    bool terminate() {return _forceStopFlag ? (*_forceStopFlag) : false; }
+    bool terminate() {return _forceStopFlag != nullptr ? (*_forceStopFlag) : false; }
 
     //! the index mapping of the vertices
     const VertexContainer& indexMapping() const {return _ivMap;}

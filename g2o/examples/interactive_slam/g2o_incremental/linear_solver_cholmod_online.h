@@ -107,7 +107,7 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>, public Linear
       cholmod_free_dense(&xcholmod, &_cholmodCommon);
 
       G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-      if (globalStats){
+      if (globalStats != nullptr){
         globalStats->timeNumericDecomposition = get_monotonic_time() - t;
         globalStats->choleskyNNZ = static_cast<size_t>(_cholmodCommon.method[0].lnz);
       }
@@ -125,7 +125,7 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>, public Linear
     size_t nonZerosInL() const {
       size_t nnz= 0;
       int* nz = (int*)_cholmodFactor->nz;
-      if (! nz)
+      if (nz == nullptr)
         return 0;
       for (size_t i = 0; i < _cholmodFactor->n; ++i)
         nnz += nz[i];
@@ -209,7 +209,7 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>, public Linear
       _cholmodFactor = cholmod_analyze_p(_cholmodSparse, _scalarPermutation.data(), nullptr, 0, &_cholmodCommon);
 
       G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-      if (globalStats)
+      if (globalStats != nullptr)
         globalStats->timeSymbolicDecomposition = get_monotonic_time() - t;
 
     }

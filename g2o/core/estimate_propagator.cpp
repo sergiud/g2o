@@ -74,9 +74,9 @@ namespace g2o {
 
   void EstimatePropagator::reset()
   {
-    for (OptimizableGraph::VertexSet::iterator it=_visited.begin(); it!=_visited.end(); ++it){
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(*it);
-      AdjacencyMap::iterator at = _adjacencyMap.find(v);
+    for (auto it : _visited){
+      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(it);
+      auto at = _adjacencyMap.find(v);
       assert(at != _adjacencyMap.end());
       at->second.reset();
     }
@@ -103,9 +103,9 @@ namespace g2o {
     reset();
 
     PriorityQueue frontier;
-    for (OptimizableGraph::VertexSet::iterator vit=vset.begin(); vit!=vset.end(); ++vit){
-      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(*vit);
-      AdjacencyMap::iterator it = _adjacencyMap.find(v);
+    for (auto vit : vset){
+      OptimizableGraph::Vertex* v = static_cast<OptimizableGraph::Vertex*>(vit);
+      auto it = _adjacencyMap.find(v);
       assert(it != _adjacencyMap.end());
       it->second._distance = 0.;
       it->second._parent.clear();
@@ -125,7 +125,7 @@ namespace g2o {
       }
 
       /* std::pair< OptimizableGraph::VertexSet::iterator, bool> insertResult = */ _visited.insert(u);
-      OptimizableGraph::EdgeSet::iterator et = u->edges().begin();
+      auto et = u->edges().begin();
       while (et != u->edges().end()){
         OptimizableGraph::Edge* edge = static_cast<OptimizableGraph::Edge*>(*et);
         ++et;
@@ -134,9 +134,9 @@ namespace g2o {
         OptimizableGraph::VertexSet initializedVertices;
         for (size_t i = 0; i < edge->vertices().size(); ++i) {
           OptimizableGraph::Vertex* z = static_cast<OptimizableGraph::Vertex*>(edge->vertex(i));
-	  if (! z)
+	  if (z == nullptr)
 	    continue;
-          AdjacencyMap::iterator ot = _adjacencyMap.find(z);
+          auto ot = _adjacencyMap.find(z);
           if (ot->second._distance != numeric_limits<double>::max()) {
             initializedVertices.insert(z);
             maxFrontier = (max)(maxFrontier, ot->second._frontierLevel);
@@ -146,7 +146,7 @@ namespace g2o {
 
         for (size_t i = 0; i < edge->vertices().size(); ++i) {
           OptimizableGraph::Vertex* z = static_cast<OptimizableGraph::Vertex*>(edge->vertex(i));
-	  if (! z)
+	  if (z == nullptr)
 	    continue;
           if (z == u)
             continue;
@@ -157,7 +157,7 @@ namespace g2o {
             double zDistance = uDistance + edgeDistance;
             //cerr << z->id() << " " << zDistance << endl;
 
-            AdjacencyMap::iterator ot = _adjacencyMap.find(z);
+            auto ot = _adjacencyMap.find(z);
             assert(ot!=_adjacencyMap.end());
 
             if (zDistance < ot->second.distance() && zDistance < maxDistance){
@@ -224,7 +224,7 @@ namespace g2o {
   EstimatePropagator::AdjacencyMapEntry* EstimatePropagator::PriorityQueue::pop()
   {
     assert(!empty());
-    iterator it = begin();
+    auto it = begin();
     AdjacencyMapEntry* entry = it->second;
     erase(it);
 
@@ -243,7 +243,7 @@ namespace g2o {
   {
     OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(edge);
     OptimizableGraph::Vertex* to = dynamic_cast<OptimizableGraph::Vertex*>(to_);
-    SparseOptimizer::EdgeContainer::const_iterator it = _graph->findActiveEdge(e);
+    auto it = _graph->findActiveEdge(e);
     if (it == _graph->activeEdges().end()) // it has to be an active edge
       return std::numeric_limits<double>::max();
     return e->initialEstimatePossible(from, to);
@@ -261,7 +261,7 @@ namespace g2o {
     OptimizableGraph::Vertex* to = dynamic_cast<OptimizableGraph::Vertex*>(to_);
     if (std::abs(from->id() - to->id()) != 1) // simple method to identify odometry edges in a pose graph
       return std::numeric_limits<double>::max();
-    SparseOptimizer::EdgeContainer::const_iterator it = _graph->findActiveEdge(e);
+    auto it = _graph->findActiveEdge(e);
     if (it == _graph->activeEdges().end()) // it has to be an active edge
       return std::numeric_limits<double>::max();
     return e->initialEstimatePossible(from_, to);

@@ -145,7 +145,7 @@ int main(int argc, const char* argv[]){
     linearSolver
         = new g2o::LinearSolverCholmod<g2o
         ::BlockSolver_6_3::PoseMatrixType>();
-    g2o::BlockSolver_6_3 * solver_ptr
+    auto * solver_ptr
         = new g2o::BlockSolver_6_3(linearSolver);
     solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
   } else {
@@ -153,7 +153,7 @@ int main(int argc, const char* argv[]){
     linearSolver
         = new g2o::LinearSolverCholmod<g2o
         ::BlockSolverX::PoseMatrixType>();
-    g2o::BlockSolverX * solver_ptr
+    auto * solver_ptr
         = new g2o::BlockSolverX(linearSolver);
     solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
   }
@@ -173,7 +173,7 @@ int main(int argc, const char* argv[]){
   vector<g2o::SE3Quat,
       aligned_allocator<g2o::SE3Quat> > true_poses;
 
-  g2o::CameraParameters * cam_params
+  auto * cam_params
       = new g2o::CameraParameters (focal_length, principal_point, 0.);
   cam_params->setId(0);
 
@@ -187,7 +187,7 @@ int main(int argc, const char* argv[]){
     Eigen:: Quaterniond q;
     q.setIdentity();
     g2o::SE3Quat T_me_from_world(q,trans);
-    g2o::VertexSE3Expmap * v_se3
+    auto * v_se3
         = new g2o::VertexSE3Expmap();
     v_se3->setId(vertex_id);
     v_se3->setEstimate(T_me_from_world);
@@ -210,11 +210,11 @@ int main(int argc, const char* argv[]){
   unordered_set<int> inliers;
 
   for (size_t i=0; i<true_points.size(); ++i){
-    g2o::VertexSBAPointXYZ * v_p
+    auto * v_p
         = new g2o::VertexSBAPointXYZ();
     int num_obs = 0;
-    for (size_t j=0; j<true_poses.size(); ++j)    {
-      Vector2d z = cam_params->cam_map(true_poses.at(j).map(true_points.at(i)));
+    for (auto & true_pose : true_poses)    {
+      Vector2d z = cam_params->cam_map(true_pose.map(true_points.at(i)));
 
       if (z[0]>=0 && z[1]>=0 && z[0]<640 && z[1]<480)      {
         ++num_obs;
@@ -254,7 +254,7 @@ int main(int argc, const char* argv[]){
           }
           z += Vector2d(Sample::gaussian(PIXEL_NOISE),
                         Sample::gaussian(PIXEL_NOISE));
-          g2o::EdgeProjectPSI2UV * e
+          auto * e
               = new g2o::EdgeProjectPSI2UV();
 
           e->resize(3);
@@ -268,7 +268,7 @@ int main(int argc, const char* argv[]){
           e->information() = Matrix2d::Identity();
 
           if (ROBUST_KERNEL) {
-            g2o::RobustKernelHuber* rk = new g2o::RobustKernelHuber;
+            auto* rk = new g2o::RobustKernelHuber;
             e->setRobustKernel(rk);
           }
 
@@ -300,35 +300,34 @@ int main(int argc, const char* argv[]){
   cout << "Point error before optimisation (inliers only): " << sqrt(sum_diff2/point_num) << endl;
   point_num = 0;
   sum_diff2 = 0;
-  for (unordered_map<int,int>::iterator it=pointid_2_trueid.begin();
-       it!=pointid_2_trueid.end(); ++it){
-    g2o::HyperGraph::VertexIDMap::iterator v_it
-        = optimizer.vertices().find(it->first);
+  for (auto & it : pointid_2_trueid){
+    auto v_it
+        = optimizer.vertices().find(it.first);
     if (v_it==optimizer.vertices().end()){
-      cerr << "Vertex " << it->first << " not in graph!" << endl;
+      cerr << "Vertex " << it.first << " not in graph!" << endl;
       exit(-1);
     }
     g2o::VertexSBAPointXYZ * v_p
         = dynamic_cast< g2o::VertexSBAPointXYZ * > (v_it->second);
     if (v_p==nullptr){
-      cerr << "Vertex " << it->first << "is not a PointXYZ!" << endl;
+      cerr << "Vertex " << it.first << "is not a PointXYZ!" << endl;
       exit(-1);
     }
-    int anchorframe_id = pointid_2_anchorid.find(it->first)->second;
+    int anchorframe_id = pointid_2_anchorid.find(it.first)->second;
     v_it
         = optimizer.vertices().find(anchorframe_id);
     if (v_it==optimizer.vertices().end()){
-      cerr << "Vertex " << it->first << " not in graph!" << endl;
+      cerr << "Vertex " << it.first << " not in graph!" << endl;
       exit(-1);
     }
     g2o::VertexSE3Expmap * v_anchor
         = dynamic_cast< g2o::VertexSE3Expmap * > (v_it->second);
     if (v_p==nullptr){
-      cerr << "Vertex " << it->first << "is not a SE3Expmap!" << endl;
+      cerr << "Vertex " << it.first << "is not a SE3Expmap!" << endl;
       exit(-1);
     }
-    Vector3d diff = v_anchor->estimate().inverse()*invert_depth(v_p->estimate())-true_points[it->second];
-    if (inliers.find(it->first)==inliers.end())
+    Vector3d diff = v_anchor->estimate().inverse()*invert_depth(v_p->estimate())-true_points[it.second];
+    if (inliers.find(it.first)==inliers.end())
       continue;
     sum_diff2 += diff.dot(diff);
     ++point_num;

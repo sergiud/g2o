@@ -630,7 +630,7 @@ YY_DECL
 
 #line 632 "flex_scanner.cpp"
 
-  if ( !(yy_init) )
+  if ( (yy_init) == 0 )
     {
     (yy_init) = 1;
 
@@ -638,13 +638,13 @@ YY_DECL
     YY_USER_INIT;
 #endif
 
-    if ( ! (yy_start) )
+    if ( (yy_start) == 0 )
       (yy_start) = 1;  /* first start state */
 
-    if ( ! yyin )
+    if ( yyin == nullptr )
       yyin = & std::cin;
 
-    if ( ! yyout )
+    if ( yyout == nullptr )
       yyout = & std::cout;
 
     if ( ! YY_CURRENT_BUFFER ) {
@@ -673,7 +673,7 @@ yy_match:
     do
       {
       YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
-      if ( yy_accept[yy_current_state] )
+      if ( yy_accept[yy_current_state] != 0 )
         {
         (yy_last_accepting_state) = yy_current_state;
         (yy_last_accepting_cpos) = yy_cp;
@@ -884,7 +884,7 @@ case YY_STATE_EOF(INITIAL):
 
       yy_bp = (yytext_ptr) + YY_MORE_ADJ;
 
-      if ( yy_next_state )
+      if ( yy_next_state != 0 )
         {
         /* Consume the NUL. */
         yy_cp = ++(yy_c_buf_p);
@@ -906,7 +906,7 @@ case YY_STATE_EOF(INITIAL):
         {
         (yy_did_buffer_switch_on_eof) = 0;
 
-        if ( yywrap(  ) )
+        if ( yywrap(  ) != 0 )
           {
           /* Note: because we've taken care in
            * yy_get_next_buffer() to have set up
@@ -925,7 +925,7 @@ case YY_STATE_EOF(INITIAL):
 
         else
           {
-          if ( ! (yy_did_buffer_switch_on_eof) )
+          if ( (yy_did_buffer_switch_on_eof) == 0 )
             YY_NEW_FILE;
           }
         break;
@@ -1005,13 +1005,13 @@ yyFlexLexer::~yyFlexLexer()
  */
 void yyFlexLexer::switch_streams( std::istream* new_in, std::ostream* new_out )
 {
-  if ( new_in )
+  if ( new_in != nullptr )
     {
     yy_delete_buffer( YY_CURRENT_BUFFER );
     yy_switch_to_buffer( yy_create_buffer( new_in, YY_BUF_SIZE  ) );
     }
 
-  if ( new_out )
+  if ( new_out != nullptr )
     yyout = new_out;
 }
 
@@ -1115,7 +1115,7 @@ int yyFlexLexer::yy_get_next_buffer()
       int yy_c_buf_p_offset =
         (int) ((yy_c_buf_p) - b->yy_ch_buf);
 
-      if ( b->yy_is_our_buffer )
+      if ( b->yy_is_our_buffer != 0 )
         {
         int new_size = b->yy_buf_size * 2;
 
@@ -1132,7 +1132,7 @@ int yyFlexLexer::yy_get_next_buffer()
         /* Can't grow it, we don't own it. */
         b->yy_ch_buf = nullptr;
 
-      if ( ! b->yy_ch_buf )
+      if ( b->yy_ch_buf == nullptr )
         YY_FATAL_ERROR(
         "fatal error - scanner input buffer overflow" );
 
@@ -1200,8 +1200,8 @@ int yyFlexLexer::yy_get_next_buffer()
 
   for ( yy_cp = (yytext_ptr) + YY_MORE_ADJ; yy_cp < (yy_c_buf_p); ++yy_cp )
     {
-    YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
-    if ( yy_accept[yy_current_state] )
+    YY_CHAR yy_c = (*yy_cp != 0 ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
+    if ( yy_accept[yy_current_state] != 0 )
       {
       (yy_last_accepting_state) = yy_current_state;
       (yy_last_accepting_cpos) = yy_cp;
@@ -1229,7 +1229,7 @@ int yyFlexLexer::yy_get_next_buffer()
       char *yy_cp = (yy_c_buf_p);
 
   YY_CHAR yy_c = 1;
-  if ( yy_accept[yy_current_state] )
+  if ( yy_accept[yy_current_state] != 0 )
     {
     (yy_last_accepting_state) = yy_current_state;
     (yy_last_accepting_cpos) = yy_cp;
@@ -1241,9 +1241,9 @@ int yyFlexLexer::yy_get_next_buffer()
       yy_c = yy_meta[(unsigned int) yy_c];
     }
   yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-  yy_is_jam = (yy_current_state == 76);
+  yy_is_jam = static_cast<int>(yy_current_state == 76);
 
-  return yy_is_jam ? 0 : yy_current_state;
+  return yy_is_jam != 0 ? 0 : yy_current_state;
 }
 
     void yyFlexLexer::yyunput( int c, char* yy_bp)
@@ -1324,10 +1324,10 @@ int yyFlexLexer::yy_get_next_buffer()
 
         case EOB_ACT_END_OF_FILE:
           {
-          if ( yywrap(  ) )
+          if ( yywrap(  ) != 0 )
             return EOF;
 
-          if ( ! (yy_did_buffer_switch_on_eof) )
+          if ( (yy_did_buffer_switch_on_eof) == 0 )
             YY_NEW_FILE;
 #ifdef __cplusplus
           return yyinput();
@@ -1422,7 +1422,7 @@ int yyFlexLexer::yy_get_next_buffer()
   YY_BUFFER_STATE b;
     
   b = (YY_BUFFER_STATE) Slamalloc(sizeof( struct yy_buffer_state )  );
-  if ( ! b )
+  if ( b == nullptr )
     YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 
   b->yy_buf_size = size;
@@ -1431,7 +1431,7 @@ int yyFlexLexer::yy_get_next_buffer()
    * we need to put in 2 end-of-buffer characters.
    */
   b->yy_ch_buf = (char *) Slamalloc(b->yy_buf_size + 2  );
-  if ( ! b->yy_ch_buf )
+  if ( b->yy_ch_buf == nullptr )
     YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 
   b->yy_is_our_buffer = 1;
@@ -1448,13 +1448,13 @@ int yyFlexLexer::yy_get_next_buffer()
     void yyFlexLexer::yy_delete_buffer( YY_BUFFER_STATE b )
 {
     
-  if ( ! b )
+  if ( b == nullptr )
     return;
 
   if ( b == YY_CURRENT_BUFFER ) /* Not sure if we should pop here. */
     YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) nullptr;
 
-  if ( b->yy_is_our_buffer )
+  if ( b->yy_is_our_buffer != 0 )
     Slamfree((void *) b->yy_ch_buf  );
 
   Slamfree((void *) b  );
@@ -1495,7 +1495,7 @@ extern "C" int isatty (int );
  */
     void yyFlexLexer::yy_flush_buffer( YY_BUFFER_STATE b )
 {
-      if ( ! b )
+      if ( b == nullptr )
     return;
 
   b->yy_n_chars = 0;
@@ -1575,7 +1575,7 @@ void yyFlexLexer::yyensure_buffer_stack(void)
 {
   int num_to_alloc;
     
-  if (!(yy_buffer_stack)) {
+  if ((yy_buffer_stack) == nullptr) {
 
     /* First allocation is just for 2 elements, since we don't know if this
      * scanner will even need a stack. We use 2 instead of 1 to avoid an
@@ -1585,7 +1585,7 @@ void yyFlexLexer::yyensure_buffer_stack(void)
     (yy_buffer_stack) = (struct yy_buffer_state**)Slamalloc
                 (num_to_alloc * sizeof(struct yy_buffer_state*)
                 );
-    if ( ! (yy_buffer_stack) )
+    if ( (yy_buffer_stack) == nullptr )
       YY_FATAL_ERROR( "out of dynamic memory in yyensure_buffer_stack()" );
                   
     memset((yy_buffer_stack), 0, num_to_alloc * sizeof(struct yy_buffer_state*));
@@ -1605,7 +1605,7 @@ void yyFlexLexer::yyensure_buffer_stack(void)
                 ((yy_buffer_stack),
                 num_to_alloc * sizeof(struct yy_buffer_state*)
                 );
-    if ( ! (yy_buffer_stack) )
+    if ( (yy_buffer_stack) == nullptr )
       YY_FATAL_ERROR( "out of dynamic memory in yyensure_buffer_stack()" );
 
     /* zero only the new slots.*/
@@ -1623,13 +1623,13 @@ void yyFlexLexer::yyensure_buffer_stack(void)
     (yy_start_stack_depth) += YY_START_STACK_INCR;
     new_size = (yy_start_stack_depth) * sizeof( int );
 
-    if ( ! (yy_start_stack) )
+    if ( (yy_start_stack) == nullptr )
       (yy_start_stack) = (int *) Slamalloc(new_size  );
 
     else
       (yy_start_stack) = (int *) Slamrealloc((void *) (yy_start_stack),new_size  );
 
-    if ( ! (yy_start_stack) )
+    if ( (yy_start_stack) == nullptr )
       YY_FATAL_ERROR( "out of memory expanding start-condition stack" );
     }
 
@@ -1741,12 +1741,11 @@ Scanner::Scanner(std::istream* in,
 }
 
 Scanner::~Scanner()
-{
-}
+= default;
 
 void Scanner::set_debug(bool b)
 {
-    yy_flex_debug = b;
+    yy_flex_debug = static_cast<int>(b);
 }
 
 } // namespace SlamParser

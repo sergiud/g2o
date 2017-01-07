@@ -173,13 +173,13 @@ void drawSphere(GLfloat radius)
 void drawEllipsoid(GLfloat r1, GLfloat r2, GLfloat r3)
 {
   GLboolean hasNormalization = glIsEnabled(GL_NORMALIZE);
-  if (!hasNormalization)
+  if (hasNormalization == 0u)
     glEnable(GL_NORMALIZE);
   glPushMatrix();
   glScalef(r1, r2, r3);
   gluSphere(GLUWrapper::getQuadradic(), 1.0f, 32, 32);
   glPopMatrix();
-  if (!hasNormalization)
+  if (hasNormalization == 0u)
     glDisable(GL_NORMALIZE);
 }
 

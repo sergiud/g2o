@@ -54,8 +54,7 @@ namespace g2o {
     }
 
     Simulator::~Simulator()
-    {
-    }
+    = default;
 
     void Simulator::simulate(int numNodes, const SE2& sensorOffset)
     {
@@ -147,9 +146,9 @@ namespace g2o {
             int cx=ccx+a;
             int cy=ccy+b;
             LandmarkPtrVector& landmarksForCell = grid[cx][cy];
-            if (landmarksForCell.size() == 0) {
+            if (landmarksForCell.empty()) {
               for (int i = 0; i < landMarksPerSquareMeter; ++i) {
-                Landmark* l = new Landmark();
+                auto* l = new Landmark();
                 double offx, offy;
                 do {
                   offx = Rand::uniform_rand(-0.5*stepLen, 0.5*stepLen);
@@ -167,10 +166,10 @@ namespace g2o {
       cerr << "Simulator: Simulating landmark observations for the poses ... ";
       double maxSensorSqr = maxSensorRangeLandmarks * maxSensorRangeLandmarks;
       int globalId = 0;
-      for (PosesVector::iterator it = poses.begin(); it != poses.end(); ++it) {
-        Simulator::GridPose& pv = *it;
-        int cx = (int)round(it->truePose.translation().x());
-        int cy = (int)round(it->truePose.translation().y());
+      for (auto & pose : poses) {
+        Simulator::GridPose& pv = pose;
+        int cx = (int)round(pose.truePose.translation().x());
+        int cy = (int)round(pose.truePose.translation().y());
         int numGridCells = (int)(maxSensorRangeLandmarks) + 1;
 
         pv.id = globalId++;
@@ -179,10 +178,9 @@ namespace g2o {
         for (int xx = cx - numGridCells; xx <= cx + numGridCells; ++xx)
           for (int yy = cy - numGridCells; yy <= cy + numGridCells; ++yy) {
             LandmarkPtrVector& landmarksForCell = grid[xx][yy];
-            if (landmarksForCell.size() == 0)
+            if (landmarksForCell.empty())
               continue;
-            for (size_t i = 0; i < landmarksForCell.size(); ++i) {
-              Landmark* l = landmarksForCell[i];
+            for (auto l : landmarksForCell) {
               double dSqr = hypot_sqr(pv.truePose.translation().x() - l->truePose.x(), pv.truePose.translation().y() - l->truePose.y());
               if (dSqr > maxSensorSqr)
                 continue;
@@ -191,7 +189,7 @@ namespace g2o {
                 continue;
               if (l->id < 0)
                 l->id = globalId++;
-              if (l->seenBy.size() == 0) {
+              if (l->seenBy.empty()) {
                 Vector2d trueObservation = trueInv * l->truePose;
                 Vector2d observation = trueObservation;
                 observation[0] += Rand::gauss_rand(0., landmarkNoise[0]);
@@ -234,25 +232,23 @@ namespace g2o {
         covariance(1, 1) = landmarkNoise[1]*landmarkNoise[1];
         Matrix2d information = covariance.inverse();
 
-        for (size_t i = 0; i < poses.size(); ++i) {
-          const GridPose& p = poses[i];
+        for (auto & p : poses) {
           for (size_t j = 0; j < p.landmarks.size(); ++j) {
             Landmark* l = p.landmarks[j];
-            if (l->seenBy.size() > 0 && l->seenBy[0] == p.id) {
+            if (!l->seenBy.empty() && l->seenBy[0] == p.id) {
               landmarks.push_back(*l);
             }
           }
         }
 
-        for (size_t i = 0; i < poses.size(); ++i) {
-          const GridPose& p = poses[i];
+        for (auto & p : poses) {
           SE2 trueInv = (p.truePose * sensorOffset).inverse();
           for (size_t j = 0; j < p.landmarks.size(); ++j) {
             Landmark* l = p.landmarks[j];
             Vector2d observation;
             Vector2d trueObservation = trueInv * l->truePose;
             observation = trueObservation;
-            if (l->seenBy.size() > 0 && l->seenBy[0] == p.id) { // write the initial position of the landmark
+            if (!l->seenBy.empty() && l->seenBy[0] == p.id) { // write the initial position of the landmark
               observation = (p.simulatorPose * sensorOffset).inverse() * l->simulatedPose;
             } else {
               // create observation for the LANDMARK using the true positions
@@ -275,11 +271,11 @@ namespace g2o {
 
 
       // cleaning up
-      for (LandmarkGrid::iterator it = grid.begin(); it != grid.end(); ++it) {
-        for (std::map<int, Simulator::LandmarkPtrVector>::iterator itt = it->second.begin(); itt != it->second.end(); ++itt) {
+      for (auto & it : grid) {
+        for (auto itt = it.second.begin(); itt != it.second.end(); ++itt) {
           Simulator::LandmarkPtrVector& landmarks = itt->second;
-          for (size_t i = 0; i < landmarks.size(); ++i)
-            delete landmarks[i];
+          for (auto & landmark : landmarks)
+            delete landmark;
         }
       }
 

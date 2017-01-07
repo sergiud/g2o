@@ -45,9 +45,9 @@ namespace g2o {
   }
 
   void SensorPose3DOffset::addParameters(){
-    if (!_offsetParam1)
+    if (_offsetParam1 == nullptr)
       _offsetParam1 = new ParameterSE3Offset();
-    if (!_offsetParam2)
+    if (_offsetParam2 == nullptr)
       _offsetParam2 = new ParameterSE3Offset();
     assert(world());
     world()->addParameter(_offsetParam1);
@@ -62,7 +62,7 @@ namespace g2o {
   }
 
   bool SensorPose3DOffset::isVisible(SensorPose3DOffset::WorldObjectType* to){
-    if (! _robotPoseObject)
+    if (_robotPoseObject == nullptr)
       return false;
     if (_posesToIgnore.find(to)!=_posesToIgnore.end())
       return false;
@@ -91,22 +91,21 @@ namespace g2o {
   void SensorPose3DOffset::sense() {
     _robotPoseObject=nullptr;
     RobotType* r= dynamic_cast<RobotType*>(robot());
-    std::list<PoseObject*>::reverse_iterator it=r->trajectory().rbegin();
+    auto it=r->trajectory().rbegin();
     _posesToIgnore.clear();
     int count = 0;
     while (it!=r->trajectory().rend() && count < _stepsToIgnore){
-      if (!_robotPoseObject)
+      if (_robotPoseObject == nullptr)
   _robotPoseObject = *it;
       _posesToIgnore.insert(*it);
       it++;
       count++;
     }
-    for (std::set<BaseWorldObject*>::iterator it=world()->objects().begin();
-   it!=world()->objects().end(); it++){
-      WorldObjectType* o=dynamic_cast<WorldObjectType*>(*it);
-      if (o && isVisible(o)){
+    for (auto it : world()->objects()){
+      WorldObjectType* o=dynamic_cast<WorldObjectType*>(it);
+      if ((o != nullptr) && isVisible(o)){
   EdgeType* e=mkEdge(o);  
-  if (e && graph()) {
+  if ((e != nullptr) && (graph() != nullptr)) {
           e->setParameterId(0,_offsetParam1->id());
           e->setParameterId(1,_offsetParam2->id());
     graph()->addEdge(e);

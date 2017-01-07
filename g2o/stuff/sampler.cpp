@@ -33,13 +33,13 @@ namespace g2o {
   static std::mt19937 _gen_real;
  
   double sampleUniform(double min, double max, std::mt19937* generator){
-    if (generator)
+    if (generator != nullptr)
       return _uniformReal(*generator)*(max-min)+min;
     return _uniformReal(_gen_real)*(max-min)+min;
   }
 
   double sampleGaussian(std::mt19937* generator){
-    if (generator)
+    if (generator != nullptr)
       return _univariateSampler(*generator);
     return _univariateSampler(_gen_real);
   }

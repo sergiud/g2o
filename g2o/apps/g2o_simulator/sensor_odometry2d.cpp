@@ -38,15 +38,15 @@ namespace g2o {
 
   void SensorOdometry2D::sense(){
     
-    if (! robot())
+    if (robot() == nullptr)
       return;
     
     RobotType* r =dynamic_cast<RobotType*>(robot());
-    if (!r)
+    if (r == nullptr)
       return;
     
     PoseObject* pprev=nullptr, *pcurr=nullptr;
-    std::list<PoseObject*>::reverse_iterator it=r->trajectory().rbegin();
+    auto it=r->trajectory().rbegin();
     if (it!=r->trajectory().rend()){
       pcurr = *it; 
       it++;
@@ -55,16 +55,16 @@ namespace g2o {
       pprev = *it; 
       it++;
     }
-    if (!(pcurr&&pprev)) {
+    if (!((pcurr != nullptr)&&(pprev != nullptr))) {
       cerr << __PRETTY_FUNCTION__ << ": fatal, trajectory empty" << endl;
       return;
     }
     _robotPoseObject = pprev;
     EdgeType* e=mkEdge(pcurr);
-    if (e){
+    if (e != nullptr){
       e->setMeasurementFromState();
       addNoise(e);
-      if (graph())
+      if (graph() != nullptr)
     graph()->addEdge(e);
     }
     _robotPoseObject = pcurr;

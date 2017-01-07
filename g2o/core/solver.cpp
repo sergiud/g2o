@@ -55,7 +55,7 @@ void Solver::resizeVector(size_t sx)
 #ifndef NDEBUG
     memset(_x, 0, _maxXSize * sizeof(double));
 #endif
-    if (_b) { // backup the former b, might still be needed for online processing
+    if (_b != nullptr) { // backup the former b, might still be needed for online processing
       memcpy(_x, _b, oldSize * sizeof(double));
       delete[] _b;
       _b = new double[_maxXSize];

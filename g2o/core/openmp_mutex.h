@@ -63,7 +63,7 @@ namespace g2o {
   {
     public:
 #ifdef NDEBUG
-      OpenMPMutex() {}
+      OpenMPMutex() = default;
 #else
       OpenMPMutex() : _cnt(0) {}
 #endif

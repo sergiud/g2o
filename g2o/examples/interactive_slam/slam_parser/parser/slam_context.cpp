@@ -34,12 +34,10 @@ using namespace std;
 namespace SlamParser {
 
 SlamContext::SlamContext()
-{
-}
+= default;
 
 SlamContext::~SlamContext()
-{
-}
+= default;
 
 bool SlamContext::process(CommandNode* commandNode)
 {

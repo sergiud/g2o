@@ -35,8 +35,7 @@ namespace g2o {
   }
 
   RobotData::~RobotData()
-  {
-  }
+  = default;
 
   void RobotData::setTimestamp(double ts)
   {

@@ -45,7 +45,7 @@ namespace SlamParser {
   {
     public:
       CommandNode(CommandType commandType, const std::string& tag) : _commandType(commandType), _tag(tag) {}
-      virtual ~CommandNode() {}
+      virtual ~CommandNode() = default;
       CommandType commandType() const { return _commandType;}
       const std::string& tag() const { return _tag;}
     protected:

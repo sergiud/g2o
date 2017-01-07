@@ -71,8 +71,7 @@ int DlWrapper::openLibraries(const std::string& directory, const std::string& pa
   vector<string> matchingFiles = getFilesByPattern(searchPattern.c_str());
 
   int numLibs = 0;
-  for (size_t i = 0; i < matchingFiles.size(); ++i) {
-    const string& filename = matchingFiles[i];
+  for (auto & filename : matchingFiles) {
     if (find(_filenames.begin(), _filenames.end(), filename) != _filenames.end())
       continue;
 
@@ -100,8 +99,8 @@ int DlWrapper::openLibraries(const std::string& directory, const std::string& pa
 void DlWrapper::clear()
 {
 # if defined (UNIX) || defined(CYGWIN)
-  for (size_t i = 0; i < _handles.size(); ++i) {
-    dlclose(_handles[i]);
+  for (auto & _handle : _handles) {
+    dlclose(_handle);
   }
 #elif defined(WINDOWS)
   for (size_t i = 0; i < _handles.size(); ++i) {
@@ -116,7 +115,7 @@ bool DlWrapper::openLibrary(const std::string& filename)
 {
 # if defined (UNIX) || defined(CYGWIN)
   void* handle = dlopen(filename.c_str(), RTLD_LAZY);
-  if (! handle) {
+  if (handle == nullptr) {
     cerr << __PRETTY_FUNCTION__ << " Cannot open library: " << dlerror() << '\n';
     return false;
   }

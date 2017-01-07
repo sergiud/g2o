@@ -79,7 +79,7 @@ namespace internal {
 template <typename MatrixType>
 bool LinearSolverPCG<MatrixType>::solve(const SparseBlockMatrix<MatrixType>& A, double* x, double* b)
 {
-  const bool indexRequired = _indices.size() == 0;
+  const bool indexRequired = _indices.empty();
   _diag.clear();
   _J.clear();
 
@@ -87,7 +87,7 @@ bool LinearSolverPCG<MatrixType>::solve(const SparseBlockMatrix<MatrixType>& A, 
   int colIdx = 0;
   for (size_t i = 0; i < A.blockCols().size(); ++i){
     const typename SparseBlockMatrix<MatrixType>::IntBlockMap& col = A.blockCols()[i];
-    if (col.size() > 0) {
+    if (!col.empty()) {
       typename SparseBlockMatrix<MatrixType>::IntBlockMap::const_iterator it;
       for (it = col.begin(); it != col.end(); ++it) {
         if (it->first == (int)i) { // only the upper triangular block is needed
@@ -148,7 +148,7 @@ bool LinearSolverPCG<MatrixType>::solve(const SparseBlockMatrix<MatrixType>& A, 
   //std::cerr << "residual[" << iteration << "]: " << dn << std::endl;
   _residual = 0.5 * dn;
   G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-  if (globalStats) {
+  if (globalStats != nullptr) {
     globalStats->iterationsLinearSolver = iteration;
   }
 

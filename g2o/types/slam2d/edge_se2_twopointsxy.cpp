@@ -58,11 +58,11 @@ namespace g2o{
     bool estimatev1 = true;
     bool estimatev2 = true;
 
-    for(std::set<HyperGraph::Vertex*>::iterator it=fixed.begin(); it!=fixed.end(); it++){
-      if(v1->id() == (*it)->id()){
+    for(auto it : fixed){
+      if(v1->id() == it->id()){
         estimatev1 = false;
       }
-      else if(v2->id() == (*it)->id()){
+      else if(v2->id() == it->id()){
         estimatev2 = false;
       }
     }
@@ -82,8 +82,8 @@ namespace g2o{
   double EdgeSE2TwoPointsXY::initialEstimatePossible(const OptimizableGraph::VertexSet& fixed, OptimizableGraph::Vertex* toEstimate){
     (void) toEstimate;
 
-    for(std::set<HyperGraph::Vertex *>::iterator it=fixed.begin(); it!=fixed.end(); it++){
-      if(_vertices[0]->id() == (*it)->id()){
+    for(auto it : fixed){
+      if(_vertices[0]->id() == it->id()){
         return 1.0;
       }
     }

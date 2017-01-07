@@ -40,7 +40,7 @@ namespace g2o {
 
 
   void SensorSE3Prior::addParameters(){
-    if (!_offsetParam)
+    if (_offsetParam == nullptr)
       _offsetParam = new ParameterSE3Offset();
     assert(world());
     world()->addParameter(_offsetParam);
@@ -54,25 +54,25 @@ namespace g2o {
   }
 
   void SensorSE3Prior::sense() {
-    if (! _offsetParam){
+    if (_offsetParam == nullptr){
       return;
     }
     _robotPoseObject=nullptr;
     RobotType* r= dynamic_cast<RobotType*>(robot());
-    std::list<PoseObject*>::reverse_iterator it=r->trajectory().rbegin();
+    auto it=r->trajectory().rbegin();
     int count = 0;
     while (it!=r->trajectory().rend() && count < 1){
-      if (!_robotPoseObject)
+      if (_robotPoseObject == nullptr)
   _robotPoseObject = *it;
       it++;
       count++;
     }
-    if (!_robotPoseObject)
+    if (_robotPoseObject == nullptr)
       return;
     _sensorPose = _robotPoseObject->vertex()->estimate()*_offsetParam->offset();
     EdgeType* e=mkEdge();
     e->setParameterId(0,_offsetParam->id());
-    if (e && graph()) {
+    if ((e != nullptr) && (graph() != nullptr)) {
       graph()->addEdge(e);
       e->setMeasurementFromState();
       addNoise(e);

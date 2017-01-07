@@ -37,7 +37,7 @@ int main()
   typedef BlockSolver< BlockSolverTraits<6, 6> > BlockSolver;
   BlockSolver::LinearSolverType * linearSolver
       = new LinearSolverCholmod<BlockSolver::PoseMatrixType>();
-  BlockSolver* blockSolver = new BlockSolver(linearSolver);
+  auto* blockSolver = new BlockSolver(linearSolver);
   OptimizationAlgorithm* optimizationAlgorithm = new OptimizationAlgorithmGaussNewton(blockSolver);
   optimizer.setAlgorithm(optimizationAlgorithm);
 
@@ -51,7 +51,7 @@ int main()
   
   // Construct the first vertex; this corresponds to the initial
   // condition and register it with the optimiser
-  VertexPositionVelocity3D* stateNode = new VertexPositionVelocity3D();
+  auto* stateNode = new VertexPositionVelocity3D();
   stateNode->setEstimate(state);
   stateNode->setId(0);
   optimizer.addVertex(stateNode);
@@ -92,13 +92,13 @@ int main()
         }
 
       // Construct vertex which corresponds to the current state of the target
-      VertexPositionVelocity3D* stateNode = new VertexPositionVelocity3D();
+      auto* stateNode = new VertexPositionVelocity3D();
       
       stateNode->setId(k);
       stateNode->setMarginalized(false);
       optimizer.addVertex(stateNode);
 
-      TargetOdometry3DEdge* toe = new TargetOdometry3DEdge(dt, accelerometerNoiseSigma);
+      auto* toe = new TargetOdometry3DEdge(dt, accelerometerNoiseSigma);
       toe->setVertex(0, lastStateNode);
       toe->setVertex(1, stateNode);
       VertexPositionVelocity3D* vPrev= dynamic_cast<VertexPositionVelocity3D*>(lastStateNode);
@@ -114,7 +114,7 @@ int main()
       lastStateNode = stateNode;
 
       // Add the GPS observation
-      GPSObservationEdgePositionVelocity3D* goe = new GPSObservationEdgePositionVelocity3D(gpsMeasurement, gpsNoiseSigma);
+      auto* goe = new GPSObservationEdgePositionVelocity3D(gpsMeasurement, gpsNoiseSigma);
       goe->setVertex(0, stateNode);
       optimizer.addEdge(goe);
     }

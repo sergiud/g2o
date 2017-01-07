@@ -46,8 +46,7 @@ namespace g2o {
   }
 
   OptimizationAlgorithmGaussNewton::~OptimizationAlgorithmGaussNewton()
-  {
-  }
+  = default;
 
   OptimizationAlgorithm::SolverResult OptimizationAlgorithmGaussNewton::solve(int iteration, bool online)
   {
@@ -59,7 +58,7 @@ namespace g2o {
     double t=get_monotonic_time();
     _optimizer->computeActiveErrors();
     G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
-    if (globalStats) {
+    if (globalStats != nullptr) {
       globalStats->timeResiduals = get_monotonic_time()-t;
     }
 
@@ -73,19 +72,19 @@ namespace g2o {
 
     t=get_monotonic_time();
     _solver->buildSystem();
-    if (globalStats) {
+    if (globalStats != nullptr) {
       globalStats->timeQuadraticForm = get_monotonic_time()-t;
       t=get_monotonic_time();
     }
 
     ok = _solver->solve();
-    if (globalStats) {
+    if (globalStats != nullptr) {
       globalStats->timeLinearSolution = get_monotonic_time()-t;
       t=get_monotonic_time();
     }
 
     _optimizer->update(_solver->x());
-    if (globalStats) {
+    if (globalStats != nullptr) {
       globalStats->timeUpdate = get_monotonic_time()-t;
     }
     if (ok)

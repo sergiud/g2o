@@ -47,8 +47,8 @@ namespace g2o {
   void ParameterContainer::clear() {
     if (!_isMainStorage)
       return;
-    for (iterator it = begin(); it!=end(); it++){
-      delete it->second;
+    for (auto & it : *this){
+      delete it.second;
     }
     BaseClass::clear();
   }
@@ -60,7 +60,7 @@ namespace g2o {
   bool ParameterContainer::addParameter(Parameter* p){
     if (p->id()<0)
       return false;
-    iterator it=find(p->id());
+    auto it=find(p->id());
     if (it!=end())
       return false;
     insert(make_pair(p->id(), p));
@@ -68,21 +68,21 @@ namespace g2o {
   }
 
   Parameter* ParameterContainer::getParameter(int id) {
-    iterator it=find(id);
+    auto it=find(id);
     if (it==end())
       return nullptr;
     return it->second;
   }
 
   const Parameter* ParameterContainer::getParameter(int id) const {
-    const_iterator it=find(id);
+    auto it=find(id);
     if (it==end())
       return nullptr;
     return it->second;
   }
 
   Parameter* ParameterContainer::detachParameter(int id){
-    iterator it=find(id);
+    auto it=find(id);
     if (it==end())
       return nullptr;
     Parameter* p=it->second;
@@ -92,10 +92,10 @@ namespace g2o {
   
   bool ParameterContainer::write(std::ostream& os) const{
     Factory* factory = Factory::instance();
-    for (const_iterator it=begin(); it!=end(); it++){
-      os << factory->tag(it->second) << " ";
-      os << it->second->id() << " ";
-      it->second->write(os);
+    for (const auto & it : *this){
+      os << factory->tag(it.second) << " ";
+      os << it.second->id() << " ";
+      it.second->write(os);
       os << endl;
     }
     return true;
@@ -114,17 +114,17 @@ namespace g2o {
       if (bytesRead == -1)
         break;
       currentLine >> token;
-      if (bytesRead == 0 || token.size() == 0 || token[0] == '#')
+      if (bytesRead == 0 || token.empty() || token[0] == '#')
         continue;
-      if (_renamedTypesLookup && _renamedTypesLookup->size()>0){
-	map<string, string>::const_iterator foundIt = _renamedTypesLookup->find(token);
+      if ((_renamedTypesLookup != nullptr) && !_renamedTypesLookup->empty()){
+	auto foundIt = _renamedTypesLookup->find(token);
 	if (foundIt != _renamedTypesLookup->end()) {
 	  token = foundIt->second;
 	}
       }
 
       HyperGraph::HyperGraphElement* element = factory->construct(token, elemBitset);
-      if (! element) // not a parameter or otherwise unknown tag
+      if (element == nullptr) // not a parameter or otherwise unknown tag
         continue;
       assert(element->elementType() == HyperGraph::HGET_PARAMETER && "Should be a param");
 

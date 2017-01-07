@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 
   // registering all the types from the libraries
 
-  if (inputFilename.size() == 0) {
+  if (inputFilename.empty()) {
     cerr << "No input data specified" << endl;
     return 0;
   } else if (inputFilename == "-") {
@@ -114,12 +114,12 @@ int main(int argc, char** argv)
   // insert all lines in the infomap
   int currentId = -1000;
   bool firstVertexFound =false;
-  for (OptimizableGraph::VertexIDMap::iterator it=inGraph.vertices().begin(); it!=inGraph.vertices().end(); it++){
-    currentId = currentId > it->first ?  currentId : it->first;
+  for (auto & it : inGraph.vertices()){
+    currentId = currentId > it.first ?  currentId : it.first;
 
-    VertexSE2 *pose=dynamic_cast<VertexSE2*> (it->second);
-    if (pose){
-      VertexSE2 *npose=new VertexSE2();
+    VertexSE2 *pose=dynamic_cast<VertexSE2*> (it.second);
+    if (pose != nullptr){
+      auto *npose=new VertexSE2();
       npose->setEstimate(pose->estimate());
       npose->setId(pose->id());
       outGraph.addVertex(npose);
@@ -129,8 +129,8 @@ int main(int argc, char** argv)
       }
     }
 
-    VertexSegment2D* s=dynamic_cast<VertexSegment2D*> (it->second);
-    if (s){
+    VertexSegment2D* s=dynamic_cast<VertexSegment2D*> (it.second);
+    if (s != nullptr){
       LineInfo linfo(s);
       outGraph.addVertex(linfo.line);
       lmap.insert(make_pair(s->id(), linfo));
@@ -140,10 +140,10 @@ int main(int argc, char** argv)
   currentId++;
 
   cerr << "filling in edges and odoms" << endl;
-  for (OptimizableGraph::EdgeSet::iterator it=inGraph.edges().begin(); it!=inGraph.edges().end(); it++){
-    EdgeSE2* ods=dynamic_cast<EdgeSE2*> (*it);
-    if (ods){
-      EdgeSE2* ods2=new EdgeSE2();
+  for (auto it : inGraph.edges()){
+    EdgeSE2* ods=dynamic_cast<EdgeSE2*> (it);
+    if (ods != nullptr){
+      auto* ods2=new EdgeSE2();
       ods2->setMeasurement(ods->measurement());
       ods2->setInformation(ods->information());
       ods2->vertices()[0]=outGraph.vertex(ods->vertices()[0]->id());
@@ -151,46 +151,46 @@ int main(int argc, char** argv)
       outGraph.addEdge(ods2);
     }
 
-    EdgeSE2Segment2D* es=dynamic_cast<EdgeSE2Segment2D*> (*it);
-    EdgeSE2Segment2DLine* el=dynamic_cast<EdgeSE2Segment2DLine*> (*it);
-    EdgeSE2Segment2DPointLine* espl=dynamic_cast<EdgeSE2Segment2DPointLine*> (*it);
+    EdgeSE2Segment2D* es=dynamic_cast<EdgeSE2Segment2D*> (it);
+    EdgeSE2Segment2DLine* el=dynamic_cast<EdgeSE2Segment2DLine*> (it);
+    EdgeSE2Segment2DPointLine* espl=dynamic_cast<EdgeSE2Segment2DPointLine*> (it);
 
-    if (es || el || espl){
-      VertexSE2* pose = dynamic_cast<VertexSE2*>((*it)->vertices()[0]);
-      VertexSegment2D* segment = dynamic_cast<VertexSegment2D*>((*it)->vertices()[1]);
-      if (!pose)
+    if ((es != nullptr) || (el != nullptr) || (espl != nullptr)){
+      VertexSE2* pose = dynamic_cast<VertexSE2*>(it->vertices()[0]);
+      VertexSegment2D* segment = dynamic_cast<VertexSegment2D*>(it->vertices()[1]);
+      if (pose == nullptr)
         continue;
       pose=dynamic_cast<VertexSE2*>(outGraph.vertex(pose->id()));
-      LineInfoMap::iterator lit=lmap.find(segment->id());
+      auto lit=lmap.find(segment->id());
       assert (lit!=lmap.end());
       LineInfo& linfo = lit->second;
       VertexLine2D* line =linfo.line;
       VertexPointXY* & p1=linfo.p1;
       VertexPointXY* & p2=linfo.p2;
 
-      EdgeSE2Line2D* el2=new EdgeSE2Line2D();
+      auto* el2=new EdgeSE2Line2D();
       el2->vertices()[0]=pose;
       el2->vertices()[1]=line;
-      if (el) {
+      if (el != nullptr) {
         el2->setMeasurement(el->measurement());
         el2->setInformation(el->information());
         outGraph.addEdge(el2);
       }
-      if (es) {
+      if (es != nullptr) {
         el2->setMeasurement(computeLineParameters(es->measurementP1(), es->measurementP2()));
         Matrix2d el2info;
         el2info << 10000, 0, 0, 1000;
         el2->setInformation(el2info);
         outGraph.addEdge(el2);
         Matrix4d si=es->information();
-        if (!p1){
+        if (p1 == nullptr){
           p1=new VertexPointXY();
           p1->setEstimate(segment->estimateP1());
           p1->setId(currentId++);
           outGraph.addVertex(p1);
           line->p1Id=p1->id();
 
-          EdgeLine2DPointXY* p1e=new EdgeLine2DPointXY();
+          auto* p1e=new EdgeLine2DPointXY();
           p1e->vertices()[0]=line;
           p1e->vertices()[1]=p1;
           p1e->setMeasurement(0);
@@ -199,14 +199,14 @@ int main(int argc, char** argv)
           p1e->setInformation(p1i);
           outGraph.addEdge(p1e);
         }
-        if (!p2){
+        if (p2 == nullptr){
           p2=new VertexPointXY();
           p2->setEstimate(segment->estimateP2());
           p2->setId(currentId++);
           outGraph.addVertex(p2);
           line->p2Id=p2->id();
 
-          EdgeLine2DPointXY* p2e=new EdgeLine2DPointXY();
+          auto* p2e=new EdgeLine2DPointXY();
           p2e->vertices()[0]=line;
           p2e->vertices()[1]=p2;
           p2e->setMeasurement(0);
@@ -216,7 +216,7 @@ int main(int argc, char** argv)
           outGraph.addEdge(p2e);
         }
 
-        EdgeSE2PointXY* p1e = new EdgeSE2PointXY();
+        auto* p1e = new EdgeSE2PointXY();
         p1e->vertices()[0]=pose;
         p1e->vertices()[1]=p1;
         p1e->setMeasurement(es->measurementP1());
@@ -224,7 +224,7 @@ int main(int argc, char** argv)
         p1e->setInformation(p1i);
         outGraph.addEdge(p1e);
 
-        EdgeSE2PointXY* p2e = new EdgeSE2PointXY();
+        auto* p2e = new EdgeSE2PointXY();
         p2e->vertices()[0]=pose;
         p2e->vertices()[1]=p2;
         p2e->setMeasurement(es->measurementP2());
@@ -234,7 +234,7 @@ int main(int argc, char** argv)
 
       }
 
-      if (espl) {
+      if (espl != nullptr) {
         Matrix3d si=espl->information();
         Vector2d lparams;
         lparams[0]=espl->theta();
@@ -247,14 +247,14 @@ int main(int argc, char** argv)
         outGraph.addEdge(el2);
 
         VertexPointXY*& pX = (espl->pointNum()==0 )? p1:p2;
-        if (!pX){
+        if (pX == nullptr){
           cerr << "mkp: " << line->id() << endl;
           pX=new VertexPointXY();
           pX->setId(currentId++);
           outGraph.addVertex(pX);
 
           Vector2d estPx;
-          if (espl->pointNum()){
+          if (espl->pointNum() != 0){
             estPx = segment->estimateP1();
             line->p1Id=pX->id();
           } else {
@@ -263,7 +263,7 @@ int main(int argc, char** argv)
           }
           pX->setEstimate(estPx);
 
-          EdgeLine2DPointXY* pXe=new EdgeLine2DPointXY();
+          auto* pXe=new EdgeLine2DPointXY();
           pXe->vertices()[0]=line;
           pXe->vertices()[1]=pX;
           pXe->setMeasurement(0);
@@ -273,7 +273,7 @@ int main(int argc, char** argv)
           outGraph.addEdge(pXe);
         }
 
-        EdgeSE2PointXY* pXe = new EdgeSE2PointXY();
+        auto* pXe = new EdgeSE2PointXY();
         pXe->vertices()[0]=pose;
         pXe->vertices()[1]=pX;
         pXe->setMeasurement(espl->point());
@@ -285,7 +285,7 @@ int main(int argc, char** argv)
   }
 
 
-  if (outputfilename.size() > 0) {
+  if (!outputfilename.empty()) {
     if (outputfilename == "-") {
       cerr << "saving to stdout";
       outGraph.save(cout);

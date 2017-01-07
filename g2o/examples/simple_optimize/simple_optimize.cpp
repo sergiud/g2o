@@ -57,11 +57,11 @@ int main(int argc, char** argv)
   BlockSolverX::LinearSolverType * linearSolver = new LinearSolverCSparse<BlockSolverX::PoseMatrixType>();
 
   // create the block solver on top of the linear solver
-  BlockSolverX* blockSolver = new BlockSolverX(linearSolver);
+  auto* blockSolver = new BlockSolverX(linearSolver);
 
   // create the algorithm to carry out the optimization
   //OptimizationAlgorithmGaussNewton* optimizationAlgorithm = new OptimizationAlgorithmGaussNewton(blockSolver);
-  OptimizationAlgorithmLevenberg* optimizationAlgorithm = new OptimizationAlgorithmLevenberg(blockSolver);
+  auto* optimizationAlgorithm = new OptimizationAlgorithmLevenberg(blockSolver);
 
   // NOTE: We skip to fix a variable here, either this is stored in the file
   // itself or Levenberg will handle it.
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
   optimizer.initializeOptimization();
   optimizer.optimize(maxIterations);
 
-  if (outputFilename.size() > 0) {
+  if (!outputFilename.empty()) {
     if (outputFilename == "-") {
       cerr << "saving to stdout";
       optimizer.save(cout);

@@ -99,13 +99,13 @@ namespace g2o {
     if (typeid(*element).name()!=_typeName)
       return nullptr;
     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
-    if (!params->os){
+    if (params->os == nullptr){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified" << std::endl;
       return nullptr;
     }
 
     EdgeSE2PointXY* e =  static_cast<EdgeSE2PointXY*>(element);
-    if (e->numUndefinedVertices())
+    if (e->numUndefinedVertices() != 0)
       return this;
     VertexSE2* fromEdge = static_cast<VertexSE2*>(e->vertex(0));
     VertexPointXY* toEdge   = static_cast<VertexPointXY*>(e->vertex(1));
@@ -125,22 +125,22 @@ namespace g2o {
       return nullptr;
 
     refreshPropertyPtrs(params_);
-    if (! _previousParams)
+    if (_previousParams == nullptr)
       return this;
     
-    if (_show && !_show->value())
+    if ((_show != nullptr) && !_show->value())
       return this;
 
 
     EdgeSE2PointXY* e =  static_cast<EdgeSE2PointXY*>(element);
     VertexSE2* fromEdge = static_cast<VertexSE2*>(e->vertex(0));
     VertexPointXY* toEdge   = static_cast<VertexPointXY*>(e->vertex(1));
-    if (! fromEdge)
+    if (fromEdge == nullptr)
       return this;
     Vector2D p=e->measurement();
     glPushAttrib(GL_ENABLE_BIT|GL_LIGHTING|GL_COLOR);
     glDisable(GL_LIGHTING);
-    if (!toEdge){
+    if (toEdge == nullptr){
       p=fromEdge->estimate()*p;
       glColor3f(LANDMARK_EDGE_GHOST_COLOR);
       glPushAttrib(GL_POINT_SIZE);

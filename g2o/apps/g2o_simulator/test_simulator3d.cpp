@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
   OptimizableGraph graph;
   World world(&graph);
   for (int i=0; i<nlandmarks; i++){
-    WorldObjectTrackXYZ * landmark = new WorldObjectTrackXYZ;
+    auto * landmark = new WorldObjectTrackXYZ;
     double x = sampleUniform(-.5, .5, &generator)*worldSize;
     double y = sampleUniform(-.5, .5, &generator)*worldSize;
     double z = sampleUniform(-.5, .5);

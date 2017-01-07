@@ -37,7 +37,7 @@ namespace g2o {
     {
       public:
         Parameter();
-        virtual ~Parameter() {};
+        virtual ~Parameter() = default;;
         //! read the data from a stream
         virtual bool read(std::istream& is) = 0;
         //! write the data to a stream

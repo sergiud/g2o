@@ -106,10 +106,10 @@ int main(int argc, char **argv)
         ::BlockSolverX::PoseMatrixType>();
 
 
-  BlockSolverX * solver_ptr
+  auto * solver_ptr
       = new BlockSolverX(linearSolver);
 
-  g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+  auto* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
 
   optimizer.setAlgorithm(solver);
 
@@ -147,7 +147,7 @@ int main(int argc, char **argv)
     cam.translation() = t;
 
     // set up node
-    VertexSCam *vc = new VertexSCam();
+    auto *vc = new VertexSCam();
     vc->setEstimate(cam);
     vc->setId(vertex_id);      // vertex id
 
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
     nm0.normalize();
     nm1.normalize();
 
-    Edge_V_V_GICP * e           // new edge with correct cohort for caching
+    auto * e           // new edge with correct cohort for caching
         = new Edge_V_V_GICP(); 
 
     e->vertices()[0]            // first viewpoint
@@ -239,15 +239,15 @@ int main(int argc, char **argv)
 
 
   // add point projections to this vertex
-  for (size_t i=0; i<true_points.size(); ++i)
+  for (auto & true_point : true_points)
   {
-    g2o::VertexSBAPointXYZ * v_p
+    auto * v_p
         = new g2o::VertexSBAPointXYZ();
 
 
     v_p->setId(vertex_id++);
     v_p->setMarginalized(true);
-    v_p->setEstimate(true_points.at(i)
+    v_p->setEstimate(true_point
         + Vector3d(Sample::gaussian(1),
                    Sample::gaussian(1),
                    Sample::gaussian(1)));
@@ -259,7 +259,7 @@ int main(int argc, char **argv)
         Vector3d z;
         dynamic_cast<g2o::VertexSCam*>
           (optimizer.vertices().find(j)->second)
-          ->mapPoint(z,true_points.at(i));
+          ->mapPoint(z,true_point);
 
         if (z[0]>=0 && z[1]>=0 && z[0]<640 && z[1]<480)
         {
@@ -267,7 +267,7 @@ int main(int argc, char **argv)
                         Sample::gaussian(pix_noise),
                         Sample::gaussian(pix_noise/16.0));
 
-          g2o::Edge_XYZ_VSC * e
+          auto * e
               = new g2o::Edge_XYZ_VSC();
 
           e->vertices()[0]

@@ -197,8 +197,7 @@ namespace SlamParser {
   }
 
   Parser::~Parser ()
-  {
-  }
+  = default;
 
 #if YYDEBUG
   /*--------------------------------.
@@ -468,7 +467,7 @@ namespace SlamParser {
 
     /* Count tokens shifted since error; after three, turn off error
        status.  */
-    if (yyerrstatus_)
+    if (yyerrstatus_ != 0)
       --yyerrstatus_;
 
     yystate = yyn;
@@ -494,7 +493,7 @@ namespace SlamParser {
        Otherwise, the following line sets YYVAL to garbage.
        This behavior is undocumented and Bison
        users should not rely upon it.  */
-    if (yylen)
+    if (yylen != 0)
       yyval = yysemantic_stack_[yylen - 1];
     else
       yyval = yysemantic_stack_[0];
@@ -773,7 +772,7 @@ namespace SlamParser {
   `------------------------------------*/
   yyerrlab:
     /* If not already recovering from an error, report this error.  */
-    if (!yyerrstatus_)
+    if (yyerrstatus_ == 0)
       {
   ++yynerrs_;
   error (yylloc, yysyntax_error_ (yystate, yytoken));
@@ -936,7 +935,7 @@ namespace SlamParser {
       for (int x = yyxbegin; x < yyxend; ++x)
         if (yycheck_[x + yyn] == x && x != yyterror_)
     {
-      res += (!count++) ? ", expecting " : " or ";
+      res += ((count++) == 0) ? ", expecting " : " or ";
       res += yytnamerr_ (yytname_[x]);
     }
     }

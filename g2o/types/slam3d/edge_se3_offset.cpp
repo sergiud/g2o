@@ -53,7 +53,7 @@ namespace g2o {
     resolveCache(_cacheFrom, (OptimizableGraph::Vertex*)_vertices[0],"CACHE_SE3_OFFSET",pv);
     pv[1]=_offsetTo;
     resolveCache(_cacheTo, (OptimizableGraph::Vertex*)_vertices[1],"CACHE_SE3_OFFSET",pv);
-    return (_cacheFrom && _cacheTo);
+    return ((_cacheFrom != nullptr) && (_cacheTo != nullptr));
   }
 
   bool EdgeSE3Offset::read(std::istream& is) {

@@ -64,11 +64,11 @@ int main(int argc, char** argv)
   double baseline = -1;
   bool firstCam = true;
   for (OptimizableGraph::VertexIDMap::const_iterator it = inputGraph.vertices().begin(); it != inputGraph.vertices().end(); ++it) {
-    if (dynamic_cast<VertexCam*>(it->second)) {
+    if (dynamic_cast<VertexCam*>(it->second) != nullptr) {
       VertexCam* v = static_cast<VertexCam*>(it->second);
       if (firstCam) {
         firstCam = false;
-        g2o::ParameterCamera* camParams = new g2o::ParameterCamera;
+        auto* camParams = new g2o::ParameterCamera;
         camParams->setId(0);
         const SBACam& c = v->estimate();
         baseline = c.baseline;
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
         outputGraph.addParameter(camParams);
       }
 
-      VertexSE3* ov = new VertexSE3;
+      auto* ov = new VertexSE3;
       ov->setId(v->id());
       Eigen::Isometry3d p;
       p = v->estimate().rotation();
@@ -87,10 +87,10 @@ int main(int argc, char** argv)
         assert(0 && "Failure adding camera vertex");
       }
     }
-    else if (dynamic_cast<VertexSBAPointXYZ*>(it->second)) {
+    else if (dynamic_cast<VertexSBAPointXYZ*>(it->second) != nullptr) {
       VertexSBAPointXYZ* v = static_cast<VertexSBAPointXYZ*>(it->second);
 
-      VertexPointXYZ* ov = new VertexPointXYZ;
+      auto* ov = new VertexPointXYZ;
       ov->setId(v->id());
       ov->setEstimate(v->estimate());
       if (! outputGraph.addVertex(ov)) {
@@ -99,11 +99,11 @@ int main(int argc, char** argv)
     }
   }
   
-  for (OptimizableGraph::EdgeSet::const_iterator it = inputGraph.edges().begin(); it != inputGraph.edges().end(); ++it) {
-    if (dynamic_cast<EdgeProjectP2SC*>(*it)) {
-      EdgeProjectP2SC* e = static_cast<EdgeProjectP2SC*>(*it);
+  for (auto it : inputGraph.edges()) {
+    if (dynamic_cast<EdgeProjectP2SC*>(it) != nullptr) {
+      EdgeProjectP2SC* e = static_cast<EdgeProjectP2SC*>(it);
 
-      EdgeSE3PointXYZDisparity* oe = new EdgeSE3PointXYZDisparity;
+      auto* oe = new EdgeSE3PointXYZDisparity;
       oe->vertices()[0] = outputGraph.vertex(e->vertices()[1]->id());
       oe->vertices()[1] = outputGraph.vertex(e->vertices()[0]->id());
 

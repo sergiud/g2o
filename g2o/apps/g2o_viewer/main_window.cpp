@@ -50,8 +50,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
 }
 
 MainWindow::~MainWindow()
-{
-}
+= default;
 
 void MainWindow::on_actionLoad_triggered(bool)
 {
@@ -76,7 +75,7 @@ void MainWindow::on_actionSave_triggered(bool)
 
 void MainWindow::on_btnOptimize_clicked()
 {
-  if (viewer->graph->vertices().size() == 0 || viewer->graph->edges().size() == 0) {
+  if (viewer->graph->vertices().empty() || viewer->graph->edges().empty()) {
     cerr << "Graph has no vertices / egdes" << endl;
     return;
   }
@@ -99,7 +98,7 @@ void MainWindow::on_btnOptimize_clicked()
 
   int maxIterations = spIterations->value();
   int iter = viewer->graph->optimize(maxIterations);
-  if (maxIterations > 0 && !iter){
+  if (maxIterations > 0 && (iter == 0)){
     cerr << "Optimization failed, result might be invalid" << endl;
   }
 
@@ -113,7 +112,7 @@ void MainWindow::on_btnOptimize_clicked()
 
 void MainWindow::on_btnInitialGuess_clicked()
 {
-  if (viewer->graph->activeEdges().size() == 0)
+  if (viewer->graph->activeEdges().empty())
     viewer->graph->initializeOptimization();
 
   switch (cbxIniitialGuessMethod->currentIndex()) {
@@ -139,7 +138,7 @@ void MainWindow::on_btnInitialGuess_clicked()
 
 void MainWindow::on_btnSetZero_clicked()
 {
-  if (viewer->graph->activeEdges().size() == 0)
+  if (viewer->graph->activeEdges().empty())
     viewer->graph->initializeOptimization();
 
   viewer->graph->setToOrigin();
@@ -149,7 +148,7 @@ void MainWindow::on_btnSetZero_clicked()
 
 void MainWindow::fixGraph()
 {
-  if (viewer->graph->vertices().size() == 0 || viewer->graph->edges().size() == 0) {
+  if (viewer->graph->vertices().empty() || viewer->graph->edges().empty()) {
     return;
   }
 
@@ -157,7 +156,7 @@ void MainWindow::fixGraph()
   bool gaugeFreedom = viewer->graph->gaugeFreedom();
   g2o::OptimizableGraph::Vertex* gauge = viewer->graph->findGauge();
   if (gaugeFreedom) {
-    if (! gauge) {
+    if (gauge == nullptr) {
       cerr <<  "cannot find a vertex to fix in this thing" << endl;
       return;
     } else {
@@ -185,8 +184,8 @@ void MainWindow::updateDisplayedSolvers()
 
   bool varFound = false;
   string varType = "";
-  for (OptimizationAlgorithmFactory::CreatorList::const_iterator it = knownSolvers.begin(); it != knownSolvers.end(); ++it) {
-    const OptimizationAlgorithmProperty& sp = (*it)->property();
+  for (const auto & knownSolver : knownSolvers) {
+    const OptimizationAlgorithmProperty& sp = knownSolver->property();
     if (sp.name == "gn_var" || sp.name == "gn_var_cholmod") {
       varType = sp.type;
       varFound = true;
@@ -195,8 +194,8 @@ void MainWindow::updateDisplayedSolvers()
   }
 
   if (varFound) {
-    for (OptimizationAlgorithmFactory::CreatorList::const_iterator it = knownSolvers.begin(); it != knownSolvers.end(); ++it) {
-      const OptimizationAlgorithmProperty& sp = (*it)->property();
+    for (const auto & knownSolver : knownSolvers) {
+      const OptimizationAlgorithmProperty& sp = knownSolver->property();
       if (sp.type == varType) {
         coOptimizer->addItem(QString::fromStdString(sp.name));
         _knownSolvers.push_back(sp);
@@ -206,22 +205,22 @@ void MainWindow::updateDisplayedSolvers()
 
   map<string, vector<OptimizationAlgorithmProperty> > solverLookUp;
 
-  for (OptimizationAlgorithmFactory::CreatorList::const_iterator it = knownSolvers.begin(); it != knownSolvers.end(); ++it) {
-    const OptimizationAlgorithmProperty& sp = (*it)->property();
+  for (const auto & knownSolver : knownSolvers) {
+    const OptimizationAlgorithmProperty& sp = knownSolver->property();
     if (varFound && varType == sp.type)
       continue;
     solverLookUp[sp.type].push_back(sp); 
   }
 
-  for (map<string, vector<OptimizationAlgorithmProperty> >::iterator it = solverLookUp.begin(); it != solverLookUp.end(); ++it) {
-    if (_knownSolvers.size() > 0) {
+  for (auto & it : solverLookUp) {
+    if (!_knownSolvers.empty()) {
       coOptimizer->insertSeparator(coOptimizer->count());
       _knownSolvers.emplace_back();
     }
-    const vector<OptimizationAlgorithmProperty>& vsp = it->second;
-    for (size_t j = 0; j < vsp.size(); ++j) {
-      coOptimizer->addItem(QString::fromStdString(vsp[j].name));
-      _knownSolvers.push_back(vsp[j]);
+    const vector<OptimizationAlgorithmProperty>& vsp = it.second;
+    for (const auto & j : vsp) {
+      coOptimizer->addItem(QString::fromStdString(j.name));
+      _knownSolvers.push_back(j);
     }
   }
 }
@@ -320,12 +319,12 @@ void MainWindow::setRobustKernel()
   if (robustKernel) {
     QString strRobustKernel = coRobustKernel->currentText();
     AbstractRobustKernelCreator* creator = RobustKernelFactory::instance()->creator(strRobustKernel.toStdString());
-    if (! creator) {
+    if (creator == nullptr) {
       cerr << strRobustKernel.toStdString() << " is not a valid robust kernel" << endl;
       return;
     }
-    for (SparseOptimizer::EdgeSet::const_iterator it = optimizer->edges().begin(); it != optimizer->edges().end(); ++it) {
-      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(*it);
+    for (auto it : optimizer->edges()) {
+      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(it);
       if (onlyLoop) {
         if (e->vertices().size() >= 2 && std::abs(e->vertex(0)->id() - e->vertex(1)->id()) != 1) {
           e->setRobustKernel(creator->construct());
@@ -337,8 +336,8 @@ void MainWindow::setRobustKernel()
       }
     }    
   } else {
-    for (SparseOptimizer::EdgeSet::const_iterator it = optimizer->edges().begin(); it != optimizer->edges().end(); ++it) {
-      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(*it);
+    for (auto it : optimizer->edges()) {
+      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(it);
       e->setRobustKernel(nullptr);
     }
   }
@@ -374,7 +373,7 @@ void MainWindow::on_actionDefault_Background_triggered(bool)
 
 void MainWindow::on_actionProperties_triggered(bool)
 {
-  if (! _viewerPropertiesWidget) {
+  if (_viewerPropertiesWidget == nullptr) {
     _viewerPropertiesWidget = new ViewerPropertiesWidget(this);
     _viewerPropertiesWidget->setWindowTitle(tr("Drawing Options"));
   }
@@ -384,7 +383,7 @@ void MainWindow::on_actionProperties_triggered(bool)
 
 void MainWindow::on_btnOptimizerParamaters_clicked()
 {
-  if (! _optimizerPropertiesWidget) {
+  if (_optimizerPropertiesWidget == nullptr) {
     _optimizerPropertiesWidget = new PropertiesWidget(this);
     _optimizerPropertiesWidget->setWindowTitle(tr("Internal Solver Properties"));
   }
@@ -396,7 +395,7 @@ void MainWindow::on_btnOptimizerParamaters_clicked()
   }
   if (allocatedNewSolver)
     prepare();
-  if (_currentSolver) {
+  if (_currentSolver != nullptr) {
     _optimizerPropertiesWidget->setProperties(const_cast<g2o::PropertyMap*>(&_currentSolver->properties()));
   } else {
     _optimizerPropertiesWidget->setProperties(nullptr);
@@ -455,7 +454,7 @@ void MainWindow::updateRobustKernels()
   coRobustKernel->clear();
   std::vector<std::string> kernels;
   RobustKernelFactory::instance()->fillKnownKernels(kernels);
-  for (size_t i = 0; i < kernels.size(); ++i) {
-    coRobustKernel->addItem(QString::fromStdString(kernels[i]));
+  for (auto & kernel : kernels) {
+    coRobustKernel->addItem(QString::fromStdString(kernel));
   }
 }

@@ -58,7 +58,7 @@ namespace g2o {
     if(!DrawAction::refreshPropertyPtrs(params_)) {
       return false;
     }
-    if(_previousParams) {
+    if(_previousParams != nullptr) {
       _lineLength = _previousParams->makeProperty<FloatProperty>(_typeName + "::LINE_LENGTH", 15);
       _lineWidth = _previousParams->makeProperty<FloatProperty>(_typeName + "::LINE_WIDTH", 5);
     }
@@ -76,11 +76,11 @@ namespace g2o {
     }
 
     refreshPropertyPtrs(params_);
-    if(!_previousParams) {
+    if(_previousParams == nullptr) {
       return this;
     }
     
-    if(_show && !_show->value()) {
+    if((_show != nullptr) && !_show->value()) {
       return this;
     }
 
@@ -91,7 +91,7 @@ namespace g2o {
     Eigen::Vector3d npoint = line.d().cross(line.w());
     glPushMatrix();
     glColor3f(float(that->color(0)), float(that->color(1)), float(that->color(2)));
-    if(_lineLength && _lineWidth) {
+    if((_lineLength != nullptr) && (_lineWidth != nullptr)) {
       glLineWidth(float(_lineWidth->value())); 
       glBegin(GL_LINES);
       glNormal3f(float(npoint.x()), float(npoint.y()), float(npoint.z()));

@@ -178,7 +178,7 @@ inline bool arrayHasNaN(const double* array, int size, int* nanIndex = nullptr)
 {
   for (int i = 0; i < size; ++i)
     if (g2o_isnan(array[i])) {
-      if (nanIndex)
+      if (nanIndex != nullptr)
         *nanIndex = i;
       return true;
     }

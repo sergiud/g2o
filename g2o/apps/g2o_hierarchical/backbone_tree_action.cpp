@@ -19,8 +19,8 @@ namespace g2o {
     _vsMap.clear();
     _vsMmap.clear();
     _freeEdges.clear();
-    for (HyperGraph::EdgeSet::iterator it=_optimizer->edges().begin(); it!=_optimizer->edges().end(); it++){
-      OptimizableGraph::Edge* e = (OptimizableGraph::Edge*)(*it);
+    for (auto it : _optimizer->edges()){
+      OptimizableGraph::Edge* e = (OptimizableGraph::Edge*)it;
       if (e->level()==_level) {
   _freeEdges.insert(e);
       }
@@ -35,7 +35,7 @@ namespace g2o {
     if (_factory->tag(v)!= _vertexTag)
       return 0;
     Star* parentStar=getStar(vParent);
-    if (! parentStar){
+    if (parentStar == nullptr){
       parentStar=new Star(_level+1,_optimizer);
       addToMap(parentStar, vParent);
       parentStar->_gauge.insert(vParent);
@@ -44,8 +44,8 @@ namespace g2o {
     fillStar(parentStar, e);
 
     // every _step levels you go down in the tree, create a new star
-    if (depth && ! (depth%_step )){
-      Star* star=new Star(_level+1, _optimizer);
+    if ((depth != 0) && ((depth%_step ) == 0)){
+      auto* star=new Star(_level+1, _optimizer);
       addToMap(star,v);
       star->_gauge.insert(v);
     }
@@ -55,7 +55,7 @@ namespace g2o {
 
   void  BackBoneTreeAction::addToMap(Star* s, HyperGraph::Vertex* v_){
     OptimizableGraph::Vertex* v= (OptimizableGraph::Vertex*)v_;
-    VertexStarMap::iterator it=_vsMap.find(v);
+    auto it=_vsMap.find(v);
     if (it!=_vsMap.end())
       it->second = s;
     else
@@ -66,7 +66,7 @@ namespace g2o {
 
   Star* BackBoneTreeAction::getStar(HyperGraph::Vertex* v_){
     OptimizableGraph::Vertex* v= (OptimizableGraph::Vertex*)v_;
-    VertexStarMap::iterator it=_vsMap.find(v);
+    auto it=_vsMap.find(v);
     if (it==_vsMap.end())
       return nullptr;
     return it->second;
@@ -74,12 +74,12 @@ namespace g2o {
 
   bool BackBoneTreeAction::fillStar(Star* s, HyperGraph::Edge* e_){
     OptimizableGraph::Edge* e = (OptimizableGraph::Edge*) e_;
-    HyperGraph::EdgeSet::iterator it=_freeEdges.find(e);
+    auto it=_freeEdges.find(e);
     if (it!=_freeEdges.end()) {
       _freeEdges.erase(it);
       s->_lowLevelEdges.insert(e);
-      for (size_t i=0; i<e->vertices().size(); i++){
-  s->_lowLevelVertices.insert(e->vertices()[i]);
+      for (auto & i : e->vertices()){
+  s->_lowLevelVertices.insert(i);
       }
       return true;
     }
