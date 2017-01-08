@@ -38,12 +38,18 @@ set (CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
 set (CPACK_PACKAGE_VERSION ${SHORT_VERSION})
 
 include (CheckCXXCompilerFlag)
+include (CheckIncludeFile)
+include (CheckCXXSymbolExists)
 include (CMakeDependentOption)
 include (CMakePackageConfigHelpers)
 include (CPack)
 include (CTest)
 include (GenerateExportHeader)
 include (GNUInstallDirs)
+
+check_cxx_symbol_exists (vasprintf cstdio G2O_HAVE_VASPRINTF)
+check_cxx_symbol_exists (drand48 cstdlib G2O_HAVE_DRAND48)
+check_include_file (sys/time.h G2O_HAVE_SYS_TIME_H)
 
 # GCC compiler flags
 check_cxx_compiler_flag (-Wa,-mbig-obj HAVE_AR_BIGOBJ)
