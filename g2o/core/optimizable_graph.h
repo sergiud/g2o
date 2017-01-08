@@ -51,14 +51,31 @@ namespace g2o {
   class CacheContainer;
   class RobustKernel;
 
+  template<class T, bool Aligned>
+  struct MakeConditionallyAligned;
+
+  template<class T>
+  struct MakeConditionallyAligned<T, true>
+  {
+      using MapType = typename T::AlignedMapType;
+  };
+
+  template<class T>
+  struct MakeConditionallyAligned<T, false>
+  {
+      using MapType = typename T::MapType;
+  };
+
+
   template <class T>
-  struct AlignmentFlags
+  struct ConditionallyAligned
   {
 #if EIGEN_VERSION_AT_LEAST(3, 3, 0)
-	  static constexpr int value = T::Flags & Eigen::AlignedMask;
+	  static constexpr bool IsAligned = !!(T::Flags & Eigen::AlignedMask);
 #else
-	  static constexpr int value = T::Flags & Eigen::AlignedBit ? Eigen::Aligned : Eigen::Unaligned;
+	  static constexpr bool IsAligned = (T::Flags & Eigen::AlignedBit) == Eigen::AlignedBit;
 #endif
+      using MapType = typename MakeConditionallyAligned<T, IsAligned>::MapType;
   };
 
   /**
