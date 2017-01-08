@@ -27,19 +27,21 @@
 #include <Eigen/Core>
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
+
+#include <cstdlib>
 #include <iostream>
 
-#include <g2o/stuff/command_args.h>
+#include <g2o/core/base_binary_edge.h>
+#include <g2o/core/base_vertex.h>
 #include <g2o/core/batch_stats.h>
-#include <g2o/core/sparse_optimizer.h>
 #include <g2o/core/block_solver.h>
 #include <g2o/core/optimization_algorithm_levenberg.h>
-#include <g2o/core/base_vertex.h>
 #include <g2o/core/solver.h>
-#include <g2o/core/base_binary_edge.h>
+#include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/dense/linear_solver_dense.h>
-#include <g2o/solvers/structure_only/structure_only_solver.h>
 #include <g2o/solvers/pcg/linear_solver_pcg.h>
+#include <g2o/solvers/structure_only/structure_only_solver.h>
+#include <g2o/stuff/command_args.h>
 
 #include "EXTERNAL/ceres/autodiff.h"
 
@@ -56,7 +58,7 @@ using namespace Eigen;
 /**
  * \brief camera vertex which stores the parameters for a pinhole camera
  *
- * The parameters of the camera are 
+ * The parameters of the camera are
  * - rx,ry,rz representing the rotation axis, whereas the angle is given by ||(rx,ry,rz)||
  * - tx,ty,tz the translation of the camera
  * - f the focal length of the camera
@@ -145,7 +147,7 @@ class VertexPointBAL : public BaseVertex<3, Eigen::Vector3d>
  *
  * In the last equation, r(p) is a function that computes a scaling factor to undo the radial
  * distortion:
- * r(p) = 1.0 + k1 * ||p||^2 + k2 * ||p||^4. 
+ * r(p) = 1.0 + k1 * ||p||^2 + k2 * ||p||^4.
  *
  * This gives a projection in pixels, where the origin of the image is the
  * center of the image, the positive x-axis points right, and the positive
@@ -336,7 +338,12 @@ int main(int argc, char** argv)
   cout << "Loading BAL dataset " << inputFilename << endl;
   {
     ifstream ifs(inputFilename.c_str());
-    int numCameras, numPoints, numObservations;
+
+    if (!ifs) {
+      std::cerr << "error: failed to open the dataset" << std::endl;
+      return EXIT_FAILURE;
+    }
+    int numCameras{}, numPoints{}, numObservations{};
     ifs >> numCameras >> numPoints >> numObservations;
 
     cerr << PVAR(numCameras) << " " << PVAR(numPoints) << " " << PVAR(numObservations) << endl;
@@ -424,7 +431,7 @@ int main(int argc, char** argv)
   // dump the points
   if (!outputFilename.empty()) {
     ofstream fout(outputFilename.c_str()); // loadable with meshlab
-    fout 
+    fout
       << "#VRML V2.0 utf8\n"
       << "Shape {\n"
       << "  appearance Appearance {\n"
@@ -445,6 +452,6 @@ int main(int argc, char** argv)
     }
     fout << "    ]\n" << "  }\n" << "}\n" << "  }\n";
   }
-  
+
   return 0;
 }
