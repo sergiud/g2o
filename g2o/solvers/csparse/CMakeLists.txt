@@ -9,7 +9,6 @@ generate_export_header (csparse_extension PREFIX_NAME G2O_ EXPORT_FILE_NAME
 target_include_directories (csparse_extension PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>
   $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
-  $<BUILD_INTERFACE:${g2o_BINARY_DIR}>
   $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 )
 
