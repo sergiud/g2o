@@ -1,5 +1,6 @@
 ADD_LIBRARY(core
 base_edge.h
+base_edge.cpp
 base_binary_edge.h          hyper_graph_action.cpp
 base_binary_edge.hpp        hyper_graph_action.h
 base_multi_edge.h           hyper_graph.cpp

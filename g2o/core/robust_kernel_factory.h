@@ -111,6 +111,8 @@ namespace g2o {
       CreatorMap _creator;     ///< look-up map for the existing creators
 
     private:
+	  RobustKernelFactory(const RobustKernelFactory&) = delete;
+	  RobustKernelFactory& operator=(const RobustKernelFactory&) = delete;
       static RobustKernelFactory* factoryInstance;
   };
 

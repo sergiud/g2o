@@ -28,14 +28,13 @@
 #define G2O_VERTEX_LINE2D_H
 
 #include <Eigen/Core>
+
 #include <g2o/config.h>
 #include <g2o/core/base_vertex.h>
 #include <g2o/core/hyper_graph_action.h>
 #include <g2o/stuff/misc.h>
 #include <g2o/types/slam2d/vertex_point_xy.h>
 #include <g2o/types/slam2d_addons/g2o_types_slam2d_addons_api.h>
-
-#include <Eigen/Core>
 
 namespace g2o {
 

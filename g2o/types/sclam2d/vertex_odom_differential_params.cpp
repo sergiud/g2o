@@ -27,12 +27,6 @@
 #include <g2o/types/sclam2d/vertex_odom_differential_params.h>
 
 namespace g2o {
-
-  VertexOdomDifferentialParams::VertexOdomDifferentialParams() :
-    BaseVertex <3, Vector3D>()
-  {
-  }
-
   bool VertexOdomDifferentialParams::read(std::istream& is)
   {
     is >> _estimate(0) >> _estimate(1) >> _estimate(2);

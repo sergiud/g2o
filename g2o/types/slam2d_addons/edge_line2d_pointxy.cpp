@@ -40,11 +40,6 @@
 
 namespace g2o {
 
-  EdgeLine2DPointXY::EdgeLine2DPointXY() :
-    BaseBinaryEdge<1, double, VertexLine2D, VertexPointXY>()
-  {
-  }
-
   bool EdgeLine2DPointXY::read(std::istream& is)
   {
     is >> _measurement;

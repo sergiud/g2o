@@ -110,8 +110,8 @@ namespace g2o {
 
     private:
       // Disable the copy constructor and assignment operator
-      OptimizationAlgorithm(const OptimizationAlgorithm&) { }
-      OptimizationAlgorithm& operator= (const OptimizationAlgorithm&) { return *this; }
+      OptimizationAlgorithm(const OptimizationAlgorithm&) = delete;
+	  OptimizationAlgorithm& operator= (const OptimizationAlgorithm&) = delete;
   };
 
 } // namespace g2o

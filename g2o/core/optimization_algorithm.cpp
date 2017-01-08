@@ -30,13 +30,9 @@ using namespace std;
 
 namespace g2o {
 
-OptimizationAlgorithm::OptimizationAlgorithm() :
-  _optimizer(nullptr)
-{
-}
+OptimizationAlgorithm::OptimizationAlgorithm() = default;
 
-OptimizationAlgorithm::~OptimizationAlgorithm()
-= default;
+OptimizationAlgorithm::~OptimizationAlgorithm() = default;
 
 void OptimizationAlgorithm::printProperties(std::ostream& os) const
 {

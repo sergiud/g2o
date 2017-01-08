@@ -99,7 +99,7 @@ namespace g2o {
     if (action->name()!=name()){
       cerr << __PRETTY_FUNCTION__  << ": invalid attempt to register an action in a collection with a different name " <<  name() << " " << action->name() << endl;
     }
-    _actionMap.insert(std::make_pair( action->typeName(), std::unique_ptr<HyperGraphElementAction>(action)));
+    _actionMap.emplace(action->typeName(), std::unique_ptr<HyperGraphElementAction>(action));
     return true;
   }
 
@@ -150,7 +150,7 @@ namespace g2o {
 #endif
       std::unique_ptr<HyperGraphElementActionCollection> col(new HyperGraphElementActionCollection(action->name()));
       collection = col.get();
-      _actionMap.insert(make_pair(action->name(), std::move(col)));
+      _actionMap.emplace(action->name(), std::move(col));
     }
     return collection->registerAction(action);
   }

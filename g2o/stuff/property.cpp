@@ -55,6 +55,8 @@ namespace g2o {
     return true;
   }
 
+  PropertyMap::PropertyMap() = default;
+
   PropertyMap::~PropertyMap() {
     for (auto & it : *this){
       if (it.second != nullptr)

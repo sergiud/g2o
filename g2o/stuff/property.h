@@ -80,6 +80,7 @@ namespace g2o {
       typedef BaseClass::iterator                         PropertyMapIterator;
       typedef BaseClass::const_iterator                   PropertyMapConstIterator;
 
+	  PropertyMap();
       ~PropertyMap();
 
       /**

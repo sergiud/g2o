@@ -44,15 +44,13 @@ namespace g2o {
   {
   }
 
-  HyperGraph::Vertex::~Vertex()
-  = default;
+  HyperGraph::Vertex::~Vertex() = default;
 
   HyperGraph::Edge::Edge(int id) : _id(id)
   {
   }
 
-  HyperGraph::Edge::~Edge()
-  = default;
+  HyperGraph::Edge::~Edge() = default;
 
   int HyperGraph::Edge::numUndefinedVertices() const{
     int undefined=0;

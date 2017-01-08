@@ -24,8 +24,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <g2o/core/optimizable_graph.h>
-
 #include <cassert>
 #include <iomanip>
 #include <fstream>
@@ -36,11 +34,11 @@
 
 #include <g2o/core/estimate_propagator.h>
 #include <g2o/core/factory.h>
-#include <g2o/core/optimization_algorithm_property.h>
-#include <g2o/core/hyper_graph_action.h>
-#include <g2o/core/robust_kernel.h>
 #include <g2o/core/g2o_core_api.h>
-
+#include <g2o/core/hyper_graph_action.h>
+#include <g2o/core/optimizable_graph.h>
+#include <g2o/core/optimization_algorithm_property.h>
+#include <g2o/core/robust_kernel.h>
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/misc.h>
@@ -119,14 +117,11 @@ namespace g2o {
 
   OptimizableGraph::Edge::Edge() :
     HyperGraph::Edge(),
-    _dimension(-1), _level(0), _robustKernel(nullptr)
+    _dimension(-1), _level(0)
   {
   }
 
-  OptimizableGraph::Edge::~Edge()
-  {
-    delete _robustKernel;
-  }
+  OptimizableGraph::Edge::~Edge() = default;
 
   OptimizableGraph* OptimizableGraph::Edge::graph(){
     if (_vertices.empty())
@@ -180,9 +175,7 @@ namespace g2o {
 
   void OptimizableGraph::Edge::setRobustKernel(RobustKernel* ptr)
   {
-    if (_robustKernel != nullptr)
-      delete _robustKernel;
-    _robustKernel = ptr;
+    _robustKernel.reset(ptr);
   }
 
   bool OptimizableGraph::Edge::resolveCaches() {
@@ -208,6 +201,8 @@ namespace g2o {
     return false;
   }
 
+  RobustKernel* OptimizableGraph::Edge::robustKernel() const
+  { return _robustKernel.get(); }
 
   OptimizableGraph::Edge* OptimizableGraph::Edge::clone() const
   {
@@ -215,6 +210,11 @@ namespace g2o {
     return nullptr;
   }
 
+  void OptimizableGraph::Vertex::oplus(const double* v)
+  {
+	  oplusImpl(v);
+	  updateCache();
+  }
 
   OptimizableGraph::OptimizableGraph()
   {

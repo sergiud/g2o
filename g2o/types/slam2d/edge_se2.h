@@ -41,7 +41,7 @@ namespace g2o {
   {
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-        EdgeSE2();
+      EdgeSE2() = default;
 
       void computeError()
       {

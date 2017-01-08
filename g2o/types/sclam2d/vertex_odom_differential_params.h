@@ -36,7 +36,7 @@ namespace g2o {
   class G2O_TYPES_SCLAM2D_API VertexOdomDifferentialParams: public BaseVertex <3, Vector3D> {
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
-      VertexOdomDifferentialParams();
+      VertexOdomDifferentialParams() = default;
       virtual void setToOriginImpl() {
         _estimate << 1. , 1., 1.;
       }

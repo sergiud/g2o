@@ -128,6 +128,10 @@ namespace g2o {
       bool unregisterAction(HyperGraphElementAction* action);
     protected:
       ActionMap _actionMap;
+
+    private:
+	  HyperGraphElementActionCollection(const HyperGraphElementActionCollection&) = delete;
+	  HyperGraphElementActionCollection& operator=(const HyperGraphElementActionCollection&) = delete;
   };
 
   /**
@@ -154,6 +158,10 @@ namespace g2o {
       HyperGraphActionLibrary() = default;
       ~HyperGraphActionLibrary() = default;
       HyperGraphElementAction::ActionMap _actionMap;
+
+    private:
+	  HyperGraphActionLibrary(const HyperGraphActionLibrary&) = delete;
+	  HyperGraphActionLibrary& operator=(const HyperGraphActionLibrary&) = delete;
   };
 
   /**

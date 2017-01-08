@@ -33,11 +33,6 @@
 
 namespace g2o {
 
-  EdgeSE2PointXY::EdgeSE2PointXY() :
-    BaseBinaryEdge<2, Vector2D, VertexSE2, VertexPointXY>()
-  {
-  }
-
   bool EdgeSE2PointXY::read(std::istream& is)
   {
     is >> _measurement[0] >> _measurement[1];

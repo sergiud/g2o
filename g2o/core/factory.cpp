@@ -40,10 +40,6 @@ using namespace std;
 
 namespace g2o {
 
-Factory::Factory()
-{
-}
-
 Factory::~Factory()
 {
 # ifdef G2O_DEBUG_FACTORY
@@ -111,7 +107,7 @@ void Factory::registerType(const std::string& tag, AbstractHyperGraphElementCrea
   cerr << endl;
 #endif
 
-  _creator[tag] = std::move(ci);
+  _creator.emplace(tag, std::move(ci));
   _tagLookup[c->name()] = tag;
 }
 

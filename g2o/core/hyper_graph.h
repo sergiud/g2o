@@ -73,10 +73,10 @@ namespace g2o {
 
       typedef std::bitset<HyperGraph::HGET_NUM_ELEMS> GraphElemBitset;
 
-      class G2O_CORE_API Data;
-      class G2O_CORE_API DataContainer;
-      class G2O_CORE_API Vertex;
-      class G2O_CORE_API Edge;
+      class Data;
+      class DataContainer;
+      class Vertex;
+      class Edge;
 
       /**
        * base hyper graph element, specialized in vertex and edge

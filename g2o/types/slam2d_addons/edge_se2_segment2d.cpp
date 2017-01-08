@@ -40,11 +40,6 @@
 
 namespace g2o {
 
-  EdgeSE2Segment2D::EdgeSE2Segment2D() :
-    BaseBinaryEdge<4, Vector4D, VertexSE2, VertexSegment2D>()
-  {
-  }
-
   bool EdgeSE2Segment2D::read(std::istream& is)
   {
     for (size_t i = 0; i < 4 ; i++)

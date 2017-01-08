@@ -30,6 +30,7 @@
 #include <iostream>
 #include <limits>
 #include <list>
+#include <memory>
 #include <set>
 #include <typeinfo>
 
@@ -81,9 +82,8 @@ namespace g2o {
     typedef std::set<HyperGraphAction*>    HyperGraphActionSet;
 
     // forward declarations
-    class G2O_CORE_API Vertex;
-    class G2O_CORE_API Edge;
-
+    class Vertex;
+    class Edge;
 
     /**
      * \brief order vertices based on their ID
@@ -265,11 +265,7 @@ namespace g2o {
          * out the update.
          * Will also call updateCache() to update the caches of depending on the vertex.
          */
-        void oplus(const double* v)
-        {
-          oplusImpl(v);
-          updateCache();
-        }
+		void oplus(const double* v);
 
         //! temporary index of this node in the parameter vector obtained from linearization
         int hessianIndex() const { return _hessianIndex;}
@@ -361,8 +357,8 @@ namespace g2o {
 
     public:
         Edge();
-        virtual ~Edge();
         virtual Edge* clone() const;
+		~Edge() override;
 
         // indicates if all vertices are fixed
         virtual bool allVerticesFixed() const = 0;
@@ -389,7 +385,7 @@ namespace g2o {
         virtual bool setMeasurementFromState();
 
         //! if NOT NULL, error of this edge will be robustifed with the kernel
-        RobustKernel* robustKernel() const { return _robustKernel;}
+		RobustKernel* robustKernel() const;
         /**
          * specify the robust kernel to be used in this edge
          */
@@ -474,7 +470,7 @@ namespace g2o {
       protected:
 	int _dimension;
         int _level;
-        RobustKernel* _robustKernel;
+        std::unique_ptr<RobustKernel> _robustKernel;
         long long _internalId{};
         std::vector<int> _cacheIds;
 

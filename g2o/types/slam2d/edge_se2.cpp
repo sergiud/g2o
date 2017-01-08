@@ -33,11 +33,6 @@
 
 namespace g2o {
 
-  EdgeSE2::EdgeSE2() :
-    BaseBinaryEdge<3, SE2, VertexSE2, VertexSE2>()
-  {
-  }
-
   bool EdgeSE2::read(std::istream& is)
   {
     Vector3D p;

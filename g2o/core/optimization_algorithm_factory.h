@@ -55,7 +55,7 @@ namespace g2o {
   class G2O_CORE_API AbstractOptimizationAlgorithmCreator
   {
     public:
-      AbstractOptimizationAlgorithmCreator(const OptimizationAlgorithmProperty& p);
+      explicit AbstractOptimizationAlgorithmCreator(const OptimizationAlgorithmProperty& p);
       virtual ~AbstractOptimizationAlgorithmCreator() = default;
       //! allocate a solver operating on optimizer, re-implement for your creator
       virtual OptimizationAlgorithm* construct() = 0;
@@ -112,6 +112,10 @@ namespace g2o {
 
       CreatorList::const_iterator findSolver(const std::string& name) const;
       CreatorList::iterator findSolver(const std::string& name);
+
+  private:
+	  OptimizationAlgorithmFactory(const OptimizationAlgorithmFactory&) = delete;
+	  OptimizationAlgorithmFactory& operator=(const OptimizationAlgorithmFactory&) = delete;
   };
 
   class RegisterOptimizationAlgorithmProxy

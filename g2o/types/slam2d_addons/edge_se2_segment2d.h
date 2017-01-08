@@ -28,10 +28,11 @@
 #define G2O_EDGE_SE2_SEGMENT2D_H
 
 #include <g2o/config.h>
+#include <g2o/core/base_binary_edge.h>
+#include <g2o/types/slam2d/vertex_se2.h>
 #include <g2o/types/slam2d_addons/vertex_segment2d.h>
 #include <g2o/types/slam2d_addons/edge_se2_segment2d_line.h>
 #include <g2o/types/slam2d_addons/edge_se2_segment2d_pointLine.h>
-#include <g2o/core/base_binary_edge.h>
 
 namespace g2o {
 
@@ -39,7 +40,7 @@ namespace g2o {
   {
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      EdgeSE2Segment2D();
+      EdgeSE2Segment2D() = default;
 
       Vector2D measurementP1(){ return Eigen::Map<const Vector2D>(&(_measurement[0])); }
       Vector2D measurementP2(){ return Eigen::Map<const Vector2D>(&(_measurement[2])); }

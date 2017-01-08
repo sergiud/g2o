@@ -26,9 +26,7 @@
 
 #include <g2o/types/slam2d/types_slam2d.h>
 #include <g2o/types/slam2d/g2o_types_slam2d_api.h>
-
 #include <g2o/core/factory.h>
-
 #include <g2o/stuff/macros.h>
 
 #include <iostream>

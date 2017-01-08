@@ -32,6 +32,7 @@
 
 #include <Eigen/Core>
 
+#include <g2o/config.h>
 #include <g2o/core/optimizable_graph.h>
 
 namespace g2o {
@@ -46,12 +47,10 @@ namespace g2o {
       typedef Eigen::Matrix<double, D, 1, Eigen::ColMajor> ErrorVector;
       typedef Eigen::Matrix<double, D, D, Eigen::ColMajor> InformationType;
 
-      BaseEdge() : OptimizableGraph::Edge()
+      BaseEdge()
       {
         _dimension = D;
       }
-
-      virtual ~BaseEdge() = default;
 
       virtual double chi2() const
       {
@@ -114,11 +113,7 @@ namespace g2o {
       typedef Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::ColMajor> ErrorVector;
       typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> InformationType;
 
-      BaseEdge() : OptimizableGraph::Edge(){
-
-      }
-
-      virtual ~BaseEdge() = default;
+	  BaseEdge() = default;
 
       virtual double chi2() const
       {
@@ -170,6 +165,17 @@ namespace g2o {
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+#ifndef core_EXPORTS
+  G2O_EXTERN_TEMPLATE class G2O_CORE_API BaseEdge<1, double>;
+  G2O_EXTERN_TEMPLATE class G2O_CORE_API BaseEdge<1, Eigen::Matrix<double, 1, 1> >;
+  G2O_EXTERN_TEMPLATE class G2O_CORE_API BaseEdge<2, Eigen::Matrix<double, 2, 1> >;
+  G2O_EXTERN_TEMPLATE class G2O_CORE_API BaseEdge<3, Eigen::Matrix<double, 3, 1> >;
+  G2O_EXTERN_TEMPLATE class G2O_CORE_API BaseEdge<4, Eigen::Matrix<double, 4, 1> >;
+  G2O_EXTERN_TEMPLATE class G2O_CORE_API BaseEdge<5, Eigen::Matrix<double, 5, 1> >;
+  G2O_EXTERN_TEMPLATE class G2O_CORE_API BaseEdge<6, Eigen::Matrix<double, 6, 1> >;
+  G2O_EXTERN_TEMPLATE class G2O_CORE_API BaseEdge<7, Eigen::Matrix<double, 7, 1> >;
+  G2O_EXTERN_TEMPLATE class G2O_CORE_API BaseEdge<6, Eigen::Isometry3d>;
+#endif
 
 } // end namespace g2o
 

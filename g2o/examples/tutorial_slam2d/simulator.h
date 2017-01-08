@@ -41,7 +41,7 @@ namespace g2o {
     class G2O_TUTORIAL_SLAM2D_API Simulator {
       public:
 
-        enum G2O_TUTORIAL_SLAM2D_API MotionType {
+        enum MotionType {
           MO_LEFT, MO_RIGHT,
           MO_NUM_ELEMS
         };

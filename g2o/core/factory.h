@@ -102,11 +102,7 @@ namespace g2o {
       {
         public:
           std::unique_ptr<AbstractHyperGraphElementCreator> creator;
-          int elementTypeBit;
-          CreatorInformation()
-          {
-            elementTypeBit = -1;
-          }
+		  int elementTypeBit{ -1 };
 
           ~CreatorInformation()
           {
@@ -118,11 +114,15 @@ namespace g2o {
 
       typedef std::map<std::string, std::unique_ptr<CreatorInformation> >               CreatorMap;
       typedef std::map<std::string, std::string>                      TagLookup;
-      Factory();
+	  Factory() = default;
       ~Factory();
 
       CreatorMap _creator;     ///< look-up map for the existing creators
       TagLookup _tagLookup;    ///< reverse look-up, class name to tag
+
+  private:
+	  Factory(const Factory&) = delete;
+	  Factory& operator=(const Factory&) = delete;
   };
 
   template<typename T>
