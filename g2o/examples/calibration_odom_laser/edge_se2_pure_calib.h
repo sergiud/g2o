@@ -27,6 +27,7 @@
 #ifndef EDGE_SE2_PURE_CALIB_H
 #define EDGE_SE2_PURE_CALIB_H
 
+#include <g2o/config.h>
 #include <g2o/core/base_binary_edge.h>
 #include <g2o/examples/calibration_odom_laser/g2o_calibration_odom_laser_api.h>
 #include <g2o/types/sclam2d/odometry_measurement.h>
@@ -41,6 +42,13 @@ namespace g2o {
     VelocityMeasurement velocityMeasurement;
     SE2 laserMotion;
   };
+
+#ifndef calibration_odom_laser_library_EXPORTS
+  G2O_EXTERN_TEMPLATE
+#else
+  template
+#endif
+  class G2O_CALIBRATION_ODOM_LASER_API BaseEdge<3, OdomAndLaserMotion>;
 
   /**
    * \brief calibrate odometry and laser based on a set of measurements

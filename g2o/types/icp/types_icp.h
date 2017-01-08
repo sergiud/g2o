@@ -30,6 +30,7 @@
 #define GICP_ANALYTIC_JACOBIANS
 //#define SCAM_ANALYTIC_JACOBIANS
 
+#include <g2o/config.h>
 #include <g2o/core/base_vertex.h>
 #include <g2o/core/base_binary_edge.h>
 #include <g2o/core/base_multi_edge.h>
@@ -155,6 +156,13 @@ namespace g2o {
     }
 
   };
+
+#ifndef calibration_odom_laser_library_EXPORTS
+  G2O_EXTERN_TEMPLATE
+#else
+  template
+#endif
+  class G2O_TYPES_ICP_API BaseEdge<3, EdgeGICP>;
 
 
   // 3D rigid constraint
