@@ -15,6 +15,7 @@ ExternalProject_Add(
   URL https://github.com/google/googletest/archive/release-1.7.0.zip
   URL_MD5 ef5e700c8a0f3ee123e2e0209b8b4961
   CMAKE_ARGS -Dgtest_force_shared_crt=ON
+             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   # # Force separate output paths for debug and release builds to allow easy
   # # identification of correct lib in subsequent TARGET_LINK_LIBRARIES commands
   # CMAKE_ARGS -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG:PATH=DebugLibs
@@ -29,6 +30,8 @@ ExternalProject_Add(
 # Specify include dir
 ExternalProject_Get_Property(googletest source_dir)
 set(GTEST_INCLUDE_DIR ${source_dir}/include)
+
+file (MAKE_DIRECTORY ${GTEST_INCLUDE_DIR})
 
 # Library
 ExternalProject_Get_Property(googletest binary_dir)
