@@ -44,24 +44,20 @@ namespace g2o {
  */
 struct G2O_SOLVER_CSPARSE_API CSparseExt : public cs
 {
-  CSparseExt() : cs_di_sparse()
+  CSparseExt() : cs{}
   {
-    nzmax = 0;
-    m = 0;
-    n = 0;
-    p = nullptr;
-    i = nullptr;
-    x = nullptr;
-    nz = 0;
-    columnsAllocated = 0;
   }
+
   ~CSparseExt()
   {
     delete[] p;
     delete[] i;
     delete[] x;
   }
-  int columnsAllocated;
+  int columnsAllocated{};
+
+  CSparseExt(const CSparseExt&) = delete;
+  CSparseExt& operator=(const CSparseExt&) = delete;
 };
 
 /**
