@@ -468,8 +468,8 @@ namespace g2o {
           _parameterTypes.resize(newSize, typeid(void*).name());
         }
       protected:
-	int _dimension;
-        int _level;
+		  int _dimension{ -1 };
+		  int _level{};
         std::unique_ptr<RobustKernel> _robustKernel;
         long long _internalId{};
         std::vector<int> _cacheIds;

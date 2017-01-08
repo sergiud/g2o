@@ -27,10 +27,10 @@
 #ifndef EDGE_SE2_PURE_CALIB_H
 #define EDGE_SE2_PURE_CALIB_H
 
-#include <g2o/types/sclam2d/odometry_measurement.h>
-#include <g2o/types/sclam2d/vertex_odom_differential_params.h>
 #include <g2o/core/base_binary_edge.h>
 #include <g2o/examples/calibration_odom_laser/g2o_calibration_odom_laser_api.h>
+#include <g2o/types/sclam2d/odometry_measurement.h>
+#include <g2o/types/sclam2d/vertex_odom_differential_params.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 
 namespace g2o {

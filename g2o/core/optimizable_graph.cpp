@@ -115,11 +115,7 @@ namespace g2o {
   }
 
 
-  OptimizableGraph::Edge::Edge() :
-    HyperGraph::Edge(),
-    _dimension(-1), _level(0)
-  {
-  }
+  OptimizableGraph::Edge::Edge() = default;
 
   OptimizableGraph::Edge::~Edge() = default;
 

@@ -50,7 +50,7 @@ namespace g2o {
   {
   }
 
-  HyperGraph::Edge::~Edge() = default;
+  HyperGraph::HyperGraphElement::~HyperGraphElement() = default;
 
   int HyperGraph::Edge::numUndefinedVertices() const{
     int undefined=0;

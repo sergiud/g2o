@@ -82,12 +82,12 @@ namespace g2o {
        * base hyper graph element, specialized in vertex and edge
        */
       struct G2O_CORE_API HyperGraphElement {
-        virtual ~HyperGraphElement() = default;
+        virtual ~HyperGraphElement();
         /**
          * returns the type of the graph element, see HyperGraphElementType
          */
         virtual HyperGraphElementType elementType() const = 0;
-	HyperGraphElement* clone() const { return nullptr; }
+		HyperGraphElement* clone() const { return nullptr; }
       };
 
       /**
@@ -143,7 +143,7 @@ namespace g2o {
         public:
           //! creates a vertex having an ID specified by the argument
           explicit Vertex(int id=InvalidId);
-          virtual ~Vertex();
+          ~Vertex() override;
           //! returns the id
           int id() const {return _id;}
 	  virtual void setId( int newId) { _id=newId; }
@@ -166,7 +166,6 @@ namespace g2o {
         public:
           //! creates and empty edge with no vertices
           explicit Edge(int id = InvalidId);
-          virtual ~Edge();
 
           /**
            * resizes the number of vertices connected by this edge
@@ -276,8 +275,8 @@ namespace g2o {
 
     private:
       // Disable the copy constructor and assignment operator
-      HyperGraph(const HyperGraph&) { }
-      HyperGraph& operator= (const HyperGraph&) { return *this; }
+      HyperGraph(const HyperGraph&) = delete;
+      HyperGraph& operator= (const HyperGraph&) = delete;
   };
 
 } // namespace g2o
