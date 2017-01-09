@@ -151,7 +151,7 @@ namespace g2o {
           const EdgeSet& edges() const {return _edges;}
           //! returns the set of hyper-edges that are leaving/entering in this vertex
           EdgeSet& edges() {return _edges;}
-          virtual HyperGraphElementType elementType() const { return HGET_VERTEX;}
+          HyperGraphElementType elementType() const override { return HGET_VERTEX;}
         protected:
           int _id;
           EdgeSet _edges;
