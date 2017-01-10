@@ -71,7 +71,7 @@ namespace g2o {
   struct ConditionallyAligned
   {
 #if EIGEN_VERSION_AT_LEAST(3, 3, 0)
-	  static constexpr bool IsAligned = !!(T::Flags & Eigen::AlignedMask);
+	  static constexpr bool IsAligned = T::NeedsToAlign;
 #else
 	  static constexpr bool IsAligned = (T::Flags & Eigen::AlignedBit) == Eigen::AlignedBit;
 #endif
