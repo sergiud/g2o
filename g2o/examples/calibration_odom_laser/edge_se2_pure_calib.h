@@ -34,7 +34,7 @@
 #include <g2o/types/sclam2d/vertex_odom_differential_params.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   struct G2O_CALIBRATION_ODOM_LASER_API OdomAndLaserMotion
   {
@@ -65,6 +65,6 @@ namespace g2o {
       virtual bool write(std::ostream& os) const;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

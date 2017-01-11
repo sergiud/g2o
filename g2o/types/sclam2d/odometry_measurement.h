@@ -31,7 +31,7 @@
 #include <g2o/types/sclam2d/g2o_types_sclam2d_api.h>
 #include <g2o/types/sclam2d/odometry_measurement.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief velocity measurement of a differential robot
@@ -99,6 +99,6 @@ namespace g2o {
       static MotionMeasurement convertToMotion(const VelocityMeasurement& vi, double l = 1.0);
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

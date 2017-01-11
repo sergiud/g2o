@@ -34,7 +34,7 @@
 #include <g2o/types/slam2d/parameter_se2_offset.h>
 #include <g2o/types/slam2d/vertex_point_xy.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 
   /*! \class EdgeSE2TrackXYZ
@@ -89,5 +89,5 @@ namespace g2o {
 
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

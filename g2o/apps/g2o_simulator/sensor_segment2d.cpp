@@ -28,7 +28,7 @@
 #include <g2o/apps/g2o_simulator/simutils.h>
 #include <iostream>
 
-namespace g2o{
+G2O_START_NAMESPACE
   using namespace std;
   using namespace Eigen;
 
@@ -125,4 +125,4 @@ namespace g2o{
     }
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

@@ -31,7 +31,7 @@
 
 #include <g2o/stuff/opengl_wrapper.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace deprecated {
 
   using namespace std;

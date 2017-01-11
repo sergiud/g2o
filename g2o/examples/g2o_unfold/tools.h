@@ -4,7 +4,7 @@
 #include <g2o/core/hyper_graph.h>
 #include <g2o/core/hyper_dijkstra.h>
 
-namespace g2o{
+G2O_START_NAMESPACE
 
  void findConnectedEdgesWithCostLimit(HyperGraph::EdgeSet& selected,
               HyperGraph::EdgeSet& border,

@@ -26,7 +26,7 @@
 
 #include <g2o/types/slam3d/se3quat.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace deprecated {
 
   /** conversion code from Euler angles */

@@ -26,7 +26,7 @@
 
 #include "sensor_pointxyz_depth.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
   using namespace Eigen;
 
@@ -103,4 +103,4 @@ namespace g2o {
     }
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

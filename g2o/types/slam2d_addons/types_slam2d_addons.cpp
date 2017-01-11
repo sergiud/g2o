@@ -33,7 +33,7 @@
 #include <iostream>
 
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   G2O_REGISTER_TYPE_GROUP(slam2d_segment);
 
@@ -52,4 +52,4 @@ namespace g2o {
   G2O_REGISTER_ACTION(VertexLine2DDrawAction);
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

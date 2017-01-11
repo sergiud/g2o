@@ -38,7 +38,7 @@
 #include <Eigen/StdVector>
 #include <stack>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 /**
  * \brief Templatized BaseVertex
@@ -112,7 +112,7 @@ namespace g2o {
 
 #include "base_vertex.hpp"
 
-} // end namespace g2o
+G2O_END_NAMESPACE
 
 
 #endif

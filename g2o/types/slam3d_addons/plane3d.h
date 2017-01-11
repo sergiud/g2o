@@ -32,7 +32,7 @@
 #include <g2o/stuff/misc.h>
 #include <g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
   
   class G2O_TYPES_SLAM3D_ADDONS_API Plane3D {
     public:
@@ -127,6 +127,6 @@ namespace g2o {
   };
 
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

@@ -27,10 +27,11 @@
  */
 
 #include <g2o/config.h>
+#include <g2o/core/abi.h>
 #include <g2o/stuff/g2o_opengl_api.h>
 #include <g2o/stuff/opengl_wrapper.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace opengl {
 
 /**
@@ -130,6 +131,6 @@ void G2O_OPENGL_API drawPoint(float  pointSize);
 
 
 } // namespace opengl
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

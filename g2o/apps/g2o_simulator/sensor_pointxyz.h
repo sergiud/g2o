@@ -30,7 +30,7 @@
 #include "sensor_pointxyz_disparity.h"
 #include "simulator3d_base.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2O_SIMULATOR_API SensorPointXYZ: public PointSensorParameters, public BinarySensor<Robot3D, EdgeSE3PointXYZ, WorldObjectTrackXYZ>{
   public:
@@ -47,6 +47,6 @@ namespace g2o {
     ParameterSE3Offset* _offsetParam;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

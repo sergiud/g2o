@@ -46,7 +46,7 @@
 #include <iostream>
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 namespace {
 
@@ -173,4 +173,4 @@ void G2oQGLViewer::setUpdateDisplay(bool updateDisplay)
   _updateDisplay = updateDisplay;
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

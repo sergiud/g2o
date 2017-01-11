@@ -32,7 +32,7 @@
 #include <g2o/types/slam2d/g2o_types_slam2d_api.h>
 #include <g2o/types/slam2d/vertex_point_xy.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM2D_API EdgePointXY : public BaseBinaryEdge<2, Vector2D, VertexPointXY, VertexPointXY>
   {
@@ -81,6 +81,6 @@ namespace g2o {
   };
 
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

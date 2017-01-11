@@ -31,7 +31,7 @@
 #include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 #include <g2o/types/slam3d/parameter_camera.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
   /**
    * \brief parameters for a camera
    */
@@ -48,6 +48,6 @@ namespace g2o {
     protected:
       double _baseline{};
   };
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

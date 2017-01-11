@@ -31,7 +31,7 @@
 #include <g2o/core/cache.h>
 #include <g2o/examples/tutorial_slam2d/g2o_tutorial_slam2d_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
   namespace tutorial {
 
     class G2O_TUTORIAL_SLAM2D_API ParameterSE2Offset: public Parameter
@@ -70,6 +70,6 @@ namespace g2o {
     };
 
   } // end namespace tutorial
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

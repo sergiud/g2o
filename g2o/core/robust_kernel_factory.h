@@ -37,7 +37,7 @@
 #include <string>
 #include <vector>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class RobustKernel;
 
@@ -145,6 +145,6 @@ namespace g2o {
     extern "C" void G2O_FACTORY_IMPORT g2o_robust_kernel_##classname(void); \
     static g2o::TypeFunctionProxy proxy_##classname(g2o_robust_kernel_##classname);
 
-} // end namespace g2o
+G2O_END_NAMESPACE
 
 #endif

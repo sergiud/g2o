@@ -24,7 +24,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   namespace {
     struct TripletEntry
@@ -653,4 +653,4 @@ namespace g2o {
     }
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

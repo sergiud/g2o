@@ -32,7 +32,7 @@
 #include <g2o/types/data/raw_laser.h>
 #include <g2o/types/data/robot_laser.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief laser measurement obtained by a robot
@@ -74,6 +74,6 @@ namespace g2o {
   };
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

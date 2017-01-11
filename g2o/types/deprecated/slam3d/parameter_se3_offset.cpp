@@ -31,7 +31,7 @@
 
 using namespace Eigen;
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace deprecated {
 
   ParameterSE3Offset::ParameterSE3Offset(){

@@ -30,7 +30,7 @@
 #include "sensor_pose2d.h"
 #include "sensor_pointxy_bearing.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
   class G2O_SIMULATOR_API SensorOdometry2D: public BinarySensor<Robot2D, EdgeSE2, WorldObjectSE2 > {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -40,6 +40,6 @@ namespace g2o {
     virtual void addNoise(EdgeType* e);
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

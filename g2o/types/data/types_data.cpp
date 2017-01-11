@@ -34,7 +34,7 @@
 #include <g2o/types/data/vertex_tag.h>
 
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   G2O_REGISTER_TYPE_GROUP(data);
 
@@ -48,4 +48,4 @@ namespace g2o {
   G2O_REGISTER_ACTION(VertexEllipseDrawAction);
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

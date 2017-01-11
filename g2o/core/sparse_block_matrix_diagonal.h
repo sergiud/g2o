@@ -34,7 +34,7 @@
 #include <g2o/config.h>
 #include <g2o/core/matrix_operations.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief Sparse matrix which uses blocks on the diagonal
@@ -103,6 +103,6 @@ namespace g2o {
       DiagonalVector _diagonal;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

@@ -36,7 +36,7 @@
 
 #include <Eigen/Geometry>
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace deprecated {
 
 

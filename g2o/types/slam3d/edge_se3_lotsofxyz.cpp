@@ -1,6 +1,6 @@
 #include <g2o/types/slam3d/edge_se3_lotsofxyz.h>
 
-namespace g2o{
+G2O_START_NAMESPACE
 
   EdgeSE3LotsOfXYZ::EdgeSE3LotsOfXYZ(){
     resize(0);
@@ -178,4 +178,4 @@ namespace g2o{
 
     return -1.0;
   }
-} // namespace g2o
+G2O_END_NAMESPACE

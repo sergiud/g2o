@@ -8,7 +8,7 @@
 #include <map>
 #include <string>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * Dijkstra traversal action that constructs a backbone skeleton on the
@@ -78,5 +78,5 @@ namespace g2o {
     Factory * _factory;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

@@ -34,7 +34,7 @@
 #include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 #include <g2o/types/slam3d/parameter_camera.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /*! \class EdgeProjectDepth
    * \brief g2o edge from a track to a depth camera node using a depth measurement (true distance, not disparity)
@@ -88,5 +88,5 @@ namespace g2o {
     CacheCamera* cache{};
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

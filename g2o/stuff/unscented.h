@@ -31,7 +31,7 @@
 #include <Eigen/Core>
 #include<Eigen/StdVector>
 
-namespace g2o {
+G2O_START_NAMESPACE
   
   template <class SampleType>
   struct SigmaPoint {
@@ -89,6 +89,6 @@ namespace g2o {
     }
 
   }
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

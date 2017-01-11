@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
 
   G2O_ATTRIBUTE_CONSTRUCTOR(init_types_interactive_online)
@@ -46,4 +46,4 @@ namespace g2o {
     factory->registerType("ONLINE_EDGE_SE3:QUAT", new HyperGraphElementCreator<OnlineEdgeSE3>);
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

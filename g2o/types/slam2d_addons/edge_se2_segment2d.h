@@ -34,7 +34,7 @@
 #include <g2o/types/slam2d_addons/edge_se2_segment2d_line.h>
 #include <g2o/types/slam2d_addons/edge_se2_segment2d_pointLine.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM2D_ADDONS_API EdgeSE2Segment2D : public BaseBinaryEdge<4, Vector4D, VertexSE2, VertexSegment2D> //Avoid redefinition of BaseEdge in MSVC
   {
@@ -108,6 +108,6 @@ namespace g2o {
 /*   }; */
 /* #endif */
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

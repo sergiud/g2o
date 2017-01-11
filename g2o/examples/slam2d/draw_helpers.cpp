@@ -36,7 +36,7 @@
 # include <GL/glu.h>
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief handle the GLU quadratic
@@ -82,4 +82,4 @@ namespace g2o {
     glEnd();
   }
 
-} // end namespace g2o
+G2O_END_NAMESPACE

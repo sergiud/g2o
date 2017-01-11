@@ -32,8 +32,7 @@
 #include <g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h>
 #include <g2o/types/slam3d_addons/vertex_plane.h>
 
-namespace g2o
-{
+G2O_START_NAMESPACE
 
 class G2O_TYPES_SLAM3D_ADDONS_API EdgePlane : public BaseBinaryEdge<4, Vector4D, VertexPlane, VertexPlane>
 {
@@ -87,6 +86,6 @@ public:
 };
 
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

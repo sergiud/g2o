@@ -33,7 +33,7 @@
 #include "vertex_pointxyz.h"
 #include "parameter_camera.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace deprecated {
 
   /*! \class EdgeProjectDepth

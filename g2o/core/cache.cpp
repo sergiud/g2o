@@ -30,7 +30,7 @@
 
 #include <iostream>
 
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
 
   Cache::CacheKey::CacheKey() :
@@ -182,4 +182,4 @@ namespace g2o {
     }
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

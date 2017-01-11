@@ -33,7 +33,7 @@
 #include <g2o/stuff/misc.h>
 #include <g2o/stuff/timeutil.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 template <typename Traits>
 BlockSolver<Traits>::BlockSolver(LinearSolverType* linearSolver) :
@@ -604,4 +604,4 @@ bool BlockSolver<Traits>::saveHessian(const std::string& fileName) const
   return _Hpp->writeOctave(fileName.c_str(), true);
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

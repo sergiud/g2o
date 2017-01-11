@@ -38,7 +38,7 @@
 
 #include <cholmod.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 /**
  * \brief Our extension of the CHOLMOD matrix struct
@@ -354,6 +354,6 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
 
 };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

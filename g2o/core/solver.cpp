@@ -29,7 +29,7 @@
 #include <cstring>
 #include <algorithm>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 Solver::Solver() :
   _optimizer(nullptr), _x(nullptr), _b(nullptr), _xSize(0), _maxXSize(0),
@@ -84,4 +84,4 @@ void Solver::setAdditionalVectorSpace(size_t s)
   _additionalVectorSpace = s;
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

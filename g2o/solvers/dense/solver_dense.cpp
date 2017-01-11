@@ -45,7 +45,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   static OptimizationAlgorithm* createSolver(const std::string& fullSolverName)
   {
@@ -99,4 +99,4 @@ namespace g2o {
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(lm_dense6_3, new DenseSolverCreator(OptimizationAlgorithmProperty("lm_dense6_3", "Levenberg: Dense solver (fixed blocksize)", "Dense", true, 6, 3)));
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(lm_dense7_3, new DenseSolverCreator(OptimizationAlgorithmProperty("lm_dense7_3", "Levenberg: Dense solver (fixed blocksize)", "Dense", true, 7, 3)));
 
-} // namespace g2o
+G2O_END_NAMESPACE

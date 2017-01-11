@@ -37,7 +37,7 @@
 #include <Eigen/Core>
 #include <Eigen/StdVector>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief Raw laser measuerement
@@ -79,6 +79,6 @@ namespace g2o {
       LaserParameters _laserParams;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

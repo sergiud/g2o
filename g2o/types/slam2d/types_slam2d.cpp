@@ -32,7 +32,7 @@
 #include <iostream>
 
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   G2O_REGISTER_TYPE_GROUP(slam2d);
 
@@ -68,4 +68,4 @@ namespace g2o {
   G2O_REGISTER_ACTION(EdgeSE2PointXYBearingDrawAction);
 
 #endif
-} // namespace g2o
+G2O_END_NAMESPACE

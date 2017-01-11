@@ -36,7 +36,7 @@
 
 #include <unordered_map>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief Sparse matrix which uses blocks
@@ -273,6 +273,6 @@ namespace g2o {
       std::vector<SparseColumn> _blockCols;     ///< the matrices stored in CCS order
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

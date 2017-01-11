@@ -26,7 +26,7 @@
 
 #include <g2o/types/data/robot_data.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   RobotData::RobotData() :
     HyperGraph::Data(),
@@ -57,4 +57,4 @@ namespace g2o {
     _hostname = hostname;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

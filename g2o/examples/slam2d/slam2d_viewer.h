@@ -21,7 +21,9 @@
 
 #include "qglviewer.h"
 
-namespace g2o {
+#include <g2o/core/abi.h>
+
+G2O_START_NAMESPACE
 
   class SparseOptimizer;
 
@@ -38,6 +40,6 @@ namespace g2o {
       bool drawCovariance;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

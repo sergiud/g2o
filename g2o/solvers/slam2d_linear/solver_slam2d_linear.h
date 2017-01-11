@@ -30,7 +30,7 @@
 #include <g2o/core/optimization_algorithm_gauss_newton.h>
 #include <g2o/solvers/slam2d_linear/g2o_slam2d_linear_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class SparseOptimizer;
   class Solver;
@@ -66,6 +66,6 @@ namespace g2o {
       bool solveOrientation();
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

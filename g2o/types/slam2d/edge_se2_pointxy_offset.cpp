@@ -28,7 +28,7 @@
 #include <g2o/types/slam2d/edge_se2_pointxy_offset.h>
 #include <iostream>
 
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
 
 
@@ -135,4 +135,4 @@ namespace g2o {
     point->setEstimate(cam->estimate() * (offsetParam->offsetMatrix() * p));
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

@@ -31,7 +31,7 @@
 #include <cstdio>
 #include <typeinfo>
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace deprecated {
 
   // TRACK VERTEX

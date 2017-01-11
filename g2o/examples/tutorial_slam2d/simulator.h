@@ -35,7 +35,7 @@
 #include <map>
 #include <vector>
 
-namespace g2o {
+G2O_START_NAMESPACE
   namespace tutorial {
 
     class G2O_TUTORIAL_SLAM2D_API Simulator {
@@ -122,6 +122,6 @@ namespace g2o {
     };
 
   } // namespace tutorial
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

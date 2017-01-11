@@ -23,7 +23,7 @@
 #include <g2o/examples/interactive_slam/g2o_interactive/graph_optimizer_sparse_online.h>
 #include <g2o/solvers/cholmod/linear_solver_cholmod.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   struct CholmodExt;
 
@@ -59,6 +59,6 @@ namespace g2o {
       void convertTripletUpdateToSparse();
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

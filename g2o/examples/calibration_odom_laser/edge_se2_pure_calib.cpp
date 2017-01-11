@@ -26,7 +26,7 @@
 
 #include "edge_se2_pure_calib.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 EdgeSE2PureCalib::EdgeSE2PureCalib()
 {
@@ -62,4 +62,4 @@ void EdgeSE2PureCalib::computeError()
   _error = delta.toVector();
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

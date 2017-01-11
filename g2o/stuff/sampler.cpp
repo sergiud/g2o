@@ -26,7 +26,7 @@
 
 #include <g2o/stuff/sampler.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   static std::normal_distribution<double> _univariateSampler(0., 1.);
   static std::uniform_real_distribution<double> _uniformReal;
@@ -44,4 +44,4 @@ namespace g2o {
     return _univariateSampler(_gen_real);
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

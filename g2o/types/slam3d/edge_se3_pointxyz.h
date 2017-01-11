@@ -34,7 +34,7 @@
 #include <g2o/types/slam3d/vertex_pointxyz.h>
 #include <g2o/types/slam3d/vertex_se3.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /*! \class EdgeSE3PointXYZ
    * \brief g2o edge from a track to a point node
@@ -98,5 +98,5 @@ namespace g2o {
   };
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

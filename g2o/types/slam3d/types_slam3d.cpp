@@ -22,7 +22,7 @@
 #include <iostream>
 
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   G2O_REGISTER_TYPE_GROUP(slam3d);
 
@@ -61,4 +61,4 @@ namespace g2o {
   G2O_REGISTER_ACTION(CacheSE3OffsetDrawAction);
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

@@ -26,7 +26,7 @@
 
 #include <g2o/types/slam3d/edge_se3_pointxyz_depth.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace g2o;
 
   // point to camera projection, monocular
@@ -169,4 +169,4 @@ namespace g2o {
     point->setEstimate(cam->estimate() * (params->offset() * p));
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

@@ -34,7 +34,7 @@
 
 #include <Eigen/Core>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM2D_ADDONS_API VertexSegment2D : public BaseVertex<4, Vector4D>
   {
@@ -109,6 +109,6 @@ namespace g2o {
   };
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

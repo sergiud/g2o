@@ -32,7 +32,7 @@
 #include <Eigen/Geometry>
 #include <g2o/types/slam3d/se3quat.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   typedef Eigen::Matrix<double, 6, 1, Eigen::ColMajor> Vector6d;
   typedef Eigen::Matrix<double, 7, 1, Eigen::ColMajor> Vector7d;
@@ -154,6 +154,6 @@ namespace g2o {
     G2O_TYPES_SLAM3D_API Isometry3D fromSE3Quat(const SE3Quat& t);
 
   } // end namespace internal
-} // end namespace g2o
+G2O_END_NAMESPACE
 
 #endif

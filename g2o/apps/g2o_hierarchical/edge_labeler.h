@@ -6,7 +6,7 @@
 
 #include <g2o/hierarchical/g2o_hierarchical_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
   /**
    * This class implements the functions to label an edge (measurement) based
    * on the actual configuration of the nodes. It does so by
@@ -47,5 +47,5 @@ protected:
    SparseOptimizer* _optimizer;
 };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

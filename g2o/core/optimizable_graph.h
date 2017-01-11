@@ -43,7 +43,7 @@
 #include <g2o/core/parameter_container.h>
 #include <g2o/stuff/macros.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class HyperGraphAction;
   struct OptimizationAlgorithmProperty;
@@ -689,6 +689,6 @@ namespace g2o {
     @}
    */
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

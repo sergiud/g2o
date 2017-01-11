@@ -28,7 +28,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 OptimizationAlgorithm::OptimizationAlgorithm() = default;
 
@@ -54,4 +54,4 @@ void OptimizationAlgorithm::setOptimizer(SparseOptimizer* optimizer)
   _optimizer = optimizer;
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

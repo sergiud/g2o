@@ -35,7 +35,7 @@
 #include <g2o/core/base_edge.h>
 #include <g2o/core/robust_kernel.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 
   template <int D, typename E, typename VertexXi>
@@ -96,6 +96,6 @@ namespace g2o {
 
 #include "base_unary_edge.hpp"
 
-} // end namespace g2o
+G2O_END_NAMESPACE
 
 #endif

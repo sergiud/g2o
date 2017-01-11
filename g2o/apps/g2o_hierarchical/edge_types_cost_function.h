@@ -5,7 +5,7 @@
 #include <g2o/core/sparse_optimizer.h>
 #include <string>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * Cost function for Hyper-Dijkstra that returns 1 when for edges that belong
@@ -29,5 +29,5 @@ struct EdgeTypesCostFunction: public HyperDijkstra::CostFunction {
   int _level;
 };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

@@ -34,7 +34,7 @@
 #include <map>
 #include <vector>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class SparseOptimizerOnline;
 
@@ -83,6 +83,6 @@ namespace g2o {
       bool printVertex(OptimizableGraph::Vertex* v);
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

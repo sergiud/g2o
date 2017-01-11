@@ -35,7 +35,7 @@
 #include <iomanip>
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   RobotLaser::RobotLaser() :
     RawLaser(),
@@ -189,4 +189,4 @@ namespace g2o {
   }
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

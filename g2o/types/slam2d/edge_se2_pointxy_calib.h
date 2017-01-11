@@ -32,7 +32,7 @@
 #include <g2o/types/slam2d/vertex_point_xy.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief Landmark measurement that also calibrates an offset for the landmark measurement
@@ -58,6 +58,6 @@ namespace g2o {
       virtual void initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* to);
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

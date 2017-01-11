@@ -32,7 +32,7 @@
 #include <g2o/types/slam3d/vertex_se3.h>
 #include <g2o/types/slam3d_addons/vertex_plane.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
   /**
    * \brief plane measurement that also calibrates an offset for the sensor
    */
@@ -76,6 +76,6 @@ namespace g2o {
   };
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

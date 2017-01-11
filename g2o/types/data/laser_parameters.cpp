@@ -26,7 +26,7 @@
 
 #include <g2o/types/data/laser_parameters.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   LaserParameters::LaserParameters(int t, int nbeams, double _firstBeamAngle, double _angularStep, double _maxRange, double _accuracy, int _remissionMode)
   {
@@ -52,4 +52,4 @@ namespace g2o {
     fov            = angularStep * nbeams;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

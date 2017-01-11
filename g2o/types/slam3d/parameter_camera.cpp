@@ -35,7 +35,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   ParameterCamera::ParameterCamera(){
     setId(-1);
@@ -142,4 +142,4 @@ namespace g2o {
   }
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

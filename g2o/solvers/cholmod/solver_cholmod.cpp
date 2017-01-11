@@ -50,7 +50,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   CholmodExt::CholmodExt() : cholmod_sparse_struct()
   {
@@ -158,4 +158,4 @@ namespace g2o {
 #endif
 
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(dl_var_cholmod, new CholmodSolverCreator(OptimizationAlgorithmProperty("dl_var_cholmod", "Dogleg: Cholesky solver using CHOLMOD (variable blocksize)", "CHOLMOD", false, Eigen::Dynamic, Eigen::Dynamic)));
-} // namespace g2o
+G2O_END_NAMESPACE

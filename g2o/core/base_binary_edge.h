@@ -34,7 +34,7 @@
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/robust_kernel.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   template <int D, typename E, typename VertexXi, typename VertexXj>
   class BaseBinaryEdge : public BaseEdge<D, E>
@@ -113,6 +113,6 @@ namespace g2o {
 
 #include "base_binary_edge.hpp"
 
-} // end namespace g2o
+G2O_END_NAMESPACE
 
 #endif

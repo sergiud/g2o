@@ -32,7 +32,7 @@
 #include <g2o/types/slam2d/g2o_types_slam2d_api.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief 2D edge between two Vertex2
@@ -112,6 +112,6 @@ namespace g2o {
   };
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

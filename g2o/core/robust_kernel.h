@@ -34,7 +34,7 @@
 #include <g2o/core/eigen_types.h>
 #include <g2o/core/g2o_core_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief base for all robust cost functions
@@ -75,6 +75,6 @@ namespace g2o {
   };
   typedef std::unique_ptr<RobustKernel> RobustKernelPtr;
 
-} // end namespace g2o
+G2O_END_NAMESPACE
 
 #endif

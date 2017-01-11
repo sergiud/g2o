@@ -36,7 +36,7 @@
 
 #include <g2o/types/sba/g2o_types_sba_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 /**
  * \brief Vertex encoding the intrinsics of the camera fx, fy, cx, xy, baseline;
@@ -358,6 +358,6 @@ class G2O_TYPES_SBA_API VertexIntrinsics : public BaseVertex<4, Eigen::Matrix<do
 
 
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif // SBA_TYPES

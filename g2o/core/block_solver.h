@@ -27,8 +27,6 @@
 #ifndef G2O_BLOCK_SOLVER_H
 #define G2O_BLOCK_SOLVER_H
 
-#include <g2o/core/block_solver.h>
-
 #include <g2o/config.h>
 #include <g2o/core/batch_stats.h>
 #include <g2o/core/linear_solver.h>
@@ -37,7 +35,7 @@
 #include <g2o/core/sparse_block_matrix.h>
 #include <g2o/core/sparse_block_matrix_diagonal.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief traits to summarize the properties of the fixed size optimization problem
@@ -187,7 +185,7 @@ namespace g2o {
   // 2Dof landmarks 3Dof poses
   typedef BlockSolver< BlockSolverTraits<3, 2> > BlockSolver_3_2;
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #include "block_solver.hpp"
 

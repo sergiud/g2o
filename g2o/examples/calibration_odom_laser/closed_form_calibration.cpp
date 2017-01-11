@@ -39,7 +39,7 @@
 
 using namespace Eigen;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 bool ClosedFormCalibration::calibrate(const MotionInformationVector& measurements, SE2& laserOffset, Eigen::Vector3d& odomParams)
 {
@@ -180,4 +180,4 @@ Eigen::VectorXd ClosedFormCalibration::solveLagrange(const Eigen::Matrix<double,
   return result;
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

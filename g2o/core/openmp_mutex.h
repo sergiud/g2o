@@ -35,7 +35,7 @@
 #include <cassert>
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 #ifdef G2O_OPENMP
 
@@ -92,6 +92,6 @@ namespace g2o {
       void operator=(const ScopedOpenMPMutex&);
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

@@ -30,7 +30,7 @@
 
 #include <iostream>
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace deprecated {
 
   using namespace std;

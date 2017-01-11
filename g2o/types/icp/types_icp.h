@@ -41,7 +41,7 @@
 #include <Eigen/Geometry>
 #include <g2o/solvers/structure_only/structure_only_solver.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   namespace types_icp {
     void init();
@@ -419,6 +419,6 @@ namespace g2o {
 
 
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif // TYPES_ICP

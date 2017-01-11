@@ -30,7 +30,7 @@
 #include <g2o/types/data/g2o_types_data_api.h>
 #include <g2o/types/slam2d/se2.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief parameters for a 2D range finder
@@ -50,6 +50,6 @@ namespace g2o {
     double maxRange;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

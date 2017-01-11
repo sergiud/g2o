@@ -28,7 +28,7 @@
 #include <g2o/types/slam3d/isometry3d_gradients.h>
 #include <iostream>
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace deprecated {
 
   using namespace std;

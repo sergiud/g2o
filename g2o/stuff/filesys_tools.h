@@ -47,7 +47,7 @@
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/string_tools.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 /**
  * get filename extension (the part after the last .), e.g.
@@ -89,6 +89,6 @@ G2O_STUFF_API bool fileExists(const char* filename);
  */
 G2O_STUFF_API std::vector<std::string> getFilesByPattern(const char* pattern);
 
-} // namespace g2o
+G2O_END_NAMESPACE
 // @}
 #endif

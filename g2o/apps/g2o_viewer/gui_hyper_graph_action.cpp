@@ -22,7 +22,7 @@
 
 #include <QApplication>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 GuiHyperGraphAction::GuiHyperGraphAction() :
   HyperGraphAction(),
@@ -55,4 +55,4 @@ HyperGraphAction* GuiHyperGraphAction::operator()(const HyperGraph* graph, Param
   return nullptr;
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

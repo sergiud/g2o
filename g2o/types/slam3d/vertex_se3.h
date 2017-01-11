@@ -33,7 +33,7 @@
 #include <g2o/core/hyper_graph_action.h>
 #include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 /**
  * \brief 3D pose Vertex, represented as an Isometry3D
@@ -146,6 +146,6 @@ namespace g2o {
   };
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

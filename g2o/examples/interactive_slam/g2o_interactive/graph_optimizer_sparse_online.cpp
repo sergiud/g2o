@@ -54,7 +54,7 @@ using namespace Eigen;
     s = new DIM_TO_SOLVER(p, l)(linearSolver); \
   } else (void)0
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   // force linking to the cholmod solver
   G2O_USE_OPTIMIZATION_LIBRARY(cholmod);
@@ -282,4 +282,4 @@ void SparseOptimizerOnline::gnuplotVisualization()
   }
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

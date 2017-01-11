@@ -31,8 +31,7 @@
 #include <g2o/types/slam3d/vertex_se3.h>
 #include <g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h>
 
-namespace g2o
-{
+G2O_START_NAMESPACE
 
 /**
  * \brief 3D edge between two VertexSE3, uses the euler angle parameterization
@@ -47,6 +46,6 @@ class G2O_TYPES_SLAM3D_ADDONS_API EdgeSE3Euler : public EdgeSE3
 };
 
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

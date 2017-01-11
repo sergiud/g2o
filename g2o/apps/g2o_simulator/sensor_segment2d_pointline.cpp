@@ -29,7 +29,7 @@
 using namespace std;
 using namespace Eigen;
 
-namespace g2o{
+G2O_START_NAMESPACE
 
   SensorSegment2DPointLine::SensorSegment2DPointLine(const std::string& name_): BinarySensor<Robot2D, EdgeSE2Segment2DPointLine, WorldObjectSegment2D>(name_) {}
 
@@ -128,4 +128,4 @@ namespace g2o{
     }
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

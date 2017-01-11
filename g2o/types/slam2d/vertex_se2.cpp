@@ -32,7 +32,7 @@
 #include <g2o/stuff/opengl_primitives.h>
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   VertexSE2::VertexSE2() :
     BaseVertex<3, SE2>()
@@ -118,4 +118,4 @@ namespace g2o {
 #endif
 
 
-} // namespace g2o
+G2O_END_NAMESPACE

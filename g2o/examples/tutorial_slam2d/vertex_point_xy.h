@@ -33,7 +33,7 @@
 
 #include <Eigen/Core>
 
-namespace g2o {
+G2O_START_NAMESPACE
   namespace tutorial {
 
     class G2O_TUTORIAL_SLAM2D_API VertexPointXY : public BaseVertex<2, Eigen::Vector2d>
@@ -58,6 +58,6 @@ namespace g2o {
     };
 
   } // namespace tutorial
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

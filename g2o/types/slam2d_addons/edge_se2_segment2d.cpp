@@ -38,7 +38,7 @@
 #endif
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   bool EdgeSE2Segment2D::read(std::istream& is)
   {
@@ -156,4 +156,4 @@ namespace g2o {
 //   }
 // #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

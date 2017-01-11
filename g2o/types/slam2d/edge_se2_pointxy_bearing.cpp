@@ -31,7 +31,7 @@
 #include <g2o/stuff/opengl_primitives.h>
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   EdgeSE2PointXYBearing::EdgeSE2PointXYBearing()
   {
@@ -134,4 +134,4 @@ namespace g2o {
   }
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

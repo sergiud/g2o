@@ -38,7 +38,7 @@
 #include <iostream>
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 bool edgeAllVertsSameDim(OptimizableGraph::Edge* e, int dim)
 {
@@ -201,4 +201,4 @@ bool dumpEdges(std::ostream& os, const OptimizableGraph& optimizer)
   return true;
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

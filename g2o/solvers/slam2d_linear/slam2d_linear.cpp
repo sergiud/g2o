@@ -44,7 +44,7 @@
     s = new DIM_TO_SOLVER(p, l)(linearSolver); \
   } else (void)0
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * helper function for allocating
@@ -76,4 +76,4 @@ namespace g2o {
 
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(2dlinear, new SLAM2DLinearSolverCreator(OptimizationAlgorithmProperty("2dlinear", "Solve Orientation + Gauss-Newton: Works only on 2D pose graphs!!", "CSparse", false, 3, 3)));
 
-} // namespace g2o
+G2O_END_NAMESPACE

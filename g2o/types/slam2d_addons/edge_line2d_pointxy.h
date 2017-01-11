@@ -34,7 +34,7 @@
 #include <g2o/types/slam2d_addons/g2o_types_slam2d_addons_api.h>
 #include <g2o/types/slam2d_addons/vertex_line2d.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM2D_ADDONS_API EdgeLine2DPointXY : public BaseBinaryEdge<1, double, VertexLine2D, VertexPointXY> //Avoid redefinition of BaseEdge in MSVC
   {
@@ -98,6 +98,6 @@ namespace g2o {
 /*   }; */
 /* #endif */
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

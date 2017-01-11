@@ -32,7 +32,7 @@
 #include <algorithm>
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 struct ColSort
 {
@@ -122,4 +122,4 @@ bool MatrixStructure::write(const char* filename) const
   return fout.good();
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

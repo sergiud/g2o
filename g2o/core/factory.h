@@ -27,23 +27,18 @@
 #ifndef G2O_FACTORY_H
 #define G2O_FACTORY_H
 
-#include <g2o/core/factory.h>
-#include <g2o/core/factory.h>
-#include <g2o/core/factory.h>
-#include <g2o/stuff/misc.h>
-
 #include <iostream>
 #include <map>
 #include <memory>
 #include <string>
 
 #include <g2o/core/creators.h>
-#include <g2o/core/factory.h>
+#include <g2o/stuff/misc.h>
 
 // define to get some verbose output
 //#define G2O_DEBUG_FACTORY
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief create vertices and edges based on TAGs in, for example, a file
@@ -164,6 +159,6 @@ namespace g2o {
 #define G2O_USE_TYPE_GROUP(typeGroupName) \
     extern "C" void G2O_FACTORY_IMPORT g2o_type_group_##typeGroupName(void); \
     static g2o::ForceLinker g2o_force_type_link_##typeGroupName(g2o_type_group_##typeGroupName);
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

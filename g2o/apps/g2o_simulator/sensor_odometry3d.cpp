@@ -28,7 +28,7 @@
 
 #include <g2o/types/slam3d/isometry3d_mappings.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
 
 
@@ -84,4 +84,4 @@ namespace g2o {
     _robotPoseObject = pcurr;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

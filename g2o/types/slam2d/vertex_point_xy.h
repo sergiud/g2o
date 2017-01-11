@@ -33,7 +33,7 @@
 #include <g2o/types/slam2d/g2o_types_slam2d_api.h>
 #include <g2o/types/slam2d_addons/line_2d.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM2D_API VertexPointXY : public BaseVertex<2, Vector2D>
   {
@@ -103,6 +103,6 @@ namespace g2o {
   };
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

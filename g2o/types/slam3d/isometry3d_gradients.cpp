@@ -26,7 +26,7 @@
 
 #include <g2o/types/slam3d/isometry3d_gradients.h>
 #include <iostream>
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
   using namespace Eigen;
 
@@ -34,4 +34,4 @@ namespace g2o {
   #include "dquat2mat.cpp"
   } // end namespace internal
 
-} // namespace g2o
+G2O_END_NAMESPACE

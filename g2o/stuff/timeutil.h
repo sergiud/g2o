@@ -27,6 +27,9 @@
 #ifndef G2O_TIMEUTIL_H
 #define G2O_TIMEUTIL_H
 
+#include <g2o/core/abi.h>
+#include <g2o/stuff/g2o_stuff_api.h>
+
 #ifdef _WINDOWS
 #include <time.h>
 #else
@@ -34,8 +37,6 @@
 #endif
 
 #include <string>
-
-#include <g2o/stuff/g2o_stuff_api.h>
 
 /** @addtogroup utils **/
 // @{
@@ -76,7 +77,7 @@ if (1) {\
     (void) 0
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 #ifdef _WINDOWS
 typedef struct timeval {
@@ -121,7 +122,7 @@ class G2O_STUFF_API ScopeTime {
     double _startTime;
 };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #ifndef MEASURE_FUNCTION_TIME
 #define MEASURE_FUNCTION_TIME \

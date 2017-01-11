@@ -33,7 +33,7 @@
 #include <g2o/examples/calibration_odom_laser/motion_information.h>
 #include <g2o/types/slam2d/se2.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief Simultaneous calibration of the laser offest and the parameters of a differential drive
@@ -52,6 +52,6 @@ namespace g2o {
       static Eigen::VectorXd solveLagrange(const Eigen::Matrix<double,5,5>& M, double lambda);
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

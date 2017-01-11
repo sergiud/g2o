@@ -33,8 +33,7 @@
 #include <g2o/core/optimization_algorithm.h>
 #include <g2o/core/sparse_optimizer.h>
 
-namespace g2o
-{
+G2O_START_NAMESPACE
 
 /**
  * \brief This is a solver for "structure-only" optimization"
@@ -219,6 +218,6 @@ class StructureOnlySolver : public OptimizationAlgorithm
     OptimizableGraph::VertexContainer _points;
 };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

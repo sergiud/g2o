@@ -4,7 +4,7 @@
 
 #include <limits>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   SparseOptimizerTerminateAction::SparseOptimizerTerminateAction() :
     HyperGraphAction(),
@@ -71,4 +71,4 @@ namespace g2o {
     }
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

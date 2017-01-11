@@ -31,7 +31,7 @@
 #include <g2o/types/slam2d/g2o_types_slam2d_api.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief Prior for a two D pose
@@ -76,6 +76,6 @@ namespace g2o {
       SE2 _inverseMeasurement;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

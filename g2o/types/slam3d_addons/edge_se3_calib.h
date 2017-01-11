@@ -33,8 +33,7 @@
 #include <g2o/types/slam3d/vertex_se3.h>
 #include <g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h>
 
-namespace g2o
-{
+G2O_START_NAMESPACE
   /**
    * \brief Landmark measurement that also calibrates an offset for the landmark measurement
    */
@@ -49,6 +48,6 @@ namespace g2o
       virtual bool write(std::ostream& os) const;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

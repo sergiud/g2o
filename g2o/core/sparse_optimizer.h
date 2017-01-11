@@ -33,7 +33,7 @@
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/optimizable_graph.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   // forward declaration
   class ActivePathCostFunction;
@@ -305,6 +305,6 @@ namespace g2o {
     BatchStatisticsContainer _batchStatistics;   ///< global statistics of the optimizer, e.g., timing, num-non-zeros
     bool _computeBatchStatistics;
   };
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

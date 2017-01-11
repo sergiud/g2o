@@ -34,7 +34,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   ParameterStereoCamera::ParameterStereoCamera(){
     setBaseline(0.075);
@@ -69,4 +69,4 @@ namespace g2o {
   }
 
 
-} // namespace g2o
+G2O_END_NAMESPACE

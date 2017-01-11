@@ -27,7 +27,7 @@
 # include <GL/glu.h>
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace opengl {
 
 /**
@@ -305,4 +305,4 @@ void drawSlice(GLfloat radius, GLfloat height, GLfloat fov, int slices_per_circl
     glEnd();
   }
 } // namespace opengl
-} // namespace g2o
+G2O_END_NAMESPACE

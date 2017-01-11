@@ -27,7 +27,7 @@
 #include <g2o/core/batch_stats.h>
 #include <cstring>
 
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
 
   G2OBatchStatistics* G2OBatchStatistics::_globalStats=nullptr;
@@ -87,4 +87,4 @@ namespace g2o {
     _globalStats = b;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

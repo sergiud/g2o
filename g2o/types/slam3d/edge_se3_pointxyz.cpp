@@ -38,7 +38,7 @@
 #include <g2o/stuff/opengl_primitives.h>
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
 
   // point to camera projection, monocular
@@ -205,4 +205,4 @@ namespace g2o {
   }
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

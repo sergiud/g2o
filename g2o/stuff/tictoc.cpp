@@ -35,7 +35,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief Internal structure of the tictoc profiling
@@ -160,4 +160,4 @@ namespace g2o {
     tictoc(_algorithmPart.c_str());
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

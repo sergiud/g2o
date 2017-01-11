@@ -36,7 +36,7 @@
 
 using namespace Eigen;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   VertexSE3::VertexSE3() :
     BaseVertex<6, Isometry3D>(),
@@ -142,4 +142,4 @@ namespace g2o {
   }
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

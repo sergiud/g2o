@@ -29,7 +29,7 @@
 #include "sensor_odometry2d.h"
 
 // Robot2D
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
 
 
@@ -78,4 +78,4 @@ namespace g2o {
     e->setInformation(information());
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

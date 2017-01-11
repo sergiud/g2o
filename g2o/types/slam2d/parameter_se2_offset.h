@@ -36,7 +36,7 @@
 
 #include <Eigen/Geometry>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class VertexSE2;
 
@@ -110,6 +110,6 @@ namespace g2o {
       
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

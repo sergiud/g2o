@@ -33,7 +33,7 @@
 #include "vertex_pointxyz.h"
 #include "parameter_se3_offset.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace deprecated {
 
 

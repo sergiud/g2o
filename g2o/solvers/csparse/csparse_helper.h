@@ -22,9 +22,10 @@
 #endif
 #include <cs.h>
 
+#include <g2o/core/abi.h>
 #include <g2o/solvers/csparse/g2o_csparse_extension_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   namespace csparse_extension {
 
@@ -38,6 +39,6 @@ G2O_CSPARSE_EXTENSION_API csn* cs_chol_workspace (const cs *A, const css *S, int
 G2O_CSPARSE_EXTENSION_API int cs_cholsolsymb(const cs *A, double *b, const css* S, double* workspace, int* work);
 
 } // namespace csparse_extension
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

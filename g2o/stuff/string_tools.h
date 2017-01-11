@@ -27,15 +27,15 @@
 #ifndef G2O_STRING_TOOLS_H
 #define G2O_STRING_TOOLS_H
 
-#include <g2o/stuff/string_tools.h>
 #include <sstream>
 #include <string>
 #include <vector>
 
+#include <g2o/core/abi.h>
 #include <g2o/stuff/g2o_stuff_api.h>
 #include <g2o/stuff/macros.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 /** @addtogroup utils **/
 // @{
@@ -172,6 +172,6 @@ G2O_STUFF_API int readLine(std::istream& is, std::stringstream& currentLine);
 
 // @}
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

@@ -24,7 +24,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <g2o/core/sparse_optimizer.h>
 
 #include <algorithm>
 #include <iomanip>
@@ -33,17 +32,18 @@
 #include <cassert>
 #include <algorithm>
 
+#include <g2o/config.h>
 #include <g2o/core/estimate_propagator.h>
-#include <g2o/core/optimization_algorithm.h>
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/hyper_graph.h>
+#include <g2o/core/optimization_algorithm.h>
 #include <g2o/core/sparse_block_matrix.h>
-#include <g2o/stuff/timeutil.h>
-#include <g2o/config.h>
+#include <g2o/core/sparse_optimizer.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/misc.h>
+#include <g2o/stuff/timeutil.h>
 
-namespace g2o{
+G2O_START_NAMESPACE
   using namespace std;
 
 
@@ -116,10 +116,10 @@ namespace g2o{
 
     int maxDim=0;
     for (auto & it : vertices()){
-      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second); 
+      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second);
       maxDim=std::max(maxDim,v->dimension());
     }
-    
+
     OptimizableGraph::Vertex* rut=nullptr;
     for (auto & it : vertices()){
       OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second);
@@ -138,7 +138,7 @@ namespace g2o{
 
     int maxDim=0;
     for (auto & it : vertices()){
-      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second); 
+      OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second);
       maxDim = std::max(maxDim,v->dimension());
     }
 
@@ -375,7 +375,7 @@ namespace g2o{
     _batchStatistics.clear();
     if (_computeBatchStatistics)
       _batchStatistics.resize(iterations);
-    
+
     OptimizationAlgorithm::SolverResult result = OptimizationAlgorithm::OK;
     for (int i=0; i<iterations && ! terminate() && ok; i++){
       preIteration(i);
@@ -387,7 +387,7 @@ namespace g2o{
         cstat.numEdges =  _activeEdges.size();
         cstat.numVertices = _activeVertices.size();
       }
-      
+
       double ts = get_monotonic_time();
       result = _algorithm->solve(i, online);
       ok = ( result == OptimizationAlgorithm::OK );
@@ -413,7 +413,7 @@ namespace g2o{
         _algorithm->printVerbose(cerr);
         cerr << endl;
       }
-      ++cjIterations; 
+      ++cjIterations;
       postIteration(i);
     }
     if (result == OptimizationAlgorithm::Fail) {
@@ -426,7 +426,7 @@ namespace g2o{
   {
     // update the graph by calling oplus on the vertices
     for (auto v : _ivMap) {
-      
+
 #ifndef NDEBUG
       bool hasNan = arrayHasNaN(update, v->dimension());
       if (hasNan)
@@ -456,7 +456,7 @@ namespace g2o{
       OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
       if (!e->allVerticesFixed()) _activeEdges.push_back(e);
     }
-    
+
     // update the index mapping
     size_t next = _ivMap.size();
     for (auto it : vset) {
@@ -468,7 +468,7 @@ namespace g2o{
           newVertices.push_back(v);
           _activeVertices.push_back(v);
           next++;
-        } 
+        }
         else // not supported right now
           abort();
       }
@@ -534,7 +534,7 @@ namespace g2o{
       OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it);
       if (v != nullptr)
 	v->push();
-      else 
+      else
 	cerr << __FUNCTION__ << ": FATAL PUSH SET" << endl;
     }
   }
@@ -545,7 +545,7 @@ namespace g2o{
       OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*> (it);
       if (v != nullptr)
 	v->pop();
-      else 
+      else
 	cerr << __FUNCTION__ << ": FATAL POP SET" << endl;
     }
   }
@@ -615,4 +615,4 @@ namespace g2o{
     discardTop(_activeVertices);
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

@@ -27,11 +27,12 @@
 #ifndef G2O_TICTOC_H
 #define G2O_TICTOC_H
 
+#include <g2o/core/abi.h>
 #include <g2o/stuff/g2o_stuff_api.h>
 
 #include <string>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief Profile the timing of certain parts of your algorithm.
@@ -65,7 +66,7 @@ namespace g2o {
        std::string _algorithmPart;
    };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #ifndef G2O_SCOPED_TICTOC
 #define G2O_SCOPED_TICTOC(s) \

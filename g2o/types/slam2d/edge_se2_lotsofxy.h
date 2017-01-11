@@ -7,7 +7,7 @@
 #include <g2o/types/slam2d/vertex_point_xy.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM2D_API EdgeSE2LotsOfXY : public BaseMultiEdge<-1,VectorXD>
   {
@@ -46,6 +46,6 @@ namespace g2o {
       virtual void linearizeOplus();
   };
 
-} // end namespace g2o
+G2O_END_NAMESPACE
 
 #endif	// G2O_EDGE_SE2_LOTSOF_XY

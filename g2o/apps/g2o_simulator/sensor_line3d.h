@@ -30,7 +30,7 @@
 #include "pointsensorparameters.h"
 #include <g2o/simulator/g2o_simulator_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2O_SIMULATOR_API SensorPointLine3D: public PointSensorParameters, public BinarySensor<Robot3D, EdgeSE3Line WorldObjectLine3D>{
   public:

@@ -38,7 +38,7 @@
 #endif
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   EdgeSE2Segment2DLine::EdgeSE2Segment2DLine() :
     BaseBinaryEdge<2, Vector2D, VertexSE2, VertexSegment2D>()
@@ -68,4 +68,4 @@ namespace g2o {
     return os.good();
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

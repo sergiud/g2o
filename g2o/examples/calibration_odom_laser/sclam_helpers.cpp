@@ -45,7 +45,7 @@
 using namespace std;
 using namespace Eigen;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   static const double INFORMATION_SCALING_ODOMETRY = 100;
 
@@ -122,4 +122,4 @@ namespace g2o {
     optimizer.setAlgorithm(solver);
   }
       
-} // namespace g2o
+G2O_END_NAMESPACE

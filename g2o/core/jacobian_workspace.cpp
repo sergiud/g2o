@@ -32,7 +32,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 JacobianWorkspace::JacobianWorkspace() :
   _maxNumVertices(-1), _maxDimension(-1)
@@ -85,4 +85,4 @@ void JacobianWorkspace::updateSize(int numVertices, int dimension)
   _maxDimension = max(dimension, _maxDimension);
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

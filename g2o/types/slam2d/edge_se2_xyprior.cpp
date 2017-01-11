@@ -26,7 +26,7 @@
 
 #include <g2o/types/slam2d/edge_se2_xyprior.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   EdgeSE2XYPrior::EdgeSE2XYPrior() : BaseUnaryEdge< 2, Vector2D, g2o::VertexSE2 >()
   {
@@ -62,4 +62,4 @@ namespace g2o {
     _jacobianOplusXi << 1,0,0, 0,1,0;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

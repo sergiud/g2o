@@ -27,11 +27,12 @@
 #ifndef G2O_SPARSE_HELPER_H
 #define G2O_SPARSE_HELPER_H
 
+#include <g2o/core/abi.h>
 #include <g2o/stuff/g2o_stuff_api.h>
 
 #include <string>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * write an array to a file, debugging
@@ -43,6 +44,6 @@ namespace g2o {
    */
   G2O_STUFF_API bool writeCCSMatrix(const std::string& filename, int rows, int cols, const int* p, const int* i, const double* v, bool upperTriangleSymmetric = true);
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

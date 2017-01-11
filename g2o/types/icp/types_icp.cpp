@@ -33,7 +33,7 @@
 
 using namespace Eigen;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   G2O_REGISTER_TYPE_GROUP(icp);
   G2O_REGISTER_TYPE(EDGE_V_V_GICP, Edge_V_V_GICP);
@@ -335,4 +335,4 @@ namespace g2o {
   bool VertexSCam::write(std::ostream&) const
   { return false; }
 
-} // namespace g2o
+G2O_END_NAMESPACE

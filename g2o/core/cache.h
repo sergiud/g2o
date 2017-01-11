@@ -34,7 +34,7 @@
 #include <g2o/core/optimizable_graph.h>
 #include <g2o/core/parameter.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class CacheContainer;
 
@@ -138,6 +138,6 @@ namespace g2o {
     }
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

@@ -33,7 +33,7 @@
 #include <g2o/core/optimizable_graph.h>
 #include <g2o/types/data/g2o_types_data_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief data recorded by the robot
@@ -63,6 +63,6 @@ namespace g2o {
       std::string _hostname; ///< name of the computer/robot generating the data
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

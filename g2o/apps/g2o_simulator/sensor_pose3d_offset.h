@@ -29,7 +29,7 @@
 #include "pointsensorparameters.h"
 #include "simulator3d_base.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class SensorPose3DOffset : public PointSensorParameters, public BinarySensor<Robot3D, EdgeSE3Offset, WorldObjectSE3>  { 
   public:
@@ -53,6 +53,6 @@ namespace g2o {
     std::set<PoseObject*> _posesToIgnore;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

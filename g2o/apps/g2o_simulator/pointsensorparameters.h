@@ -29,9 +29,10 @@
 
 #include <cmath>
 
+#include <g2o/core/abi.h>
 #include <g2o/simulator/g2o_simulator_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2O_SIMULATOR_API PointSensorParameters{
   public:
@@ -49,6 +50,6 @@ namespace g2o {
     double _maxRange2, _minRange2, _fov,  _maxAngularDifference;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

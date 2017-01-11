@@ -29,7 +29,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace csparse_extension {
 
   struct SparseMatrixEntry{
@@ -196,4 +196,4 @@ namespace csparse_extension {
   }
 
 } // namespace csparse_extension
-} // namespace g2o
+G2O_END_NAMESPACE

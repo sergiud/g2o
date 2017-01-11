@@ -1,4 +1,5 @@
 ADD_LIBRARY(core
+abi.h
 base_edge.h
 base_edge.cpp
 base_binary_edge.h          hyper_graph_action.cpp

@@ -31,7 +31,7 @@
 #include <g2o/apps/g2o_simulator/pointsensorparameters.h>
 #include <g2o/types/slam2d_addons/types_slam2d_addons.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   // sensor that senses segments, only if the extremas are visible
   class G2O_SIMULATOR_API SensorSegment2D: public PointSensorParameters, public BinarySensor<Robot2D, EdgeSE2Segment2D,WorldObjectSegment2D>{
@@ -44,6 +44,6 @@ namespace g2o {
     bool isVisible(WorldObjectType* to);
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

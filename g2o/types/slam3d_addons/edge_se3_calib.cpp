@@ -26,7 +26,7 @@
 
 #include <g2o/types/slam3d_addons/edge_se3_calib.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 #ifdef _MSC_VER
   extern template const BaseEdge<6, Isometry3D>::InformationType& BaseEdge<6, Isometry3D>::information() const;
 #endif // defined(_MSC_VER)
@@ -78,4 +78,4 @@ namespace g2o {
     return true;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

@@ -30,7 +30,7 @@
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/robust_kernel.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief scale a robust kernel to another delta (window size)
@@ -195,6 +195,6 @@ namespace g2o {
     public:
       virtual void robustify(double e2, Vector3D& rho) const;
   };
-} // end namespace g2o
+G2O_END_NAMESPACE
 
 #endif

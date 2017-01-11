@@ -32,7 +32,7 @@
 #include <g2o/types/sclam2d/edge_se2_sensor_calib.h>
 #include <g2o/types/slam2d/types_slam2d.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   G2O_USE_TYPE_GROUP(slam2d);
 
@@ -46,4 +46,4 @@ namespace g2o {
   G2O_REGISTER_ACTION(EdgeSE2OdomDifferentialCalibDrawAction);
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

@@ -26,7 +26,7 @@
 
 #include "sensor_se3_prior.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
 
   // SensorSE3Prior
@@ -79,4 +79,4 @@ namespace g2o {
     }
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

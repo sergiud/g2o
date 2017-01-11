@@ -26,7 +26,7 @@
 
 #include "sensor_line3d.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
 
   // SensorLine3D

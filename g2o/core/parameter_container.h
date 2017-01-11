@@ -31,9 +31,10 @@
 #include <map>
 #include <string>
 
+#include <g2o/core/abi.h>
 #include <g2o/core/g2o_core_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
     class Parameter;
 
@@ -73,6 +74,6 @@ namespace g2o {
       bool _isMainStorage;
     };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

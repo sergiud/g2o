@@ -51,7 +51,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 DlWrapper::DlWrapper()
 {
@@ -134,5 +134,5 @@ bool DlWrapper::openLibrary(const std::string& filename)
   return true;
 }
 
-} // end namespace g2o
+G2O_END_NAMESPACE
 

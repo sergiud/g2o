@@ -40,7 +40,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   VertexEllipse::VertexEllipse() : RobotData()
   {
@@ -174,4 +174,4 @@ namespace g2o {
   }
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

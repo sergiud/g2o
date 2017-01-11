@@ -29,7 +29,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   VelocityMeasurement::VelocityMeasurement() :
     _measurement(0., 0.), _dt(0.)
@@ -116,4 +116,4 @@ namespace g2o {
 
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

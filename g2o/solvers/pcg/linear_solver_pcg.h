@@ -36,7 +36,7 @@
 #include <g2o/core/batch_stats.h>
 #include <g2o/core/linear_solver.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief linear solver using PCG, pre-conditioner is block Jacobi
@@ -103,6 +103,6 @@ namespace g2o {
 
 #include "linear_solver_pcg.hpp"
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

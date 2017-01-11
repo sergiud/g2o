@@ -37,7 +37,7 @@
 
 #include <iostream>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 /**
  * \brief Our C++ version of the csparse struct
@@ -340,6 +340,6 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
     }
 };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

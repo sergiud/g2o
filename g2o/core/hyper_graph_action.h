@@ -42,7 +42,7 @@
 // define to get verbose output
 //#define G2O_DEBUG_ACTIONLIB
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class CacheContainer;
   /**
@@ -229,6 +229,6 @@ namespace g2o {
 #define G2O_REGISTER_ACTION(classname) \
     extern "C" void g2o_action_##classname(void) {} \
     static g2o::RegisterActionProxy<classname> g_action_proxy_##classname;
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

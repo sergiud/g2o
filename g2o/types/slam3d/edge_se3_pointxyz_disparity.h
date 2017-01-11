@@ -34,7 +34,7 @@
 #include <g2o/types/slam3d/vertex_se3.h>
 
 #define EDGE_PROJECT_DISPARITY_ANALYTIC_JACOBIAN
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief edge from a track to a depth camera node using a disparity measurement
@@ -102,5 +102,5 @@ namespace g2o {
   };
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

@@ -32,8 +32,7 @@
 #include <string>
 #include <typeinfo>
 
-namespace g2o
-{
+G2O_START_NAMESPACE
 
   /**
    * \brief Abstract interface for allocating HyperGraphElement
@@ -70,6 +69,6 @@ namespace g2o
       std::string _name;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

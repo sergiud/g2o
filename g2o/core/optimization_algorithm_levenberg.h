@@ -30,7 +30,7 @@
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/optimization_algorithm_with_hessian.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief Implementation of the Levenberg Algorithm
@@ -86,6 +86,6 @@ namespace g2o {
 
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

@@ -26,7 +26,7 @@
 
 #include <g2o/types/slam3d/edge_pointxyz.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   EdgePointXYZ::EdgePointXYZ() :
     BaseBinaryEdge<3, Vector3D, VertexPointXYZ, VertexPointXYZ>()
@@ -68,4 +68,4 @@ namespace g2o {
   }
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

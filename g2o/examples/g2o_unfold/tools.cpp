@@ -10,7 +10,7 @@
 
 #include <g2o/types/slam2d/types_three_dof.h>
 
-namespace g2o{
+G2O_START_NAMESPACE
 
   using namespace std;
 

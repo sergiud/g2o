@@ -30,7 +30,7 @@
 #include "simulator3d_base.h"
 #include <g2o/simulator/g2o_simulator_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2O_SIMULATOR_API SensorOdometry3D: public BinarySensor<Robot3D, EdgeSE3, WorldObjectSE3 > {
   public:
@@ -40,6 +40,6 @@ namespace g2o {
     void addNoise(EdgeType* e);
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

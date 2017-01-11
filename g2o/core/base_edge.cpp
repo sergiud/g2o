@@ -1,6 +1,6 @@
 #include <g2o/core/base_edge.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   template class G2O_CORE_API BaseEdge<1, double>;
   template class G2O_CORE_API BaseEdge<1, Eigen::Matrix<double, 1, 1> >;
@@ -12,4 +12,4 @@ namespace g2o {
   template class G2O_CORE_API BaseEdge<7, Eigen::Matrix<double, 7, 1> >;
   template class G2O_CORE_API BaseEdge<6, Eigen::Isometry3d>;
 
-} // namespace g2o
+G2O_END_NAMESPACE

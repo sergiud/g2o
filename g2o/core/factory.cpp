@@ -24,10 +24,9 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <g2o/core/factory.h>
-
 #include <g2o/core/cache.h>
 #include <g2o/core/creators.h>
+#include <g2o/core/factory.h>
 #include <g2o/core/optimizable_graph.h>
 #include <g2o/core/parameter.h>
 #include <g2o/stuff/color_macros.h>
@@ -38,7 +37,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 Factory::~Factory()
 {
@@ -197,5 +196,5 @@ HyperGraph::HyperGraphElement* Factory::construct(const std::string& tag, const 
   return nullptr;
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE
 

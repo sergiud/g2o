@@ -36,12 +36,13 @@
 #include <unordered_map>
 #include <vector>
 
+#include <g2o/core/abi.h>
 #include <g2o/core/eigen_types.h>
 #include <g2o/core/g2o_core_api.h>
 
 /** @addtogroup graph */
 //@{
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
      Class that models a directed  Hyper-Graph. An hyper graph is a graph where an edge
@@ -279,7 +280,7 @@ namespace g2o {
       HyperGraph& operator= (const HyperGraph&) = delete;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 //@}
 

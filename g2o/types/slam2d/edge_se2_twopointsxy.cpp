@@ -6,7 +6,7 @@
 #endif
 
 
-namespace g2o{
+G2O_START_NAMESPACE
 
   EdgeSE2TwoPointsXY::EdgeSE2TwoPointsXY() : BaseMultiEdge<4,Vector4D>(){
     resize(3);
@@ -107,4 +107,4 @@ namespace g2o{
     return true;
   }
 
-} // end namespace g2o
+G2O_END_NAMESPACE

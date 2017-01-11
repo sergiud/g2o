@@ -28,7 +28,7 @@
 
 using namespace Eigen;
 
-namespace g2o{
+G2O_START_NAMESPACE
   SensorPose2D::SensorPose2D(const std::string& name_):
     BinarySensor<Robot2D, EdgeSE2, WorldObjectSE2>(name_)
   {
@@ -95,4 +95,4 @@ namespace g2o{
     }
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

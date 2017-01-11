@@ -27,7 +27,7 @@
 #include "types_slam3d.h"
 #include <g2o/core/factory.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace deprecated {
 
   G2O_REGISTER_TYPE_GROUP(deprecated_slam3d);

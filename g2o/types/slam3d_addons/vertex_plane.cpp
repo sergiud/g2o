@@ -28,8 +28,7 @@
 
 #include <g2o/stuff/opengl_wrapper.h>
 
-namespace g2o
-{
+G2O_START_NAMESPACE
 
   VertexPlane::VertexPlane(){
     color << .2, .2, .2;
@@ -111,4 +110,4 @@ namespace g2o
   }
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

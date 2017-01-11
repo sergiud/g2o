@@ -31,7 +31,7 @@
 #include <g2o/types/sclam2d/g2o_types_sclam2d_api.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief scanmatch measurement that also calibrates an offset for the laser
@@ -83,6 +83,6 @@ namespace g2o {
   };
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

@@ -31,8 +31,7 @@
 
 using namespace Eigen;
 
-namespace g2o
-{
+G2O_START_NAMESPACE
 
   bool VertexSE3Euler::read(std::istream& is)
   {
@@ -54,4 +53,4 @@ namespace g2o
     return os.good();
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

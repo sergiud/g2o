@@ -32,7 +32,7 @@
 
 #include <iostream>
 
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
 
   HyperGraphAction::ParametersIteration::ParametersIteration(int iter) :
@@ -247,4 +247,4 @@ namespace g2o {
     }
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

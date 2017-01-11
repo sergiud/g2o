@@ -30,7 +30,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   RawLaser::RawLaser() :
     RobotData(),
@@ -102,4 +102,4 @@ namespace g2o {
     return points;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

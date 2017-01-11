@@ -2,27 +2,28 @@
 // Copyright (C) 2011 R. Kuemmerle, G. Grisetti, W. Burgard
 //
 // This file is part of g2o.
-// 
+//
 // g2o is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // g2o is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with g2o.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef G2O_GUI_HYPER_GRAPH_ACTION_H
 #define G2O_GUI_HYPER_GRAPH_ACTION_H
 
+#include <g2o/core/abi.h>
 #include <g2o/core/hyper_graph_action.h>
 #include <g2o/viewer/g2o_viewer_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2oQGLViewer;
 
@@ -44,6 +45,6 @@ namespace g2o {
       bool dumpScreenshots;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

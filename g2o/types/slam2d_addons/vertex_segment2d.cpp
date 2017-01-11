@@ -38,7 +38,7 @@
 
 #include <g2o/stuff/macros.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   VertexSegment2D::VertexSegment2D() :
     BaseVertex<4, Vector4D>()
@@ -120,4 +120,4 @@ namespace g2o {
   }
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

@@ -28,7 +28,7 @@
 
 using namespace Eigen;
 
-namespace g2o {
+G2O_START_NAMESPACE
   namespace tutorial {
 
     VertexPointXY::VertexPointXY() :
@@ -50,4 +50,4 @@ namespace g2o {
     }
 
   } // namespace tutorial
-} // namespace g2o
+G2O_END_NAMESPACE

@@ -31,7 +31,7 @@
 #include <g2o/types/data/g2o_types_data_api.h>
 #include <g2o/types/data/robot_data.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief string tag to be attached to a vertex
@@ -71,6 +71,6 @@ namespace g2o {
   };
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

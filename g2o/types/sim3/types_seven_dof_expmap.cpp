@@ -31,7 +31,7 @@
 #include <g2o/stuff/macros.h>
 
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   G2O_USE_TYPE_GROUP(sba);
 
@@ -216,4 +216,4 @@ namespace g2o {
 //    _jacobianOplusXj(1,6) = 0; // scale is ignored
 //  }
 
-} // namespace g2o
+G2O_END_NAMESPACE

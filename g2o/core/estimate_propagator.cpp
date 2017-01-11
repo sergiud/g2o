@@ -37,7 +37,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 # ifdef DEBUG_ESTIMATE_PROPAGATOR
   struct FrontierLevelCmp {
@@ -267,4 +267,4 @@ namespace g2o {
     return e->initialEstimatePossible(from_, to);
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

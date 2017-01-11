@@ -38,7 +38,7 @@
 
 #include <g2o/stuff/macros.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   VertexLine2D::VertexLine2D() :
     BaseVertex<2, Line2D>()
@@ -143,4 +143,4 @@ namespace g2o {
   }
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

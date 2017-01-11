@@ -34,7 +34,7 @@
 #include <g2o/stuff/g2o_stuff_api.h>
 #include <g2o/stuff/string_tools.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2O_STUFF_API BaseProperty {
     public:
@@ -156,5 +156,5 @@ namespace g2o {
   typedef Property<double> DoubleProperty;
   typedef Property<std::string> StringProperty;
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

@@ -26,7 +26,7 @@
 
 #include <g2o/core/robust_kernel.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 RobustKernel::RobustKernel() :
   _delta(1.)
@@ -43,4 +43,4 @@ void RobustKernel::setDelta(double delta)
   _delta = delta;
 }
 
-} // end namespace g2o
+G2O_END_NAMESPACE

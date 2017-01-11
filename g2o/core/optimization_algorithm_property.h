@@ -29,9 +29,10 @@
 
 #include <string>
 
+#include <g2o/core/abi.h>
 #include <g2o/core/g2o_core_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 /**
  * \brief describe the properties of a solver
@@ -54,6 +55,6 @@ struct G2O_CORE_API OptimizationAlgorithmProperty
   }
 };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

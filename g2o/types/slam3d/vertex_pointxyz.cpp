@@ -34,7 +34,7 @@
 
 #include <typeinfo>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   bool VertexPointXYZ::read(std::istream& is) {
     Vector3D lv;
@@ -119,5 +119,5 @@ namespace g2o {
     return this;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE
 

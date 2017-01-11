@@ -28,18 +28,16 @@
 #define G2O_GAUSSIAN_SAMPLER_
 
 #include <Eigen/StdVector>
-#include <g2o/stuff/sampler.h>
-#include <g2o/stuff/sampler.h>
 
 #include <cstdlib>
 #include <cmath>
 #include <ctime>
-
 #include <random>
 
+#include <g2o/core/abi.h>
 #include <g2o/stuff/g2o_stuff_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   double G2O_STUFF_API sampleUniform(double min=0, double max=1, std::mt19937* generator=nullptr);
   double G2O_STUFF_API sampleGaussian(std::mt19937* generator = nullptr);
@@ -123,6 +121,6 @@ namespace g2o {
       }
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

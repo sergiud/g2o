@@ -32,7 +32,7 @@
 #include <g2o/examples/tutorial_slam2d/g2o_tutorial_slam2d_api.h>
 #include <g2o/examples/tutorial_slam2d/se2.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
   namespace tutorial {
 
     /**
@@ -60,6 +60,6 @@ namespace g2o {
     };
 
   } // namespace tutorial
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

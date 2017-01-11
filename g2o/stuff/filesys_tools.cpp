@@ -55,7 +55,7 @@
 
 using namespace ::std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 std::string getFileExtension(const std::string& filename)
 {
@@ -161,4 +161,4 @@ std::vector<std::string> getFilesByPattern(const char* pattern)
   return result;
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

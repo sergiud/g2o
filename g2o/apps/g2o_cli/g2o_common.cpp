@@ -80,7 +80,7 @@ HMODULE getMyInstance()
 static const string TYPES_PATTERN=string("*_types_*")+string(G2O_LIBRARY_POSTFIX)+string(".")+string(SO_EXT);
 static const string SOLVERS_PATTERN=string("*_solver_*")+string(G2O_LIBRARY_POSTFIX)+string(".")+string(SO_EXT);
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 void findArguments(const std::string& option, vector<string>& args, int argc, char** argv)
 {
@@ -165,4 +165,4 @@ void loadStandardSolver(DlWrapper& dlSolverWrapper, int argc, char** argv)
   }
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

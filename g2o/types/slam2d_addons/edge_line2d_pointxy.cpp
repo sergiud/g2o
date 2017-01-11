@@ -38,7 +38,7 @@
 #endif
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   bool EdgeLine2DPointXY::read(std::istream& is)
   {
@@ -152,4 +152,4 @@ namespace g2o {
 //   }
 // #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

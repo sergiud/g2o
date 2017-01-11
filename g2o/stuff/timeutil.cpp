@@ -36,7 +36,7 @@
 #include <unistd.h>
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 #ifdef _WINDOWS
 #if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
@@ -121,4 +121,4 @@ double get_monotonic_time()
 #endif
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

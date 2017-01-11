@@ -27,9 +27,10 @@
 #ifndef G2O_COMMON_H
 #define G2O_COMMON_H
 
+#include <g2o/core/abi.h>
 #include <g2o/cli/g2o_cli_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class DlWrapper;
   class DlSolverWrapper;
@@ -44,6 +45,6 @@ namespace g2o {
    */
   G2O_CLI_API void loadStandardSolver(DlWrapper& dlSolverWrapper, int argc = 0, char** argv = nullptr);
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

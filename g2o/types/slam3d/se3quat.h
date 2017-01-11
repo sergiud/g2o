@@ -33,7 +33,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   typedef Eigen::Matrix<double, 6, 1, Eigen::ColMajor> Vector6d;
   typedef Eigen::Matrix<double, 7, 1, Eigen::ColMajor> Vector7d;
@@ -303,6 +303,6 @@ namespace g2o {
   //G2O_TYPES_SLAM3D_API void quat_to_euler(const Eigen::Quaterniond& q, double& yaw, double& pitch, double& roll);
   //G2O_TYPES_SLAM3D_API void jac_quat3_euler3(Eigen::Matrix<double, 6, 6, Eigen::ColMajor>& J, const SE3Quat& t);
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

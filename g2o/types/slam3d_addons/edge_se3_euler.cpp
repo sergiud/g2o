@@ -30,8 +30,7 @@
 
 using namespace Eigen;
 
-namespace g2o
-{
+G2O_START_NAMESPACE
 #ifdef _MSC_VER
 extern template const BaseEdge<6, Isometry3D>::InformationType& BaseEdge<6, Isometry3D>::information() const;
 #endif // defined(_MSC_VER)
@@ -95,4 +94,4 @@ static void jac_quat3_euler3(Eigen::Matrix<double, 6, 6, Eigen::ColMajor>& J, co
     return os.good();
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

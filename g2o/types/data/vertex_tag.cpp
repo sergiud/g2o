@@ -37,7 +37,7 @@
 #include <iomanip>
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   VertexTag::VertexTag() : RobotData()
   {
@@ -109,4 +109,4 @@ namespace g2o {
   }
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

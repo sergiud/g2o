@@ -31,7 +31,7 @@
 
 #include "vertex_se3_quat.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace deprecated {
 
   class ParameterSE3Offset;

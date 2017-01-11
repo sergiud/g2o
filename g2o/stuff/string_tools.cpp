@@ -47,7 +47,7 @@
 #include <wordexp.h>
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 using namespace std;
 
@@ -188,4 +188,4 @@ int readLine(std::istream& is, std::stringstream& currentLine)
   return static_cast<int>(currentLine.str().size());
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

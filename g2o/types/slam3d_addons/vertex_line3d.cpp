@@ -28,7 +28,7 @@
 
 #include <g2o/stuff/opengl_wrapper.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   VertexLine3D::VertexLine3D() {
     color << 1.0, 0.5, 0.0;
@@ -109,4 +109,4 @@ namespace g2o {
   }
 #endif
   
-} // namespace g2o
+G2O_END_NAMESPACE

@@ -1,7 +1,7 @@
 #include "star.h"
 #include <g2o/core/optimization_algorithm_with_hessian.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
 
   Star::Star(int level, SparseOptimizer* optimizer): _level(level), _optimizer(optimizer) {}
@@ -86,4 +86,4 @@ namespace g2o {
     return ok;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

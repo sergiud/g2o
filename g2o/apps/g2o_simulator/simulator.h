@@ -34,7 +34,7 @@
 #include <set>
 #include <string>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 class World;
 class BaseSensor;
@@ -291,6 +291,6 @@ class G2O_SIMULATOR_API World
     int _paramId;
 };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

@@ -32,7 +32,7 @@
 #include <iosfwd>
 #include <string>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   struct OptimizableGraph;
 
@@ -47,6 +47,6 @@ namespace g2o {
    */
   G2O_CLI_API bool dumpEdges(std::ostream& os, const OptimizableGraph& optimizer);
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

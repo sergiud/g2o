@@ -6,7 +6,7 @@
 #include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 #include <g2o/types/slam3d/vertex_se3.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief Edge between two 3D pose vertices
@@ -80,5 +80,5 @@ namespace g2o {
   };
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

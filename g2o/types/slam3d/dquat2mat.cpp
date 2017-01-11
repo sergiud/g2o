@@ -1,6 +1,6 @@
 #include <g2o/types/slam3d/dquat2mat.h>
 #include <iostream>
-namespace g2o {
+G2O_START_NAMESPACE
   namespace internal {
     using namespace std;
 
@@ -58,4 +58,4 @@ namespace g2o {
 	dq_dR *= -1;
     }
   } // namespace internal
-} // namespace g2o
+G2O_END_NAMESPACE

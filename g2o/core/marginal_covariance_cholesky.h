@@ -37,7 +37,7 @@
 
 #include <g2o/core/g2o_core_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief computing the marginal covariance given a cholesky factor (lower triangle of the factor)
@@ -95,6 +95,6 @@ namespace g2o {
       double computeEntry(int r, int c);
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

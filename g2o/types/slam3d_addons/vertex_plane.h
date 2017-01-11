@@ -34,8 +34,7 @@
 #include <g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h>
 #include <g2o/types/slam3d_addons/plane3d.h>
 
-namespace g2o
-{
+G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM3D_ADDONS_API VertexPlane : public BaseVertex<3, Plane3D>
     {
@@ -85,5 +84,5 @@ namespace g2o
   };
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

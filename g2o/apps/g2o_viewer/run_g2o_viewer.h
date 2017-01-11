@@ -24,9 +24,10 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <g2o/core/abi.h>
 #include <g2o/viewer/g2o_viewer_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class CommandArgs;
 
@@ -39,4 +40,4 @@ namespace g2o {
       static int run(int argc, char** argv, CommandArgs& arg);
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE

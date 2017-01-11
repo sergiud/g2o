@@ -32,7 +32,7 @@
 #include <g2o/core/marginal_covariance_cholesky.h>
 #include <g2o/core/batch_stats.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 /**
  * \brief basic solver for Ax = b
@@ -107,6 +107,6 @@ class LinearSolverCCS : public LinearSolver<MatrixType>
     }
 };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

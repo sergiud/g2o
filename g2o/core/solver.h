@@ -33,7 +33,7 @@
 #include <g2o/core/hyper_graph.h>
 #include <g2o/core/solver.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 
   class SparseOptimizer;
@@ -147,6 +147,6 @@ namespace g2o {
       Solver(const Solver&) { }
       Solver& operator= (const Solver&) { return *this; }
   };
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

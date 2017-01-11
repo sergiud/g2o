@@ -32,7 +32,7 @@
 
 #include <Eigen/Core>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   struct Line2D : public Vector2D{
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -54,6 +54,6 @@ namespace g2o {
     return est;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

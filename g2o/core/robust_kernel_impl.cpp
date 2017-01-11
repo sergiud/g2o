@@ -29,7 +29,7 @@
 
 #include <cmath>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 RobustKernelScaleDelta::RobustKernelScaleDelta(RobustKernelPtr&& kernel, double delta) :
   RobustKernel(delta),
@@ -179,4 +179,4 @@ G2O_REGISTER_ROBUST_KERNEL(Fair, RobustKernelFair)
 G2O_REGISTER_ROBUST_KERNEL(Tukey, RobustKernelTukey)
 G2O_REGISTER_ROBUST_KERNEL(Saturated, RobustKernelSaturated)
 G2O_REGISTER_ROBUST_KERNEL(DCS, RobustKernelDCS)
-} // end namespace g2o
+G2O_END_NAMESPACE

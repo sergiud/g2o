@@ -29,7 +29,7 @@
 
 #include <cassert>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   namespace {
     struct ScopedPointerDeleter
@@ -142,6 +142,6 @@ namespace g2o {
       const ScopedArray& operator=(const ScopedArray&);
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

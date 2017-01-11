@@ -34,7 +34,7 @@
 
 #include "types_tutorial_slam2d.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   namespace tutorial {
 
@@ -60,6 +60,6 @@ namespace g2o {
     };
 
   } // namespace tutorial
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

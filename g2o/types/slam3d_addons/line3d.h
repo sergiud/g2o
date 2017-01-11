@@ -36,7 +36,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-namespace g2o {
+G2O_START_NAMESPACE
   
   typedef Eigen::Matrix<double, 6, 1> Vector6d;
   typedef Eigen::Matrix<double, 6, 6> Matrix6d;
@@ -205,6 +205,6 @@ namespace g2o {
     
   } // namespace internal
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

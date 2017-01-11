@@ -24,24 +24,22 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <g2o/types/sba/types_six_dof_expmap.h>
-
 #include <g2o/core/creators.h>
 #include <g2o/core/factory.h>
 #include <g2o/stuff/macros.h>
+#include <g2o/types/sba/types_six_dof_expmap.h>
 
-
-namespace g2o {
+G2O_START_NAMESPACE
 
 using namespace std;
 using namespace Eigen;
 
 G2O_REGISTER_TYPE_GROUP(expmap);
-G2O_REGISTER_TYPE(VERTEX_SE3:EXPMAP, VertexSE3Expmap);
-G2O_REGISTER_TYPE(EDGE_SE3:EXPMAP, EdgeSE3Expmap);
-G2O_REGISTER_TYPE(EDGE_PROJECT_XYZ2UV:EXPMAP, EdgeProjectXYZ2UV);
-G2O_REGISTER_TYPE(EDGE_PROJECT_XYZ2UVU:EXPMAP, EdgeProjectXYZ2UVU);
-G2O_REGISTER_TYPE(PARAMS_CAMERAPARAMETERS, CameraParameters);
+G2O_REGISTER_TYPE(VERTEX_SE3:EXPMAP, VertexSE3Expmap)
+G2O_REGISTER_TYPE(EDGE_SE3:EXPMAP, EdgeSE3Expmap)
+G2O_REGISTER_TYPE(EDGE_PROJECT_XYZ2UV:EXPMAP, EdgeProjectXYZ2UV)
+G2O_REGISTER_TYPE(EDGE_PROJECT_XYZ2UVU:EXPMAP, EdgeProjectXYZ2UVU)
+G2O_REGISTER_TYPE(PARAMS_CAMERAPARAMETERS, CameraParameters)
 
 CameraParameters
 ::CameraParameters()
@@ -355,4 +353,4 @@ bool EdgeProjectXYZ2UVU::write(std::ostream& os) const {
   return os.good();
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

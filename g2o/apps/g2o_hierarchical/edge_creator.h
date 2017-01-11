@@ -7,7 +7,7 @@
 
 #include <g2o/hierarchical/g2o_hierarchical_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * Class that implements a simple edge_creation, based on the types and the
@@ -64,5 +64,5 @@ protected:
 };
 
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

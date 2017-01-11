@@ -30,7 +30,7 @@
 
 #include <iostream>
 
-namespace g2o {
+G2O_START_NAMESPACE
   using namespace std;
 
   EdgeSE2Offset::EdgeSE2Offset() : BaseBinaryEdge<3, SE2, VertexSE2, VertexSE2>() {
@@ -117,4 +117,4 @@ namespace g2o {
       from->setEstimate(to->estimate() * virtualMeasurement.inverse());
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

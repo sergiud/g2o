@@ -2,7 +2,7 @@
 #include <g2o/core/factory.h>
 #include "backbone_tree_action.h"
 #include "edge_types_cost_function.h"
-namespace g2o {
+G2O_START_NAMESPACE
 
   using namespace std;
 
@@ -85,4 +85,4 @@ namespace g2o {
     }
     return false;
   }
-} // namespace g2o
+G2O_END_NAMESPACE

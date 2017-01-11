@@ -34,7 +34,7 @@
 #include <g2o/stuff/string_tools.h>
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   BaseProperty::BaseProperty(const std::string name_) :_name(name_){
   }
@@ -104,4 +104,4 @@ namespace g2o {
     return status;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

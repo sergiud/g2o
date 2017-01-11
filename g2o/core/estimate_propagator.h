@@ -37,7 +37,7 @@
 
 #include <g2o/core/factory.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief cost for traversing along active edges in the optimizer
@@ -168,5 +168,5 @@ namespace g2o {
       OptimizableGraph* _graph;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

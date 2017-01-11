@@ -26,7 +26,7 @@
 
 #include <g2o/types/sclam2d/vertex_odom_differential_params.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
   bool VertexOdomDifferentialParams::read(std::istream& is)
   {
     is >> _estimate(0) >> _estimate(1) >> _estimate(2);
@@ -39,4 +39,4 @@ namespace g2o {
     return os.good();
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

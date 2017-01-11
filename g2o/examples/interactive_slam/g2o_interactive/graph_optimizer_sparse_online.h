@@ -30,7 +30,7 @@
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/examples/interactive_slam/g2o_interactive_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class Solver;
 
@@ -64,6 +64,6 @@ namespace g2o {
       Solver* _underlyingSolver;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

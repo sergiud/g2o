@@ -31,7 +31,7 @@
 #include "simulator2d_base.h"
 #include <g2o/simulator/g2o_simulator_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
   
   class G2O_SIMULATOR_API SensorPointXY: public PointSensorParameters, public BinarySensor<Robot2D, EdgeSE2PointXY, WorldObjectPointXY>{ 
   public:
@@ -43,6 +43,6 @@ namespace g2o {
     bool isVisible(WorldObjectType* to);
   }; 
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

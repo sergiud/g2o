@@ -26,8 +26,7 @@
 
 #include <g2o/types/slam3d_addons/edge_plane.h>
 
-namespace g2o
-{
+G2O_START_NAMESPACE
 using namespace Eigen;
 
 EdgePlane::EdgePlane() :
@@ -75,4 +74,4 @@ void EdgePlane::linearizeOplus()
 #endif
 
 
-} // namespace g2o
+G2O_END_NAMESPACE

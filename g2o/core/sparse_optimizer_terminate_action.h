@@ -4,7 +4,7 @@
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/hyper_graph_action.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class SparseOptimizer;
 
@@ -37,6 +37,6 @@ namespace g2o {
       void setOptimizerStopFlag(const SparseOptimizer* optimizer, bool stop);
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

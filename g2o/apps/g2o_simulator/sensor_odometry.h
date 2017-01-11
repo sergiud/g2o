@@ -28,7 +28,7 @@
 #define G2O_ODOMETRY_SENSOR_
 
 #include "simulator.h"
-namespace g2o {
+G2O_START_NAMESPACE
 
   template <class  R, class  E, class O>
   class SensorOdometry: public BinarySensor<R, E, O > {

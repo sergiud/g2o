@@ -27,9 +27,10 @@
 #ifndef G2O_SCLAM_HELPERS_H
 #define G2O_SCLAM_HELPERS_H
 
+#include <g2o/core/abi.h>
 #include <g2o/examples/calibration_odom_laser/g2o_calibration_odom_laser_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class SparseOptimizer;
   class DataQueue;
@@ -38,6 +39,6 @@ namespace g2o {
 
   G2O_CALIBRATION_ODOM_LASER_API void allocateSolverForSclam(SparseOptimizer& optimizer, bool levenberg = false);
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

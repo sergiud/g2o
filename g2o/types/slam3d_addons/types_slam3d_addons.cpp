@@ -32,7 +32,7 @@
 #include <typeinfo>
 
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   G2O_REGISTER_TYPE_GROUP(slam3d_addons);
 
@@ -73,4 +73,4 @@ namespace g2o {
 #endif
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

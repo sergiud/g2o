@@ -32,7 +32,7 @@
 #include <g2o/stuff/macros.h>
 #include <vector>
 
-namespace g2o{
+G2O_START_NAMESPACE
 
   using namespace std;
 
@@ -49,7 +49,7 @@ namespace g2o{
     return std::numeric_limits<double>::max();
   }
 
-  HyperDijkstra::AdjacencyMapEntry::AdjacencyMapEntry(HyperGraph::Vertex* child_, HyperGraph::Vertex* parent_, 
+  HyperDijkstra::AdjacencyMapEntry::AdjacencyMapEntry(HyperGraph::Vertex* child_, HyperGraph::Vertex* parent_,
       HyperGraph::Edge* edge_, double distance_)
   {
     _child=child_;
@@ -83,7 +83,7 @@ namespace g2o{
   }
 
 
-  void HyperDijkstra::shortestPaths(HyperGraph::VertexSet& vset, HyperDijkstra::CostFunction* cost, 
+  void HyperDijkstra::shortestPaths(HyperGraph::VertexSet& vset, HyperDijkstra::CostFunction* cost,
       double maxDistance, double comparisonConditioner, bool directed, double maxEdgeCost)
   {
     reset();
@@ -145,7 +145,7 @@ namespace g2o{
     }
   }
 
-  void HyperDijkstra::shortestPaths(HyperGraph::Vertex* v, HyperDijkstra::CostFunction* cost, double maxDistance, 
+  void HyperDijkstra::shortestPaths(HyperGraph::Vertex* v, HyperDijkstra::CostFunction* cost, double maxDistance,
       double comparisonConditioner, bool directed, double maxEdgeCost)
   {
     HyperGraph::VertexSet vset;
@@ -177,7 +177,7 @@ namespace g2o{
 
   void HyperDijkstra::visitAdjacencyMap(AdjacencyMap& amap, TreeAction* action, bool useDistance)
   {
-    
+
     typedef std::deque<HyperGraph::Vertex*> Deque;
     Deque q;
     // scans for the vertices without the parent (whcih are the roots of the trees) and applies the action to them.
@@ -205,7 +205,7 @@ namespace g2o{
         //cerr << child->id();
         auto adjacencyIt=amap.find(child);
         assert (adjacencyIt!=amap.end());
-        HyperGraph::Edge* edge=adjacencyIt->second.edge();  
+        HyperGraph::Edge* edge=adjacencyIt->second.edge();
 
         assert(adjacencyIt->first==child);
         assert(adjacencyIt->second.child()==child);
@@ -222,10 +222,10 @@ namespace g2o{
 
   }
 
-  void HyperDijkstra::connectedSubset(HyperGraph::VertexSet& connected, HyperGraph::VertexSet& visited, 
-      HyperGraph::VertexSet& startingSet, 
+  void HyperDijkstra::connectedSubset(HyperGraph::VertexSet& connected, HyperGraph::VertexSet& visited,
+      HyperGraph::VertexSet& startingSet,
       HyperGraph* g, HyperGraph::Vertex* v,
-      HyperDijkstra::CostFunction* cost, double distance, 
+      HyperDijkstra::CostFunction* cost, double distance,
       double comparisonConditioner, double maxEdgeCost)
   {
     typedef std::queue<HyperGraph::Vertex*> VertexDeque;
@@ -256,4 +256,4 @@ namespace g2o{
     return 1.;
   }
 
-} // namespace g2o;
+G2O_END_NAMESPACE

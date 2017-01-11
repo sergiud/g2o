@@ -29,7 +29,7 @@
 #include <cassert>
 #include <queue>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   HyperGraph::Data::Data() {
     _next = nullptr;
@@ -238,4 +238,4 @@ namespace g2o {
     clear();
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

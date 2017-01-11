@@ -26,7 +26,7 @@
 
 #include <g2o/types/slam3d/isometry3d_mappings.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
   namespace internal {
 
     Eigen::Quaterniond normalized(const Eigen::Quaterniond& q) {
@@ -149,4 +149,4 @@ namespace g2o {
     }
 
   } // end namespace internal
-} // end namespace g2o
+G2O_END_NAMESPACE

@@ -41,7 +41,7 @@
 #include <g2o/core/eigen_types.h>
 #include <g2o/core/matrix_operations.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 /**
  * \brief Sparse matrix which uses blocks
  *
@@ -224,7 +224,7 @@ std::ostream& operator << (std::ostream&, const SparseBlockMatrix<MatrixType>& m
 
   typedef SparseBlockMatrix<MatrixXD> SparseBlockMatrixXd;
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #include "sparse_block_matrix.hpp"
 

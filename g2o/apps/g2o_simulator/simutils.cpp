@@ -1,6 +1,6 @@
 #include "simutils.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
   // -1: outside
   // 0: p1Clipped
   // 1: p2clipped
@@ -125,4 +125,4 @@ namespace g2o {
     lp[1]=n.dot(p1+p2)*.5;
     return lp;
   } 
-} // namespace g2o
+G2O_END_NAMESPACE

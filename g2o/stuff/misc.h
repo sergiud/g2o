@@ -27,8 +27,8 @@
 #ifndef G2O_STUFF_MISC_H
 #define G2O_STUFF_MISC_H
 
+#include <g2o/core/abi.h>
 #include <g2o/stuff/macros.h>
-#include <g2o/stuff/misc.h> // for M_PI
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -43,7 +43,7 @@
  *  This file specifies some general case utility functions
  **/
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 /**
  * return the square value
@@ -199,7 +199,7 @@ struct ForceLinker
 };
 
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 // @}
 

@@ -31,7 +31,7 @@
 #include "sensor_pointxy.h"
 #include "simulator2d_base.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2O_SIMULATOR_API SensorPose2D : public PointSensorParameters, public BinarySensor<Robot2D, EdgeSE2, WorldObjectSE2>  { 
   public:
@@ -49,6 +49,6 @@ namespace g2o {
     std::set<PoseObject*> _posesToIgnore;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

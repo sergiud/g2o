@@ -41,7 +41,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * helper function for allocating
@@ -124,4 +124,4 @@ namespace g2o {
 #endif
 
   G2O_REGISTER_OPTIMIZATION_ALGORITHM(dl_var, new CSparseSolverCreator(OptimizationAlgorithmProperty("dl_var", "Dogleg: Cholesky solver using CSparse (variable blocksize)", "CSparse", false, Eigen::Dynamic, Eigen::Dynamic)));
-} // namespace g2o
+G2O_END_NAMESPACE

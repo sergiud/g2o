@@ -21,9 +21,9 @@
 
 #include "ui_base_main_window.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
   class OptimizationAlgorithm;
-} // namespace g2o
+G2O_END_NAMESPACE
 
 class MainWindow : public QMainWindow, public Ui::BaseMainWindow
 {

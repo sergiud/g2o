@@ -35,8 +35,9 @@
 #endif
 
 #include <g2o/cli/g2o_cli_api.h>
+#include <g2o/core/abi.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief Loading libraries during run-time
@@ -79,6 +80,6 @@ namespace g2o {
       DlWrapper& operator=(const DlWrapper& );
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

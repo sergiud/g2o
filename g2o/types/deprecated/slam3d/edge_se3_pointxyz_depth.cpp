@@ -26,7 +26,7 @@
 
 #include "edge_se3_pointxyz_depth.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
 namespace deprecated {
 
   using namespace std;

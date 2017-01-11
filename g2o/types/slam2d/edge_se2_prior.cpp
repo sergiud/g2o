@@ -26,7 +26,7 @@
 
 #include <g2o/types/slam2d/edge_se2_prior.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   EdgeSE2Prior::EdgeSE2Prior() : BaseUnaryEdge<3, SE2, VertexSE2>()
   {
@@ -76,4 +76,4 @@ namespace g2o {
     return true;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

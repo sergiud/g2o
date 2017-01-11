@@ -24,7 +24,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <g2o/stuff/command_args.h>
 
 #include <cstdlib>
 #include <cstring>
@@ -32,10 +31,12 @@
 #include <algorithm>
 #include <functional>
 
+#include <g2o/stuff/command_args.h>
 #include <g2o/stuff/os_specific.h>
+
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 // forward declarations
 std::istream& operator>>(std::istream& is, std::vector<int>& v);
@@ -555,4 +556,4 @@ bool CommandArgs::parsedParam(const std::string& param) const
   return false;
 }
 
-} // end namespace g2o
+G2O_END_NAMESPACE

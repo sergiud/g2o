@@ -28,7 +28,7 @@
 #ifdef G2O_HAVE_OPENGL
 #include <g2o/stuff/opengl_wrapper.h>
 #endif
-namespace g2o {
+G2O_START_NAMESPACE
 
   EdgeSE2SensorCalib::EdgeSE2SensorCalib() :
     BaseMultiEdge<3, SE2>()
@@ -101,4 +101,4 @@ namespace g2o {
   }
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

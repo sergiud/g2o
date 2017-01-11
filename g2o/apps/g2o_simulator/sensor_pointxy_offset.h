@@ -31,7 +31,7 @@
 #include "sensor_segment2d.h"
 #include "sensor_segment2d_line.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
   
   class G2O_SIMULATOR_API SensorPointXYOffset: public PointSensorParameters, public BinarySensor<Robot2D, EdgeSE2PointXYOffset, WorldObjectPointXY>{ 
   public:
@@ -47,6 +47,6 @@ namespace g2o {
     RobotPoseType _sensorPose;
   }; 
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

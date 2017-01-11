@@ -37,7 +37,7 @@
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/hyper_graph.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   struct OptimizableGraph;
 
@@ -93,6 +93,6 @@ namespace g2o {
       int _maxDimension;            ///< the maximum dimension (number of elements) for a Jacobian
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

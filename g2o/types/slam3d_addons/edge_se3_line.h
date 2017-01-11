@@ -35,7 +35,7 @@
 #include <g2o/types/slam3d_addons/line3d.h>
 #include <g2o/types/slam3d_addons/vertex_line3d.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM3D_ADDONS_API EdgeSE3Line3D : public BaseBinaryEdge<4, Line3D, VertexSE3, VertexLine3D> {
     public:
@@ -95,5 +95,5 @@ namespace g2o {
   };
 #endif
   
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

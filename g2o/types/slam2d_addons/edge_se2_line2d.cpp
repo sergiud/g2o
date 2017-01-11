@@ -38,7 +38,7 @@
 #endif
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   EdgeSE2Line2D::EdgeSE2Line2D() :
     BaseBinaryEdge<2, Line2D, VertexSE2, VertexLine2D>()
@@ -158,4 +158,4 @@ namespace g2o {
 //   }
 // #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

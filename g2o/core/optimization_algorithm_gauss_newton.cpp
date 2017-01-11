@@ -38,7 +38,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   OptimizationAlgorithmGaussNewton::OptimizationAlgorithmGaussNewton(Solver* solver) :
     OptimizationAlgorithmWithHessian(solver)
@@ -99,4 +99,4 @@ namespace g2o {
       << "\t schur= " << _solver->schur();
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

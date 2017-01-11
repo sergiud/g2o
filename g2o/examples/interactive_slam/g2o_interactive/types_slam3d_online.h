@@ -32,7 +32,7 @@
 
 #include <iostream>
 
-namespace g2o {
+G2O_START_NAMESPACE
   
   class G2O_INTERACTIVE_API OnlineVertexSE3 : public VertexSE3
   {
@@ -85,6 +85,6 @@ namespace g2o {
       }
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

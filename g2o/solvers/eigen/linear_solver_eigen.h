@@ -37,7 +37,7 @@
 #include <iostream>
 #include <vector>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 /**
  * \brief linear solver which uses the sparse Cholesky solver from Eigen
@@ -229,6 +229,6 @@ class LinearSolverEigen: public LinearSolver<MatrixType>
     }
 };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

@@ -35,7 +35,7 @@
 
 #include <g2o/stuff/macros.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   VertexPointXY::VertexPointXY() :
     BaseVertex<2, Vector2D>()
@@ -115,4 +115,4 @@ namespace g2o {
   }
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE

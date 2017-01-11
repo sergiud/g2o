@@ -8,7 +8,7 @@
 #include <set>
 #include <vector>
 
-namespace g2o {
+G2O_START_NAMESPACE
   /**
    * Class that represents a subgraph in the hierarchical optimization.
    * The subgraph is consisting of
@@ -72,5 +72,5 @@ struct Star{
   typedef std::map<HyperGraph::Edge*, Star*> EdgeStarMap;
 
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

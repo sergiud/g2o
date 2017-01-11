@@ -27,9 +27,10 @@
 #ifndef G2O_MATRIX_STRUCTURE_H
 #define G2O_MATRIX_STRUCTURE_H
 
+#include <g2o/core/abi.h>
 #include <g2o/core/g2o_core_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 /**
  * \brief representing the structure of a matrix in column compressed structure (only the upper triangular part of the matrix)
@@ -46,7 +47,7 @@ class G2O_CORE_API MatrixStructure
     void alloc(int n_, int nz);
 
     void free();
-    
+
     /**
      * Write the matrix pattern to a file. File is also loadable by octave, e.g., then use spy(matrix)
      */
@@ -65,6 +66,6 @@ class G2O_CORE_API MatrixStructure
     int maxNz;    ///< size of the allocated memory
 };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

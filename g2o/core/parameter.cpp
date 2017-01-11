@@ -26,7 +26,7 @@
 
 #include <g2o/core/parameter.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   Parameter::Parameter() : _id(-1)
   {
@@ -37,4 +37,4 @@ namespace g2o {
     _id = id_;
   }
   
-} // namespace g2o
+G2O_END_NAMESPACE

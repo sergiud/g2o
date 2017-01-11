@@ -34,7 +34,7 @@
 
 #include <g2o/types/sim3/g2o_types_sim3_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 
   /**
@@ -137,6 +137,6 @@ class G2O_TYPES_SIM3_API EdgeSim3ProjectXYZ : public  BaseBinaryEdge<2, Vector2D
 
 };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

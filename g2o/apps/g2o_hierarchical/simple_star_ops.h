@@ -11,7 +11,7 @@
 
 #include <g2o/hierarchical/g2o_hierarchical_api.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 
   G2O_HIERARCHICAL_API void constructEdgeStarMap(EdgeStarMap& esmap, StarSet& stars, bool low=true);
@@ -36,5 +36,5 @@ namespace g2o {
                           int starIterations=30,
                           double rejectionThreshold=1e-5, bool debug=false);
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

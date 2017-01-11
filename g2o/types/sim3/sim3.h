@@ -30,8 +30,7 @@
 #include <Eigen/Geometry>
 #include <g2o/types/slam3d/se3_ops.h>
 
-namespace g2o
-{
+G2O_START_NAMESPACE
   typedef  Eigen::Matrix <double, 7, 1> Vector7d;
   typedef  Eigen::Matrix <double, 7, 7> Matrix7d;
 
@@ -292,7 +291,7 @@ namespace g2o
     return out_str;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 
 #endif

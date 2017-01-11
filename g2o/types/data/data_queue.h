@@ -27,10 +27,12 @@
 #ifndef G2O_DATA_QUEUE_H
 #define G2O_DATA_QUEUE_H
 
-#include <g2o/types/data/g2o_types_data_api.h>
 #include <map>
 
-namespace g2o {
+#include <g2o/core/abi.h>
+#include <g2o/types/data/g2o_types_data_api.h>
+
+G2O_START_NAMESPACE
 
   class RobotData;
 
@@ -59,6 +61,6 @@ namespace g2o {
       Buffer _buffer;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

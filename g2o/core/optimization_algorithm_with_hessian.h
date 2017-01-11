@@ -30,7 +30,7 @@
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/optimization_algorithm.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class Solver;
 
@@ -68,6 +68,6 @@ namespace g2o {
 
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

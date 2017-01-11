@@ -26,7 +26,7 @@
 
 #include "vertex_se2.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
   namespace tutorial {
 
     VertexSE2::VertexSE2() :
@@ -50,4 +50,4 @@ namespace g2o {
     }
 
   } // namespace tutorial
-} // namespace g2o
+G2O_END_NAMESPACE

@@ -35,7 +35,7 @@
 #include <g2o/config.h>
 #include <g2o/core/optimizable_graph.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   template <int D, typename E>
   class BaseEdge : public OptimizableGraph::Edge
@@ -177,6 +177,6 @@ namespace g2o {
   G2O_EXTERN_TEMPLATE class G2O_CORE_API BaseEdge<6, Eigen::Isometry3d>;
 #endif
 
-} // end namespace g2o
+G2O_END_NAMESPACE
 
 #endif

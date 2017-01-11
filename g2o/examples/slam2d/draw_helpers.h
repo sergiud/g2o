@@ -29,7 +29,9 @@
 
 #include <qgl.h>
 
-namespace g2o {
+#include <g2o/core/abi.h>
+
+G2O_START_NAMESPACE
 
   /**
    * draw a disk
@@ -41,6 +43,6 @@ namespace g2o {
    */
   void drawCircle(GLfloat radius, int segments = 32);
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

@@ -35,7 +35,7 @@
 #include <g2o/core/sparse_optimizer.h>
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   OptimizationAlgorithmLevenberg::OptimizationAlgorithmLevenberg(Solver* solver) :
     OptimizationAlgorithmWithHessian(solver)
@@ -186,4 +186,4 @@ namespace g2o {
       << "\t levenbergIter= " << _levenbergIterations;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

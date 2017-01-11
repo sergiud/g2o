@@ -31,7 +31,7 @@
 
 using namespace std;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 RobustKernelFactory* RobustKernelFactory::instance()
 {
@@ -90,4 +90,4 @@ void RobustKernelFactory::destroy()
 {
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

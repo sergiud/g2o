@@ -39,7 +39,7 @@
 #include <g2o/core/base_edge.h>
 #include <g2o/core/robust_kernel.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief base class to represent an edge connecting an arbitrary number of nodes
@@ -172,6 +172,6 @@ namespace g2o {
 
 #include "base_multi_edge.hpp"
 
-} // end namespace g2o
+G2O_END_NAMESPACE
 
 #endif

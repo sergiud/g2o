@@ -28,7 +28,7 @@
 
 #include <g2o/types/data/robot_data.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   DataQueue::DataQueue()
   {
@@ -77,4 +77,4 @@ namespace g2o {
     _buffer[rd->timestamp()] = rd;
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

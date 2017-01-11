@@ -42,7 +42,7 @@ using namespace std;
 #define QGLVIEWER_DEPRECATED_MOUSEBINDING
 #endif
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 namespace {
 
@@ -216,4 +216,4 @@ void Slam2DViewer::init()
   delete oldcam;
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

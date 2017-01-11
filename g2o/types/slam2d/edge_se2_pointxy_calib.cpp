@@ -26,7 +26,7 @@
 
 #include <g2o/types/slam2d/edge_se2_pointxy_calib.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   EdgeSE2PointXYCalib::EdgeSE2PointXYCalib() :
     BaseMultiEdge<2, Vector2D>()
@@ -60,4 +60,4 @@ namespace g2o {
     return os.good();
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

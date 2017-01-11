@@ -31,7 +31,7 @@
 #include <g2o/types/slam3d_addons/types_slam3d_addons.h>
 #include "simulator.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   typedef WorldObject<VertexSE3> WorldObjectSE3;
 
@@ -41,6 +41,6 @@ namespace g2o {
 
   typedef Robot<WorldObjectSE3>  Robot3D;
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

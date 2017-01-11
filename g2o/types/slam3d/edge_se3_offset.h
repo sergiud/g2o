@@ -33,7 +33,7 @@
 #include <g2o/types/slam3d/parameter_camera.h>
 #include <g2o/types/slam3d/parameter_stereo_camera.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
   class ParameterSE3Offset;
   class CacheSE3Offset;
 
@@ -68,5 +68,5 @@ namespace g2o {
       CacheSE3Offset  *_cacheFrom, *_cacheTo;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 #endif

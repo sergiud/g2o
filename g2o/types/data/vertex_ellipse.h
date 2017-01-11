@@ -31,7 +31,7 @@
 #include <g2o/core/hyper_graph_action.h>
 #include <g2o/types/data/robot_data.h>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   /**
    * \brief string ellipse to be attached to a vertex
@@ -88,6 +88,6 @@ namespace g2o {
   };
 #endif
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

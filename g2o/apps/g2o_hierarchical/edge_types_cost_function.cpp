@@ -2,7 +2,7 @@
 #include <g2o/core/factory.h>
 #include "edge_types_cost_function.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   EdgeTypesCostFunction::EdgeTypesCostFunction(std::string edgeTag, std::string vertexTag, int level):
     _edgeTag(edgeTag),
@@ -19,4 +19,4 @@ namespace g2o {
     return std::numeric_limits<double>::max();
   }
 
-} // namespace g2o
+G2O_END_NAMESPACE

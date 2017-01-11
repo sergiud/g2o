@@ -8,7 +8,7 @@
 #include <iostream>
 
 
-namespace g2o{
+G2O_START_NAMESPACE
 
   using namespace std;
   using namespace Eigen;
@@ -462,4 +462,4 @@ void computeBorder(StarSet& stars, EdgeStarMap& hesmap){
   }
 
 
-} // namespace g2o
+G2O_END_NAMESPACE

@@ -50,7 +50,7 @@
 // this seems to have to go outside of the AISNav namespace...
 //USING_PART_OF_NAMESPACE_EIGEN;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   typedef  Eigen::Matrix<double, 6, 1> Vector6d;
 
@@ -74,7 +74,6 @@ namespace g2o {
       // initialize an object
       SBACam()
       {
-        SE3Quat();
         setKcam(1,1,0.5,0.5,0);  // unit image projection
       }
 
@@ -237,7 +236,7 @@ namespace g2o {
 
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 
 #endif  // SBACam

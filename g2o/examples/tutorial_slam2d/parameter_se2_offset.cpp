@@ -27,7 +27,7 @@
 #include "parameter_se2_offset.h"
 #include "vertex_se2.h"
 
-namespace g2o {
+G2O_START_NAMESPACE
   namespace tutorial {
 
     ParameterSE2Offset::ParameterSE2Offset()
@@ -68,4 +68,4 @@ namespace g2o {
     }
 
   } // end namespace tutorial
-} // namespace g2o
+G2O_END_NAMESPACE

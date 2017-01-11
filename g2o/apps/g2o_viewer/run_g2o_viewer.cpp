@@ -37,7 +37,7 @@
 #include <QApplication>
 #include <QThread>
 
-namespace g2o {
+G2O_START_NAMESPACE
 
 /**
  * \brief helper for calling usleep on any system using Qt
@@ -89,4 +89,4 @@ int RunG2OViewer::run(int argc, char** argv, CommandArgs& arg)
   return 0;
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

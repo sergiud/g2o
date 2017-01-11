@@ -38,7 +38,7 @@
 using namespace std;
 using namespace Eigen;
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   namespace {
     void quat_to_euler(const Eigen::Quaterniond& q, double& yaw, double& pitch, double& roll)
@@ -480,4 +480,4 @@ void G2oSlamInterface::setBatchSolveEachN(int n)
   _batchEveryN = n;
 }
 
-} // namespace g2o
+G2O_END_NAMESPACE

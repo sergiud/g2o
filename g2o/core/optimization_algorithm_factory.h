@@ -40,7 +40,7 @@
 // define to get some verbose output
 //#define G2O_DEBUG_OPTIMIZATION_ALGORITHM_FACTORY
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   // forward decl
   class OptimizationAlgorithm;
@@ -141,7 +141,7 @@ namespace g2o {
       AbstractOptimizationAlgorithmCreator* _creator;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 /**
  * Use the following macro to register a whole library of

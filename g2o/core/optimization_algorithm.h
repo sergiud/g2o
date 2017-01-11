@@ -38,7 +38,7 @@
 #include <g2o/stuff/property.h>
 
 
-namespace g2o {
+G2O_START_NAMESPACE
 
   class SparseOptimizer;
 
@@ -114,6 +114,6 @@ namespace g2o {
 	  OptimizationAlgorithm& operator= (const OptimizationAlgorithm&) = delete;
   };
 
-} // namespace g2o
+G2O_END_NAMESPACE
 
 #endif

@@ -5,7 +5,7 @@
 #include <g2o/stuff/opengl_primitives.h>
 #endif
 
-namespace g2o{
+G2O_START_NAMESPACE
 
   EdgeSE2LotsOfXY::EdgeSE2LotsOfXY() : BaseMultiEdge<-1,VectorXD>(){
     resize(0);
@@ -180,4 +180,4 @@ namespace g2o{
     return true;
   }
 
-} // end namespace g2o
+G2O_END_NAMESPACE
