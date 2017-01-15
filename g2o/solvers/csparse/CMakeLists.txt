@@ -25,6 +25,7 @@ ENDIF()
 ADD_LIBRARY(solver_csparse
   solver_csparse.cpp
   linear_solver_csparse.h
+  linear_solver_csparse.cpp
 )
 
 generate_export_header (solver_csparse PREFIX_NAME G2O_ EXPORT_FILE_NAME

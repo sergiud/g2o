@@ -27,6 +27,7 @@
 #ifndef G2O_LINEAR_SOLVERCSPARSE_H
 #define G2O_LINEAR_SOLVERCSPARSE_H
 
+#include <g2o/config.h>
 #include <g2o/core/batch_stats.h>
 #include <g2o/core/linear_solver.h>
 #include <g2o/core/marginal_covariance_cholesky.h>
@@ -339,6 +340,13 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
       _ccsA->nz=-1; // tag as CCS formatted matrix
     }
 };
+
+#ifndef solver_csparse_EXPORTS
+G2O_EXTERN_TEMPLATE
+#else
+template
+#endif
+class G2O_SOLVER_CSPARSE_API LinearSolverCSparse<Eigen::MatrixXd>;
 
 G2O_END_NAMESPACE
 

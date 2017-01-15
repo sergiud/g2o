@@ -1,6 +1,7 @@
 ADD_LIBRARY(solver_cholmod
   solver_cholmod.cpp
   linear_solver_cholmod.h
+  linear_solver_cholmod.cpp
 )
 
 generate_export_header (solver_cholmod PREFIX_NAME G2O_ EXPORT_FILE_NAME

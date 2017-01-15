@@ -29,6 +29,7 @@
 
 #include <memory>
 
+#include <g2o/config.h>
 #include <g2o/core/batch_stats.h>
 #include <g2o/core/linear_solver.h>
 #include <g2o/core/sparse_block_matrix_ccs.h>
@@ -353,6 +354,13 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType>
     }
 
 };
+
+#ifndef solver_cholmod_EXPORTS
+G2O_EXTERN_TEMPLATE
+#else
+template
+#endif
+class G2O_SOLVER_CHOLMOD_API LinearSolverCholmod<Eigen::MatrixXd>;
 
 G2O_END_NAMESPACE
 
