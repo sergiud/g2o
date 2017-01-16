@@ -16,7 +16,7 @@
 
 //! Starts the inner ABI specific namespace.
 #define G2O_START_ABI_NAMESPACE \
-    namespace G2O_ABI_NAMESPACE_NAME {
+    inline namespace G2O_ABI_NAMESPACE_NAME {
 
 //! End the inner ABI specific namespace.
 #define G2O_END_ABI_NAMESPACE }
@@ -41,7 +41,6 @@
 G2O_START_LIBRARY_NAMESPACE
 G2O_START_ABI_NAMESPACE
 G2O_END_ABI_NAMESPACE
-using namespace G2O_LIBRARY_NAMESPACE_NAME::G2O_ABI_NAMESPACE_NAME;
 G2O_END_LIBRARY_NAMESPACE
 
 #endif
