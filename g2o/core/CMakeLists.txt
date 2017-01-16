@@ -59,9 +59,15 @@ target_include_directories (core PUBLIC
 )
 
 target_compile_features (core
-  PUBLIC cxx_rvalue_references cxx_constexpr cxx_nullptr
-         cxx_uniform_initialization
+  PUBLIC cxx_constexpr
+         cxx_deleted_functions
+         cxx_nullptr
+         cxx_override
+         cxx_range_for
+         cxx_rvalue_references
+         cxx_defaulted_functions
          cxx_inline_namespaces
+         cxx_uniform_initialization
   PRIVATE cxx_auto_type
 )
 
