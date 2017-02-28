@@ -9,7 +9,8 @@ generate_export_header (freeglut_minimal PREFIX_NAME G2O_ EXPORT_FILE_NAME
   EXPORT_MACRO_NAME FGAPI)
 
 
-TARGET_LINK_LIBRARIES(freeglut_minimal ${OPENGL_gl_LIBRARY} stuff)
+target_include_directories (freeglut_minimal PUBLIC ${OPENGL_INCLUDE_DIR})
+TARGET_LINK_LIBRARIES(freeglut_minimal ${OPENGL_LIBRARIES} stuff)
 
 SET_TARGET_PROPERTIES(freeglut_minimal PROPERTIES OUTPUT_NAME ${LIB_PREFIX}ext_freeglut_minimal)
 
