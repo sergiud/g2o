@@ -157,7 +157,7 @@ G2O_START_NAMESPACE
 
   };
 
-#ifndef calibration_odom_laser_library_EXPORTS
+#ifndef types_icp_EXPORTS
   G2O_EXTERN_TEMPLATE
 #else
   template
