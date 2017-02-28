@@ -153,6 +153,7 @@ IF(WIN32)
     add_definitions("/wd4244") # Conversion from double -> int
     add_definitions("/wd4267") # Conversion during return
     add_definitions("/wd4522") # Duplicated operator=() in Eigen headers
+    add_definitions("/wd4661") # no suitable definition provided for explicit template instantiation
   ENDIF(MSVC)
 ENDIF(WIN32)
 
