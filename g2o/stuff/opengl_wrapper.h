@@ -3,7 +3,7 @@
 
 #include <g2o/config.h>
 
-#ifdef WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 

@@ -60,7 +60,7 @@ G2O_START_NAMESPACE
   {
     public:
       HyperGraphElementCreator() : _name(typeid(T).name()) {}
-#if defined (WINDOWS) && defined(__GNUC__) // force stack alignment on Windows with GCC
+#if defined (_WIN32) && defined(__GNUC__) // force stack alignment on Windows with GCC
       __attribute__((force_align_arg_pointer))
 #endif
       HyperGraph::HyperGraphElement* construct() { return new T;}

@@ -26,7 +26,7 @@
 
 #include <g2o/types/slam2d_addons/vertex_segment2d.h>
 
-#ifdef WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 

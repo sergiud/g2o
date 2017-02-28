@@ -43,7 +43,7 @@
 #include <iostream>
 #include <iterator>
 
-#if (defined (UNIX) || defined(CYGWIN)) && !defined(ANDROID)
+#if defined(G2O_HAVE_WORDEXP_H) && !defined(__ANDROID__)
 #include <wordexp.h>
 #endif
 
@@ -129,7 +129,7 @@ int strPrintf(std::string& str, const char* fmt, ...)
 
 std::string strExpandFilename(const std::string& filename)
 {
-#if (defined (UNIX) || defined(CYGWIN)) && !defined(ANDROID)
+#if defined(G2O_HAVE_WORDEXP_H) && !defined(__ANDROID__)
   string result = filename;
   wordexp_t p{};
 

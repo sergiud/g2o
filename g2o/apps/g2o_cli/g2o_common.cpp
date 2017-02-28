@@ -24,14 +24,16 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <g2o/config.h>
+#include <g2o/stuff/filesys_tools.h>
+
 #include "g2o_common.h"
 #include "dl_wrapper.h"
 #include <cstdlib>
-#include <g2o/stuff/filesys_tools.h>
-
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+
 using namespace ::std;
 
 /*
@@ -39,15 +41,15 @@ using namespace ::std;
  */
 #ifdef __APPLE__
 #define SO_EXT "dylib"
-#elif defined (WINDOWS) || defined (CYGWIN)
+#elif defined (_WIN32) || defined (__CYGWIN__)
 #define SO_EXT "dll"
 #else // Linux
 #define SO_EXT "so"
 #endif
 
 // This is used to determine where this library is
-#if defined (UNIX) || defined(CYGWIN)
-# if (defined UNIX)
+#if defined(G2O_HAVE_DLADDR)
+# if (defined __unix__)
    // dladdr is not available on a recent installation of Cygwin
 #  ifndef _GNU_SOURCE
 #    define _GNU_SOURCE
@@ -55,8 +57,11 @@ using namespace ::std;
 #  include <dlfcn.h>
    static Dl_info info;
 #  endif
+#endif
+
+#if defined(__unix__)
 # define PATH_SEPARATOR ":"
-#else // WINDOWS
+#else // _WIN32
 #define PATH_SEPARATOR ";"
 
 static void fakeFunctionForWindows() {}
@@ -69,12 +74,6 @@ HMODULE getMyInstance()
   }
   return NULL;
 }
-#endif
-
-// This can occur if we are doing a release build, and the release
-// postfix is empty
-#ifndef G2O_LIBRARY_POSTFIX
-#define G2O_LIBRARY_POSTFIX ""
 #endif
 
 static const string TYPES_PATTERN=string("*_types_*")+string(G2O_LIBRARY_POSTFIX)+string(".")+string(SO_EXT);
@@ -101,11 +100,11 @@ void loadStandardTypes(DlWrapper& dlTypesWrapper, int argc, char** argv)
     typesPath = envTypesPath;
   } else {
     typesPath = G2O_DEFAULT_TYPES_DIR_;
-#if (defined UNIX)
+#if (defined G2O_HAVE_DLADDR)
     if (dladdr(&info, &info) != 0) {
       typesPath = getDirname(info.dli_fname);
     }
-#elif (defined WINDOWS)
+#elif (defined _WIN32)
     char libFilename[MAX_PATH + 1];
     HMODULE instance = getMyInstance();
     if (instance && GetModuleFileName(instance, libFilename, MAX_PATH) > 0) {
@@ -137,11 +136,11 @@ void loadStandardSolver(DlWrapper& dlSolverWrapper, int argc, char** argv)
   if (envSolversPath != nullptr) {
       solversPath = envSolversPath;
   } else {
-#if (defined UNIX)
+#if (defined G2O_HAVE_DLADDR)
     if (dladdr(&info, &info) != 0) {
       solversPath = getDirname(info.dli_fname);
     }
-#elif (defined WINDOWS)
+#elif (defined _WIN32)
     char libFilename[MAX_PATH + 1];
     HMODULE instance = getMyInstance();
     if (instance && GetModuleFileName(instance, libFilename, MAX_PATH) > 0) {

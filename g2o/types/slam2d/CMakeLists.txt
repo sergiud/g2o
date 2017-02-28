@@ -29,7 +29,7 @@ SET_TARGET_PROPERTIES(types_slam2d PROPERTIES OUTPUT_NAME ${LIB_PREFIX}types_sla
 
 TARGET_LINK_LIBRARIES(types_slam2d core)
 IF(G2O_HAVE_OPENGL)
-  TARGET_LINK_LIBRARIES(types_slam2d opengl_helper ${OPENGL_gl_LIBRARY} )
+  TARGET_LINK_LIBRARIES(types_slam2d opengl_helper ${OPENGL_LIBRARIES} )
 ENDIF()
 
 INSTALL(TARGETS types_slam2d EXPORT g2o-targets

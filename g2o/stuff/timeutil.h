@@ -27,11 +27,12 @@
 #ifndef G2O_TIMEUTIL_H
 #define G2O_TIMEUTIL_H
 
+#include <g2o/config.h>
 #include <g2o/core/abi.h>
 #include <g2o/stuff/g2o_stuff_api.h>
 
-#ifdef _WINDOWS
-#include <time.h>
+#ifndef G2O_HAVE_SYS_TIME_H
+#include <ctime>
 #else
 #include <sys/time.h>
 #endif
@@ -79,7 +80,7 @@ if (1) {\
 
 G2O_START_NAMESPACE
 
-#ifdef _WINDOWS
+#ifndef G2O_HAVE_GETTIMEOFDAY
 typedef struct timeval {
   long tv_sec;
   long tv_usec;

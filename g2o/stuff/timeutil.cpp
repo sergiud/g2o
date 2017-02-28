@@ -24,21 +24,22 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <g2o/config.h>
 #include <g2o/stuff/timeutil.h>
 #include <iostream>
 
-#ifdef _WINDOWS
-#include <time.h>
+#ifdef _WIN32
+#include <ctime>
 #include <windows.h>
 #endif
 
-#ifdef UNIX
+#ifdef G2O_HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
 G2O_START_NAMESPACE
 
-#ifdef _WINDOWS
+#if defined(_WIN32) && !defined(G2O_HAVE_GETTIMEOFDAY)
 #if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
   #define DELTA_EPOCH_IN_MICROSECS  11644473600000000Ui64
 #else

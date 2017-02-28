@@ -28,7 +28,7 @@
 #include <g2o/types/slam3d/isometry3d_gradients.h>
 #include <g2o/types/slam3d/isometry3d_mappings.h>
 
-#ifdef WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 

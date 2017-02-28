@@ -6,7 +6,7 @@
 
 #include <g2o/types/slam2d_addons/edge_se2_segment2d_pointLine.h>
 
-#ifdef WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 

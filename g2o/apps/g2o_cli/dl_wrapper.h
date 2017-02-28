@@ -30,7 +30,7 @@
 #include <string>
 #include <vector>
 
-#ifdef WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -65,9 +65,9 @@ G2O_START_NAMESPACE
       void clear();
 
     protected:
-# if defined (UNIX) || defined(CYGWIN)
+# if defined (__unix__) || defined(__CYGWIN__)
       std::vector<void*> _handles;
-#     elif defined (WINDOWS)
+#     elif defined (_WIN32) && !defined(__CYGWIN__)
       std::vector<HMODULE> _handles;
 #     endif
       std::vector<std::string> _filenames;

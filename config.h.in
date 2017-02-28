@@ -1,23 +1,37 @@
 #ifndef G2O_CONFIG_H
 #define G2O_CONFIG_H
 
-#cmakedefine G2O_HAVE_OPENGL 1
-#cmakedefine G2O_OPENGL_FOUND 1
-#cmakedefine G2O_OPENMP 1
-#cmakedefine G2O_SHARED_LIBS 1
-#cmakedefine G2O_LGPL_SHARED_LIBS 1
-#cmakedefine G2O_HAVE_SYS_TIME_H 1
-#cmakedefine G2O_HAVE_VASPRINTF 1
-#cmakedefine G2O_HAVE_DRAND48 1
+/* Does drand48 function exist? */
+#cmakedefine G2O_HAVE_DRAND48
+/* Is OpenGL available? */
+#cmakedefine G2O_HAVE_OPENGL
+/* Does <sys/time.h> exist? */
+#cmakedefine G2O_HAVE_SYS_TIME_H
+/* Does vasprintf function exist? */
+#cmakedefine G2O_HAVE_VASPRINTF
+#cmakedefine G2O_LGPL_SHARED_LIBS
+/* Is OpenGL available */
+#cmakedefine G2O_OPENGL_FOUND
+/* Is OpenMP available? */
+#cmakedefine G2O_OPENMP
+/* Are we building shared libraries? */
+#cmakedefine G2O_SHARED_LIBS
+/* Does <dlfcn.h> exist? */
+#cmakedefine G2O_HAVE_DLFCN_H
+/* Does <unistd.h> exist? */
+#cmakedefine G2O_HAVE_UNISTD_H
+#cmakedefine G2O_HAVE_WORDEXP_H
+#cmakedefine G2O_HAVE_DLADDR
+#cmakedefine G2O_HAVE_GETTIMEOFDAY
 
 // available sparse matrix libraries
-#cmakedefine G2O_HAVE_CHOLMOD 1
-#cmakedefine G2O_HAVE_CSPARSE 1
+#cmakedefine G2O_HAVE_CHOLMOD
+#cmakedefine G2O_HAVE_CSPARSE
 
-#cmakedefine G2O_CXX_COMPILER "@G2O_CXX_COMPILER@"
+#cmakedefine G2O_CXX_COMPILER "@G2O_CXX_COMPILER_ID@"
 
 #if (defined(_WIN32) || defined(__CYGWIN__)) && \
-     defined(G2O_SHARED_LIBS) && G2O_SHARED_LIBS
+     defined(G2O_SHARED_LIBS)
 #   if defined(__GNUC__)
 #       define G2O_FACTORY_EXPORT __attribute__((dllexport))
 #       define G2O_FACTORY_IMPORT __attribute__((dllimport))

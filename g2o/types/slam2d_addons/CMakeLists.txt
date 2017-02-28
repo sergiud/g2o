@@ -25,7 +25,7 @@ SET_TARGET_PROPERTIES(types_slam2d_addons PROPERTIES OUTPUT_NAME ${LIB_PREFIX}ty
 
 TARGET_LINK_LIBRARIES(types_slam2d_addons types_slam2d core)
 IF(G2O_HAVE_OPENGL)
-  TARGET_LINK_LIBRARIES(types_slam2d_addons ${OPENGL_gl_LIBRARY})
+  TARGET_LINK_LIBRARIES(types_slam2d_addons ${OPENGL_LIBRARIES})
 ENDIF()
 
 INSTALL(TARGETS types_slam2d_addons EXPORT g2o-targets

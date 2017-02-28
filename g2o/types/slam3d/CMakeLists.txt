@@ -48,7 +48,7 @@ target_include_directories (types_slam3d PUBLIC
 SET_TARGET_PROPERTIES(types_slam3d PROPERTIES OUTPUT_NAME ${LIB_PREFIX}types_slam3d)
 TARGET_LINK_LIBRARIES(types_slam3d core)
 IF(G2O_HAVE_OPENGL)
-  TARGET_LINK_LIBRARIES(types_slam3d opengl_helper ${OPENGL_gl_LIBRARY} )
+  TARGET_LINK_LIBRARIES(types_slam3d opengl_helper ${OPENGL_LIBRARIES} )
 ENDIF()
 
 INSTALL(TARGETS types_slam3d EXPORT g2o-targets

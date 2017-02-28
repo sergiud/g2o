@@ -69,7 +69,7 @@ SparseOptimizerOnline::SparseOptimizerOnline(bool pcg) :
 SparseOptimizerOnline::~SparseOptimizerOnline()
 {
   if (_gnuplot != nullptr) {
-#ifdef WINDOWS
+#ifdef _MSC_VER
     _pclose(_gnuplot);
 #else
     pclose(_gnuplot);
@@ -239,7 +239,7 @@ void SparseOptimizerOnline::gnuplotVisualization()
 {
   if (slamDimension == 3) {
     if (_gnuplot == nullptr) {
-#ifdef WINDOWS
+#ifdef _MSC_VER
       _gnuplot = _popen("gnuplot -persistent", "w");
 #else
       _gnuplot = popen("gnuplot -persistent", "w");
@@ -261,7 +261,7 @@ void SparseOptimizerOnline::gnuplotVisualization()
   }
   if (slamDimension == 6) {
     if (_gnuplot == nullptr) {
-#ifdef WINDOWS
+#ifdef _MSC_VER
       _gnuplot = _popen("gnuplot -persistent", "w");
 #else
       _gnuplot = popen("gnuplot -persistent", "w");

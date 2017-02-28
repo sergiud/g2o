@@ -38,18 +38,39 @@ set (CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
 set (CPACK_PACKAGE_VERSION ${SHORT_VERSION})
 
 include (CheckCXXCompilerFlag)
-include (CheckIncludeFile)
 include (CheckCXXSymbolExists)
+include (CheckFunctionExists)
+include (CheckIncludeFile)
+include (CheckLibraryExists)
 include (CMakeDependentOption)
 include (CMakePackageConfigHelpers)
+include (CMakePushCheckState)
 include (CPack)
 include (CTest)
 include (GenerateExportHeader)
 include (GNUInstallDirs)
 
-check_cxx_symbol_exists (vasprintf cstdio G2O_HAVE_VASPRINTF)
 check_cxx_symbol_exists (drand48 cstdlib G2O_HAVE_DRAND48)
+check_cxx_symbol_exists (vasprintf cstdio G2O_HAVE_VASPRINTF)
+check_include_file (dlfcn.h G2O_HAVE_DLFCN_H)
 check_include_file (sys/time.h G2O_HAVE_SYS_TIME_H)
+check_include_file (unistd.h G2O_HAVE_UNISTD_H)
+check_include_file (wordexp.h G2O_HAVE_WORDEXP_H)
+check_library_exists (m pow math.h G2O_HAVE_M)
+check_library_exists (rt clock_gettime time.h G2O_HAVE_RT)
+check_library_exists (dl dlopen dlfcn.h G2O_HAVE_DL)
+
+cmake_push_check_state ()
+set (CMAKE_REQUIRED_INCLUDE dlfcn.h)
+set (CMAKE_REQUIRED_LIBRARIES dl)
+check_function_exists (dladdr G2O_HAVE_DLADDR)
+cmake_pop_check_state ()
+
+cmake_push_check_state ()
+set (CMAKE_REQUIRED_INCLUDE sys/time.h)
+set (CMAKE_REQUIRED_LIBRARIES)
+check_function_exists (gettimeofday G2O_HAVE_GETTIMEOFDAY)
+cmake_pop_check_state ()
 
 # GCC compiler flags
 check_cxx_compiler_flag (-Wa,-mbig-obj HAVE_AR_BIGOBJ)
@@ -122,7 +143,6 @@ endif(MSVC90)
 
 # Detect OS and define macros appropriately
 IF(WIN32)
-  ADD_DEFINITIONS(-DWINDOWS)
   IF(MSVC)
     ADD_DEFINITIONS(-DNOMINMAX)
     ADD_DEFINITIONS(-D_USE_MATH_DEFINES)
@@ -134,19 +154,7 @@ IF(WIN32)
     add_definitions("/wd4267") # Conversion during return
     add_definitions("/wd4522") # Duplicated operator=() in Eigen headers
   ENDIF(MSVC)
-ELSEIF(CYGWIN)
-  ADD_DEFINITIONS(-DCYGWIN)
-ELSEIF(APPLE)
-  ADD_DEFINITIONS(-DUNIX)
-ELSEIF(UNIX)
-  ADD_DEFINITIONS(-DUNIX)
 ENDIF(WIN32)
-
-# detect Android Cross Compiler
-# based on android-cmake which sets the variable ANDROID for us
-IF(ANDROID)
-  ADD_DEFINITIONS(-DANDROID)
-ENDIF()
 
 find_package (Qt5 COMPONENTS Core Gui OpenGL Widgets Xml)
 

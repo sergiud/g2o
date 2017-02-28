@@ -26,7 +26,7 @@
 
 #include <g2o/types/slam2d_addons/edge_line2d_pointxy.h>
 
-#ifdef WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 

@@ -31,17 +31,19 @@
 #include <algorithm>
 
 #include "dl_wrapper.h"
+
+#include <g2o/config.h>
 #include <g2o/stuff/filesys_tools.h>
 #include <g2o/stuff/macros.h>
 
-#if defined (UNIX) || defined(CYGWIN)
+#if defined (G2O_HAVE_DLFCN_H)
 #include <dlfcn.h>
 #endif
 
 #ifdef __APPLE__
 #define SO_EXT "dylib"
 #define SO_EXT_LEN 5
-#elif defined (WINDOWS) || defined (CYGWIN)
+#elif defined (_WIN32) || defined (__CYGWIN__)
 #define SO_EXT "dll"
 #define SO_EXT_LEN 3
 #else // Linux
@@ -98,11 +100,11 @@ int DlWrapper::openLibraries(const std::string& directory, const std::string& pa
 
 void DlWrapper::clear()
 {
-# if defined (UNIX) || defined(CYGWIN)
+# if defined (G2O_HAVE_DLFCN_H)
   for (auto & _handle : _handles) {
     dlclose(_handle);
   }
-#elif defined(WINDOWS)
+#elif defined(_WIN32)
   for (size_t i = 0; i < _handles.size(); ++i) {
     FreeLibrary(_handles[i]);
   }
@@ -113,13 +115,13 @@ void DlWrapper::clear()
 
 bool DlWrapper::openLibrary(const std::string& filename)
 {
-# if defined (UNIX) || defined(CYGWIN)
+# if defined (G2O_HAVE_DLFCN_H)
   void* handle = dlopen(filename.c_str(), RTLD_LAZY);
   if (handle == nullptr) {
     cerr << __PRETTY_FUNCTION__ << " Cannot open library: " << dlerror() << '\n';
     return false;
   }
-# elif defined (WINDOWS)
+# elif defined (_WIN32)
   HMODULE handle = LoadLibrary(filename.c_str());
   if (! handle) {
     cerr << __PRETTY_FUNCTION__ << " Cannot open library." << endl;

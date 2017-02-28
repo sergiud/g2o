@@ -67,7 +67,7 @@ target_include_directories (csparse PUBLIC
 )
 
 SET_TARGET_PROPERTIES(csparse PROPERTIES OUTPUT_NAME ${LIB_PREFIX}ext_csparse)
-IF (UNIX)
+IF (G2O_HAVE_M)
   TARGET_LINK_LIBRARIES(csparse m)
 ENDIF()
 

@@ -39,12 +39,12 @@
 #include <iostream>
 #include <sys/types.h>
 
-#ifdef WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #include <winbase.h>
 #endif
 
-#if (defined (UNIX) || defined(CYGWIN)) && !defined(ANDROID)
+#if (defined (__unix__) || defined(__CYGWIN__)) && !defined(__ANDROID__)
 #include <wordexp.h>
 #endif
 
@@ -77,7 +77,7 @@ std::string getPureFilename(const std::string& filename)
 
 std::string getBasename(const std::string& filename)
 {
-#ifdef WINDOWS
+#ifdef _WIN32
   std::string::size_type lastSlash = filename.find_last_of('\\');
 #else
   std::string::size_type lastSlash = filename.find_last_of('/');
@@ -90,7 +90,7 @@ std::string getBasename(const std::string& filename)
 
 std::string getDirname(const std::string& filename)
 {
-#ifdef WINDOWS
+#ifdef _WIN32
   std::string::size_type lastSlash = filename.find_last_of('\\');
 #else
   std::string::size_type lastSlash = filename.find_last_of('/');
@@ -123,7 +123,7 @@ std::vector<std::string> getFilesByPattern(const char* pattern)
 {
   std::vector<std::string> result;
 
-#ifdef WINDOWS
+#if defined(_WIN32) && !defined(__CYGWIN__)
 
   HANDLE hFind;
   WIN32_FIND_DATA FData;
@@ -134,7 +134,7 @@ std::vector<std::string> getFilesByPattern(const char* pattern)
     FindClose(hFind);
   }
   
-#elif (defined (UNIX) || defined (CYGWIN)) && !defined(ANDROID)
+#elif (defined (__unix__) || defined (__CYGWIN__)) && !defined(__ANDROID__)
 
   wordexp_t p{};
   wordexp(pattern, &p, 0);
