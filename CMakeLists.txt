@@ -75,9 +75,16 @@ cmake_pop_check_state ()
 # GCC compiler flags
 check_cxx_compiler_flag (-Wa,-mbig-obj HAVE_AR_BIGOBJ)
 
+# MSVC compiler flags
+check_cxx_compiler_flag (/bigobj HAVE_BIGOBJ)
+
 if (HAVE_AR_BIGOBJ)
   add_compile_options (-Wa,-mbig-obj)
 endif (HAVE_AR_BIGOBJ)
+
+if (HAVE_BIGOBJ)
+  add_compile_options (/bigobj)
+endif (HAVE_BIGOBJ)
 
 set (_g2o_CMake_Base_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR})
 set (_g2o_CMake_BINDIR ${CMAKE_INSTALL_BINDIR})
