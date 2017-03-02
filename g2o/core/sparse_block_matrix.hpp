@@ -553,7 +553,7 @@ G2O_START_NAMESPACE
 
     std::vector<TripletEntry> entries;
     for (size_t i = 0; i<_blockCols.size(); ++i){
-      const int& c = i;
+      const auto& c = i;
       for (auto it=_blockCols[i].begin(); it!=_blockCols[i].end(); ++it) {
         const int& r = it->first;
         const MatrixType& m = *(it->second);
