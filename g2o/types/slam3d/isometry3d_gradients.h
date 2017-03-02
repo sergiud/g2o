@@ -34,6 +34,8 @@
 #include <Eigen/Geometry>
 #include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
   namespace internal {
     // forward declaration
@@ -328,4 +330,7 @@ G2O_START_NAMESPACE
 
 } // end namespace internal
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 #endif

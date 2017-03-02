@@ -32,6 +32,8 @@
 #include <g2o/stuff/misc.h>
 #include <g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
   
   class G2O_TYPES_SLAM3D_ADDONS_API Plane3D {
@@ -128,5 +130,8 @@ G2O_START_NAMESPACE
 
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

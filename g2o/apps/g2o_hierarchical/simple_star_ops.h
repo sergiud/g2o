@@ -11,6 +11,8 @@
 
 #include <g2o/hierarchical/g2o_hierarchical_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
 
@@ -37,4 +39,7 @@ G2O_START_NAMESPACE
                           double rejectionThreshold=1e-5, bool debug=false);
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 #endif

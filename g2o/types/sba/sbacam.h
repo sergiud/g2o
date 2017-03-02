@@ -50,6 +50,8 @@
 // this seems to have to go outside of the AISNav namespace...
 //USING_PART_OF_NAMESPACE_EIGEN;
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   typedef  Eigen::Matrix<double, 6, 1> Vector6d;
@@ -237,6 +239,9 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 
 #endif  // SBACam

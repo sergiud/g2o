@@ -31,6 +31,8 @@
 
 #include <g2o/core/hyper_graph.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
     class G2O_CORE_API Parameter : public HyperGraph::HyperGraphElement
@@ -52,5 +54,8 @@ G2O_START_NAMESPACE
     typedef std::vector<Parameter*> ParameterVector;
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

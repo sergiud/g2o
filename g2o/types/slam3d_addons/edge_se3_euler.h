@@ -31,6 +31,8 @@
 #include <g2o/types/slam3d/vertex_se3.h>
 #include <g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
 /**
@@ -47,5 +49,8 @@ class G2O_TYPES_SLAM3D_ADDONS_API EdgeSE3Euler : public EdgeSE3
 
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

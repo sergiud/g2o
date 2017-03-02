@@ -40,6 +40,8 @@
 // define to get some verbose output
 //#define G2O_DEBUG_OPTIMIZATION_ALGORITHM_FACTORY
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   // forward decl
@@ -142,6 +144,9 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 /**
  * Use the following macro to register a whole library of

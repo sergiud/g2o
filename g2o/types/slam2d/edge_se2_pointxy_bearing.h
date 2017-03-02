@@ -33,6 +33,8 @@
 #include <g2o/types/slam2d/vertex_point_xy.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM2D_API EdgeSE2PointXYBearing: public BaseBinaryEdge<1, double, VertexSE2, VertexPointXY>
@@ -93,5 +95,8 @@ G2O_START_NAMESPACE
 #endif
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

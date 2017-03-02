@@ -32,6 +32,8 @@
 
 #include <string>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   /**
@@ -67,6 +69,9 @@ G2O_START_NAMESPACE
    };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #ifndef G2O_SCOPED_TICTOC
 #define G2O_SCOPED_TICTOC(s) \

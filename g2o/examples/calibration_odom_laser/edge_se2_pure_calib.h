@@ -34,6 +34,8 @@
 #include <g2o/types/sclam2d/vertex_odom_differential_params.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   struct G2O_CALIBRATION_ODOM_LASER_API OdomAndLaserMotion
@@ -66,5 +68,8 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

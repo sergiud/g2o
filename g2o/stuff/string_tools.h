@@ -35,6 +35,8 @@
 #include <g2o/stuff/g2o_stuff_api.h>
 #include <g2o/stuff/macros.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
 /** @addtogroup utils **/
@@ -173,5 +175,8 @@ G2O_STUFF_API int readLine(std::istream& is, std::stringstream& currentLine);
 // @}
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

@@ -7,6 +7,8 @@
 #include <g2o/types/slam3d/vertex_pointxyz.h>
 #include <g2o/types/slam3d/vertex_se3.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM3D_API EdgeSE3LotsOfXYZ : public BaseMultiEdge<-1, VectorXD>{
@@ -47,6 +49,9 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 
 

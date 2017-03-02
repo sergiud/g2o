@@ -30,6 +30,8 @@
 #include <g2o/core/optimization_algorithm_gauss_newton.h>
 #include <g2o/solvers/slam2d_linear/g2o_slam2d_linear_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class SparseOptimizer;
@@ -67,5 +69,8 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

@@ -39,6 +39,8 @@
 
 #include <g2o/deprecated/g2o_deprecated_types_slam3d_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 namespace deprecated {
 

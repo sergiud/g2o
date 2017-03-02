@@ -42,6 +42,8 @@
 // define to get verbose output
 //#define G2O_DEBUG_ACTIONLIB
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class CacheContainer;
@@ -230,5 +232,8 @@ G2O_START_NAMESPACE
     extern "C" void g2o_action_##classname(void) {} \
     static g2o::RegisterActionProxy<classname> g_action_proxy_##classname;
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

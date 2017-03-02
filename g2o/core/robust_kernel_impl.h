@@ -30,6 +30,8 @@
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/robust_kernel.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   /**
@@ -196,5 +198,8 @@ G2O_START_NAMESPACE
       virtual void robustify(double e2, Vector3D& rho) const;
   };
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

@@ -35,6 +35,8 @@
 #include <map>
 #include <vector>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
   namespace tutorial {
 
@@ -123,5 +125,8 @@ G2O_START_NAMESPACE
 
   } // namespace tutorial
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

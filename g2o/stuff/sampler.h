@@ -37,6 +37,8 @@
 #include <g2o/core/abi.h>
 #include <g2o/stuff/g2o_stuff_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   double G2O_STUFF_API sampleUniform(double min=0, double max=1, std::mt19937* generator=nullptr);
@@ -122,5 +124,8 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

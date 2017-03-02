@@ -27,6 +27,8 @@
 #include <g2o/core/abi.h>
 #include <g2o/viewer/g2o_viewer_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class CommandArgs;
@@ -41,3 +43,6 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+

@@ -35,6 +35,8 @@
 #include <g2o/core/abi.h>
 #include <g2o/stuff/g2o_stuff_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
 /**
@@ -122,5 +124,8 @@ class G2O_STUFF_API CommandArgs
 };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

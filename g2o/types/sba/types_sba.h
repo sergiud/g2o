@@ -36,6 +36,8 @@
 
 #include <g2o/types/sba/g2o_types_sba_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
 /**
@@ -359,5 +361,8 @@ class G2O_TYPES_SBA_API VertexIntrinsics : public BaseVertex<4, Eigen::Matrix<do
 
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif // SBA_TYPES

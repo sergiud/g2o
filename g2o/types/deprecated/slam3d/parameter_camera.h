@@ -31,6 +31,8 @@
 #include <g2o/core/hyper_graph_action.h>
 #include "parameter_se3_offset.h"
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 namespace deprecated {
 

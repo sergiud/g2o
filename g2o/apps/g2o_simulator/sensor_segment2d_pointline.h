@@ -31,6 +31,8 @@
 #include <g2o/apps/g2o_simulator/pointsensorparameters.h>
 #include <g2o/types/slam2d_addons/types_slam2d_addons.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   // sensor that senses segments, only if the extremas are visible
@@ -46,5 +48,8 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

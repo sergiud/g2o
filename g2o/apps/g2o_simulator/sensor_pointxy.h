@@ -31,6 +31,8 @@
 #include "simulator2d_base.h"
 #include <g2o/simulator/g2o_simulator_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
   
   class G2O_SIMULATOR_API SensorPointXY: public PointSensorParameters, public BinarySensor<Robot2D, EdgeSE2PointXY, WorldObjectPointXY>{ 
@@ -44,5 +46,8 @@ G2O_START_NAMESPACE
   }; 
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

@@ -32,6 +32,8 @@
 #include <g2o/core/abi.h>
 #include <g2o/simulator/g2o_simulator_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class G2O_SIMULATOR_API PointSensorParameters{
@@ -51,5 +53,8 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

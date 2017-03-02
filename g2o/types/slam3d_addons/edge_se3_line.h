@@ -35,6 +35,8 @@
 #include <g2o/types/slam3d_addons/line3d.h>
 #include <g2o/types/slam3d_addons/vertex_line3d.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM3D_ADDONS_API EdgeSE3Line3D : public BaseBinaryEdge<4, Line3D, VertexSE3, VertexLine3D> {
@@ -96,4 +98,7 @@ G2O_START_NAMESPACE
 #endif
   
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 #endif

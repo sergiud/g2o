@@ -34,6 +34,8 @@
 
 #include <Eigen/Core>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM2D_ADDONS_API VertexSegment2D : public BaseVertex<4, Vector4D>
@@ -110,5 +112,8 @@ G2O_START_NAMESPACE
 #endif
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

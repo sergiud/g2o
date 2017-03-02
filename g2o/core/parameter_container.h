@@ -34,6 +34,8 @@
 #include <g2o/core/abi.h>
 #include <g2o/core/g2o_core_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
     class Parameter;
@@ -75,5 +77,8 @@ G2O_START_NAMESPACE
     };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

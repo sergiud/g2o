@@ -6,6 +6,8 @@
 #include <g2o/core/abi.h>
 #include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
   namespace internal {
 
@@ -14,4 +16,7 @@ G2O_START_NAMESPACE
     void  G2O_TYPES_SLAM3D_API compute_dR_dq ( Eigen::Matrix<double, 9 , 3, Eigen::ColMajor>&  dR_dq , const double&  qx , const double&  qy , const double&  qz , const double&  qw ) ;
   } // namespace internal
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 #endif

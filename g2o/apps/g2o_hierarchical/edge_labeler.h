@@ -6,6 +6,8 @@
 
 #include <g2o/hierarchical/g2o_hierarchical_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
   /**
    * This class implements the functions to label an edge (measurement) based
@@ -48,4 +50,7 @@ protected:
 };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 #endif

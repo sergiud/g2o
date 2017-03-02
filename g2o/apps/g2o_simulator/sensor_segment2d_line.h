@@ -31,6 +31,8 @@
 #include "simulator2d.h"
 #include "simulator2d_base.h"
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   // sensor that senses segments, only if the extremas are visible
@@ -45,5 +47,8 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

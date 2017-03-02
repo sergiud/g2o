@@ -34,6 +34,8 @@
 #include <g2o/types/slam2d/g2o_types_slam2d_api.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class G2O_TYPES_SCLAM2D_API EdgeSE2OdomDifferentialCalib : public BaseMultiEdge<3, VelocityMeasurement>
@@ -75,5 +77,8 @@ G2O_START_NAMESPACE
 #endif
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

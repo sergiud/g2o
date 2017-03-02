@@ -37,6 +37,8 @@
 #include <string>
 #include <vector>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class RobustKernel;
@@ -146,5 +148,8 @@ G2O_START_NAMESPACE
     static g2o::TypeFunctionProxy proxy_##classname(g2o_robust_kernel_##classname);
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

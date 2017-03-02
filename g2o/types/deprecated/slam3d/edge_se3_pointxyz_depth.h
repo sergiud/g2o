@@ -33,6 +33,8 @@
 #include "vertex_pointxyz.h"
 #include "parameter_camera.h"
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 namespace deprecated {
 

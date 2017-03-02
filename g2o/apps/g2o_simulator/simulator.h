@@ -34,6 +34,8 @@
 #include <set>
 #include <string>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
 class World;
@@ -292,5 +294,8 @@ class G2O_SIMULATOR_API World
 };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

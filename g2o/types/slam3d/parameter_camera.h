@@ -31,6 +31,8 @@
 #include <g2o/types/slam3d/vertex_pointxyz.h>
 #include <g2o/types/slam3d/vertex_se3.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
   /**
    * \brief parameters for a camera
@@ -83,5 +85,8 @@ G2O_START_NAMESPACE
 #endif
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

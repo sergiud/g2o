@@ -30,6 +30,8 @@
 #include "sensor_pointxyz.h"
 #include "simulator3d_base.h"
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class G2O_SIMULATOR_API SensorPose3D : public PointSensorParameters, public BinarySensor<Robot3D, EdgeSE3, WorldObjectSE3>  {
@@ -50,5 +52,8 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

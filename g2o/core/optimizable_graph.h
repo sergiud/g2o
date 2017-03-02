@@ -43,6 +43,8 @@
 #include <g2o/core/parameter_container.h>
 #include <g2o/stuff/macros.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class HyperGraphAction;
@@ -690,5 +692,8 @@ G2O_START_NAMESPACE
    */
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

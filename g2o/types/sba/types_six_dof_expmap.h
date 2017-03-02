@@ -35,6 +35,8 @@
 #include <g2o/types/sba/types_sba.h>
 #include <g2o/types/slam3d/se3_ops.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 namespace types_six_dof_expmap {
 void init();
@@ -202,5 +204,8 @@ class G2O_TYPES_SBA_API EdgeProjectXYZ2UVU : public  BaseBinaryEdge<3, Vector3D,
 };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

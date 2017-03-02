@@ -31,6 +31,8 @@
 #include <g2o/core/hyper_graph_action.h>
 #include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
   /**
    * \brief Vertex for a tracked point in space
@@ -108,4 +110,7 @@ G2O_START_NAMESPACE
 #endif
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 #endif

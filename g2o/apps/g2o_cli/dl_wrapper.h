@@ -37,6 +37,8 @@
 #include <g2o/cli/g2o_cli_api.h>
 #include <g2o/core/abi.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   /**
@@ -81,5 +83,8 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

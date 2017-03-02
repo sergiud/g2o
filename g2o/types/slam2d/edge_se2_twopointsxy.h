@@ -7,6 +7,8 @@
 #include <g2o/types/slam2d/vertex_point_xy.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM2D_API EdgeSE2TwoPointsXY : public BaseMultiEdge<4, Vector4D>
@@ -26,4 +28,7 @@ G2O_START_NAMESPACE
       virtual double initialEstimatePossible(const OptimizableGraph::VertexSet&, OptimizableGraph::Vertex*);
   };
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 #endif	// G2O_EDGE_SE2_TWOPOINTS_XY_H

@@ -32,6 +32,8 @@
 #include <iosfwd>
 #include <string>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   struct OptimizableGraph;
@@ -48,5 +50,8 @@ G2O_START_NAMESPACE
   G2O_CLI_API bool dumpEdges(std::ostream& os, const OptimizableGraph& optimizer);
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

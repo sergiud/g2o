@@ -31,6 +31,8 @@
 #include <g2o/types/sclam2d/edge_se2_sensor_calib.h>
 #include <g2o/types/sclam2d/g2o_types_sclam2d_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class G2O_TYPES_SCLAM2D_API VertexOdomDifferentialParams: public BaseVertex <3, Vector3D> {
@@ -51,5 +53,8 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

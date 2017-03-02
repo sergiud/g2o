@@ -30,6 +30,8 @@
 #include "vertex_se3_quat.h"
 #include <g2o/core/base_unary_edge.h>
 #include "parameter_se3_offset.h"
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 namespace deprecated {
 

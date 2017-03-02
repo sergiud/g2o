@@ -32,6 +32,8 @@
 
 #include <string>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   /**
@@ -45,5 +47,8 @@ G2O_START_NAMESPACE
   G2O_STUFF_API bool writeCCSMatrix(const std::string& filename, int rows, int cols, const int* p, const int* i, const double* v, bool upperTriangleSymmetric = true);
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

@@ -32,6 +32,8 @@
 #include <Eigen/Geometry>
 #include <g2o/types/slam3d/se3quat.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   typedef Eigen::Matrix<double, 6, 1, Eigen::ColMajor> Vector6d;
@@ -155,5 +157,8 @@ G2O_START_NAMESPACE
 
   } // end namespace internal
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

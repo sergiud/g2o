@@ -35,6 +35,8 @@
 
 #include <Eigen/Geometry>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class VertexSE3;
@@ -108,5 +110,8 @@ G2O_START_NAMESPACE
 #endif
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

@@ -34,6 +34,8 @@
 #include "parameter_camera.h"
 
 #define EDGE_PROJECT_DISPARITY_ANALYTIC_JACOBIAN
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 namespace deprecated {
 

@@ -33,6 +33,8 @@
 #include <g2o/core/eigen_types.h>
 #include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   inline G2O_TYPES_SLAM3D_API Matrix3D skew(const Vector3D&v);
@@ -45,5 +47,8 @@ G2O_START_NAMESPACE
   #include "se3_ops.hpp"
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif //MATH_STUFF

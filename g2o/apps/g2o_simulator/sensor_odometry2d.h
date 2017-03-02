@@ -30,6 +30,8 @@
 #include "sensor_pose2d.h"
 #include "sensor_pointxy_bearing.h"
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
   class G2O_SIMULATOR_API SensorOdometry2D: public BinarySensor<Robot2D, EdgeSE2, WorldObjectSE2 > {
   public:
@@ -41,5 +43,8 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

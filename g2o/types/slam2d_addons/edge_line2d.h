@@ -32,6 +32,8 @@
 #include <g2o/types/slam2d_addons/types_slam2d_addons.h>
 #include <g2o/types/slam2d_addons/vertex_line2d.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM2D_ADDONS_API EdgeLine2D : public BaseBinaryEdge<2, Line2D, VertexLine2D, VertexLine2D>
@@ -86,4 +88,7 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 #endif

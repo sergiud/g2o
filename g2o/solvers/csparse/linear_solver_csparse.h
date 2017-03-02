@@ -38,6 +38,8 @@
 
 #include <iostream>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
 /**
@@ -349,5 +351,8 @@ template
 class G2O_SOLVER_CSPARSE_API LinearSolverCSparse<Eigen::MatrixXd>;
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

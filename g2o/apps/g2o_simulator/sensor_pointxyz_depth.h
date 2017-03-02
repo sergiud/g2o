@@ -30,6 +30,8 @@
 #include "simulator3d_base.h"
 #include <g2o/simulator/g2o_simulator_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class G2O_SIMULATOR_API SensorPointXYZDepth: public PointSensorParameters, public BinarySensor<Robot3D, EdgeSE3PointXYZDepth, WorldObjectTrackXYZ>{
@@ -47,5 +49,8 @@ G2O_START_NAMESPACE
     ParameterSE3Offset* _offsetParam;
   };
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

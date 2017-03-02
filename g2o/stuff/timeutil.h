@@ -78,6 +78,8 @@ if (1) {\
     (void) 0
 #endif
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
 #ifndef G2O_HAVE_GETTIMEOFDAY
@@ -124,6 +126,9 @@ class G2O_STUFF_API ScopeTime {
 };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #ifndef MEASURE_FUNCTION_TIME
 #define MEASURE_FUNCTION_TIME \

@@ -30,10 +30,15 @@
 class ViewerPropertiesWidget;
 class PropertiesWidget;
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
   class DlWrapper;
   class OptimizationAlgorithm;
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 /**
  * \brief main window of the g2o viewer

@@ -38,6 +38,8 @@
 // define to get some verbose output
 //#define G2O_DEBUG_FACTORY
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   /**
@@ -160,5 +162,8 @@ G2O_START_NAMESPACE
     extern "C" void G2O_FACTORY_IMPORT g2o_type_group_##typeGroupName(void); \
     static g2o::ForceLinker g2o_force_type_link_##typeGroupName(g2o_type_group_##typeGroupName);
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

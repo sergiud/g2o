@@ -34,6 +34,8 @@
 #include <g2o/types/slam3d/vertex_se3.h>
 
 #define EDGE_PROJECT_DISPARITY_ANALYTIC_JACOBIAN
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   /**
@@ -103,4 +105,7 @@ G2O_START_NAMESPACE
 #endif
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 #endif

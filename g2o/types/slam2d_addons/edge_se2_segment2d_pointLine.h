@@ -33,6 +33,8 @@
 #include <g2o/types/slam2d_addons/g2o_types_slam2d_addons_api.h>
 #include <g2o/types/slam2d_addons/vertex_segment2d.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class G2O_TYPES_SLAM2D_ADDONS_API EdgeSE2Segment2DPointLine : public BaseBinaryEdge<3, Vector3D, VertexSE2, VertexSegment2D>
@@ -125,5 +127,8 @@ G2O_START_NAMESPACE
 /* #endif */
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

@@ -22,9 +22,14 @@
 #include "properties_widget.h"
 #include <g2o/viewer/g2o_viewer_api.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
   class G2oQGLViewer;
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 class G2O_VIEWER_API ViewerPropertiesWidget : public PropertiesWidget
 {

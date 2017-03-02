@@ -32,6 +32,8 @@
 
 #include <iostream>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   class G2O_INTERACTIVE_API OnlineVertexSE2 : public VertexSE2
@@ -88,5 +90,8 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

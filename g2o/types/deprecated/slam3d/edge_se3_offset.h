@@ -31,6 +31,8 @@
 
 #include "vertex_se3_quat.h"
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 namespace deprecated {
 

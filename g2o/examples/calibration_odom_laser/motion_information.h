@@ -33,6 +33,8 @@
 #include <g2o/examples/calibration_odom_laser/g2o_calibration_odom_laser_api.h>
 #include <g2o/types/slam2d/se2.h>
 
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
 
   struct G2O_CALIBRATION_ODOM_LASER_API MotionInformation
@@ -46,5 +48,8 @@ G2O_START_NAMESPACE
   typedef std::vector<MotionInformation, Eigen::aligned_allocator<MotionInformation> >     MotionInformationVector;
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 
 #endif

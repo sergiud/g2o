@@ -31,6 +31,8 @@
 #include <g2o/types/slam3d/g2o_types_slam3d_api.h>
 #include <g2o/types/slam3d/parameter_se3_offset.h>
 #include <g2o/types/slam3d/vertex_se3.h>
+#include <g2o/prefix.hpp>
+
 G2O_START_NAMESPACE
   /**
    * \brief prior for an SE3 element
@@ -87,4 +89,7 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.hpp>
+
 #endif
