@@ -33,7 +33,7 @@
 #include <g2o/types/slam3d/se3quat.h>
 #include <g2o/deprecated/g2o_deprecated_types_slam3d_api.h>
 
-#include <g2o/prefix.hpp>
+#include <g2o/prefix.h>
 
 G2O_START_NAMESPACE
 namespace deprecated {

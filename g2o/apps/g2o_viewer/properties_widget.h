@@ -29,14 +29,14 @@
 
 #include "ui_base_properties_widget.h"
 
-#include <g2o/prefix.hpp>
+#include <g2o/prefix.h>
 
 G2O_START_NAMESPACE
   class G2oQGLViewer;
   class PropertyMap;
 G2O_END_NAMESPACE
 
-#include <g2o/suffix.hpp>
+#include <g2o/suffix.h>
 
 
 class G2O_VIEWER_API PropertiesWidget : public QDialog, public Ui::BasePropertiesWidget

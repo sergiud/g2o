@@ -47,6 +47,7 @@ include (CMakePackageConfigHelpers)
 include (CMakePushCheckState)
 include (CPack)
 include (CTest)
+include (FeatureSummary)
 include (GenerateExportHeader)
 include (GNUInstallDirs)
 
@@ -315,3 +316,71 @@ install (FILES
   ${CMAKE_CURRENT_BINARY_DIR}/g2o-config.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/g2o-config-version.cmake
   DESTINATION ${_g2o_CMake_INSTALLDIR})
+
+set_package_properties (CXSparse PROPERTIES
+  URL "http://faculty.cse.tamu.edu/davis/suitesparse.html"
+  DESCRIPTION "A concise sparse Cholesky factorization package"
+  TYPE RECOMMENDED
+  PURPOSE "Sparse matrix decompositions"
+)
+
+set_package_properties (SuiteSparse PROPERTIES
+  URL "http://faculty.cse.tamu.edu/davis/suitesparse.html"
+  DESCRIPTION "A sparse suite of matrix software"
+  TYPE RECOMMENDED
+  PURPOSE "Sparse matrix decompositions"
+)
+
+set_package_properties (QGLViewer PROPERTIES
+  URL "http://libqglviewer.com"
+  DESCRIPTION "C++ library based on Qt that eases the creation of OpenGL 3D viewers"
+  TYPE OPTIONAL
+  PURPOSE "Required for visualization tools"
+)
+
+set_package_properties (Qt5 PROPERTIES
+  URL "https://www.qt.io/developers"
+  DESCRIPTION "C++ template library for task parallelism"
+  TYPE OPTIONAL
+  PURPOSE "Required for visualization tools"
+)
+
+set_package_properties (Qt5Core PROPERTIES
+  DESCRIPTION "A cross-platform application and UI framework"
+  TYPE REQUIRED
+)
+
+set_package_properties (Qt5Xml PROPERTIES
+  DESCRIPTION "XML support"
+  TYPE REQUIRED
+)
+
+set_package_properties (Qt5OpenGL PROPERTIES
+  DESCRIPTION "OpenGL support"
+  TYPE REQUIRED
+)
+
+set_package_properties (Qt5Gui PROPERTIES
+  DESCRIPTION "Graphical user interface functionality"
+  TYPE REQUIRED
+)
+
+set_package_properties (Qt5Widgets PROPERTIES
+  DESCRIPTION "Graphical user interface widgets"
+  TYPE REQUIRED
+)
+
+set_package_properties (Eigen3 PROPERTIES
+  URL "http://eigen.tuxfamily.org"
+  DESCRIPTION "C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms"
+  TYPE REQUIRED
+  PURPOSE "Provides fundamental linear algebra functionality"
+)
+
+add_feature_info (Examples BUILD_EXAMPLES "Demonstration of g2o features")
+add_feature_info (OpenGL WITH_OPENGL "Visualization")
+add_feature_info (OpenMP WITH_OPENMP "Multithreading support")
+add_feature_info (Tools BUILD_APPS "A set of additional tools")
+add_feature_info (Tests BUILD_TESTING "Unit tests")
+
+feature_summary (WHAT ALL)

@@ -33,6 +33,7 @@
 
 #include <g2o/config.h>
 #include <g2o/core/matrix_operations.h>
+#include <g2o/prefix.h>
 
 #include <unordered_map>
 
@@ -274,5 +275,7 @@ G2O_START_NAMESPACE
   };
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.h>
 
 #endif

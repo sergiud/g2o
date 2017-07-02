@@ -26,9 +26,10 @@
 
 #include <Eigen/LU>
 #include <fstream>
-#include <g2o/core/sparse_optimizer.h>
 #include <iomanip>
 
+#include <g2o/prefix.h>
+#include <g2o/core/sparse_optimizer.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/misc.h>
 #include <g2o/stuff/timeutil.h>
@@ -605,3 +606,5 @@ bool BlockSolver<Traits>::saveHessian(const std::string& fileName) const
 }
 
 G2O_END_NAMESPACE
+
+#include <g2o/suffix.h>

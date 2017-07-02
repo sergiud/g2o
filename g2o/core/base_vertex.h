@@ -27,6 +27,7 @@
 #ifndef G2O_BASE_VERTEX_H
 #define G2O_BASE_VERTEX_H
 
+#include <g2o/prefix.h>
 #include <g2o/core/creators.h>
 #include <g2o/core/eigen_types.h>
 #include <g2o/core/optimizable_graph.h>
@@ -114,5 +115,6 @@ G2O_START_NAMESPACE
 
 G2O_END_NAMESPACE
 
+#include <g2o/suffix.h>
 
 #endif

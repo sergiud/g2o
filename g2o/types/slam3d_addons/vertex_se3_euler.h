@@ -30,7 +30,7 @@
 #include <g2o/types/slam3d/vertex_se3.h>
 #include <g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h>
 
-#include <g2o/prefix.hpp>
+#include <g2o/prefix.h>
 
 G2O_START_NAMESPACE
 
@@ -49,7 +49,7 @@ class G2O_TYPES_SLAM3D_ADDONS_API VertexSE3Euler : public VertexSE3
 
 G2O_END_NAMESPACE
 
-#include <g2o/suffix.hpp>
+#include <g2o/suffix.h>
 
 
 #endif

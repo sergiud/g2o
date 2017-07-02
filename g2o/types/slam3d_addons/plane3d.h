@@ -32,7 +32,7 @@
 #include <g2o/stuff/misc.h>
 #include <g2o/types/slam3d_addons/g2o_types_slam3d_addons_api.h>
 
-#include <g2o/prefix.hpp>
+#include <g2o/prefix.h>
 
 G2O_START_NAMESPACE
   
@@ -131,7 +131,7 @@ G2O_START_NAMESPACE
 
 G2O_END_NAMESPACE
 
-#include <g2o/suffix.hpp>
+#include <g2o/suffix.h>
 
 
 #endif

@@ -22,7 +22,7 @@
 #include <g2o/examples/interactive_slam/g2o_incremental_api.h>
 #include <g2o/solvers/cholmod/linear_solver_cholmod.h>
 
-#include <g2o/prefix.hpp>
+#include <g2o/prefix.h>
 
 G2O_START_NAMESPACE
 
@@ -275,7 +275,7 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>, public Linear
 
 G2O_END_NAMESPACE
 
-#include <g2o/suffix.hpp>
+#include <g2o/suffix.h>
 
 
 #endif

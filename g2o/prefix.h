@@ -1,6 +1,6 @@
 #if defined(_MSC_VER)
 #   pragma warning(push)
-#   pragma warning(disable: 4275 4251 4231)
+#   pragma warning(disable: 4275 4251 4231 4244 4267)
 #elif defined(__clang__)
 #   pragma clang diagnostic push
 #elif defined(__GNUC__)

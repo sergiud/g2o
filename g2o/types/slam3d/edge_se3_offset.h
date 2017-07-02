@@ -33,7 +33,7 @@
 #include <g2o/types/slam3d/parameter_camera.h>
 #include <g2o/types/slam3d/parameter_stereo_camera.h>
 
-#include <g2o/prefix.hpp>
+#include <g2o/prefix.h>
 
 G2O_START_NAMESPACE
   class ParameterSE3Offset;
@@ -72,6 +72,6 @@ G2O_START_NAMESPACE
 
 G2O_END_NAMESPACE
 
-#include <g2o/suffix.hpp>
+#include <g2o/suffix.h>
 
 #endif

@@ -31,7 +31,7 @@
 #include "simulator2d_base.h"
 #include <g2o/simulator/g2o_simulator_api.h>
 
-#include <g2o/prefix.hpp>
+#include <g2o/prefix.h>
 
 G2O_START_NAMESPACE
   // -1: outside
@@ -60,7 +60,7 @@ G2O_START_NAMESPACE
   G2O_SIMULATOR_API Eigen::Vector2d computeLineParameters(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2);
 G2O_END_NAMESPACE
 
-#include <g2o/suffix.hpp>
+#include <g2o/suffix.h>
 
 
 #endif

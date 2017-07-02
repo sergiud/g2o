@@ -32,7 +32,7 @@
 #include <g2o/core/abi.h>
 #include <g2o/types/data/g2o_types_data_api.h>
 
-#include <g2o/prefix.hpp>
+#include <g2o/prefix.h>
 
 G2O_START_NAMESPACE
 
@@ -65,7 +65,7 @@ G2O_START_NAMESPACE
 
 G2O_END_NAMESPACE
 
-#include <g2o/suffix.hpp>
+#include <g2o/suffix.h>
 
 
 #endif

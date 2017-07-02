@@ -30,7 +30,7 @@
 #include "pointsensorparameters.h"
 #include <g2o/simulator/g2o_simulator_api.h>
 
-#include <g2o/prefix.hpp>
+#include <g2o/prefix.h>
 
 G2O_START_NAMESPACE
 

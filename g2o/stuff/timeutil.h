@@ -78,7 +78,7 @@ if (1) {\
     (void) 0
 #endif
 
-#include <g2o/prefix.hpp>
+#include <g2o/prefix.h>
 
 G2O_START_NAMESPACE
 
@@ -127,7 +127,7 @@ class G2O_STUFF_API ScopeTime {
 
 G2O_END_NAMESPACE
 
-#include <g2o/suffix.hpp>
+#include <g2o/suffix.h>
 
 
 #ifndef MEASURE_FUNCTION_TIME
