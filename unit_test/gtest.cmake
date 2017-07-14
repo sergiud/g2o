@@ -20,6 +20,7 @@ ExternalProject_Add(
   googletest
   URL https://github.com/google/googletest/archive/release-1.7.0.zip
   URL_MD5 ef5e700c8a0f3ee123e2e0209b8b4961
+  CMAKE_CACHE_ARGS -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
   CMAKE_ARGS -Dgtest_force_shared_crt=ON ${_ADDITIONAL_ARGS}
   # # Force separate output paths for debug and release builds to allow easy
   # # identification of correct lib in subsequent TARGET_LINK_LIBRARIES commands
