@@ -30,6 +30,7 @@
 
 #include <g2o/prefix.h>
 #include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/dynamic_aligned_buffer.hpp>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/misc.h>
 #include <g2o/stuff/timeutil.h>
@@ -71,8 +72,8 @@ void BlockSolver<Traits>::resize(int* blockPoseIndices, int numPoseBlocks,
   if (_doSchur) {
     // the following two are only used in schur
     assert(_sizePoses > 0 && "allocating with wrong size");
-    _coefficients = new double [s];
-    _bschur = new double[_sizePoses];
+    _coefficients = allocate_aligned<double>(s);
+    _bschur = allocate_aligned<double>(_sizePoses);
   }
 
   _Hpp=new PoseHessianType(blockPoseIndices, blockPoseIndices, numPoseBlocks, numPoseBlocks);
@@ -102,9 +103,9 @@ void BlockSolver<Traits>::deallocate()
   _Hschur=nullptr;
   delete _DInvSchur;
   _DInvSchur=nullptr;
-  delete[] _coefficients;
+  free_aligned(_coefficients);
   _coefficients = nullptr;
-  delete[] _bschur;
+  free_aligned(_bschur);
   _bschur = nullptr;
   delete _HplCCS;
   _HplCCS = nullptr;

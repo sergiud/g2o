@@ -56,13 +56,13 @@ G2O_START_NAMESPACE
   };
   typedef struct OrthonormalLine3D OrthonormalLine3D;
   
-  class G2O_TYPES_SLAM3D_ADDONS_API Line3D : public Vector6d {
+  class Line3D : public Vector6d {
     public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
     friend G2O_TYPES_SLAM3D_ADDONS_API Line3D operator*(const Eigen::Isometry3d& t, const Line3D& line);
 
-    Line3D() {
+    G2O_TYPES_SLAM3D_ADDONS_API Line3D() {
       *this << 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
     }
 

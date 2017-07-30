@@ -131,7 +131,8 @@ G2O_START_NAMESPACE
 #ifdef G2O_DEBUG_FACTORY
         std::cout << __FUNCTION__ << ": Registering " << _name << " of type " << typeid(T).name() << std::endl;
 #endif
-        Factory::instance()->registerType(_name, new HyperGraphElementCreator<T>());
+        _creator = new HyperGraphElementCreator<T>();
+        Factory::instance()->registerType(_name, _creator);
       }
 
       ~RegisterTypeProxy()
@@ -140,10 +141,12 @@ G2O_START_NAMESPACE
         std::cout << __FUNCTION__ << ": Unregistering " << _name << " of type " << typeid(T).name() << std::endl;
 #endif
         Factory::instance()->unregisterType(_name);
+        delete _creator;
       }
 
     private:
       std::string _name;
+      HyperGraphElementCreator<T>* _creator;
   };
 
   // These macros are used to automate registering types and forcing linkage

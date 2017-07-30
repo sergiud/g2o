@@ -729,10 +729,13 @@ struct NumTraits<ceres::Jet<T, N> >
   typedef ceres::Jet<T, N> Real;
   typedef ceres::Jet<T, N> NonInteger;
   typedef ceres::Jet<T, N> Nested;
+  typedef ceres::Jet<T, N> Literal;
 
   static typename ceres::Jet<T, N> dummy_precision() {
     return ceres::Jet<T, N>(1e-12);
   }
+
+  static inline int digits10() { return NumTraits<T>::digits10(); }
 
   enum {
     IsComplex = 0,
@@ -742,7 +745,8 @@ struct NumTraits<ceres::Jet<T, N> >
     AddCost = 1,
     // For Jet types, multiplication is more expensive than addition.
     MulCost = 3,
-    HasFloatingPoint = 1
+    HasFloatingPoint = 1,
+    RequireInitialization = 1
   };
 };
 

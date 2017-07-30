@@ -1,4 +1,5 @@
 ADD_LIBRARY(core
+dynamic_aligned_buffer.hpp
 abi.h
 base_edge.h
 base_edge.cpp

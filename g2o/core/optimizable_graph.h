@@ -535,6 +535,8 @@ G2O_START_NAMESPACE
      */
     virtual bool addVertex(HyperGraph::Vertex* v, Data* userData);
     virtual bool addVertex(HyperGraph::Vertex* v) { return addVertex(v, nullptr);}
+    bool addVertex(OptimizableGraph::Vertex* v, Data* userData);
+    bool addVertex(OptimizableGraph::Vertex* v) { return addVertex(v, 0); }
 
     /**
      * adds a new edge.
@@ -542,6 +544,7 @@ G2O_START_NAMESPACE
      * @return false if the insertion does not work (incompatible types of the vertices/missing vertex). true otherwise.
      */
     virtual bool addEdge(HyperGraph::Edge* e);
+    bool addEdge(OptimizableGraph::Edge* e);
 
     /**
      * overridden from HyperGraph, to mantain the bookkeeping of the caches/parameters and jacobian workspaces consistent upon a change in the veretx.

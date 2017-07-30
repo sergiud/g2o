@@ -38,6 +38,7 @@
 #include <g2o/config.h>
 #include <g2o/core/base_edge.h>
 #include <g2o/core/robust_kernel.h>
+#include <g2o/core/dynamic_aligned_buffer.hpp>
 
 G2O_START_NAMESPACE
 
