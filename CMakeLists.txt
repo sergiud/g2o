@@ -18,9 +18,9 @@ project (g2o)
 # look for SuiteSparse, QGLViewer, and Eigen3.
 list (APPEND CMAKE_MODULE_PATH ${g2o_SOURCE_DIR}/cmake_modules)
 
-set (MAJOR_VERSION 0)
-set (MINOR_VERSION 1)
-set (VERSION_PATCH 0)
+set (MAJOR_VERSION 2017)
+set (MINOR_VERSION 7)
+set (VERSION_PATCH 30)
 
 set (SHORT_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}")
 
