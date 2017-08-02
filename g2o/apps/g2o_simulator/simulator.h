@@ -27,19 +27,40 @@
 #ifndef G2O_SIMULATOR_
 #define G2O_SIMULATOR_
 
-#include <g2o/config.h>
-#include <g2o/simulator/g2o_simulator_api.h>
-#include <g2o/stuff/sampler.h>
-#include <g2o/types/slam3d/types_slam3d.h>
 #include <set>
 #include <string>
 
+#include <g2o/config.h>
 #include <g2o/prefix.h>
+#include <g2o/simulator/g2o_simulator_api.h>
+#include <g2o/stuff/sampler.h>
+#include <g2o/types/slam3d/types_slam3d.h>
 
 G2O_START_NAMESPACE
 
-class World;
 class BaseSensor;
+class BaseRobot;
+class BaseWorldObject;
+
+class G2O_SIMULATOR_API World
+{
+  public:
+    World(OptimizableGraph* graph_) {_graph = graph_; _runningId=0; _paramId=0;}
+    OptimizableGraph* graph() {return _graph;}
+    bool addRobot(BaseRobot* robot);
+    bool addWorldObject(BaseWorldObject* worldObject);
+    bool addParameter(Parameter* p);
+
+    std::set<BaseWorldObject*>& objects() {return _objects;}
+    std::set<BaseRobot*>&  robots() {return _robots; }
+  protected:
+    std::set<BaseWorldObject*> _objects;
+    std::set<BaseRobot*> _robots;
+    OptimizableGraph* _graph;
+    int _runningId;
+    int _paramId;
+};
+
 
 class G2O_SIMULATOR_API BaseWorldObject{
   public:
@@ -272,25 +293,6 @@ class BinarySensor: public BaseSensor {
     }
     GaussianSampler<typename EdgeType::ErrorVector, InformationType> _sampler;
     virtual void addNoise(EdgeType*){};
-};
-
-class G2O_SIMULATOR_API World
-{
-  public:
-    World(OptimizableGraph* graph_) {_graph = graph_; _runningId=0; _paramId=0;}
-    OptimizableGraph* graph() {return _graph;}
-    bool addRobot(BaseRobot* robot);
-    bool addWorldObject(BaseWorldObject* worldObject);
-    bool addParameter(Parameter* p);
-
-    std::set<BaseWorldObject*>& objects() {return _objects;}
-    std::set<BaseRobot*>&  robots() {return _robots; }
-  protected:
-    std::set<BaseWorldObject*> _objects;
-    std::set<BaseRobot*> _robots;
-    OptimizableGraph* _graph;
-    int _runningId;
-    int _paramId;
 };
 
 G2O_END_NAMESPACE
