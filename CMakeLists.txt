@@ -247,8 +247,6 @@ endif (TARGET Eigen3::Eigen)
 # g2o export targets
 set (g2o_TARGETS
   core
-  g2o_cli_library
-  g2o_hierarchical_library
   solver_dense
   solver_pcg
   solver_structure_only
@@ -263,6 +261,14 @@ set (g2o_TARGETS
   types_slam3d
   types_slam3d_addons
 )
+
+if (TARGET g2o_hierarchical_library)
+  list (APPEND g2o_TARGETS g2o_hierarchical_library)
+endif (TARGET g2o_hierarchical_library)
+
+if (TARGET g2o_cli_library)
+  list (APPEND g2o_TARGETS g2o_cli_library)
+endif (TARGET g2o_cli_library)
 
 if (TARGET csparse)
   list (APPEND g2o_TARGETS csparse)
