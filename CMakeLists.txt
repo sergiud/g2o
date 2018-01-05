@@ -165,8 +165,6 @@ IF(WIN32)
   ENDIF(MSVC)
 ENDIF(WIN32)
 
-find_package (Qt5 COMPONENTS Core Gui OpenGL Widgets Xml)
-
 # For building the CHOLMOD / CSPARSE solvers
 find_package (SuiteSparse 4.4.5 NO_MODULE)
 
@@ -184,16 +182,22 @@ IF(OPENMP_FOUND AND WITH_OPENMP)
   add_compile_options (-DEIGEN_DONT_PARALLELIZE ${OpenMP_CXX_FLAGS})
 ENDIF(OPENMP_FOUND AND WITH_OPENMP)
 
-# OpenGL is used in the draw actions for the different types, as well
-# as for creating the GUI itself
-FIND_PACKAGE(OpenGL)
+if (BUILD_APPS)
+  if (WITH_OPENGL)
+    # OpenGL is used in the draw actions for the different types, as well
+    # as for creating the GUI itself
+    FIND_PACKAGE(OpenGL)
 
-IF (OPENGL_FOUND AND WITH_OPENGL)
-  SET (G2O_HAVE_OPENGL 1)
-ENDIF()
+    IF (OPENGL_FOUND)
+      SET (G2O_HAVE_OPENGL 1)
+    ENDIF (OPENGL_FOUND)
+  endif (WITH_OPENGL)
 
-# For building the GUI
-FIND_PACKAGE(QGLViewer)
+  find_package (Qt5 COMPONENTS Core Gui OpenGL Widgets Xml)
+
+  # For building the GUI
+  FIND_PACKAGE(QGLViewer)
+endif (BUILD_APPS)
 
 # Find Eigen3
 FIND_PACKAGE (Eigen3 REQUIRED)
@@ -226,7 +230,10 @@ IF(BUILD_TESTING)
 ENDIF()
 
 # Include the subdirectories
-add_subdirectory(EXTERNAL)
+if (BUILD_APPS)
+  add_subdirectory(EXTERNAL)
+endif (BUILD_APPS)
+
 add_subdirectory(g2o)
 
 if (SuiteSparse_FOUND)
