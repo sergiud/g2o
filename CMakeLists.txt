@@ -311,13 +311,13 @@ endif (TARGET opengl_helper)
 
 set_target_properties (${g2o_TARGETS} PROPERTIES DEBUG_POSTFIX _d)
 
+set (g2o_NAMESPACE g2o::)
+
 configure_package_config_file (g2o-config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/g2o-config.cmake
   INSTALL_DESTINATION ${_g2o_CMake_INSTALLDIR})
 write_basic_package_version_file (g2o-config-version.cmake
   VERSION ${VERSION} COMPATIBILITY SameMajorVersion)
-
-set (g2o_NAMESPACE g2o::)
 
 export (TARGETS ${g2o_TARGETS} NAMESPACE ${g2o_NAMESPACE} FILE
   g2o-targets.cmake)
