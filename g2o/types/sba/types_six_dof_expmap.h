@@ -41,10 +41,6 @@
 
 G2O_START_NAMESPACE
 
-namespace types_six_dof_expmap {
-void init();
-} // namespace types_six_dof_expmap
-
 typedef Eigen::Matrix<double, 6, 6, Eigen::ColMajor> Matrix6d;
 
 class G2O_TYPES_SBA_API CameraParameters : public g2o::Parameter
