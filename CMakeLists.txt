@@ -166,7 +166,7 @@ IF(WIN32)
 ENDIF(WIN32)
 
 # For building the CHOLMOD / CSPARSE solvers
-find_package (SuiteSparse 4.4.5 NO_MODULE)
+find_package (SuiteSparse 4.4.5 COMPONENTS CHOLMOD NO_MODULE)
 
 SET (G2O_LGPL_LIB_TYPE STATIC)
 IF (BUILD_LGPL_SHARED_LIBS)
@@ -238,12 +238,12 @@ add_subdirectory(g2o)
 
 if (SuiteSparse_FOUND)
   set (SuiteSparse_DEPENDENCY
-    "find_dependency (SuiteSparse ${SuiteSparse_VERSION})")
+    "find_dependency (SuiteSparse ${SuiteSparse_VERSION} COMPONENTS CHOLMOD NO_MODULE)")
 endif (SuiteSparse_FOUND)
 
 if (TARGET CXSparse::CXSparse)
   set (CXSparse_DEPENDENCY
-    "find_dependency (CXSparse ${CXSparse_VERSION})")
+    "find_dependency (CXSparse ${CXSparse_VERSION} NO_MODULE)")
 endif (TARGET CXSparse::CXSparse)
 
 if (TARGET Eigen3::Eigen)
