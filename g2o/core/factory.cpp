@@ -50,7 +50,7 @@ Factory* Factory::instance()
 {
   static Factory factory;
 #  ifdef G2O_DEBUG_FACTORY
-    cerr << "# Factory allocated " << (void*)factoryInstance << endl;
+    cerr << "# Factory allocated " << (void*)&factory << endl;
 #  endif
 
   return &factory;

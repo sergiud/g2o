@@ -104,7 +104,7 @@ G2O_START_NAMESPACE
           ~CreatorInformation()
           {
 #ifdef G2O_DEBUG_FACTORY
-            std::cout << "Deleting " << static_cast<void*>(creator) << std::endl;
+            std::cout << "Deleting " << static_cast<void*>(creator.get()) << std::endl;
 #endif
           }
       };
