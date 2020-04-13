@@ -184,6 +184,7 @@ ENDIF(OPENMP_FOUND AND WITH_OPENMP)
 
 if (BUILD_APPS)
   if (WITH_OPENGL)
+    set (OpenGL_GL_PREFERENCE GLVND)
     # OpenGL is used in the draw actions for the different types, as well
     # as for creating the GUI itself
     FIND_PACKAGE(OpenGL)

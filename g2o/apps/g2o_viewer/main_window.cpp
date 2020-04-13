@@ -2,17 +2,17 @@
 // Copyright (C) 2011 R. Kuemmerle, G. Grisetti, W. Burgard
 //
 // This file is part of g2o.
-// 
+//
 // g2o is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // g2o is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with g2o.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -107,7 +107,7 @@ void MainWindow::on_btnOptimize_clicked()
   btnForceStop->hide();
 
   viewer->setUpdateDisplay(true);
-  viewer->updateGL();
+  viewer->updateDisplay();
   _forceStopFlag = false;
 }
 
@@ -134,7 +134,7 @@ void MainWindow::on_btnInitialGuess_clicked()
   }
 
   viewer->setUpdateDisplay(true);
-  viewer->updateGL();
+  viewer->updateDisplay();
 }
 
 void MainWindow::on_btnSetZero_clicked()
@@ -144,7 +144,7 @@ void MainWindow::on_btnSetZero_clicked()
 
   viewer->graph->setToOrigin();
   viewer->setUpdateDisplay(true);
-  viewer->updateGL();
+  viewer->updateDisplay();
 }
 
 void MainWindow::on_btnReload_clicked()
@@ -154,7 +154,7 @@ void MainWindow::on_btnReload_clicked()
     viewer->graph->clear();
     viewer->graph->load(_filename.c_str());
     viewer->setUpdateDisplay(true);
-    viewer->updateGL();
+    viewer->updateDisplay();
   }
 }
 
@@ -221,7 +221,7 @@ void MainWindow::updateDisplayedSolvers()
     const OptimizationAlgorithmProperty& sp = knownSolver->property();
     if (varFound && varType == sp.type)
       continue;
-    solverLookUp[sp.type].push_back(sp); 
+    solverLookUp[sp.type].push_back(sp);
   }
 
   for (auto & it : solverLookUp) {
@@ -329,9 +329,9 @@ void MainWindow::setRobustKernel()
 {
   SparseOptimizer* optimizer = viewer->graph;
   bool robustKernel = cbRobustKernel->isChecked();
-  double huberWidth = leKernelWidth->text().toDouble();  
+  double huberWidth = leKernelWidth->text().toDouble();
   //odometry edges are those whose node ids differ by 1
-  
+
   bool onlyLoop = cbOnlyLoop->isChecked();
 
   if (robustKernel) {
@@ -352,7 +352,7 @@ void MainWindow::setRobustKernel()
         e->setRobustKernel(creator->construct());
         e->robustKernel()->setDelta(huberWidth);
       }
-    }    
+    }
   } else {
     for (auto it : optimizer->edges()) {
       OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
@@ -375,7 +375,7 @@ bool MainWindow::loadFromFile(const QString& filename)
   }
   cerr << "loaded " << filename.toStdString() << " with " << viewer->graph->vertices().size()
     << " vertices and " << viewer->graph->edges().size() << " measurements" << endl;
-  viewer->updateGL();
+  viewer->updateDisplay();
   fixGraph();
   return loadStatus;
 }
@@ -383,13 +383,13 @@ bool MainWindow::loadFromFile(const QString& filename)
 void MainWindow::on_actionWhite_Background_triggered(bool)
 {
   viewer->setBackgroundColor(QColor::fromRgb(255, 255, 255));
-  viewer->updateGL();
+  viewer->updateDisplay();
 }
 
 void MainWindow::on_actionDefault_Background_triggered(bool)
 {
   viewer->setBackgroundColor(QColor::fromRgb(51, 51, 51));
-  viewer->updateGL();
+  viewer->updateDisplay();
 }
 
 void MainWindow::on_actionProperties_triggered(bool)
@@ -454,7 +454,7 @@ void MainWindow::on_actionLoad_Viewer_State_triggered(bool)
     viewer->setStateFileName(filename);
     viewer->restoreStateFromFile();
     viewer->setStateFileName(QString::null);
-    viewer->updateGL();
+    viewer->updateDisplay();
     cerr << "Loaded state from " << filename.toStdString() << endl;
   }
 }
