@@ -453,7 +453,7 @@ void MainWindow::on_actionLoad_Viewer_State_triggered(bool)
   if (!filename.isEmpty()) {
     viewer->setStateFileName(filename);
     viewer->restoreStateFromFile();
-    viewer->setStateFileName(QString::null);
+    viewer->setStateFileName(QString{});
     viewer->updateDisplay();
     cerr << "Loaded state from " << filename.toStdString() << endl;
   }
@@ -465,7 +465,7 @@ void MainWindow::on_actionSave_Viewer_State_triggered(bool)
   if (!filename.isEmpty()) {
     viewer->setStateFileName(filename);
     viewer->saveStateToFile();
-    viewer->setStateFileName(QString::null);
+    viewer->setStateFileName(QString{});
     cerr << "Saved state to " << filename.toStdString() << endl;
   }
 }
