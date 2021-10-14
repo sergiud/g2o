@@ -11,7 +11,7 @@ target_include_directories (g2o_incremental_library PUBLIC
 )
 
 SET_TARGET_PROPERTIES(g2o_incremental_library PROPERTIES OUTPUT_NAME ${LIB_PREFIX}incremental)
-TARGET_LINK_LIBRARIES(g2o_incremental_library g2o_interactive_library solver_cholmod ${CAMD_LIBRARY})
+TARGET_LINK_LIBRARIES(g2o_incremental_library g2o_interactive_library solver_cholmod SuiteSparse::CAMD)
 
 ADD_EXECUTABLE(g2o_incremental_application g2o_incremental.cpp)
 TARGET_LINK_LIBRARIES(g2o_incremental_application g2o_incremental_library)
