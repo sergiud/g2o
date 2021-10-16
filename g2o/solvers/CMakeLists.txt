@@ -11,9 +11,4 @@ IF(SuiteSparse_FOUND)
   ADD_SUBDIRECTORY(cholmod)
 ENDIF(SuiteSparse_FOUND)
 
-# Sparse Module of Eigen is stable starting from 3.1
-IF (DEFINED EIGEN3_VERSION)
-  IF(${EIGEN3_VERSION} VERSION_GREATER "3.1.0" OR ${EIGEN3_VERSION} VERSION_EQUAL "3.1.0")
-    ADD_SUBDIRECTORY(eigen)
-  ENDIF()
-ENDIF()
+ADD_SUBDIRECTORY(eigen)

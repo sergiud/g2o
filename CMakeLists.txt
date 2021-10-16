@@ -201,7 +201,7 @@ if (BUILD_APPS)
 endif (BUILD_APPS)
 
 # Find Eigen3
-FIND_PACKAGE (Eigen3 REQUIRED)
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
 # Generate config.h
 SET(G2O_HAVE_CHOLMOD ${SuiteSparse_FOUND})
@@ -246,11 +246,6 @@ if (TARGET CXSparse::CXSparse)
   set (CXSparse_DEPENDENCY
     "find_dependency (CXSparse ${CXSparse_VERSION} NO_MODULE)")
 endif (TARGET CXSparse::CXSparse)
-
-if (TARGET Eigen3::Eigen)
-  set (Eigen3_DEPENDENCY
-    "find_dependency (Eigen3 ${Eigen3_VERSION})")
-endif (TARGET Eigen3::Eigen)
 
 # g2o export targets
 set (g2o_TARGETS

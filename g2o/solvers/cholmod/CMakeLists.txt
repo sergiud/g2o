@@ -15,7 +15,7 @@ target_include_directories (solver_cholmod PUBLIC
 
 SET_TARGET_PROPERTIES(solver_cholmod PROPERTIES OUTPUT_NAME ${LIB_PREFIX}solver_cholmod)
 
-TARGET_LINK_LIBRARIES(solver_cholmod SuiteSparse::CHOLMOD core)
+TARGET_LINK_LIBRARIES(solver_cholmod PUBLIC SuiteSparse::CHOLMOD core)
 
 INSTALL(TARGETS solver_cholmod EXPORT g2o-targets
   RUNTIME DESTINATION ${_g2o_CMake_BINDIR}

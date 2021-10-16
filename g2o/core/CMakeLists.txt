@@ -45,7 +45,7 @@ generate_export_header (core PREFIX_NAME G2O_ EXPORT_FILE_NAME
 
 SET_TARGET_PROPERTIES(core PROPERTIES OUTPUT_NAME ${LIB_PREFIX}core)
 
-TARGET_LINK_LIBRARIES(core stuff)
+TARGET_LINK_LIBRARIES(core PUBLIC stuff)
 
 if (TARGET Eigen3::Eigen)
   target_link_libraries (core PUBLIC Eigen3::Eigen)
