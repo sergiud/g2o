@@ -215,7 +215,6 @@ G2O_START_NAMESPACE
       v->edges().erase(it);
     }
 
-    delete e;
     return true;
   }
 
@@ -225,10 +224,6 @@ G2O_START_NAMESPACE
 
   void HyperGraph::clear()
   {
-    for (auto & _vertice : _vertices)
-      delete (_vertice.second);
-    for (auto _edge : _edges)
-      delete _edge;
     _vertices.clear();
     _edges.clear();
   }
