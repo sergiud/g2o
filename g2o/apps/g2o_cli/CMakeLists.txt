@@ -30,9 +30,6 @@ ADD_EXECUTABLE(g2o_cli_application
 
 TARGET_LINK_LIBRARIES(g2o_cli_application g2o_cli_library)
 
-if(POLICY CMP0043)
-cmake_policy(SET CMP0043 OLD)
-endif()
 SET_PROPERTY(TARGET g2o_cli_library APPEND PROPERTY COMPILE_DEFINITIONS
   $<$<OR:$<CONFIG:Release>,$<NOT:$<CONFIG:Debug,RelWithDebInfo,MinSizeRel>>>:G2O_LIBRARY_POSTFIX=>
   $<$<CONFIG:Debug>:G2O_LIBRARY_POSTFIX=${CMAKE_DEBUG_POSTFIX}>

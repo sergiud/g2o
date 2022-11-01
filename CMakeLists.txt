@@ -12,6 +12,10 @@ if (POLICY CMP0063)
   cmake_policy (SET CMP0063 NEW)
 endif (POLICY CMP0063)
 
+if (POLICY CMP0135)
+  cmake_policy (SET CMP0135 NEW)
+endif (POLICY CMP0135)
+
 project (g2o)
 
 # Set search directory for looking for our custom CMake scripts to
