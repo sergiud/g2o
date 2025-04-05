@@ -1,9 +1,4 @@
-cmake_minimum_required (VERSION 3.5)
-
-if (POLICY CMP0135)
-  cmake_policy (SET CMP0135 NEW)
-endif (POLICY CMP0135)
-
+cmake_minimum_required (VERSION 3.24)
 project (g2o)
 
 # Set search directory for looking for our custom CMake scripts to
@@ -119,7 +114,6 @@ cmake_dependent_option (BUILD_LINKED_APPS "Build apps linked with the libraries 
 option (BUILD_TESTING "build unit test framework and the tests" ON)
 
 set (CMAKE_CXX_STANDARD 11)
-set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set (CMAKE_CXX_VISIBILITY_PRESET hidden)
 set (CMAKE_VISIBILITY_INLINES_HIDDEN 1)
@@ -194,6 +188,7 @@ endif (BUILD_APPS)
 
 # Find Eigen3
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+find_package (GTest 1.16 NO_MODULE)
 
 # Generate config.h
 SET(G2O_HAVE_CHOLMOD ${SuiteSparse_FOUND})
@@ -218,7 +213,7 @@ set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}/lib)
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/lib)
 
 # building unit test framework and our tests
-IF(BUILD_TESTING)
+IF(BUILD_TESTING AND GTest_FOUND)
   ADD_SUBDIRECTORY(unit_test)
 ENDIF()
 

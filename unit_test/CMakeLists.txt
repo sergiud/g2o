@@ -1,8 +1,7 @@
 # download and compile gtest library
-INCLUDE(gtest.cmake)
 
 macro (create_test target)
-  target_link_libraries(${target} google::gtest)
+  target_link_libraries(${target} GTest::gtest)
   add_test (NAME ${target} COMMAND $<TARGET_FILE:${target}>)
 endmacro (create_test)
 
