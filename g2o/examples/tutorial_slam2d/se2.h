@@ -27,6 +27,8 @@
 #ifndef G2O_TUTORIAL_SE2_H
 #define G2O_TUTORIAL_SE2_H
 
+#include <cassert>
+
 #include <g2o/stuff/misc.h>
 #include <g2o/stuff/macros.h>
 

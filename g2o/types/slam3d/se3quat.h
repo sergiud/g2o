@@ -30,6 +30,8 @@
 #include <g2o/core/eigen_types.h>
 #include <g2o/types/slam3d/se3_ops.h>
 
+#include <cassert>
+
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
