@@ -154,6 +154,7 @@ bool EdgeSim3::read(std::istream& is)
     for (int i=0; i<2; i++)
       for (int j=i; j<2; j++) {
   is >> information()(i,j);
+      if (!is) return false;
       if (i!=j)
         information()(j,i)=information()(i,j);
     }
@@ -185,6 +186,7 @@ bool EdgeInverseSim3ProjectXYZ::read(std::istream &is) {
   for (int i = 0; i < 2; i++)
     for (int j = i; j < 2; j++) {
       is >> information()(i, j);
+      if (!is) return false;
       if (i != j)
         information()(j, i) = information()(i, j);
     }
