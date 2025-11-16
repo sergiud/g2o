@@ -9,11 +9,7 @@ ADD_LIBRARY(stuff
   tictoc.cpp tictoc.h
 )
 
-if (TARGET Eigen3::Eigen)
-  target_link_libraries (stuff PUBLIC Eigen3::Eigen)
-else (TARGET Eigen3::Eigen)
-  target_include_directories (stuff SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
-endif (TARGET Eigen3::Eigen)
+target_link_libraries (stuff PUBLIC Eigen3::Eigen)
 
 generate_export_header (stuff PREFIX_NAME G2O_ EXPORT_FILE_NAME
   ${CMAKE_BINARY_DIR}/include/g2o/stuff/g2o_stuff_api.h

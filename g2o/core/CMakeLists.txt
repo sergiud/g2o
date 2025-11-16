@@ -47,11 +47,8 @@ SET_TARGET_PROPERTIES(core PROPERTIES OUTPUT_NAME ${LIB_PREFIX}core)
 
 TARGET_LINK_LIBRARIES(core PUBLIC stuff)
 
-if (TARGET Eigen3::Eigen)
-  target_link_libraries (core PUBLIC Eigen3::Eigen)
-else (TARGET Eigen3::Eigen)
-  target_include_directories (core SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
-endif (TARGET Eigen3::Eigen)
+target_compile_features (core PUBLIC cxx_std_11)
+target_link_libraries (core PUBLIC Eigen3::Eigen)
 
 target_include_directories (core PUBLIC
   $<INSTALL_INTERFACE:${_g2o_CMake_Base_INCLUDEDIR}>

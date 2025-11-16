@@ -113,8 +113,6 @@ cmake_dependent_option (BUILD_LINKED_APPS "Build apps linked with the libraries 
   "BUILD_APPS" OFF)
 option (BUILD_TESTING "build unit test framework and the tests" ON)
 
-set (CMAKE_CXX_STANDARD 11)
-
 set (CMAKE_CXX_VISIBILITY_PRESET hidden)
 set (CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
@@ -187,7 +185,7 @@ if (BUILD_APPS)
 endif (BUILD_APPS)
 
 # Find Eigen3
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+find_package (Eigen3 3.4.1...5 REQUIRED NO_MODULE)
 find_package (GTest 1.16 NO_MODULE)
 
 # Generate config.h
