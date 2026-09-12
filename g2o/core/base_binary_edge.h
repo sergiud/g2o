@@ -54,8 +54,8 @@ G2O_START_NAMESPACE
       typedef typename BaseEdge<D,E>::ErrorVector ErrorVector;
       typedef typename BaseEdge<D,E>::InformationType InformationType;
 
-      typedef typename ConditionallyAligned<Eigen::Matrix<double, Di, Dj, Di==1?Eigen::RowMajor:Eigen::ColMajor> >::MapType HessianBlockType;
-      typedef typename ConditionallyAligned<Eigen::Matrix<double, Dj, Di, Dj==1?Eigen::RowMajor:Eigen::ColMajor> >::MapType HessianBlockTransposedType;
+      typedef Eigen::Map<Eigen::Matrix<double, Di, Dj, Di==1?Eigen::RowMajor:Eigen::ColMajor>> HessianBlockType;
+      typedef Eigen::Map<Eigen::Matrix<double, Dj, Di, Dj==1?Eigen::RowMajor:Eigen::ColMajor>> HessianBlockTransposedType;
 
       BaseBinaryEdge() : BaseEdge<D,E>(),
       _hessianRowMajor(false),
