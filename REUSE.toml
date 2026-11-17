@@ -63,15 +63,6 @@ SPDX-FileCopyrightText = [
 SPDX-License-Identifier = "MIT"
 
 [[annotations]]
-path = "README.md"
-precedence = "aggregate"
-SPDX-FileCopyrightText = [
-  "2015 Rainer Kuemmerle, Giorgio Grisetti",
-  "2026 Sergiu Deitsch",
-]
-SPDX-License-Identifier = "BSD-2-Clause"
-
-[[annotations]]
 path = "doc/README_IF_IT_WAS_WORKING_AND_IT_DOES_NOT.txt"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2014 Rainer Kuemmerle, Giorgio Grisetti"

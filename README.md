@@ -1,144 +1,136 @@
-g2o - General Graph Optimization
-================================
+<!--
+SPDX-FileCopyrightText: 2015 Rainer Kuemmerle, Giorgio Grisetti
+SPDX-FileCopyrightText: 2026 Sergiu Deitsch
 
-Linux: [![Build Status](https://travis-ci.org/RainerKuemmerle/g2o.svg?branch=master)](https://travis-ci.org/RainerKuemmerle/g2o)
-Windows: [![Build status](https://ci.appveyor.com/api/projects/status/9w0cpb9krc6t4nt7/branch/master?svg=true)](https://ci.appveyor.com/project/RainerKuemmerle/g2o/branch/master)
+SPDX-License-Identifier: BSD-2-Clause
+-->
 
-g2o is an open-source C++ framework for optimizing graph-based nonlinear error
-functions. g2o has been designed to be easily extensible to a wide range of
-problems and a new problem typically can be specified in a few lines of code.
-The current implementation provides solutions to several variants of SLAM and
-BA.
+# g2o
 
-A wide range of problems in robotics as well as in computer-vision involve the
-minimization of a non-linear error function that can be represented as a graph.
-Typical instances are simultaneous localization and mapping (SLAM) or bundle
-adjustment (BA). The overall goal in these problems is to find the
-configuration of parameters or state variables that maximally explain a set of
-measurements affected by Gaussian noise. g2o is an open-source C++ framework
-for such nonlinear least squares problems. g2o has been designed to be easily
-extensible to a wide range of problems and a new problem typically can be
-specified in a few lines of code. The current implementation provides solutions
-to several variants of SLAM and BA. g2o offers a performance comparable to
-implementations of state-of-the-art approaches for the specific problems
-(02/2011).
+g2o optimizes nonlinear error functions that can be represented as a graph,
+such as in simultaneous localization and mapping (SLAM) and bundle adjustment.
+A new problem takes a few lines of code: a vertex for each state variable and
+an edge for each measurement. Rainer Kümmerle, Giorgio Grisetti, Hauke
+Strasdat, Kurt Konolige and Wolfram Burgard created it [1].
 
-### Papers Describing the Approach:
-Rainer Kuemmerle, Giorgio Grisetti, Hauke Strasdat,
-Kurt Konolige, and Wolfram Burgard
-g2o: A General Framework for Graph Optimization
-IEEE International Conference on Robotics and Automation (ICRA), 2011
-http://ais.informatik.uni-freiburg.de/publications/papers/kuemmerle11icra.pdf
+## Motivation
 
-### Documentation
-A detailed description of how the library is structured and how to use and extend it can be found in /doc/g2o.pdf
-The API documentation can be generated as described in doc/doxygen/readme.txt
+This is a fork of the [original g2o](https://github.com/RainerKuemmerle/g2o)
+that keeps the interface of version 2017.7.30. The g2o releases since then
+changed that interface, while projects such as
+[this fork of ORB-SLAM](https://github.com/sergiud/ORB_SLAM) still use it.
 
-### License
-g2o is licensed under the BSD-2-Clause license. However, some libraries are
-available under different license terms. See below. Every file states its
-copyright holders and license with SPDX tags, or through REUSE.toml for files
-that cannot carry them, following the REUSE specification.
+The fork builds as a single CMake 3.28 project that installs a CMake package
+and a software bill of materials, with Eigen up to version 5, Qt 6 and
+SuiteSparse 7, and logs through ng-log. It fixes defects of the original, such
+as installed headers that do not compile, exports missing from shared
+libraries, the alignment of Eigen types and a crash on exit of programs that
+draw with OpenGL.
 
-The following parts are licensed under LGPL3+:
-- csparse\_extension
+## Requirements
 
-The following parts are licensed under GPL3+:
-- g2o\_viewer
-- g2o\_incremental
-- slam2d\_g2o (example for 2D SLAM with a QGLviewer GUI)
+* CMake 3.28 and a C++20 compiler
+* Eigen 3.4.1 up to version 5
+* [ng-log](https://github.com/ng-log/ng-log) 0.9.0 with its experimental C++20
+  interface, which only its development branch provides yet
 
-Please note that some features of CHOLMOD (which may be used by g2o, see
-libsuitesparse below) are licensed under the GPL. To avoid that your binary has
-to be licensed under the GPL, you may have to re-compile CHOLMOD without
-including its GPL features. The CHOLMOD library distributed with, for example,
-Ubuntu or Debian includes the GPL features. The supernodal factorization is
-considered by g2o, if it is available.
+The following are optional:
 
-Within the folder EXTERNAL we include software not written by us to
-guarantee easy compilation.
-- ceres: BSD (see EXTERNAL/ceres/LICENSE)
-  Headers to perform Automatic Differentiation
-- freeglut: MIT (Copyright (c) 1999-2000 Pawel W. Olszta)
-  We use a stripped down version for drawing text in OpenGL.
+* SuiteSparse 7, whose CHOLMOD and CXSparse libraries the sparse solvers use
+* OpenGL with GLU to draw graphs, turned on with `-DWITH_OPENGL=ON`
+* Qt 6 and libQGLViewer built for Qt 6, which the graph viewer `g2o_viewer`
+  needs together with OpenGL
+* GoogleTest 1.16 for the unit tests
 
-The LICENSES folder holds the full text of each license.
+The build leaves out the parts whose optional dependencies are missing.
 
-g2o is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-licenses for more details.
+## Getting Started
 
+Build g2o and run its tests:
 
-### Requirements
-  * cmake 3.28        http://www.cmake.org/
-  * Eigen3            http://eigen.tuxfamily.org
-  * ng-log 0.9.0      https://github.com/ng-log/ng-log
-    with its experimental logging functions, which require a C++20 compiler.
-    g2o reports its diagnostics through them, and its programs write the
-    messages to the standard error.
+```sh
+git clone -b cmake https://github.com/sergiud/g2o.git
+cd g2o
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+ctest --test-dir build
+```
 
-  On Ubuntu / Debian these dependencies are resolved by installing the
-  following packages.
-    - cmake
-    - libeigen3-dev
+Add the installation prefix of a dependency that CMake does not find, such as
+ng-log, with `-DCMAKE_PREFIX_PATH=<prefix>`. Then generate a pose graph on a
+sphere and optimize it with 10 iterations:
 
-#### Optional requirements
-  * suitesparse       http://www.cise.ufl.edu/research/sparse/SuiteSparse/
-    whose CHOLMOD and CXSparse libraries the sparse solvers build on
-  * Qt6               http://qt-project.org
-  * libQGLViewer      http://www.libqglviewer.com/ built for Qt6
+```sh
+build/bin/create_sphere -o sphere.g2o
+build/bin/g2o -i 10 -o optimized.g2o sphere.g2o
+```
 
-  On Ubuntu / Debian these dependencies are resolved by installing the
-  following packages.
-    - libsuitesparse-dev
-    - qt6-base-dev
-    - libqglviewer-dev-qt6
+The programs write their messages to the standard error. `-h` lists the
+options of the command line tools, and `g2o -listSolvers` the available
+solvers.
 
-#### Mac OS X
-If using [Homebrew](http://brew.sh/), then
+## Advanced Usage
 
-`brew install homebrew/science/g2o`
+These CMake options select what is built:
 
-will install g2o together with its required dependencies. In this case no manual compilation is necessary.
+| Option | Default | Effect |
+| --- | --- | --- |
+| `BUILD_APPS` | `ON` | the command line tools and the viewer |
+| `BUILD_EXAMPLES` | `ON` | the examples |
+| `BUILD_SHARED_LIBS` | `ON` | shared libraries, which the plugins of `g2o` need |
+| `BUILD_LGPL_SHARED_LIBS` | `OFF` | the LGPL libraries as shared libraries |
+| `BUILD_LINKED_APPS` | `OFF` | variants of the tools linked to the solvers and types instead of loading them |
+| `WITH_OPENGL` | `OFF` | drawing with OpenGL |
+| `WITH_OPENMP` | `OFF` | experimental parallelization with OpenMP |
+| `WITH_SBOM` | `ON` | a software bill of materials in SPDX format, which CMake 4.5 generates, 4.3 and 4.4 generate experimentally and earlier versions skip |
 
-### Compilation
-Our primary development platform is Linux. Experimental support for
-Mac OS X, Android and Windows (MinGW or MSVC).
-We recommend a so-called out of source build which can be achieved
-by the following command sequence.
+`cmake --install build --prefix <prefix>` installs the programs into `bin`,
+the libraries and the CMake package into `lib/g2o`, the headers into
+`include` and the bill of materials into `share/sbom`. The installed programs
+and libraries find the libraries of g2o relative to their own location, so
+that the installation can be moved. Dependencies installed elsewhere, such as
+ng-log, must be on the search path of the dynamic linker. Other projects link
+against the libraries they use:
 
-- `mkdir build`
-- `cd build`
-- `cmake ../`
-- `make`
+```cmake
+find_package (g2o 2017 REQUIRED COMPONENTS core types_slam3d)
 
-The binaries will be placed in bin and the libraries in lib which
-are both located in the build folder.
+target_link_libraries (app PRIVATE g2o::core g2o::types_slam3d)
+```
 
-With CMake 4.5 or later, and experimentally with CMake 4.3 and 4.4,
-`cmake --install` also installs a software bill of materials in SPDX format to
-`share/sbom`, unless the option `WITH_SBOM` is turned off.
-If you are compiling on Windows, please download Eigen3 and extract it.
-Within cmake-gui set the variable G2O\_EIGEN3\_INCLUDE to that directory.
+The components are the names of the libraries, such as `stuff`, `core`,
+`solver_cholmod`, `solver_csparse`, `types_slam2d`, `types_slam3d`,
+`types_sba` and `types_sim3`.
 
-### Cross-Compiling for Android
+The libraries report warnings and errors through the experimental logging
+functions of ng-log and leave it to the application where the messages go.
+Without any setup, ng-log writes them to the standard error after a warning
+that logging was not initialized. `g2o::initializeLogging(argv[0])` from
+`g2o/stuff/logger.h` of `g2o::stuff`, which `g2o::core` links, sends them to the standard error only, as the programs
+of g2o do, and the setup functions of ng-log send them to log files or sinks.
 
-- `mkdir build`
-- `cd build`
-- `cmake -DCMAKE_TOOLCHAIN_FILE=../script/android.toolchain.cmake -DANDROID_NDK=<YOUR_PATH_TO_ANDROID_NDK_r10d+> -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI="armeabi-v7a with NEON" -DEIGEN3_INCLUDE_DIR="<YOUR_PATH_TO_EIGEN>" -DEIGEN3_VERSION_OK=ON .. && cmake --build .`
+`doc/g2o.pdf` describes the structure of the library and how to extend it,
+and `doc/doxygen/readme.txt` how to generate the API documentation.
 
+## Licensing
 
-### Acknowledgments
-We thank the following contributors for providing patches:
-- Simon J. Julier: patches to achieve compatibility with Mac OS X and others.
-- Michael A. Eriksen for submitting patches to compile with MSVC.
-- Mark Pupilli for submitting patches to compile with MSVC.
+g2o is released under the [BSD 2-Clause License](LICENSES/BSD-2-Clause.txt).
+Some parts are released under the LGPL version 3 or later or the GPL version 3
+or later, such as
+the CSparse solver under the LGPL and the graph viewer, the incremental SLAM
+example and the 2D SLAM example under the GPL, as the SPDX header of each file
+states. The included code of other projects keeps its license: the automatic
+differentiation of Ceres under the BSD 3-Clause License and the font rendering
+of freeglut under the MIT License. [LICENSES](LICENSES) holds the full text of
+each license.
 
+CHOLMOD contains features under the GPL, which the builds of Debian and Ubuntu
+include. A program that links the CHOLMOD solver of g2o to such a build falls
+under the GPL, unless CHOLMOD is rebuilt without them.
 
-### Contact information
-Rainer Kuemmerle <kuemmerl@informatik.uni-freiburg.de>   
-Giorgio Grisetti <grisetti@dis.uniroma1.it>   
-Hauke Strasdat <strasdat@gmail.com>   
-Kurt Konolige <konolige@willowgarage.com>   
-Wolfram Burgard <burgard@informatik.uni-freiburg.de>   
+If you use g2o in academic work, please cite [1]:
+
+1. Rainer Kümmerle, Giorgio Grisetti, Hauke Strasdat, Kurt Konolige and
+   Wolfram Burgard. g2o: A General Framework for Graph Optimization. *IEEE
+   International Conference on Robotics and Automation (ICRA)*, 3607–3613,
+   2011. [doi:10.1109/ICRA.2011.5979949](https://doi.org/10.1109/ICRA.2011.5979949)
