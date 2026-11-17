@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2017 Sergiu Deitsch
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 #if defined(_MSC_VER)
 #   pragma warning(pop)
 #elif defined(__clang__)

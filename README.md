@@ -35,8 +35,10 @@ A detailed description of how the library is structured and how to use and exten
 The API documentation can be generated as described in doc/doxygen/readme.txt
 
 ### License
-g2o is licensed under the BSD License. However, some libraries are available
-under different license terms. See below.
+g2o is licensed under the BSD-2-Clause license. However, some libraries are
+available under different license terms. See below. Every file states its
+copyright holders and license with SPDX tags, or through REUSE.toml for files
+that cannot carry them, following the REUSE specification.
 
 The following parts are licensed under LGPL3+:
 - csparse\_extension
@@ -57,10 +59,10 @@ Within the folder EXTERNAL we include software not written by us to
 guarantee easy compilation.
 - ceres: BSD (see EXTERNAL/ceres/LICENSE)
   Headers to perform Automatic Differentiation
-- freeglut: X Consortium (Copyright (c) 1999-2000 Pawel W. Olszta)
+- freeglut: MIT (Copyright (c) 1999-2000 Pawel W. Olszta)
   We use a stripped down version for drawing text in OpenGL.
 
-See the doc folder for the full text of the licenses.
+The LICENSES folder holds the full text of each license.
 
 g2o is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of

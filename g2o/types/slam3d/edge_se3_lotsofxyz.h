@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2014 Rainer Kuemmerle, Giorgio Grisetti
+// SPDX-FileCopyrightText: 2017 Sergiu Deitsch
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 #ifndef G2O_SE3_LOTSOF_XYZ
 #define G2O_SE3_LOTSOF_XYZ
 

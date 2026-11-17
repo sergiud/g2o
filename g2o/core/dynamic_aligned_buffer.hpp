@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2017 Rainer Kuemmerle, Giorgio Grisetti
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 #pragma once
 
 #include <cstddef>

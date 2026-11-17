@@ -1,4 +1,8 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2014 Rainer Kuemmerle, Giorgio Grisetti
+#
+# SPDX-License-Identifier: BSD-2-Clause
+
 
 set -ev
 

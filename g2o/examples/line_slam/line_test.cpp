@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2016 Rainer Kuemmerle, Giorgio Grisetti
+// SPDX-FileCopyrightText: 2017 Sergiu Deitsch
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 #include <iostream>
 
 #include <g2o/types/slam3d/isometry3d_mappings.h>

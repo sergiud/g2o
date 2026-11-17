@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2012 Rainer Kuemmerle, Giorgio Grisetti
+// SPDX-FileCopyrightText: 2017 Sergiu Deitsch
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 #include <g2o/types/slam3d/edge_se3.h>
 #include <g2o/types/slam3d/isometry3d_gradients.h>
 #include <iostream>

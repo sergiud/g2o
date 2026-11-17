@@ -1,0 +1,179 @@
+version = 1
+
+[[annotations]]
+path = [
+  "EXTERNAL/ceres/LICENSE",
+  "EXTERNAL/ceres/eigen.h",
+  "EXTERNAL/ceres/macros.h",
+  "EXTERNAL/ceres/manual_constructor.h",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2015 Google Inc."
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = [
+  "EXTERNAL/ceres/autodiff.h",
+  "EXTERNAL/ceres/fixed_array.h",
+  "EXTERNAL/ceres/variadic_evaluate.h",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+  "2015 Google Inc.",
+  "2017 Sergiu Deitsch",
+]
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = "EXTERNAL/ceres/fpclassify.h"
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+  "2012 Google Inc.",
+  "2017 Sergiu Deitsch",
+]
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = "EXTERNAL/ceres/jet.h"
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+  "2010-2012 Google Inc.",
+  "2017 Sergiu Deitsch",
+]
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = [
+  "EXTERNAL/freeglut/COPYING",
+  "EXTERNAL/freeglut/freeglut_font.cpp",
+  "EXTERNAL/freeglut/freeglut_stroke_mono_roman.cpp",
+  "EXTERNAL/freeglut/freeglut_stroke_roman.cpp",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "1999-2000 Pawel W. Olszta"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "EXTERNAL/freeglut/freeglut_minimal.h"
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+  "1999-2000 Pawel W. Olszta",
+  "2017 Sergiu Deitsch",
+]
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "README.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+  "2015 Rainer Kuemmerle, Giorgio Grisetti",
+  "2026 Sergiu Deitsch",
+]
+SPDX-License-Identifier = "BSD-2-Clause"
+
+[[annotations]]
+path = "doc/README_IF_IT_WAS_WORKING_AND_IT_DOES_NOT.txt"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2014 Rainer Kuemmerle, Giorgio Grisetti"
+SPDX-License-Identifier = "BSD-2-Clause"
+
+[[annotations]]
+path = [
+  "doc/doxygen/readme.txt",
+  "doc/g2o.pdf",
+  "doc/g2o.tex",
+  "doc/pics/classes.eps",
+  "doc/pics/classes.fig",
+  "doc/pics/classes.svg",
+  "doc/pics/hgraph.eps",
+  "doc/pics/hgraph.fig",
+  "doc/pics/slam.eps",
+  "doc/pics/slam.fig",
+  "doc/pics/viewer.eps",
+  "doc/pics/viewer.png",
+  "doc/robots.bib",
+  "g2o/examples/icp/gicp-test1.dat",
+  "g2o/examples/interactive_slam/README.txt",
+  "g2o/examples/interactive_slam/g2o_interactive/protocol.txt",
+  "g2o/examples/interactive_slam/slam_parser/parser/parser.yy",
+  "g2o/examples/interactive_slam/slam_parser/parser/scanner.l",
+  "g2o/types/slam3d/dquat2mat.wxm",
+  "g2o/types/slam3d/dquat2mat_maxima_generated.cpp",
+  "g2o/what_is_in_these_directories.txt",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2012 Rainer Kuemmerle, Giorgio Grisetti"
+SPDX-License-Identifier = "BSD-2-Clause"
+
+[[annotations]]
+path = [
+  "g2o/apps/g2o_viewer/base_main_window.ui",
+  "g2o/apps/g2o_viewer/base_properties_widget.ui",
+  "g2o/examples/interactive_slam/g2o_incremental/README.txt",
+  "g2o/examples/interactive_slam/g2o_incremental/protocol.txt",
+  "g2o/examples/slam2d/base_main_window.ui",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2012 Rainer Kuemmerle, Giorgio Grisetti"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = "g2o/examples/interactive_slam/g2o_interactive/fast_output.h"
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+  "2005-2007 Nick Galbreath",
+  "2017 Sergiu Deitsch",
+]
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = "g2o/examples/interactive_slam/slam_parser/parser/FlexLexer.h"
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+  "1993 The Regents of the University of California",
+  "2017 Sergiu Deitsch",
+]
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = [
+  "g2o/examples/interactive_slam/slam_parser/parser/bison_parser.cpp",
+  "g2o/examples/interactive_slam/slam_parser/parser/bison_parser.h",
+  "g2o/examples/interactive_slam/slam_parser/parser/stack.hh",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+  "2002-2008 Free Software Foundation, Inc.",
+  "2017 Sergiu Deitsch",
+]
+SPDX-License-Identifier = "GPL-3.0-or-later WITH Bison-exception-2.2"
+
+[[annotations]]
+path = "g2o/examples/interactive_slam/slam_parser/parser/flex_scanner.cpp"
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+  "2012 Rainer Kuemmerle, Giorgio Grisetti",
+  "2015-2017 Sergiu Deitsch",
+]
+SPDX-License-Identifier = "BSD-2-Clause"
+
+[[annotations]]
+path = [
+  "g2o/examples/interactive_slam/slam_parser/parser/location.hh",
+  "g2o/examples/interactive_slam/slam_parser/parser/position.hh",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+  "2002-2006 Free Software Foundation, Inc.",
+  "2017 Sergiu Deitsch",
+]
+SPDX-License-Identifier = "GPL-3.0-or-later WITH Bison-exception-2.2"
+
+[[annotations]]
+path = "script/android.toolchain.cmake"
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+  "2010-2011 Ethan Rublee",
+  "2011-2014 Andrey Kamaev",
+]
+SPDX-License-Identifier = "BSD-3-Clause"

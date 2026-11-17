@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2012 Rainer Kuemmerle, Giorgio Grisetti
+// SPDX-FileCopyrightText: 2017 Sergiu Deitsch
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 #ifndef G2O_STAR_
 #define G2O_STAR_
 

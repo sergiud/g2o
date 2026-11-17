@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2012 Rainer Kuemmerle, Giorgio Grisetti
+// SPDX-FileCopyrightText: 2017 Sergiu Deitsch
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 #include <g2o/core/sparse_optimizer_terminate_action.h>
 
 #include <g2o/core/sparse_optimizer.h>

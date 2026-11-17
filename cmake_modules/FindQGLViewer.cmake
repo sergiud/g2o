@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2012 Rainer Kuemmerle, Giorgio Grisetti
+# SPDX-FileCopyrightText: 2016-2026 Sergiu Deitsch
+#
+# SPDX-License-Identifier: BSD-2-Clause
+
 #[=======================================================================[.rst:
 FindQGLViewer
 -------------

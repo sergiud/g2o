@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2012 Rainer Kuemmerle, Giorgio Grisetti
+#
+# SPDX-License-Identifier: BSD-2-Clause
+
 
 # wrapper script to generate the parser by flex / bison
 

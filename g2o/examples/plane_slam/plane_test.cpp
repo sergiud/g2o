@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2012 Rainer Kuemmerle, Giorgio Grisetti
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 #include <list>
 #include <iostream>
 #include "plane3d.h"

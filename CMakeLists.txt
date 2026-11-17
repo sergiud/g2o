@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2012 Rainer Kuemmerle, Giorgio Grisetti
+# SPDX-FileCopyrightText: 2015-2026 Sergiu Deitsch
+#
+# SPDX-License-Identifier: BSD-2-Clause
+
 cmake_minimum_required (VERSION 3.28...4.5)
 
 # CMake 4.3 and 4.4 generate software bills of materials experimentally,

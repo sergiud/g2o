@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2012 Rainer Kuemmerle, Giorgio Grisetti
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 #ifndef G2O_CONTINUOUS_TO_DISCRETE_H_
 #define G2O_CONTINUOUS_TO_DISCRETE_H_
 

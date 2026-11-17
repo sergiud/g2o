@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2015-2026 Sergiu Deitsch
+#
+# SPDX-License-Identifier: BSD-2-Clause
+
 if (CMAKE_VERSION VERSION_LESS 3.25)
   set (g2o_FOUND FALSE)
   set (g2o_NOT_FOUND_MESSAGE "g2o requires CMake 3.25, found ${CMAKE_VERSION}")

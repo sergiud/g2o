@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2012 Rainer Kuemmerle, Giorgio Grisetti
+// SPDX-FileCopyrightText: 2017 Sergiu Deitsch
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 #ifndef G2O_EDGE_TYPES_COST_FUNCTION_
 #define G2O_EDGE_TYPES_COST_FUNCTION_
 

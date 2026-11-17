@@ -1,4 +1,8 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2015 Rainer Kuemmerle, Giorgio Grisetti
+#
+# SPDX-License-Identifier: BSD-2-Clause
+
 
 SCRIPTS_PATH="$(dirname $(readlink -f ${0}))"
 G2O_BIN_DIR=$SCRIPTS_PATH/../bin

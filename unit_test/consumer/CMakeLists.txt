@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Sergiu Deitsch
+#
+# SPDX-License-Identifier: BSD-2-Clause
+
 cmake_minimum_required (VERSION 3.28...4.5)
 # The configuration of SuiteSparse, which g2o finds for CXSparse and CHOLMOD,
 # searches for OpenMP for C and therefore needs C enabled.

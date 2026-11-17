@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2013 Rainer Kuemmerle, Giorgio Grisetti
+#
+# SPDX-License-Identifier: BSD-2-Clause
+
 SHELL = /bin/bash
 
 ifeq ($(VERBOSE), 1)

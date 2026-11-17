@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2014 Rainer Kuemmerle, Giorgio Grisetti
+// SPDX-FileCopyrightText: 2017 Sergiu Deitsch
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 #include <g2o/types/slam2d/edge_se2_twopointsxy.h>
 
 #ifdef G2O_HAVE_OPENGL

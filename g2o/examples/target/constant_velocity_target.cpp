@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2012 Rainer Kuemmerle, Giorgio Grisetti
+// SPDX-FileCopyrightText: 2017 Sergiu Deitsch
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 // This example consists of a single constant velocity target which
 // moves under piecewise constant velocity in 3D. Its position is
 // measured by an idealised GPS receiver.

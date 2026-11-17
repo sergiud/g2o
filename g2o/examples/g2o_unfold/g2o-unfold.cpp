@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2012 Rainer Kuemmerle, Giorgio Grisetti
+// SPDX-FileCopyrightText: 2017 Sergiu Deitsch
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 //  ../aisnavigation-free/bin/g2o-unfold -i 30 -solver var_cholmod -v -gnudump vic.dat ../datasets/2D/victoriaPark/victoriaPark.g2o
 
 #include <signal.h>
