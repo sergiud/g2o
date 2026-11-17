@@ -169,6 +169,19 @@ endif (BUILD_LGPL_SHARED_LIBS)
 set (_g2o_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR}/g2o)
 set (_g2o_INSTALL_CMAKEDIR ${_g2o_INSTALL_LIBDIR}/cmake)
 
+# The installed programs and libraries find the libraries of g2o relative to
+# their own location, so that the installation can be moved.
+if (APPLE)
+  set (_g2o_INSTALL_ORIGIN @loader_path)
+else (APPLE)
+  set (_g2o_INSTALL_ORIGIN $ORIGIN)
+endif (APPLE)
+
+cmake_path (RELATIVE_PATH CMAKE_INSTALL_FULL_LIBDIR
+  BASE_DIRECTORY ${CMAKE_INSTALL_FULL_BINDIR}
+  OUTPUT_VARIABLE _g2o_BINDIR_TO_LIBDIR
+)
+
 # The license of the files without a license notice of their own.
 set (_g2o_DEFAULT_LICENSE BSD-2-Clause)
 
@@ -331,6 +344,7 @@ function (g2o_add_library name)
   set_target_properties (${name} PROPERTIES
     EXPORT_NAME ${arg_EXPORT_NAME}
     OUTPUT_NAME g2o_${arg_OUTPUT_NAME}
+    INSTALL_RPATH ${_g2o_INSTALL_ORIGIN}
     SOVERSION ${g2o_VERSION_MAJOR}
     SPDX_LICENSE "${arg_LICENSE}"
     VERSION ${g2o_VERSION}
@@ -403,7 +417,10 @@ function (g2o_add_executable name)
 
   add_executable (${name} ${arg_SOURCES})
   target_link_libraries (${name} PRIVATE ${arg_LINK})
-  set_target_properties (${name} PROPERTIES SPDX_LICENSE "${arg_LICENSE}")
+  set_target_properties (${name} PROPERTIES
+    INSTALL_RPATH ${_g2o_INSTALL_ORIGIN}/${_g2o_BINDIR_TO_LIBDIR}/g2o
+    SPDX_LICENSE "${arg_LICENSE}"
+  )
 
   if (DEFINED arg_OUTPUT_NAME)
     set_target_properties (${name} PROPERTIES OUTPUT_NAME ${arg_OUTPUT_NAME})
@@ -1693,6 +1710,31 @@ if (BUILD_TESTING)
   set_tests_properties (g2o_consumer PROPERTIES
     FIXTURES_REQUIRED g2o_installed
   )
+
+  # The installed programs find the libraries of g2o and load its plugins on
+  # their own. Dependencies installed elsewhere, such as ng-log, are found
+  # through the search path of the environment.
+  # The plugin of the data types depends on the one of the 2D types, which
+  # the program loads after it.
+  if (BUILD_APPS AND UNIX AND NOT APPLE)
+    add_test (NAME g2o_installed_solvers
+      COMMAND ${_g2o_CONSUMER_PREFIX}/${CMAKE_INSTALL_BINDIR}/g2o -listSolvers
+    )
+    add_test (NAME g2o_installed_types
+      COMMAND ${_g2o_CONSUMER_PREFIX}/${CMAKE_INSTALL_BINDIR}/g2o -listTypes
+    )
+    set_tests_properties (g2o_installed_solvers g2o_installed_types PROPERTIES
+      ENVIRONMENT_MODIFICATION
+        "LD_LIBRARY_PATH=path_list_prepend:$<TARGET_FILE_DIR:ng-log::ng-log>"
+      FIXTURES_REQUIRED g2o_installed
+    )
+    set_tests_properties (g2o_installed_solvers PROPERTIES
+      PASS_REGULAR_EXPRESSION "Gauss-Newton"
+    )
+    set_tests_properties (g2o_installed_types PROPERTIES
+      PASS_REGULAR_EXPRESSION "VERTEX_TAG"
+    )
+  endif (BUILD_APPS AND UNIX AND NOT APPLE)
 endif (BUILD_TESTING)
 
 # A directory that is not part of the repository may hold experiments.
