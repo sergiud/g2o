@@ -37,7 +37,7 @@ G2O_START_NAMESPACE
   class G2O_VIEWER_API G2oQGLViewer : public QGLViewer
   {
     public:
-      G2oQGLViewer(QWidget* parent=nullptr, const QGLWidget* shareWidget=nullptr, Qt::WindowFlags flags=nullptr);
+      explicit G2oQGLViewer(QWidget* parent = nullptr, Qt::WindowFlags flags = {});
       ~G2oQGLViewer();
       void draw();
       void init();

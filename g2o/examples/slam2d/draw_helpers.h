@@ -27,7 +27,7 @@
 #ifndef G2O_DRAW_HELPERS_H
 #define G2O_DRAW_HELPERS_H
 
-#include <qgl.h>
+#include <g2o/stuff/opengl_wrapper.h>
 
 #include <g2o/core/abi.h>
 

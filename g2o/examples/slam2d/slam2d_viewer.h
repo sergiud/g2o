@@ -30,7 +30,7 @@ G2O_START_NAMESPACE
   class Slam2DViewer : public QGLViewer
   {
     public:
-      Slam2DViewer(QWidget* parent=nullptr, const QGLWidget* shareWidget=nullptr, Qt::WindowFlags flags=nullptr);
+      explicit Slam2DViewer(QWidget* parent = nullptr, Qt::WindowFlags flags = {});
       ~Slam2DViewer();
       virtual void draw();
       void init();

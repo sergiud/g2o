@@ -82,8 +82,8 @@ namespace {
 
 } // end anonymous namespace
 
-G2oQGLViewer::G2oQGLViewer(QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFlags flags) :
-  QGLViewer(parent, shareWidget, flags),
+G2oQGLViewer::G2oQGLViewer(QWidget* parent, Qt::WindowFlags flags) :
+  QGLViewer(parent, flags),
   graph(nullptr), _drawActions(nullptr), _drawList(0)
 {
   setAxisIsDrawn(false);
@@ -144,10 +144,10 @@ void G2oQGLViewer::init()
   // mouse bindings
 #ifdef QGLVIEWER_DEPRECATED_MOUSEBINDING
   setMouseBinding(Qt::NoModifier, Qt::RightButton, CAMERA, ZOOM);
-  setMouseBinding(Qt::NoModifier, Qt::MidButton, CAMERA, TRANSLATE);
+  setMouseBinding(Qt::NoModifier, Qt::MiddleButton, CAMERA, TRANSLATE);
 #else
   setMouseBinding(Qt::RightButton, CAMERA, ZOOM);
-  setMouseBinding(Qt::MidButton, CAMERA, TRANSLATE);
+  setMouseBinding(Qt::MiddleButton, CAMERA, TRANSLATE);
 #endif
 
   // keyboard shortcuts

@@ -99,6 +99,13 @@ G2O_START_NAMESPACE
     if (action->name()!=name()){
       cerr << __PRETTY_FUNCTION__  << ": invalid attempt to register an action in a collection with a different name " <<  name() << " " << action->name() << endl;
     }
+    // The collection takes ownership only of an action it stores, since the
+    // caller keeps owning an action that is rejected.
+    if (_actionMap.find(action->typeName()) != _actionMap.end()) {
+      cerr << __PRETTY_FUNCTION__ << ": an action for the type " << action->typeName()
+           << " is already registered in the collection " << name() << endl;
+      return false;
+    }
     _actionMap.emplace(action->typeName(), std::unique_ptr<HyperGraphElementAction>(action));
     return true;
   }

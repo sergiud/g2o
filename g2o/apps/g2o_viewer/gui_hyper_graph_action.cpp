@@ -45,7 +45,7 @@ HyperGraphAction* GuiHyperGraphAction::operator()(const HyperGraph* graph, Param
       if (p != nullptr) {
         viewer->setSnapshotFormat(QString("PNG"));
         viewer->setSnapshotQuality(-1);
-        viewer->saveSnapshot(QString().sprintf("g2o%.6d.png", p->iteration), true);
+        viewer->saveSnapshot(QString::asprintf("g2o%.6d.png", p->iteration), true);
       }
     }
 

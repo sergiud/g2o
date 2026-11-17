@@ -34,7 +34,7 @@ G2O_END_NAMESPACE
 class G2O_VIEWER_API ViewerPropertiesWidget : public PropertiesWidget
 {
   public:
-    ViewerPropertiesWidget(QWidget * parent = nullptr, Qt::WindowFlags f = nullptr);
+    ViewerPropertiesWidget(QWidget * parent = nullptr, Qt::WindowFlags f = {});
     virtual ~ViewerPropertiesWidget();
 
     void setViewer(g2o::G2oQGLViewer* viewer);

@@ -47,7 +47,7 @@ class G2O_VIEWER_API MainWindow : public QMainWindow, public Ui::BaseMainWindow
 {
   Q_OBJECT
   public:
-    MainWindow(QWidget * parent = nullptr, Qt::WindowFlags flags = nullptr);
+    MainWindow(QWidget * parent = nullptr, Qt::WindowFlags flags = {});
     ~MainWindow();
 
   public:

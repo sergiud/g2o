@@ -1,28 +1,34 @@
-if (CMAKE_VERSION VERSION_LESS 3.9)
-  message (FATAL_ERROR "CMake >= 3.9 required")
-endif (CMAKE_VERSION VERSION_LESS 3.9)
+if (CMAKE_VERSION VERSION_LESS 3.25)
+  set (g2o_FOUND FALSE)
+  set (g2o_NOT_FOUND_MESSAGE "g2o requires CMake 3.25, found ${CMAKE_VERSION}")
+  return ()
+endif (CMAKE_VERSION VERSION_LESS 3.25)
 
 @PACKAGE_INIT@
 
 include (CMakeFindDependencyMacro)
 
-find_dependency (Eigen3 @Eigen3_VERSION@)
-@CXSparse_DEPENDENCY@
-@SuiteSparse_DEPENDENCY@
+# The searches for the dependencies define variables of their own, which the
+# block keeps out of the scope of the consumer. The imported targets remain.
+block (SCOPE_FOR VARIABLES PROPAGATE g2o_FOUND g2o_NOT_FOUND_MESSAGE)
+  @g2o_FIND_DEPENDENCIES@
+endblock ()
 
-include ("${CMAKE_CURRENT_LIST_DIR}/g2o-targets.cmake")
+if (DEFINED g2o_FOUND AND NOT g2o_FOUND)
+  return ()
+endif (DEFINED g2o_FOUND AND NOT g2o_FOUND)
 
-set (_g2o_NAMESPACE "@g2o_NAMESPACE@")
+include (${CMAKE_CURRENT_LIST_DIR}/g2o-targets.cmake)
 
-foreach (_comp ${g2o_FIND_COMPONENTS})
-  set (_TARGET ${_g2o_NAMESPACE}${_comp})
-
-  if (TARGET ${_TARGET})
-    set (g2o_${_comp}_FOUND TRUE)
-  else (TARGET ${_TARGET})
-    set (g2o_${_comp}_FOUND FALSE)
-    set (g2o_NOT_FOUND_MESSAGE "g2o could not be found because the component ${_comp} could not be found.")
-  endif (TARGET ${_TARGET})
-endforeach (_comp)
+# The components are the names of the exported libraries.
+foreach (_g2o_component IN LISTS g2o_FIND_COMPONENTS)
+  if (TARGET g2o::${_g2o_component})
+    set (g2o_${_g2o_component}_FOUND TRUE)
+  else (TARGET g2o::${_g2o_component})
+    set (g2o_${_g2o_component}_FOUND FALSE)
+    set (g2o_NOT_FOUND_MESSAGE "g2o could not be found because the \
+component ${_g2o_component} could not be found")
+  endif (TARGET g2o::${_g2o_component})
+endforeach (_g2o_component IN LISTS g2o_FIND_COMPONENTS)
 
 check_required_components (g2o)

@@ -55,8 +55,6 @@ considered by g2o, if it is available.
 
 Within the folder EXTERNAL we include software not written by us to
 guarantee easy compilation.
-- csparse: LPGL2.1 (see EXTERNAL/csparse/License.txt)
-  csparse is compiled if it is not provided by the system.
 - ceres: BSD (see EXTERNAL/ceres/LICENSE)
   Headers to perform Automatic Differentiation
 - freeglut: X Consortium (Copyright (c) 1999-2000 Pawel W. Olszta)
@@ -71,7 +69,7 @@ licenses for more details.
 
 
 ### Requirements
-  * cmake             http://www.cmake.org/
+  * cmake 3.28        http://www.cmake.org/
   * Eigen3            http://eigen.tuxfamily.org
 
   On Ubuntu / Debian these dependencies are resolved by installing the
@@ -81,15 +79,15 @@ licenses for more details.
 
 #### Optional requirements
   * suitesparse       http://www.cise.ufl.edu/research/sparse/SuiteSparse/
-  * Qt5               http://qt-project.org
-  * libQGLViewer      http://www.libqglviewer.com/
+    whose CHOLMOD and CXSparse libraries the sparse solvers build on
+  * Qt6               http://qt-project.org
+  * libQGLViewer      http://www.libqglviewer.com/ built for Qt6
 
   On Ubuntu / Debian these dependencies are resolved by installing the
   following packages.
     - libsuitesparse-dev
-    - qtdeclarative5-dev
-    - qt5-qmake
-    - libqglviewer-dev
+    - qt6-base-dev
+    - libqglviewer-dev-qt6
 
 #### Mac OS X
 If using [Homebrew](http://brew.sh/), then
@@ -110,7 +108,11 @@ by the following command sequence.
 - `make`
 
 The binaries will be placed in bin and the libraries in lib which
-are both located in the top-level folder.
+are both located in the build folder.
+
+With CMake 4.5 or later, and experimentally with CMake 4.3 and 4.4,
+`cmake --install` also installs a software bill of materials in SPDX format to
+`share/sbom`, unless the option `WITH_SBOM` is turned off.
 If you are compiling on Windows, please download Eigen3 and extract it.
 Within cmake-gui set the variable G2O\_EIGEN3\_INCLUDE to that directory.
 

@@ -29,7 +29,7 @@ class MainWindow : public QMainWindow, public Ui::BaseMainWindow
 {
   Q_OBJECT
   public:
-    MainWindow(QWidget * parent = nullptr, Qt::WindowFlags flags = nullptr);
+    MainWindow(QWidget * parent = nullptr, Qt::WindowFlags flags = {});
     ~MainWindow();
 
     g2o::OptimizationAlgorithm* solverGaussNewton{};

@@ -43,7 +43,7 @@ class G2O_VIEWER_API PropertiesWidget : public QDialog, public Ui::BasePropertie
 {
   Q_OBJECT
   public:
-    PropertiesWidget(QWidget * parent = nullptr, Qt::WindowFlags f = nullptr);
+    PropertiesWidget(QWidget * parent = nullptr, Qt::WindowFlags f = {});
     virtual ~PropertiesWidget();
 
     void setProperties(g2o::PropertyMap* properties);
