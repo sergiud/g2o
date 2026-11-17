@@ -114,9 +114,8 @@ cmake_dependent_option (BUILD_LINKED_APPS "Build apps linked with the libraries 
 option (BUILD_TESTING "build unit test framework and the tests" ON)
 
 set (CMAKE_CXX_VISIBILITY_PRESET hidden)
-set (CMAKE_VISIBILITY_INLINES_HIDDEN 1)
-
 set (CMAKE_POSITION_INDEPENDENT_CODE ON)
+set (CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 # The library prefix
 set(LIB_PREFIX g2o_)
