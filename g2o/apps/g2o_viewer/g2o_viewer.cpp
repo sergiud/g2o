@@ -7,15 +7,16 @@
 #include <g2o/apps/g2o_cli/g2o_common.h>
 #include <g2o/core/optimizable_graph.h>
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 
 #include <QApplication>
-#include <iostream>
 
 #include "run_g2o_viewer.h"
 using namespace std;
 using namespace g2o;
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   OptimizableGraph::initMultiThreading();
   QApplication qapp(argc, argv);
 

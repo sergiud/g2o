@@ -10,13 +10,12 @@
 #include <g2o/core/optimization_algorithm_levenberg.h>
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/csparse/linear_solver_csparse.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/types/data/data_queue.h>
 #include <g2o/types/data/robot_laser.h>
 #include <g2o/types/sclam2d/edge_se2_odom_differential_calib.h>
 #include <g2o/types/sclam2d/odometry_measurement.h>
 #include <g2o/types/sclam2d/vertex_odom_differential_params.h>
-
-#include <iostream>
 
 #include "gm2dl_io.h"
 using namespace std;
@@ -53,12 +52,11 @@ void addOdometryCalibLinksDifferential(SparseOptimizer& optimizer,
         dynamic_cast<RobotLaser*>(odomData.findClosestData(rl2->timestamp()));
 
     if (fabs(rl1->timestamp() - rl2->timestamp()) < 1e-7) {
-      cerr << "strange egde " << r1->id() << " <-> " << r2->id() << endl;
-      cerr << FIXED(PVAR(rl1->timestamp()) << "\t " << PVAR(rl2->timestamp()))
-           << endl;
-      cerr << FIXED(PVAR(odom1->timestamp())
-                    << "\t " << PVAR(odom2->timestamp()))
-           << endl;
+      ngx::Log("strange egde {} <-> {}", r1->id(), r2->id());
+      ngx::Log("rl1->timestamp() = {:f}\t rl2->timestamp() = {:f}",
+               rl1->timestamp(), rl2->timestamp());
+      ngx::Log("odom1->timestamp() = {:f}\t odom2->timestamp() = {:f}",
+               odom1->timestamp(), odom2->timestamp());
     }
 
     // cerr << PVAR(odom1->odomPose().toVector().transpose()) << endl;

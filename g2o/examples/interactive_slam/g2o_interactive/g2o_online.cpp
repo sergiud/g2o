@@ -4,9 +4,11 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/timeutil.h>
 #include <g2o_interactive/g2o_slam_interface.h>
+#include <ng-log/experimental/signal_safe_log.h>
 
 #include <csignal>
 #include <cstdlib>
@@ -26,13 +28,14 @@ void sigquit_handler(int sig) {
     hasToStop = 1;
     static int cnt = 0;
     if (cnt++ == 2) {
-      cerr << __PRETTY_FUNCTION__ << " forcing exit" << endl;
+      ngx::Log(ngx::SignalSafe | ngx::Warning, "forcing exit");
       exit(1);
     }
   }
 }
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   bool pcg;
   int updateEachN;
   bool vis;

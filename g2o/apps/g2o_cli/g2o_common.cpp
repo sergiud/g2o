@@ -7,9 +7,9 @@
 
 #include <g2o/config.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/logger.h>
 
 #include <cstdlib>
-#include <iostream>
 #include <vector>
 
 #include "dl_wrapper.h"
@@ -105,7 +105,7 @@ void loadStandardTypes(DlWrapper& dlTypesWrapper, int argc, char** argv) {
   if (argc > 0 && argv != nullptr) findArguments("-typeslib", libs, argc, argv);
   for (vector<string>::const_iterator it = libs.begin(); it != libs.end();
        ++it) {
-    cerr << "Loading types " << *it << endl;
+    ngx::Log("Loading types {}", *it);
     dlTypesWrapper.openLibrary(*it);
   }
 }
@@ -141,7 +141,7 @@ void loadStandardSolver(DlWrapper& dlSolverWrapper, int argc, char** argv) {
     findArguments("-solverlib", libs, argc, argv);
   for (vector<string>::const_iterator it = libs.begin(); it != libs.end();
        ++it) {
-    cerr << "Loading solver " << *it << endl;
+    ngx::Log("Loading solver {}", *it);
     dlSolverWrapper.openLibrary(*it);
   }
 }

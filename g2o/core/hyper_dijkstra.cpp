@@ -4,11 +4,11 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
 #include <g2o/core/hyper_dijkstra.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 
 #include <cassert>
 #include <deque>
-#include <iostream>
 #include <queue>
 #include <vector>
 
@@ -78,8 +78,7 @@ void HyperDijkstra::shortestPaths(HyperGraph::VertexSet& vset,
     assert(v != 0);
     auto it = _adjacencyMap.find(v);
     if (it == _adjacencyMap.end()) {
-      cerr << __PRETTY_FUNCTION__ << "Vertex " << v->id()
-           << " is not in the adjacency map" << endl;
+      ngx::Log(ngx::Warning, "Vertex {} is not in the adjacency map", v->id());
     }
     assert(it != _adjacencyMap.end());
     it->second._distance = 0.;
@@ -93,8 +92,7 @@ void HyperDijkstra::shortestPaths(HyperGraph::VertexSet& vset,
     HyperGraph::Vertex* u = entry.child();
     auto ut = _adjacencyMap.find(u);
     if (ut == _adjacencyMap.end()) {
-      cerr << __PRETTY_FUNCTION__ << "Vertex " << u->id()
-           << " is not in the adjacency map" << endl;
+      ngx::Log(ngx::Warning, "Vertex {} is not in the adjacency map", u->id());
     }
     assert(ut != _adjacencyMap.end());
     double uDistance = ut->second.distance();

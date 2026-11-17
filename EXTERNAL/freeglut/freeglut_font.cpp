@@ -25,7 +25,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <iostream>
+#include <g2o/stuff/logger.h>
 
 #include "freeglut_minimal.h"
 
@@ -45,7 +45,7 @@ static SFG_StrokeFont* fghStrokeByID(FontID font) {
   if (font == GLUT_STROKE_MONO_ROMAN)
     return (SFG_StrokeFont*)&fgStrokeMonoRoman;
 
-  std::cerr << "stroke font " << (int)font << " not found" << std::endl;
+  g2o::ngx::Log(g2o::ngx::Error, "stroke font {} not found", (int)font);
   return 0;
 }
 

@@ -11,6 +11,7 @@
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/dense/linear_solver_dense.h>
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/sampler.h>
 
 #include <Eigen/Core>
@@ -27,17 +28,17 @@ class VertexParams : public g2o::BaseVertex<3, Eigen::Vector3d> {
   VertexParams() {}
 
   virtual bool read(std::istream& /*is*/) {
-    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    g2o::ngx::Log(g2o::ngx::Error, "not implemented yet");
     return false;
   }
 
   virtual bool write(std::ostream& /*os*/) const {
-    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    g2o::ngx::Log(g2o::ngx::Error, "not implemented yet");
     return false;
   }
 
   virtual void setToOriginImpl() {
-    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    g2o::ngx::Log(g2o::ngx::Error, "not implemented yet");
   }
 
   virtual void oplusImpl(const double* update) {
@@ -59,11 +60,11 @@ class EdgePointOnCurve
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   EdgePointOnCurve() {}
   virtual bool read(std::istream& /*is*/) {
-    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    g2o::ngx::Log(g2o::ngx::Error, "not implemented yet");
     return false;
   }
   virtual bool write(std::ostream& /*os*/) const {
-    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    g2o::ngx::Log(g2o::ngx::Error, "not implemented yet");
     return false;
   }
 
@@ -78,6 +79,7 @@ class EdgePointOnCurve
 };
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   int numPoints;
   int maxIterations;
   bool verbose;

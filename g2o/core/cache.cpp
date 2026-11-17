@@ -6,8 +6,7 @@
 #include <g2o/config.h>
 #include <g2o/core/cache.h>
 #include <g2o/core/factory.h>
-
-#include <iostream>
+#include <g2o/stuff/logger.h>
 
 G2O_START_NAMESPACE
 using namespace std;
@@ -94,14 +93,14 @@ Cache* CacheContainer::createCache(const Cache::CacheKey& key) {
   Factory* f = Factory::instance();
   HyperGraph::HyperGraphElement* e = f->construct(key.type());
   if (e == nullptr) {
-    cerr << __PRETTY_FUNCTION__ << endl;
-    cerr << "fatal error in creating cache of type " << key.type() << endl;
+    ngx::Log(ngx::Error, "fatal error in creating cache of type {}",
+             key.type());
     return nullptr;
   }
   Cache* c = dynamic_cast<Cache*>(e);
   if (c == nullptr) {
-    cerr << __PRETTY_FUNCTION__ << endl;
-    cerr << "fatal error in creating cache of type " << key.type() << endl;
+    ngx::Log(ngx::Error, "fatal error in creating cache of type {}",
+             key.type());
     return nullptr;
   }
   c->_container = this;

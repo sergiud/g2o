@@ -5,8 +5,9 @@
 
 #include "sensor_odometry2d.h"
 
+#include <g2o/stuff/logger.h>
+
 #include <cassert>
-#include <iostream>
 
 // Robot2D
 G2O_START_NAMESPACE
@@ -32,7 +33,7 @@ void SensorOdometry2D::sense() {
     it++;
   }
   if (!((pcurr != nullptr) && (pprev != nullptr))) {
-    cerr << __PRETTY_FUNCTION__ << ": fatal, trajectory empty" << endl;
+    ngx::Log(ngx::Error, "trajectory empty");
     return;
   }
   _robotPoseObject = pprev;

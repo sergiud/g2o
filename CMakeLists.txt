@@ -84,6 +84,7 @@ endif (NOT TARGET SuiteSparse::CHOLMOD)
 
 find_package (Eigen3 3.4.1...5 REQUIRED CONFIG)
 find_package (GTest 1.16 CONFIG)
+find_package (ng-log 0.9.0 REQUIRED CONFIG COMPONENTS experimental)
 find_package (OpenGL COMPONENTS OpenGL)
 find_package (OpenMP COMPONENTS CXX)
 
@@ -422,6 +423,7 @@ g2o_add_library (stuff
   SOURCES
     g2o/stuff/command_args.cpp
     g2o/stuff/filesys_tools.cpp
+    g2o/stuff/logger.cpp
     g2o/stuff/os_specific.cpp
     g2o/stuff/property.cpp
     g2o/stuff/sampler.cpp
@@ -435,6 +437,7 @@ g2o_add_library (stuff
     g2o/stuff/color_macros.h
     g2o/stuff/command_args.h
     g2o/stuff/filesys_tools.h
+    g2o/stuff/logger.h
     g2o/stuff/macros.h
     g2o/stuff/misc.h
     g2o/stuff/opengl_wrapper.h
@@ -443,6 +446,7 @@ g2o_add_library (stuff
     g2o/stuff/sampler.h
     g2o/stuff/scoped_pointer.h
     g2o/stuff/sparse_helper.h
+    g2o/stuff/streamed.h
     g2o/stuff/string_tools.h
     g2o/stuff/tictoc.h
     g2o/stuff/timeutil.h
@@ -450,7 +454,14 @@ g2o_add_library (stuff
     g2o/suffix.h
 )
 
-target_link_libraries (stuff PUBLIC Eigen3::Eigen)
+# The diagnostics of g2o, including those of its templates in the public
+# headers, go through the experimental logging functions of ng-log, which
+# compile their consumers as C++20.
+target_link_libraries (stuff PUBLIC Eigen3::Eigen ng-log::experimental)
+
+# The public headers format values that provide only a stream insertion
+# operator by specializing std::formatter.
+target_compile_features (stuff PUBLIC cxx_std_20)
 
 if (G2O_HAVE_RT AND NOT ANDROID)
   target_link_libraries (stuff PRIVATE rt)
@@ -1166,6 +1177,7 @@ if (BUILD_APPS)
         g2o/apps/g2o_viewer/properties_widget.cpp
         g2o/apps/g2o_viewer/run_g2o_viewer.cpp
         g2o/apps/g2o_viewer/stream_redirect.cpp
+        g2o/apps/g2o_viewer/text_edit_sink.cpp
         g2o/apps/g2o_viewer/viewer_properties_widget.cpp
       HEADERS
         g2o/apps/g2o_viewer/g2o_qglviewer.h
@@ -1174,6 +1186,7 @@ if (BUILD_APPS)
         g2o/apps/g2o_viewer/properties_widget.h
         g2o/apps/g2o_viewer/run_g2o_viewer.h
         g2o/apps/g2o_viewer/stream_redirect.h
+        g2o/apps/g2o_viewer/text_edit_sink.h
         g2o/apps/g2o_viewer/viewer_properties_widget.h
     )
 
@@ -1299,6 +1312,7 @@ if (BUILD_EXAMPLES)
   # The generated scanner includes the bundled FlexLexer.h with angle
   # brackets, which must take precedence over the header of an installed
   # Flex, whose interface differs.
+  target_link_libraries (parser_library PRIVATE stuff)
   target_include_directories (parser_library
     PUBLIC
       $<BUILD_INTERFACE:${g2o_SOURCE_DIR}/g2o/examples/interactive_slam>
@@ -1322,7 +1336,10 @@ if (BUILD_EXAMPLES)
       g2o/examples/interactive_slam/slam_parser/interface/slam_context_interface.h
   )
 
-  target_link_libraries (interface_library PUBLIC parser_library)
+  target_link_libraries (interface_library
+    PUBLIC parser_library
+    PRIVATE stuff
+  )
 
   g2o_add_library (example_library
     OUTPUT_NAME example
@@ -1334,19 +1351,21 @@ if (BUILD_EXAMPLES)
       g2o/examples/interactive_slam/slam_parser/example/example_slam_interface.h
   )
 
-  target_link_libraries (example_library PUBLIC
-    interface_library
-    parser_library
+  target_link_libraries (example_library
+    PUBLIC
+      interface_library
+      parser_library
+    PRIVATE stuff
   )
 
   g2o_add_executable (test_slam_parser
     SOURCES g2o/examples/interactive_slam/slam_parser/parser/test_slam_parser.cpp
-    LINK parser_library
+    LINK parser_library stuff
   )
 
   g2o_add_executable (test_slam_interface
     SOURCES g2o/examples/interactive_slam/slam_parser/example/test_slam_interface.cpp
-    LINK example_library
+    LINK example_library stuff
   )
 
   if (G2O_HAVE_CSPARSE)
@@ -1592,9 +1611,11 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
   g2o_add_executable (unittest_general
     SOURCES
       unit_test/general/clear_and_redo.cpp
+      unit_test/general/factory.cpp
       unit_test/general/graph_operations.cpp
       unit_test/general/hyper_graph_action.cpp
-    LINK GTest::gtest_main types_slam2d types_slam3d
+      unit_test/general/logging.cpp
+    LINK GTest::gmock GTest::gtest_main types_slam2d types_slam3d
   )
 
   g2o_add_executable (unittest_slam2d
@@ -1689,6 +1710,7 @@ endif (IS_DIRECTORY ${g2o_SOURCE_DIR}/g2o/playground)
 # libraries, including the private ones of static libraries.
 set (_g2o_FIND_DEPENDENCIES
   "find_dependency (Eigen3 ${Eigen3_VERSION} CONFIG)"
+  "find_dependency (ng-log ${ng-log_VERSION} CONFIG COMPONENTS experimental)"
 )
 
 if (G2O_HAVE_CSPARSE)
@@ -1816,6 +1838,12 @@ set_package_properties (Eigen3 PROPERTIES
   DESCRIPTION "C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms"
   TYPE REQUIRED
   PURPOSE "Provides fundamental linear algebra functionality"
+)
+set_package_properties (ng-log PROPERTIES
+  URL "https://github.com/ng-log/ng-log"
+  DESCRIPTION "C++ logging library"
+  TYPE REQUIRED
+  PURPOSE "Logs the diagnostics of g2o"
 )
 set_package_properties (QGLViewer PROPERTIES
   URL "https://libqglviewer.com"

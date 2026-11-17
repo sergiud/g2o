@@ -15,6 +15,7 @@
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/command_args.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/timeutil.h>
 #include <g2o/types/slam2d_addons/types_slam2d_addons.h>
 
@@ -49,6 +50,7 @@ struct LineInfo {
 typedef std::map<int, LineInfo> LineInfoMap;
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   string outputfilename;
   string inputFilename;
   CommandArgs arg;
@@ -62,30 +64,30 @@ int main(int argc, char** argv) {
   // registering all the types from the libraries
 
   if (inputFilename.empty()) {
-    cerr << "No input data specified" << endl;
+    ngx::Log(ngx::Error, "No input data specified");
     return 0;
   } else if (inputFilename == "-") {
-    cerr << "Read input from stdin" << endl;
+    ngx::Log("Read input from stdin");
     if (!inGraph.load(cin)) {
-      cerr << "Error loading graph" << endl;
+      ngx::Log(ngx::Error, "Error loading graph");
       return 2;
     }
   } else {
-    cerr << "Read input from " << inputFilename << endl;
+    ngx::Log("Read input from {}", inputFilename);
     ifstream ifs(inputFilename.c_str());
     if (!ifs) {
-      cerr << "Failed to open file" << endl;
+      ngx::Log(ngx::Error, "Failed to open file");
       return 1;
     }
     if (!inGraph.load(ifs)) {
-      cerr << "Error loading graph" << endl;
+      ngx::Log(ngx::Error, "Error loading graph");
       return 2;
     }
   }
-  cerr << "Loaded " << inGraph.vertices().size() << " vertices" << endl;
-  cerr << "Loaded " << inGraph.edges().size() << " edges" << endl;
+  ngx::Log("Loaded {} vertices", inGraph.vertices().size());
+  ngx::Log("Loaded {} edges", inGraph.edges().size());
 
-  cerr << "filling in linfoMap and odoms" << endl;
+  ngx::Log("filling in linfoMap and odoms");
   LineInfoMap lmap;
   OptimizableGraph outGraph;
   // insert all lines in the infomap
@@ -116,7 +118,7 @@ int main(int argc, char** argv) {
 
   currentId++;
 
-  cerr << "filling in edges and odoms" << endl;
+  ngx::Log("filling in edges and odoms");
   for (auto it : inGraph.edges()) {
     EdgeSE2* ods = dynamic_cast<EdgeSE2*>(it);
     if (ods != nullptr) {
@@ -226,7 +228,7 @@ int main(int argc, char** argv) {
 
         VertexPointXY*& pX = (espl->pointNum() == 0) ? p1 : p2;
         if (pX == nullptr) {
-          cerr << "mkp: " << line->id() << endl;
+          ngx::Log("mkp: {}", line->id());
           pX = new VertexPointXY();
           pX->setId(currentId++);
           outGraph.addVertex(pX);
@@ -264,13 +266,13 @@ int main(int argc, char** argv) {
 
   if (!outputfilename.empty()) {
     if (outputfilename == "-") {
-      cerr << "saving to stdout";
+      ngx::Log("saving to stdout");
       outGraph.save(cout);
     } else {
-      cerr << "saving " << outputfilename << " ... ";
+      ngx::Log("saving {}", outputfilename);
       outGraph.save(outputfilename.c_str());
     }
-    cerr << "done." << endl;
+    ngx::Log("done.");
   }
 
   // destroy all the singletons

@@ -13,6 +13,7 @@
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/cholmod/linear_solver_cholmod.h>
 #include <g2o/solvers/pcg/linear_solver_pcg.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/sampler.h>
 
 #include <Eigen/StdVector>
@@ -27,6 +28,7 @@ using namespace std;
 using namespace g2o;
 
 int main() {
+  g2o::initializeLogging("constant_velocity_target");
   // Set up the parameters of the simulation
   int numberOfTimeSteps = 1000;
   const double processNoiseSigma = 1;
@@ -126,8 +128,8 @@ int main() {
   optimizer.initializeOptimization();
   optimizer.setVerbose(true);
   optimizer.optimize(5);
-  cerr << "number of vertices:" << optimizer.vertices().size() << endl;
-  cerr << "number of edges:" << optimizer.edges().size() << endl;
+  ngx::Log("number of vertices:{}", optimizer.vertices().size());
+  ngx::Log("number of edges:{}", optimizer.edges().size());
 
   // Print the results
 

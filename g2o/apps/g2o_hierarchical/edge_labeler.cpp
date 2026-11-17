@@ -5,6 +5,7 @@
 
 #include "edge_labeler.h"
 
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/unscented.h>
 
 #include <Eigen/Dense>
@@ -141,7 +142,7 @@ bool EdgeLabeler::labelEdge(const SparseBlockMatrix<MatrixXd>& spinv,
   std::vector<MySigmaPoint, Eigen::aligned_allocator<MySigmaPoint> >
       incrementPoints;
   if (!sampleUnscented(incrementPoints, incMean, cov)) {
-    cerr << "sampleUnscented fail" << endl;
+    ngx::Log(ngx::Error, "sampleUnscented fail");
     return false;
   }
   // now determine the zero-error measure by applying the error function of the
@@ -149,7 +150,7 @@ bool EdgeLabeler::labelEdge(const SparseBlockMatrix<MatrixXd>& spinv,
   // TODO!!!
   bool smss = e->setMeasurementFromState();
   if (!smss) {
-    cerr << "FATAL: Edge::setMeasurementFromState() not implemented" << endl;
+    ngx::Log(ngx::Error, "Edge::setMeasurementFromState() not implemented");
   }
   assert(smss && "Edge::setMeasurementFromState() not implemented");
 

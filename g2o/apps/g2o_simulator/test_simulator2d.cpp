@@ -5,11 +5,11 @@
 
 #include <g2o/core/optimizable_graph.h>
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 
 #include <Eigen/Cholesky>
 #include <cstdlib>
 #include <fstream>
-#include <iostream>
 #include <sstream>
 
 #include "simulator2d.h"
@@ -19,6 +19,7 @@ using namespace std;
 using namespace Eigen;
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   CommandArgs arg;
   int nlandmarks;
   int simSteps;
@@ -74,7 +75,7 @@ int main(int argc, char** argv) {
     world.addWorldObject(landmark);
   }
 
-  cerr << "nSegments = " << nSegments << endl;
+  ngx::Log("nSegments = {}", nSegments);
 
   for (int i = 0; i < nSegments; i++) {
     auto* segment = new WorldObjectSegment2D;
@@ -148,9 +149,9 @@ int main(int argc, char** argv) {
   }
 
   if (hasSegmentSensor) {
-    cerr << "creating Segment Sensor" << endl;
+    ngx::Log("creating Segment Sensor");
     SensorSegment2D* segmentSensor = new SensorSegment2D("segmentSensor");
-    cerr << "segmentSensorCreated" << endl;
+    ngx::Log("segmentSensorCreated");
     segmentSensor->setMaxRange(3);
     segmentSensor->setMinRange(.1);
     robot.addSensor(segmentSensor);
@@ -191,7 +192,6 @@ int main(int argc, char** argv) {
   moveRight.setRotation(Rotation2Dd(-M_PI / 2));
 
   for (int i = 0; i < simSteps; i++) {
-    cerr << "m";
     SE2 move;
     SE2 pose = robot.pose();
     double dtheta = -100;
@@ -229,7 +229,6 @@ int main(int argc, char** argv) {
     }
     robot.relativeMove(move);
     // do a sense
-    cerr << "s";
     robot.sense();
   }
   // string fname=outputFilename + ss.str() + ".g2o";

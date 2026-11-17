@@ -4,6 +4,7 @@
 #include <string>
 
 #include "scanner.h"
+#include <g2o/stuff/logger.h>
 
 /* import the parser's token type into a local typedef */
 typedef SlamParser::Parser::token token;
@@ -156,7 +157,7 @@ void Scanner::set_debug(bool b)
 
 int SlamFlexLexer::yylex()
 {
-    std::cerr << "in SlamFlexLexer::yylex() !" << std::endl;
+    ngx::Log("in SlamFlexLexer::yylex() !");
     return 0;
 }
 

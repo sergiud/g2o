@@ -9,6 +9,7 @@
 #include <g2o/core/optimizable_graph.h>
 #include <g2o/core/parameter.h>
 #include <g2o/stuff/color_macros.h>
+#include <g2o/stuff/logger.h>
 
 #include <cassert>
 #include <iostream>
@@ -20,14 +21,14 @@ G2O_START_NAMESPACE
 
 Factory::~Factory() {
 #ifdef G2O_DEBUG_FACTORY
-  cerr << "# Factory destroying " << (void*)this << endl;
+  ngx::Log("# Factory destroying {}", (void*)this);
 #endif
 }
 
 Factory* Factory::instance() {
   static Factory factory;
 #ifdef G2O_DEBUG_FACTORY
-  cerr << "# Factory allocated " << (void*)&factory << endl;
+  ngx::Log("# Factory allocated {}", (void*)&factory);
 #endif
 
   return &factory;
@@ -37,13 +38,14 @@ void Factory::registerType(const std::string& tag,
                            AbstractHyperGraphElementCreator* c) {
   CreatorMap::const_iterator foundIt = _creator.find(tag);
   if (foundIt != _creator.end()) {
-    cerr << "FACTORY WARNING: Overwriting Vertex tag " << tag << endl;
+    ngx::Log(ngx::Warning, "FACTORY WARNING: Overwriting Vertex tag {}", tag);
     assert(0);
   }
   TagLookup::const_iterator tagIt = _tagLookup.find(c->name());
   if (tagIt != _tagLookup.end()) {
-    cerr << "FACTORY WARNING: Registering same class for two tags " << c->name()
-         << endl;
+    ngx::Log(ngx::Warning,
+             "FACTORY WARNING: Registering same class for two tags {}",
+             c->name());
     assert(0);
   }
 
@@ -51,37 +53,36 @@ void Factory::registerType(const std::string& tag,
   ci->creator.reset(c);
 
 #ifdef G2O_DEBUG_FACTORY
-  cerr << "# Factory " << (void*)this << " constructing type " << tag << " ";
+  ngx::Log("# Factory {} constructing type {}", static_cast<void*>(this), tag);
 #endif
   // construct an element once to figure out its type
   std::unique_ptr<HyperGraph::HyperGraphElement> element(c->construct());
   ci->elementTypeBit = element->elementType();
 
 #ifdef G2O_DEBUG_FACTORY
-  cerr << "done." << endl;
-  cerr << "# Factory " << (void*)this << " registering " << tag;
-  cerr << " " << (void*)c << " ";
+  const char* elementType = "";
   switch (element->elementType()) {
     case HyperGraph::HGET_VERTEX:
-      cerr << " -> Vertex";
+      elementType = "Vertex";
       break;
     case HyperGraph::HGET_EDGE:
-      cerr << " -> Edge";
+      elementType = "Edge";
       break;
     case HyperGraph::HGET_PARAMETER:
-      cerr << " -> Parameter";
+      elementType = "Parameter";
       break;
     case HyperGraph::HGET_CACHE:
-      cerr << " -> Cache";
+      elementType = "Cache";
       break;
     case HyperGraph::HGET_DATA:
-      cerr << " -> Data";
+      elementType = "Data";
       break;
     default:
       assert(0 && "Unknown element type occured, fix elementTypes");
       break;
   }
-  cerr << endl;
+  ngx::Log("# Factory {} registering {} {} -> {}", static_cast<void*>(this),
+           tag, static_cast<void*>(c), elementType);
 #endif
 
   _creator.emplace(tag, std::move(ci));
@@ -144,7 +145,7 @@ void Factory::printRegisteredTypes(std::ostream& os, bool comment) const {
   os << "types:" << endl;
   for (const auto& it : _creator) {
     if (comment) os << "#";
-    cerr << "\t" << it.first << endl;
+    os << "\t" << it.first << endl;
   }
 }
 

@@ -14,6 +14,7 @@
 #include <g2o/solvers/pcg/linear_solver_pcg.h>
 #include <g2o/solvers/structure_only/structure_only_solver.h>
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -49,17 +50,17 @@ class VertexCameraBAL : public BaseVertex<9, Eigen::VectorXd> {
   VertexCameraBAL() {}
 
   virtual bool read(std::istream& /*is*/) {
-    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    ngx::Log(ngx::Error, "not implemented yet");
     return false;
   }
 
   virtual bool write(std::ostream& /*os*/) const {
-    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    ngx::Log(ngx::Error, "not implemented yet");
     return false;
   }
 
   virtual void setToOriginImpl() {
-    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    ngx::Log(ngx::Error, "not implemented yet");
   }
 
   virtual void oplusImpl(const double* update) {
@@ -79,17 +80,17 @@ class VertexPointBAL : public BaseVertex<3, Eigen::Vector3d> {
   VertexPointBAL() {}
 
   virtual bool read(std::istream& /*is*/) {
-    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    ngx::Log(ngx::Error, "not implemented yet");
     return false;
   }
 
   virtual bool write(std::ostream& /*os*/) const {
-    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    ngx::Log(ngx::Error, "not implemented yet");
     return false;
   }
 
   virtual void setToOriginImpl() {
-    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    ngx::Log(ngx::Error, "not implemented yet");
   }
 
   virtual void oplusImpl(const double* update) {
@@ -126,11 +127,11 @@ class EdgeObservationBAL
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
   EdgeObservationBAL() {}
   virtual bool read(std::istream& /*is*/) {
-    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    ngx::Log(ngx::Error, "not implemented yet");
     return false;
   }
   virtual bool write(std::ostream& /*os*/) const {
-    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    ngx::Log(ngx::Error, "not implemented yet");
     return false;
   }
 
@@ -255,6 +256,7 @@ class EdgeObservationBAL
 };
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   int maxIterations;
   bool verbose;
   bool usePCG;
@@ -290,10 +292,10 @@ int main(int argc, char** argv) {
   g2o::SparseOptimizer optimizer;
   g2o::LinearSolver<BalBlockSolver::PoseMatrixType>* linearSolver = nullptr;
   if (usePCG) {
-    cout << "Using PCG" << endl;
+    ngx::Log("Using PCG");
     linearSolver = new BalLinearSolverPCG();
   } else {
-    cout << "Using Cholesky: " << choleskySolverName << endl;
+    ngx::Log("Using Cholesky: {}", choleskySolverName);
     auto* cholesky = new BalLinearSolver();
     cholesky->setBlockOrdering(true);
     linearSolver = cholesky;
@@ -310,19 +312,19 @@ int main(int argc, char** argv) {
   vector<VertexCameraBAL*> cameras;
 
   // parse BAL dataset
-  cout << "Loading BAL dataset " << inputFilename << endl;
+  ngx::Log("Loading BAL dataset {}", inputFilename);
   {
     ifstream ifs(inputFilename.c_str());
 
     if (!ifs) {
-      std::cerr << "error: failed to open the dataset" << std::endl;
+      ngx::Log(ngx::Error, "failed to open the dataset");
       return EXIT_FAILURE;
     }
     int numCameras{}, numPoints{}, numObservations{};
     ifs >> numCameras >> numPoints >> numObservations;
 
-    cerr << PVAR(numCameras) << " " << PVAR(numPoints) << " "
-         << PVAR(numObservations) << endl;
+    ngx::Log("numCameras = {} numPoints = {} numObservations = {}", numCameras,
+             numPoints, numObservations);
 
     int id = 0;
     cameras.reserve(numCameras);
@@ -340,7 +342,7 @@ int main(int argc, char** argv) {
       p->setMarginalized(true);
       bool addedVertex = optimizer.addVertex(p);
       if (!addedVertex) {
-        cerr << "failing adding vertex" << endl;
+        ngx::Log(ngx::Error, "failing adding vertex");
       }
       points.push_back(p);
     }
@@ -365,7 +367,7 @@ int main(int argc, char** argv) {
       e->setMeasurement(Eigen::Vector2d(obsX, obsY));
       bool addedEdge = optimizer.addEdge(e);
       if (!addedEdge) {
-        cerr << "error adding edge" << endl;
+        ngx::Log(ngx::Error, "error adding edge");
       }
     }
 
@@ -386,21 +388,21 @@ int main(int argc, char** argv) {
       point->setEstimate(p);
     }
   }
-  cout << "done." << endl;
+  ngx::Log("done.");
 
-  cout << "Initializing ... " << flush;
+  ngx::Log("Initializing");
   optimizer.initializeOptimization();
-  cout << "done." << endl;
+  ngx::Log("done.");
   optimizer.setVerbose(verbose);
-  cout << "Start to optimize" << endl;
+  ngx::Log("Start to optimize");
   optimizer.optimize(maxIterations);
 
   if (statsFilename != "") {
-    cerr << "writing stats to file \"" << statsFilename << "\" ... ";
+    ngx::Log("writing stats to file \"{}\"", statsFilename);
     ofstream fout(statsFilename.c_str());
     const BatchStatisticsContainer& bsc = optimizer.batchStatistics();
     for (const auto& i : bsc) fout << i << endl;
-    cerr << "done." << endl;
+    ngx::Log("done.");
   }
 
   // dump the points

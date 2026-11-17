@@ -10,6 +10,7 @@
 #include <g2o/core/optimization_algorithm.h>
 #include <g2o/core/sparse_block_matrix.h>
 #include <g2o/core/sparse_optimizer.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/misc.h>
 #include <g2o/stuff/timeutil.h>
@@ -17,8 +18,8 @@
 #include <algorithm>
 #include <cassert>
 #include <iomanip>
-#include <iostream>
 #include <iterator>
+#include <sstream>
 
 G2O_START_NAMESPACE
 using namespace std;
@@ -55,8 +56,8 @@ void SparseOptimizer::computeActiveErrors() {
     OptimizableGraph::Edge* e = _activeEdges[k];
     bool hasNan = arrayHasNaN(e->errorData(), e->dimension());
     if (hasNan) {
-      cerr << "computeActiveErrors(): found NaN in error for edge " << e
-           << endl;
+      ngx::Log(ngx::Error,
+               "computeActiveErrors(): found NaN in error for edge {}", e);
     }
   }
 #endif
@@ -174,8 +175,7 @@ bool SparseOptimizer::initializeOptimization(int level) {
 bool SparseOptimizer::initializeOptimization(HyperGraph::VertexSet& vset,
                                              int level) {
   if (edges().empty()) {
-    cerr << __PRETTY_FUNCTION__ << ": Attempt to initialize an empty graph"
-         << endl;
+    ngx::Log(ngx::Warning, "Attempt to initialize an empty graph");
     return false;
   }
   preIteration(-1);
@@ -224,8 +224,8 @@ bool SparseOptimizer::initializeOptimization(HyperGraph::VertexSet& vset,
           int k;
           bool hasNan = arrayHasNaN(estimateData.data(), estimateDim, &k);
           if (hasNan)
-            cerr << __PRETTY_FUNCTION__ << ": Vertex " << v->id()
-                 << " contains a nan entry at index " << k << endl;
+            ngx::Log(ngx::Warning, "Vertex {} contains a nan entry at index {}",
+                     v->id(), k);
         }
       }
 #endif
@@ -331,19 +331,18 @@ void SparseOptimizer::computeInitialGuess(
   }
   if (verbose()) {
     computeActiveErrors();
-    cerr << "iteration= -1\t chi2= " << activeChi2() << "\t time= 0.0"
-         << "\t cumTime= 0.0"
-         << "\t (using initial guess from " << costFunction.name() << ")"
-         << endl;
+    ngx::Log(
+        "iteration= -1\t chi2= {}\t time= 0.0\t cumTime= 0.0\t (using initial "
+        "guess from {})",
+        activeChi2(), costFunction.name());
   }
 }
 
 int SparseOptimizer::optimize(int iterations, bool online) {
   if (_ivMap.empty()) {
-    cerr << __PRETTY_FUNCTION__
-         << ": 0 vertices to optimize, maybe forgot to call "
-            "initializeOptimization()"
-         << endl;
+    ngx::Log(ngx::Error,
+             "0 vertices to optimize, maybe forgot to call "
+             "initializeOptimization()");
     return -1;
   }
 
@@ -353,7 +352,7 @@ int SparseOptimizer::optimize(int iterations, bool online) {
 
   ok = _algorithm->init(online);
   if (!ok) {
-    cerr << __PRETTY_FUNCTION__ << " Error while initializing" << endl;
+    ngx::Log(ngx::Error, "Error while initializing");
     return -1;
   }
 
@@ -388,11 +387,14 @@ int SparseOptimizer::optimize(int iterations, bool online) {
       double dts = get_monotonic_time() - ts;
       cumTime += dts;
       if (!errorComputed) computeActiveErrors();
-      cerr << "iteration= " << i << "\t chi2= " << FIXED(activeRobustChi2())
-           << "\t time= " << dts << "\t cumTime= " << cumTime
-           << "\t edges= " << _activeEdges.size();
-      _algorithm->printVerbose(cerr);
-      cerr << endl;
+      // The algorithms describe their state through a stream.
+      std::ostringstream algorithmState;
+      _algorithm->printVerbose(algorithmState);
+      ngx::Log(
+          "iteration= {}\t chi2= {:f}\t time= {:g}\t cumTime= {:g}\t edges= "
+          "{}{}",
+          i, activeRobustChi2(), dts, cumTime, _activeEdges.size(),
+          algorithmState.view());
     }
     ++cjIterations;
     postIteration(i);
@@ -409,8 +411,7 @@ void SparseOptimizer::update(const double* update) {
 #ifndef NDEBUG
     bool hasNan = arrayHasNaN(update, v->dimension());
     if (hasNan)
-      cerr << __PRETTY_FUNCTION__ << ": Update contains a nan for vertex "
-           << v->id() << endl;
+      ngx::Log(ngx::Error, "Update contains a nan for vertex {}", v->id());
 #endif
     v->oplus(update);
     update += v->dimension();
@@ -505,7 +506,7 @@ void SparseOptimizer::push(HyperGraph::VertexSet& vlist) {
     if (v != nullptr)
       v->push();
     else
-      cerr << __FUNCTION__ << ": FATAL PUSH SET" << endl;
+      ngx::Log(ngx::Error, "FATAL PUSH SET");
   }
 }
 
@@ -515,7 +516,7 @@ void SparseOptimizer::pop(HyperGraph::VertexSet& vlist) {
     if (v != nullptr)
       v->pop();
     else
-      cerr << __FUNCTION__ << ": FATAL POP SET" << endl;
+      ngx::Log(ngx::Error, "FATAL POP SET");
   }
 }
 

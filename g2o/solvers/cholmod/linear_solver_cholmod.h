@@ -13,6 +13,7 @@
 #include <g2o/core/sparse_block_matrix_ccs.h>
 #include <g2o/prefix.h>
 #include <g2o/solvers/cholmod/g2o_solver_cholmod_api.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/sparse_helper.h>
 #include <g2o/stuff/timeutil.h>
 
@@ -93,9 +94,9 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType> {
     cholmod_factorize(_cholmodSparse.get(), _cholmodFactor, &_cholmodCommon);
     if (_cholmodCommon.status == CHOLMOD_NOT_POSDEF) {
       if (_writeDebug) {
-        std::cerr << "Cholesky failure, writing debug.txt (Hessian loadable by "
-                     "Octave)"
-                  << std::endl;
+        ngx::Log(
+            ngx::Error,
+            "Cholesky failure, writing debug.txt (Hessian loadable by Octave)");
         saveMatrix("debug.txt");
       }
       return false;

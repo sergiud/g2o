@@ -5,6 +5,7 @@
 
 #include <g2o/core/factory.h>
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/sampler.h>
 #include <g2o/types/slam3d/edge_se3.h>
 #include <g2o/types/slam3d/vertex_se3.h>
@@ -20,6 +21,7 @@ using namespace std;
 using namespace g2o;
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   // command line parsing
   int nodesPerLevel;
   int numLaps;
@@ -46,23 +48,27 @@ int main(int argc, char** argv) {
   arg.parseArgs(argc, argv);
 
   if (noiseTranslation.empty()) {
-    cerr << "using default noise for the translation" << endl;
+    ngx::Log("using default noise for the translation");
     noiseTranslation.push_back(0.01);
     noiseTranslation.push_back(0.01);
     noiseTranslation.push_back(0.01);
   }
-  cerr << "Noise for the translation:";
-  for (double i : noiseTranslation) cerr << " " << i;
-  cerr << endl;
+  std::string translationNoise;
+  for (double i : noiseTranslation) {
+    std::format_to(std::back_inserter(translationNoise), " {}", i);
+  }
+  ngx::Log("Noise for the translation:{}", translationNoise);
   if (noiseRotation.empty()) {
-    cerr << "using default noise for the rotation" << endl;
+    ngx::Log("using default noise for the rotation");
     noiseRotation.push_back(0.005);
     noiseRotation.push_back(0.005);
     noiseRotation.push_back(0.005);
   }
-  cerr << "Noise for the rotation:";
-  for (double i : noiseRotation) cerr << " " << i;
-  cerr << endl;
+  std::string rotationNoise;
+  for (double i : noiseRotation) {
+    std::format_to(std::back_inserter(rotationNoise), " {}", i);
+  }
+  ngx::Log("Noise for the rotation:{}", rotationNoise);
 
   Eigen::Matrix3d transNoise = Eigen::Matrix3d::Zero();
   for (int i = 0; i < 3; ++i)
@@ -141,9 +147,7 @@ int main(int argc, char** argv) {
     std::seed_seq seedSeq{r(), r(), r(), r(), r()};
     vector<int> seeds(2);
     seedSeq.generate(seeds.begin(), seeds.end());
-    cerr << "using seeds:";
-    for (int seed : seeds) cerr << " " << seed;
-    cerr << endl;
+    ngx::Log("using seeds: {} {}", seeds[0], seeds[1]);
     transSampler.seed(seeds[0]);
     rotSampler.seed(seeds[1]);
   }
@@ -157,7 +161,6 @@ int main(int argc, char** argv) {
     double qw = 1.0 - quatXYZ.norm();
     if (qw < 0) {
       qw = 0.;
-      cerr << "x";
     }
     Eigen::Quaterniond rot(qw, quatXYZ.x(), quatXYZ.y(), quatXYZ.z());
     rot.normalize();
@@ -183,10 +186,10 @@ int main(int argc, char** argv) {
   // write output
   ofstream fileOutputStream;
   if (outFilename != "-") {
-    cerr << "Writing into " << outFilename << endl;
+    ngx::Log("Writing into {}", outFilename);
     fileOutputStream.open(outFilename.c_str());
   } else {
-    cerr << "writing to stdout" << endl;
+    ngx::Log("writing to stdout");
   }
 
   string vertexTag = Factory::instance()->tag(vertices[0]);

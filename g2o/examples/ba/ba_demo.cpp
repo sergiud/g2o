@@ -18,6 +18,7 @@
 #include <unordered_set>
 // #include <g2o/math_groups/se3quat.h>
 #include <g2o/solvers/structure_only/structure_only_solver.h>
+#include <g2o/stuff/logger.h>
 
 using namespace Eigen;
 using namespace std;
@@ -53,6 +54,7 @@ double Sample::uniform() { return uniform_rand(0., 1.); }
 double Sample::gaussian(double sigma) { return gauss_rand(0., sigma); }
 
 int main(int argc, const char* argv[]) {
+  g2o::initializeLogging(argv[0]);
   if (argc < 2) {
     cout << endl;
     cout << "Please type: " << endl;
@@ -98,11 +100,11 @@ int main(int argc, const char* argv[]) {
     DENSE = atoi(argv[5]) != 0;
   }
 
-  cout << "PIXEL_NOISE: " << PIXEL_NOISE << endl;
-  cout << "OUTLIER_RATIO: " << OUTLIER_RATIO << endl;
-  cout << "ROBUST_KERNEL: " << ROBUST_KERNEL << endl;
-  cout << "STRUCTURE_ONLY: " << STRUCTURE_ONLY << endl;
-  cout << "DENSE: " << DENSE << endl;
+  g2o::ngx::Log("PIXEL_NOISE: {}", PIXEL_NOISE);
+  g2o::ngx::Log("OUTLIER_RATIO: {}", OUTLIER_RATIO);
+  g2o::ngx::Log("ROBUST_KERNEL: {}", ROBUST_KERNEL);
+  g2o::ngx::Log("STRUCTURE_ONLY: {}", STRUCTURE_ONLY);
+  g2o::ngx::Log("DENSE: {}", DENSE);
 
   g2o::SparseOptimizer optimizer;
   optimizer.setVerbose(false);
@@ -158,7 +160,6 @@ int main(int argc, const char* argv[]) {
   int point_num = 0;
   double sum_diff2 = 0;
 
-  cout << endl;
   unordered_map<int, int> pointid_2_trueid;
   unordered_set<int> inliers;
 
@@ -217,12 +218,11 @@ int main(int argc, const char* argv[]) {
       ++point_num;
     }
   }
-  cout << endl;
   optimizer.initializeOptimization();
   optimizer.setVerbose(true);
   if (STRUCTURE_ONLY) {
     g2o::StructureOnlySolver<3> structure_only_ba;
-    cout << "Performing structure-only BA:" << endl;
+    g2o::ngx::Log("Performing structure-only BA:");
     g2o::OptimizableGraph::VertexContainer points;
     for (g2o::OptimizableGraph::VertexIDMap::const_iterator it =
              optimizer.vertices().begin();
@@ -234,10 +234,8 @@ int main(int argc, const char* argv[]) {
     structure_only_ba.calc(points, 10);
   }
   // optimizer.save("test.g2o");
-  cout << endl;
-  cout << "Performing full BA:" << endl;
+  g2o::ngx::Log("Performing full BA:");
   optimizer.optimize(10);
-  cout << endl;
   cout << "Point error before optimisation (inliers only): "
        << sqrt(sum_diff2 / point_num) << endl;
   point_num = 0;
@@ -245,13 +243,13 @@ int main(int argc, const char* argv[]) {
   for (auto& it : pointid_2_trueid) {
     auto v_it = optimizer.vertices().find(it.first);
     if (v_it == optimizer.vertices().end()) {
-      cerr << "Vertex " << it.first << " not in graph!" << endl;
+      g2o::ngx::Log(g2o::ngx::Error, "Vertex {} not in graph!", it.first);
       exit(-1);
     }
     g2o::VertexSBAPointXYZ* v_p =
         dynamic_cast<g2o::VertexSBAPointXYZ*>(v_it->second);
     if (v_p == nullptr) {
-      cerr << "Vertex " << it.first << "is not a PointXYZ!" << endl;
+      g2o::ngx::Log(g2o::ngx::Error, "Vertex {} is not a PointXYZ!", it.first);
       exit(-1);
     }
     Vector3d diff = v_p->estimate() - true_points[it.second];

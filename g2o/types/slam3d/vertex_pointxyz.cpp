@@ -3,6 +3,7 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <g2o/stuff/logger.h>
 #include <g2o/types/slam3d/vertex_pointxyz.h>
 
 #include <cstdio>
@@ -84,8 +85,7 @@ HyperGraphElementAction* VertexPointXYZWriteGnuplotAction::operator()(
   WriteGnuplotAction::Parameters* params =
       dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
   if (params->os == nullptr) {
-    std::cerr << __PRETTY_FUNCTION__ << ": warning, no valid os specified"
-              << std::endl;
+    ngx::Log(ngx::Warning, "no valid os specified");
     return nullptr;
   }
 

@@ -5,6 +5,7 @@
 
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/prefix.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/misc.h>
 #include <g2o/stuff/timeutil.h>
@@ -273,7 +274,7 @@ bool BlockSolver<Traits>::updateStructure(
       PoseMatrixType* m = _Hpp->block(ind, ind, true);
       v->mapHessianMemory(m->data());
     } else {
-      std::cerr << "updateStructure(): Schur not supported" << std::endl;
+      ngx::Log(ngx::Error, "updateStructure(): Schur not supported");
       abort();
     }
   }
@@ -303,7 +304,7 @@ bool BlockSolver<Traits>::updateStructure(
           PoseMatrixType* m = _Hpp->block(ind1, ind2, true);
           e->mapHessianMemory(m->data(), viIdx, vjIdx, transposedBlock);
         } else {
-          std::cerr << __PRETTY_FUNCTION__ << ": not supported" << std::endl;
+          ngx::Log(ngx::Error, "not supported");
         }
       }
     }
@@ -516,8 +517,10 @@ bool BlockSolver<Traits>::buildSystem() {
         bool hasANan = arrayHasNaN(jacobianWorkspace.workspaceForVertex(i),
                                    e->dimension() * v->dimension());
         if (hasANan) {
-          std::cerr << "buildSystem(): NaN within Jacobian for edge " << e
-                    << " for vertex " << i << std::endl;
+          ngx::Log(
+              ngx::Error,
+              "buildSystem(): NaN within Jacobian for edge {} for vertex {}", e,
+              i);
           break;
         }
       }

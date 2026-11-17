@@ -10,6 +10,7 @@
 #include <g2o/core/optimization_algorithm_levenberg.h>
 #include <g2o/core/solver.h>
 #include <g2o/solvers/cholmod/linear_solver_cholmod.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 
 #include <Eigen/Core>
@@ -18,15 +19,15 @@
 
 #define DIM_TO_SOLVER(p, l) BlockSolver<BlockSolverTraits<p, l> >
 
-#define ALLOC_CHOLMOD(s, p, l, blockorder)                                   \
-  if (1) {                                                                   \
-    std::cerr << "# Using CHOLMOD poseDim " << p << " landMarkDim " << l     \
-              << " blockordering " << blockorder << std::endl;               \
-    LinearSolverCholmod<DIM_TO_SOLVER(p, l)::PoseMatrixType>* linearSolver = \
-        new LinearSolverCholmod<DIM_TO_SOLVER(p, l)::PoseMatrixType>();      \
-    linearSolver->setBlockOrdering(blockorder);                              \
-    s = new DIM_TO_SOLVER(p, l)(linearSolver);                               \
-  } else                                                                     \
+#define ALLOC_CHOLMOD(s, p, l, blockorder)                                    \
+  if (1) {                                                                    \
+    ngx::Log("# Using CHOLMOD poseDim {} landMarkDim {} blockordering {}", p, \
+             l, blockorder);                                                  \
+    LinearSolverCholmod<DIM_TO_SOLVER(p, l)::PoseMatrixType>* linearSolver =  \
+        new LinearSolverCholmod<DIM_TO_SOLVER(p, l)::PoseMatrixType>();       \
+    linearSolver->setBlockOrdering(blockorder);                               \
+    s = new DIM_TO_SOLVER(p, l)(linearSolver);                                \
+  } else                                                                      \
     (void)0
 
 using namespace std;

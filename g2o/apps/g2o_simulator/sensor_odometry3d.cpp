@@ -5,6 +5,7 @@
 
 #include "sensor_odometry3d.h"
 
+#include <g2o/stuff/logger.h>
 #include <g2o/types/slam3d/isometry3d_mappings.h>
 
 G2O_START_NAMESPACE
@@ -44,7 +45,7 @@ void SensorOdometry3D::sense() {
     it++;
   }
   if (!((pcurr != nullptr) && (pprev != nullptr))) {
-    cerr << __PRETTY_FUNCTION__ << ": fatal, trajectory empty" << endl;
+    ngx::Log(ngx::Error, "trajectory empty");
     return;
   }
   _robotPoseObject = pprev;

@@ -6,8 +6,7 @@
 #include "sensor_segment2d.h"
 
 #include <g2o/apps/g2o_simulator/simutils.h>
-
-#include <iostream>
+#include <g2o/stuff/logger.h>
 
 G2O_START_NAMESPACE
 using namespace std;
@@ -15,7 +14,7 @@ using namespace Eigen;
 
 SensorSegment2D::SensorSegment2D(const std::string& name_)
     : BinarySensor<Robot2D, EdgeSE2Segment2D, WorldObjectSegment2D>(name_) {
-  cerr << "I am the constructor" << endl;
+  ngx::Log("I am the constructor");
 }
 
 void SensorSegment2D::addNoise(EdgeType* e) {

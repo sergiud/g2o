@@ -1,3 +1,4 @@
+
 // SPDX-FileCopyrightText: 2011 R. Kuemmerle, G. Grisetti, H. Strasdat, W.
 // Burgard SPDX-FileCopyrightText: 2017 Sergiu Deitsch
 //
@@ -6,8 +7,8 @@
 template <int D, typename E, typename VertexXiType>
 void BaseUnaryEdge<D, E, VertexXiType>::resize(size_t size) {
   if (size != 1) {
-    std::cerr << "WARNING, attempting to resize unary edge "
-              << BaseEdge<D, E>::id() << " to " << size << std::endl;
+    ngx::Log(ngx::Warning, "attempting to resize unary edge {} to {}",
+             BaseEdge<D, E>::id(), size);
     assert(0 && "error resizing unary edge where size != 1");
   }
   BaseEdge<D, E>::resize(size);
@@ -109,8 +110,7 @@ void BaseUnaryEdge<D, E, VertexXiType>::linearizeOplus() {
 template <int D, typename E, typename VertexXiType>
 void BaseUnaryEdge<D, E, VertexXiType>::initialEstimate(
     const OptimizableGraph::VertexSet&, OptimizableGraph::Vertex*) {
-  std::cerr
-      << __PRETTY_FUNCTION__
-      << " is not implemented, please give implementation in your derived class"
-      << std::endl;
+  ngx::Log(
+      ngx::Error,
+      "is not implemented, please give implementation in your derived class");
 }

@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
 #include <g2o/core/optimization_algorithm_factory.h>
+#include <g2o/stuff/logger.h>
 
 #include <algorithm>
 #include <cassert>
@@ -29,8 +30,8 @@ void OptimizationAlgorithmFactory::registerSolver(
   auto foundIt = findSolver(name);
   if (foundIt != _creator.end()) {
     _creator.erase(foundIt);
-    cerr << "SOLVER FACTORY WARNING: Overwriting Solver creator " << name
-         << endl;
+    ngx::Log(ngx::Warning,
+             "SOLVER FACTORY WARNING: Overwriting Solver creator {}", name);
     assert(0);
   }
   _creator.emplace_back(c);
@@ -53,7 +54,8 @@ OptimizationAlgorithm* OptimizationAlgorithmFactory::construct(
     solverProperty = (*foundIt)->property();
     return (*foundIt)->construct();
   }
-  cerr << "SOLVER FACTORY WARNING: Unable to create solver " << name << endl;
+  ngx::Log(ngx::Warning, "SOLVER FACTORY WARNING: Unable to create solver {}",
+           name);
   return nullptr;
 }
 

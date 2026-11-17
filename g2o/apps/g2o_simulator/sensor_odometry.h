@@ -6,6 +6,8 @@
 #ifndef G2O_ODOMETRY_SENSOR_
 #define G2O_ODOMETRY_SENSOR_
 
+#include <g2o/stuff/logger.h>
+
 #include "simulator.h"
 G2O_START_NAMESPACE
 
@@ -32,7 +34,7 @@ class SensorOdometry : public BinarySensor<R, E, O> {
       it++;
     }
     if (!(pcurr && pprev)) {
-      cerr << __PRETTY_FUNCTION__ << ": fatal, trajectory empty" << endl;
+      ngx::Log(ngx::Error, "trajectory empty");
       return;
     }
     _robotPoseObject = pprev;

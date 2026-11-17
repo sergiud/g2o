@@ -5,18 +5,19 @@
 
 #include <g2o/core/optimizable_graph.h>
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/types/sba/types_sba.h>
 #include <g2o/types/slam3d/edge_se3_pointxyz_disparity.h>
 #include <g2o/types/slam3d/parameter_camera.h>
 
 #include <fstream>
-#include <iostream>
 
 using namespace std;
 using namespace g2o;
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   string inputFilename;
   string outputFilename;
   // command line parsing
@@ -31,7 +32,7 @@ int main(int argc, char** argv) {
   OptimizableGraph inputGraph;
   bool loadStatus = inputGraph.load(inputFilename.c_str());
   if (!loadStatus) {
-    cerr << "Error while loading input data" << endl;
+    ngx::Log(ngx::Error, "Error while loading input data");
     return 1;
   }
 
@@ -100,13 +101,13 @@ int main(int argc, char** argv) {
     }
   }
 
-  cout << "Vertices in/out:\t" << inputGraph.vertices().size() << " "
-       << outputGraph.vertices().size() << endl;
-  cout << "Edges in/out:\t" << inputGraph.edges().size() << " "
-       << outputGraph.edges().size() << endl;
+  ngx::Log("Vertices in/out:\t{} {}", inputGraph.vertices().size(),
+           outputGraph.vertices().size());
+  ngx::Log("Edges in/out:\t{} {}", inputGraph.edges().size(),
+           outputGraph.edges().size());
 
-  cout << "Writing output ... " << flush;
+  ngx::Log("Writing output");
   outputGraph.save(outputFilename.c_str());
-  cout << "done." << endl;
+  ngx::Log("done.");
   return 0;
 }

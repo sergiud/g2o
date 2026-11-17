@@ -5,6 +5,8 @@
 
 #include "example_slam_interface.h"
 
+#include <g2o/stuff/logger.h>
+
 #include <iostream>
 using namespace std;
 
@@ -13,12 +15,14 @@ ExampleSlamInterface::ExampleSlamInterface() {}
 bool ExampleSlamInterface::addNode(const std::string& tag, int id,
                                    int dimension,
                                    const std::vector<double>& values) {
-  cerr << "ADDING NODE " << tag << " id=" << id << " dim=" << dimension;
-  if (!values.empty() != 0u) {
-    cerr << "\tpose=";
-    for (double value : values) cerr << " " << value;
+  std::string pose;
+  if (!values.empty()) {
+    pose = "\tpose=";
+    for (double value : values) {
+      std::format_to(std::back_inserter(pose), " {}", value);
+    }
   }
-  cerr << endl;
+  g2o::ngx::Log("ADDING NODE {} id={} dim={}{}", tag, id, dimension, pose);
 
   // store the values
   if (values.empty())
@@ -33,26 +37,34 @@ bool ExampleSlamInterface::addEdge(const std::string& tag, int id,
                                    int dimension, int v1, int v2,
                                    const std::vector<double>& measurement,
                                    const std::vector<double>& information) {
-  cerr << "ADDING EDGE " << tag << " id=" << id << " dim=" << dimension << " ("
-       << v1 << " <-> " << v2 << ")" << " measurement=";
-  for (double i : measurement) cerr << " " << i;
-  cerr << " information=";
-  for (double i : information) cerr << " " << i;
-  cerr << endl;
+  std::string values;
+  for (double i : measurement) {
+    std::format_to(std::back_inserter(values), " {}", i);
+  }
+  values += " information=";
+  for (double i : information) {
+    std::format_to(std::back_inserter(values), " {}", i);
+  }
+  g2o::ngx::Log("ADDING EDGE {} id={} dim={} ({} <-> {}) measurement={}", tag,
+                id, dimension, v1, v2, values);
   return true;
 }
 
 bool ExampleSlamInterface::fixNode(const std::vector<int>& nodes) {
-  cerr << "FIXING NODE";
-  for (int node : nodes) cerr << " " << node;
-  cerr << endl;
+  std::string ids;
+  for (int node : nodes) {
+    std::format_to(std::back_inserter(ids), " {}", node);
+  }
+  g2o::ngx::Log("FIXING NODE{}", ids);
   return true;
 }
 
 bool ExampleSlamInterface::queryState(const std::vector<int>& nodes) {
-  cerr << "QUERY STATE";
-  for (int node : nodes) cerr << " " << node;
-  cerr << endl;
+  std::string ids;
+  for (int node : nodes) {
+    std::format_to(std::back_inserter(ids), " {}", node);
+  }
+  g2o::ngx::Log("QUERY STATE{}", ids);
 
   // actually output the values to the evaluator
   // If a SLAM algorithm is running we would need to copy its estimate
@@ -85,6 +97,6 @@ bool ExampleSlamInterface::queryState(const std::vector<int>& nodes) {
 }
 
 bool ExampleSlamInterface::solveState() {
-  cerr << "SOLVE STATE" << endl;
+  g2o::ngx::Log("SOLVE STATE");
   return true;
 }

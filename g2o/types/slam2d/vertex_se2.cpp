@@ -3,6 +3,7 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <g2o/stuff/logger.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 
 #include <typeinfo>
@@ -39,8 +40,7 @@ HyperGraphElementAction* VertexSE2WriteGnuplotAction::operator()(
   WriteGnuplotAction::Parameters* params =
       dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
   if ((params == nullptr) || (params->os == nullptr)) {
-    std::cerr << __PRETTY_FUNCTION__
-              << ": warning, no valid output stream specified" << std::endl;
+    ngx::Log(ngx::Warning, "no valid output stream specified");
     return nullptr;
   }
 

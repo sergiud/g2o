@@ -5,6 +5,7 @@
 
 #include <g2o/core/robust_kernel.h>
 #include <g2o/core/robust_kernel_factory.h>
+#include <g2o/stuff/logger.h>
 
 #include <cassert>
 
@@ -21,8 +22,9 @@ void RobustKernelFactory::registerRobustKernel(const std::string& tag,
                                                AbstractRobustKernelCreator* c) {
   auto foundIt = _creator.find(tag);
   if (foundIt != _creator.end()) {
-    cerr << "RobustKernelFactory WARNING: Overwriting robust kernel tag " << tag
-         << endl;
+    ngx::Log(ngx::Warning,
+             "RobustKernelFactory WARNING: Overwriting robust kernel tag {}",
+             tag);
     assert(0);
   }
 

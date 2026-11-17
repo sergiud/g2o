@@ -9,6 +9,7 @@
 #endif  // !defined(_GNU_SOURCE)
 #endif  // defined(__CYGWIN__)
 
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/os_specific.h>
 #include <g2o/stuff/string_tools.h>
@@ -18,7 +19,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
-#include <iostream>
+#include <istream>
 #include <iterator>
 #include <string>
 
@@ -78,7 +79,7 @@ std::string formatString(const char* fmt, ...) {
   if (numChar != -1)
     retString = auxPtr;
   else {
-    cerr << __PRETTY_FUNCTION__ << ": Error while allocating memory" << endl;
+    ngx::Log(ngx::Error, "Error while allocating memory");
   }
   free(auxPtr);
   return retString;
@@ -108,8 +109,7 @@ std::string strExpandFilename(const std::string& filename) {
   return result;
 #else
   (void)filename;
-  std::cerr << "WARNING: " << __PRETTY_FUNCTION__ << " not implemented"
-            << std::endl;
+  ngx::Log(ngx::Warning, "{} not implemented", __PRETTY_FUNCTION__);
   return std::string();
 #endif
 }

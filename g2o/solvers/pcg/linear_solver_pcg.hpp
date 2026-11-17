@@ -1,3 +1,4 @@
+
 // SPDX-FileCopyrightText: 2011 R. Kuemmerle, G. Grisetti, W. Burgard
 // SPDX-FileCopyrightText: 2017 Sergiu Deitsch
 //
@@ -113,8 +114,7 @@ bool LinearSolverPCG<MatrixType>::solve(const SparseBlockMatrix<MatrixType>& A,
 
   int iteration;
   for (iteration = 0; iteration < maxIter; ++iteration) {
-    if (_verbose)
-      std::cerr << "residual[" << iteration << "]: " << dn << std::endl;
+    if (_verbose) ngx::Log("residual[{}]: {}", iteration, dn);
     if (dn <= d0) break;  // done
     mult(A.colBlockIndices(), d, q);
     double a = dn / d.dot(q);

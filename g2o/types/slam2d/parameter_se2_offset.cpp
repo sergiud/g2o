@@ -25,9 +25,7 @@ bool ParameterSE2Offset::read(std::istream& is) {
   Vector3D off;
   for (int i = 0; i < 3; i++) {
     is >> off[i];
-    std::cerr << off[i] << " ";
   }
-  std::cerr << std::endl;
   setOffset(SE2(off));
   return is.good() || is.eof();
 }

@@ -3,6 +3,7 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <g2o/stuff/logger.h>
 #include <g2o/types/slam3d/edge_se3.h>
 #include <g2o/types/slam3d/isometry3d_gradients.h>
 
@@ -106,8 +107,7 @@ HyperGraphElementAction* EdgeSE3WriteGnuplotAction::operator()(
   WriteGnuplotAction::Parameters* params =
       dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
   if (params->os == nullptr) {
-    std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified"
-              << std::endl;
+    ngx::Log(ngx::Warning, "on valid os specified");
     return nullptr;
   }
 

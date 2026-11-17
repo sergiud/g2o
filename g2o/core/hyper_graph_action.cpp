@@ -6,9 +6,8 @@
 #include <g2o/core/cache.h>
 #include <g2o/core/hyper_graph_action.h>
 #include <g2o/core/optimizable_graph.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
-
-#include <iostream>
 
 G2O_START_NAMESPACE
 using namespace std;
@@ -66,21 +65,21 @@ HyperGraphElementAction* HyperGraphElementActionCollection::operator()(
 bool HyperGraphElementActionCollection::registerAction(
     HyperGraphElementAction* action) {
 #ifdef G2O_DEBUG_ACTIONLIB
-  cerr << __PRETTY_FUNCTION__ << " " << action->name() << " "
-       << action->typeName() << endl;
+  ngx::Log("{} {}", action->name(), action->typeName());
 #endif
   if (action->name() != name()) {
-    cerr << __PRETTY_FUNCTION__
-         << ": invalid attempt to register an action in a collection with a "
-            "different name "
-         << name() << " " << action->name() << endl;
+    ngx::Log(ngx::Error,
+             "invalid attempt to register an action in a collection with a "
+             "different name {} {}",
+             name(), action->name());
   }
   // The collection takes ownership only of an action it stores, since the
   // caller keeps owning an action that is rejected.
   if (_actionMap.find(action->typeName()) != _actionMap.end()) {
-    cerr << __PRETTY_FUNCTION__ << ": an action for the type "
-         << action->typeName() << " is already registered in the collection "
-         << name() << endl;
+    ngx::Log(
+        ngx::Warning,
+        "an action for the type {} is already registered in the collection {}",
+        action->typeName(), name());
     return false;
   }
   _actionMap.emplace(action->typeName(),
@@ -120,17 +119,15 @@ bool HyperGraphActionLibrary::registerAction(HyperGraphElementAction* action) {
   if (oldAction != nullptr) {
     collection = dynamic_cast<HyperGraphElementActionCollection*>(oldAction);
     if (collection == nullptr) {
-      cerr << __PRETTY_FUNCTION__
-           << ": fatal error, a collection is not at the first level in the "
-              "library"
-           << endl;
+      ngx::Log(
+          ngx::Error,
+          "fatal error, a collection is not at the first level in the library");
       return 0;
     }
   }
   if (collection == nullptr) {
 #ifdef G2O_DEBUG_ACTIONLIB
-    cerr << __PRETTY_FUNCTION__ << ": creating collection for \""
-         << action->name() << "\"" << endl;
+    ngx::Log("creating collection for \"{}\"", action->name());
 #endif
     std::unique_ptr<HyperGraphElementActionCollection> col(
         new HyperGraphElementActionCollection(action->name()));

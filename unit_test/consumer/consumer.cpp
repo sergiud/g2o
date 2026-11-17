@@ -107,8 +107,9 @@
 #include <g2o/stuff/opengl_primitives.h>
 #endif
 
+#include <g2o/stuff/logger.h>
+
 #include <cstdlib>
-#include <iostream>
 
 int main() {
   int unresolved = 0;
@@ -116,8 +117,9 @@ int main() {
   // A function whose address is null was not resolved by the dynamic linker.
   auto check = [&unresolved](const char* name, const void* address) {
     if (address == nullptr) {
-      std::cerr << name << " resolved to address " << address
-                << ", expected a non-null address\n";
+      g2o::ngx::Log(g2o::ngx::Error,
+                    "{} resolved to address {}, expected a non-null address",
+                    name, address);
       ++unresolved;
     }
   };

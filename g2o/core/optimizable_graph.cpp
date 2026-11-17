@@ -11,6 +11,7 @@
 #include <g2o/core/optimization_algorithm_property.h>
 #include <g2o/core/robust_kernel.h>
 #include <g2o/stuff/color_macros.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/misc.h>
 #include <g2o/stuff/string_tools.h>
@@ -109,7 +110,7 @@ bool OptimizableGraph::Edge::setParameterId(int argNum, int paramId) {
 
 bool OptimizableGraph::Edge::resolveParameters() {
   if (graph() == nullptr) {
-    cerr << __PRETTY_FUNCTION__ << ": edge not registered with a graph" << endl;
+    ngx::Log(ngx::Error, "edge not registered with a graph");
     return false;
   }
 
@@ -120,13 +121,12 @@ bool OptimizableGraph::Edge::resolveParameters() {
     int index = _parameterIds[i];
     *_parameters[i] = graph()->parameter(index);
     if (typeid(**_parameters[i]).name() != _parameterTypes[i]) {
-      cerr << __PRETTY_FUNCTION__
-           << ": FATAL, parameter type mismatch - encountered "
-           << typeid(**_parameters[i]).name() << "; should be "
-           << _parameterTypes[i] << endl;
+      ngx::Log(ngx::Error,
+               "parameter type mismatch - encountered {}; should be {}",
+               typeid(**_parameters[i]).name(), _parameterTypes[i]);
     }
     if (*_parameters[i] == nullptr) {
-      cerr << __PRETTY_FUNCTION__ << ": FATAL, *_parameters[i] == 0" << endl;
+      ngx::Log(ngx::Error, "*_parameters[i] == 0");
       return false;
     }
   }
@@ -174,21 +174,24 @@ OptimizableGraph::~OptimizableGraph() {
 
 bool OptimizableGraph::addVertex(OptimizableGraph::Vertex* ov, Data* userData) {
   if (ov->id() < 0) {
-    cerr << __FUNCTION__ << ": FATAL, a vertex with (negative) ID " << ov->id()
-         << " cannot be inserted in the graph" << endl;
+    ngx::Log(ngx::Error,
+             "a vertex with (negative) ID {} cannot be inserted in the graph",
+             ov->id());
     assert(0 && "Invalid vertex id");
     return false;
   }
   Vertex* inserted = vertex(ov->id());
   if (inserted != nullptr) {
-    cerr << __FUNCTION__ << ": FATAL, a vertex with ID " << ov->id()
-         << " has already been registered with this graph" << endl;
+    ngx::Log(ngx::Error,
+             "a vertex with ID {} has already been registered with this graph",
+             ov->id());
     assert(0 && "Vertex with this ID already contained in the graph");
     return false;
   }
   if (ov->_graph != nullptr && ov->_graph != this) {
-    cerr << __FUNCTION__ << ": FATAL, vertex with ID " << ov->id()
-         << " has already registered with another graph " << ov->_graph << endl;
+    ngx::Log(ngx::Error,
+             "vertex with ID {} has already registered with another graph {}",
+             ov->id(), ov->_graph);
     assert(0 && "Vertex already registered with another graph");
     return false;
   }
@@ -213,14 +216,12 @@ bool OptimizableGraph::addEdge(OptimizableGraph::Edge* e) {
   if (e->numUndefinedVertices()) return true;
   //    std::cerr << "internalId set" << std::endl;
   if (!e->resolveParameters()) {
-    cerr << __FUNCTION__ << ": FATAL, cannot resolve parameters for edge " << e
-         << endl;
+    ngx::Log(ngx::Error, "cannot resolve parameters for edge {}", e);
     return false;
   }
   //    std::cerr << "parameters set" << std::endl;
   if (!e->resolveCaches()) {
-    cerr << __FUNCTION__ << ": FATAL, cannot resolve caches for edge " << e
-         << endl;
+    ngx::Log(ngx::Error, "cannot resolve caches for edge {}", e);
     return false;
   }
   //    std::cerr << "updating jacobian size" << std::endl;
@@ -252,13 +253,11 @@ bool OptimizableGraph::setEdgeVertex(HyperGraph::Edge* e, int pos,
     OptimizableGraph::Edge* ee = dynamic_cast<OptimizableGraph::Edge*>(e);
 #endif
     if (!ee->resolveParameters()) {
-      cerr << __FUNCTION__ << ": FATAL, cannot resolve parameters for edge "
-           << e << endl;
+      ngx::Log(ngx::Error, "cannot resolve parameters for edge {}", e);
       return false;
     }
     if (!ee->resolveCaches()) {
-      cerr << __FUNCTION__ << ": FATAL, cannot resolve caches for edge " << e
-           << endl;
+      ngx::Log(ngx::Error, "cannot resolve caches for edge {}", e);
       return false;
     }
     _jacobianWorkspace.updateSize(e);
@@ -368,12 +367,13 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
             static_cast<OptimizableGraph::Vertex*>(vertex(id));
         if (v != nullptr) {
 #ifndef NDEBUG
-          cerr << "Fixing vertex " << v->id() << endl;
+          ngx::Log("Fixing vertex {}", v->id());
 #endif
           v->setFixed(true);
         } else {
-          cerr << "Warning: Unable to fix vertex with id " << id
-               << ". Not found in the graph." << endl;
+          ngx::Log(ngx::Warning,
+                   "Unable to fix vertex with id {}. Not found in the graph.",
+                   id);
         }
       }
     }
@@ -392,8 +392,7 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
     if (!factory->knowsTag(token)) {
       if (warnedUnknownTypes.count(token) != 1) {
         warnedUnknownTypes.insert(token);
-        cerr << CL_RED(__PRETTY_FUNCTION__ << " unknown type: " << token)
-             << endl;
+        ngx::Log(ngx::Error, "unknown type: {}", token);
       }
       continue;
     }
@@ -410,13 +409,13 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
       p->setId(pid);
       bool r = p->read(currentLine);
       if (!r) {
-        cerr << __PRETTY_FUNCTION__ << ": Error reading data " << token
-             << " for parameter " << pid << endl;
+        ngx::Log(ngx::Error, "Error reading data {} for parameter {}", token,
+                 pid);
         delete p;
       } else {
         if (!_parameters.addParameter(p)) {
-          cerr << __PRETTY_FUNCTION__ << ": Parameter of type:" << token
-               << " id:" << pid << " already defined" << endl;
+          ngx::Log(ngx::Warning, "Parameter of type:{} id:{} already defined",
+                   token, pid);
         }
       }
       continue;
@@ -431,13 +430,10 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
       int id;
       currentLine >> id;
       bool r = v->read(currentLine);
-      if (!r)
-        cerr << __PRETTY_FUNCTION__ << ": Error reading vertex " << token << " "
-             << id << endl;
+      if (!r) ngx::Log(ngx::Error, "Error reading vertex {} {}", token, id);
       v->setId(id);
       if (!addVertex(v)) {
-        cerr << __PRETTY_FUNCTION__ << ": Failure adding Vertex, " << token
-             << " " << id << endl;
+        ngx::Log(ngx::Error, "Failure adding Vertex, {} {}", token, id);
         delete v;
       } else {
         previousDataContainer = v;
@@ -477,14 +473,14 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
           if (id1 < 0 || id2 < 0) doInit = 0;
         } else {
           if (((from == nullptr) && id1 >= 0)) {
-            cerr << __PRETTY_FUNCTION__ << ": Unable to find vertex for edge "
-                 << token << " " << id1 << " <-> " << id2 << endl;
+            ngx::Log(ngx::Error, "Unable to find vertex for edge {} {} <-> {}",
+                     token, id1, id2);
             delete e;
             e = nullptr;
           }
           if ((to == nullptr) && id2 >= 0) {
-            cerr << __PRETTY_FUNCTION__ << ": Unable to find vertex for edge "
-                 << token << " " << id1 << " <-> " << id2 << endl;
+            ngx::Log(ngx::Error, "Unable to find vertex for edge {} {} <-> {}",
+                     token, id1, id2);
             delete e;
             e = nullptr;
           }
@@ -494,8 +490,8 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
           e->setVertex(1, to);
           e->read(currentLine);
           if (!addEdge(e)) {
-            cerr << __PRETTY_FUNCTION__ << ": Unable to add edge " << token
-                 << " " << id1 << " <-> " << id2 << endl;
+            ngx::Log(ngx::Error, "Unable to add edge {} {} <-> {}", token, id1,
+                     id2);
             delete e;
           } else {
             switch (doInit) {
@@ -530,6 +526,19 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
           numV = ids.size();
           e->resize(numV);
         }
+        // Lists the vertices of the edge separated by arrows.
+        auto describeVertices = [&ids]() {
+          std::string description;
+          for (std::size_t l = 0; l < ids.size(); ++l) {
+            if (l > 0) {
+              std::format_to(std::back_inserter(description), " <-> {}",
+                             ids[l]);
+            } else {
+              std::format_to(std::back_inserter(description), " {}", ids[l]);
+            }
+          }
+          return description;
+        };
         bool vertsOkay = true;
         for (int l = 0; l < numV; ++l) {
           int vertexId = ids[l];
@@ -544,21 +553,14 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
           }
         }
         if (!vertsOkay) {
-          cerr << __PRETTY_FUNCTION__ << ": Unable to find vertices for edge "
-               << token;
-          for (int l = 0; l < numV; ++l) {
-            if (l > 0) cerr << " <->";
-            cerr << " " << ids[l];
-          }
+          ngx::Log(ngx::Error, "Unable to find vertices for edge {}{}", token,
+                   describeVertices());
           delete e;
         } else {
           bool r = e->read(currentLine);
           if (!r || !addEdge(e)) {
-            cerr << __PRETTY_FUNCTION__ << ": Unable to add edge " << token;
-            for (int l = 0; l < numV; ++l) {
-              if (l > 0) cerr << " <->";
-              cerr << " " << ids[l];
-            }
+            ngx::Log(ngx::Error, "Unable to add edge {}{}", token,
+                     describeVertices());
             delete e;
             e = nullptr;
           }
@@ -572,8 +574,8 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
       Data* d = dynamic_cast<Data*>(element);
       bool r = d->read(currentLine);
       if (!r) {
-        cerr << __PRETTY_FUNCTION__ << ": Error reading data " << token
-             << " at line " << lineNumber << endl;
+        ngx::Log(ngx::Error, "Error reading data {} at line {}", token,
+                 lineNumber);
         delete d;
         previousData = nullptr;
       } else if (previousData != nullptr) {
@@ -590,8 +592,8 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
         previousDataContainer = nullptr;
         // cerr << "done" << endl;
       } else {
-        cerr << __PRETTY_FUNCTION__
-             << ": got data element, but no data container available" << endl;
+        ngx::Log(ngx::Warning,
+                 "got data element, but no data container available");
         delete d;
         previousData = nullptr;
       }
@@ -599,7 +601,7 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
   }  // while read line
 
 #ifndef NDEBUG
-  cerr << "Loaded " << _parameters.size() << " parameters" << endl;
+  ngx::Log("Loaded {} parameters", _parameters.size());
 #endif
 
   return true;
@@ -608,7 +610,7 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
 bool OptimizableGraph::load(const char* filename, bool createEdges) {
   ifstream ifs(filename);
   if (!ifs) {
-    cerr << __PRETTY_FUNCTION__ << " unable to open file " << filename << endl;
+    ngx::Log(ngx::Error, "unable to open file {}", filename);
     return false;
   }
   return load(ifs, createEdges);
@@ -752,25 +754,24 @@ void OptimizableGraph::setRenamedTypesFromString(const std::string& types) {
   for (auto& i : typesMap) {
     vector<string> m = strSplit(i, "=");
     if (m.size() != 2) {
-      cerr << __PRETTY_FUNCTION__ << ": unable to extract type map from " << i
-           << endl;
+      ngx::Log(ngx::Error, "unable to extract type map from {}", i);
       continue;
     }
     string typeInFile = trim(m[0]);
     string loadedType = trim(m[1]);
     if (!factory->knowsTag(loadedType)) {
-      cerr << __PRETTY_FUNCTION__ << ": unknown type " << loadedType << endl;
+      ngx::Log(ngx::Error, "unknown type {}", loadedType);
       continue;
     }
 
     _renamedTypesLookup[typeInFile] = loadedType;
   }
 
-  cerr << "# load look up table" << endl;
+  ngx::Log("# load look up table");
   for (std::map<std::string, std::string>::const_iterator it =
            _renamedTypesLookup.begin();
        it != _renamedTypesLookup.end(); ++it) {
-    cerr << "#\t" << it->first << " -> " << it->second << endl;
+    ngx::Log("#\t{} -> {}", it->first, it->second);
   }
 }
 
@@ -937,15 +938,21 @@ bool OptimizableGraph::verifyInformationMatrices(bool verbose) const {
     allEdgeOk = allEdgeOk && okay;
     if (!okay) {
       if (verbose) {
-        if (!isSymmetric)
-          cerr << "Information Matrix for an edge is not symmetric:";
-        else
-          cerr << "Information Matrix for an edge is not SPD:";
-        for (size_t i = 0; i < e->vertices().size(); ++i)
-          cerr << " " << e->vertex(i)->id();
-        if (isSymmetric)
-          cerr << "\teigenvalues: " << eigenSolver.eigenvalues().transpose();
-        cerr << endl;
+        std::string vertices;
+        for (size_t i = 0; i < e->vertices().size(); ++i) {
+          std::format_to(std::back_inserter(vertices), " {}",
+                         e->vertex(i)->id());
+        }
+        if (!isSymmetric) {
+          ngx::Log(ngx::Warning,
+                   "Information Matrix for an edge is not symmetric:{}",
+                   vertices);
+        } else {
+          ngx::Log(ngx::Warning,
+                   "Information Matrix for an edge is not SPD:{}\teigenvalues: "
+                   "{}",
+                   vertices, Streamed{eigenSolver.eigenvalues().transpose()});
+        }
       }
     }
   }

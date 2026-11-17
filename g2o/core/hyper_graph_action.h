@@ -8,11 +8,12 @@
 
 #include <g2o/core/cache.h>
 #include <g2o/core/hyper_graph_action.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/property.h>
 
 #include <iosfwd>
-#include <iostream>
 #include <memory>
+#include <ostream>
 #include <set>
 #include <string>
 #include <typeinfo>
@@ -210,8 +211,7 @@ class RegisterActionProxy {
  public:
   RegisterActionProxy() {
 #ifdef G2O_DEBUG_ACTIONLIB
-    std::cout << __FUNCTION__ << ": Registering action of type "
-              << typeid(T).name() << std::endl;
+    ngx::Log("Registering action of type {}", typeid(T).name());
 #endif
     _action.reset(new T());
     HyperGraphActionLibrary::instance()->registerAction(_action.get());
@@ -219,8 +219,7 @@ class RegisterActionProxy {
 
   ~RegisterActionProxy() {
 #ifdef G2O_DEBUG_ACTIONLIB
-    std::cout << __FUNCTION__ << ": Unregistering action of type "
-              << typeid(T).name() << std::endl;
+    ngx::Log("Unregistering action of type {}", typeid(T).name());
 #endif
     HyperGraphActionLibrary::instance()->unregisterAction(_action.get());
   }

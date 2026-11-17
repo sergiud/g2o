@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
 #include <g2o/core/factory.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/types/slam3d/vertex_se3.h>
 #ifdef G2O_HAVE_OPENGL
 #include <g2o/stuff/opengl_primitives.h>
@@ -46,8 +47,7 @@ HyperGraphElementAction* VertexSE3WriteGnuplotAction::operator()(
   WriteGnuplotAction::Parameters* params =
       dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
   if (params->os == nullptr) {
-    std::cerr << __PRETTY_FUNCTION__ << ": warning, no valid os specified"
-              << std::endl;
+    ngx::Log(ngx::Warning, "no valid os specified");
     return nullptr;
   }
 

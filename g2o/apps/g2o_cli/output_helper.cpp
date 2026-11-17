@@ -7,6 +7,7 @@
 
 #include <g2o/core/hyper_graph_action.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/string_tools.h>
 
 #include <Eigen/Core>
@@ -41,8 +42,7 @@ bool saveGnuplot(const std::string& gnudump,
   HyperGraphElementAction* saveGnuplot =
       HyperGraphActionLibrary::instance()->actionByName("writeGnuplot");
   if (saveGnuplot == nullptr) {
-    cerr << __PRETTY_FUNCTION__ << ": no action \"writeGnuplot\" registered"
-         << endl;
+    ngx::Log(ngx::Error, "no action \"writeGnuplot\" registered");
     return false;
   }
   WriteGnuplotAction::Parameters params{};
@@ -78,10 +78,10 @@ bool saveGnuplot(const std::string& gnudump,
   bool fileStatus = true;
   if (hasOdomEdge) {
     string odomFilename = baseFilename + "_odom_edges." + extension;
-    cerr << "# saving " << odomFilename << " ... ";
+    ngx::Log("# saving {}", odomFilename);
     ofstream fout(odomFilename.c_str());
     if (!fout) {
-      cerr << "Unable to open file" << endl;
+      ngx::Log(ngx::Error, "Unable to open file");
       return false;
     }
     params.os = &fout;
@@ -93,15 +93,15 @@ bool saveGnuplot(const std::string& gnudump,
         continue;
       (*saveGnuplot)(e, &params);
     }
-    cerr << "done." << endl;
+    ngx::Log("done.");
   }
 
   if (hasLandmarkEdge) {
     string filename = baseFilename + "_landmarks_edges." + extension;
-    cerr << "# saving " << filename << " ... ";
+    ngx::Log("# saving {}", filename);
     ofstream fout(filename.c_str());
     if (!fout) {
-      cerr << "Unable to open file" << endl;
+      ngx::Log(ngx::Error, "Unable to open file");
       return false;
     }
     params.os = &fout;
@@ -112,15 +112,15 @@ bool saveGnuplot(const std::string& gnudump,
       if (e->vertices().size() != 2 || edgeAllVertsSameDim(e, maxDim)) continue;
       (*saveGnuplot)(e, &params);
     }
-    cerr << "done." << endl;
+    ngx::Log("done.");
   }
 
   if (1) {
     string filename = baseFilename + "_edges." + extension;
-    cerr << "# saving " << filename << " ... ";
+    ngx::Log("# saving {}", filename);
     ofstream fout(filename.c_str());
     if (!fout) {
-      cerr << "Unable to open file" << endl;
+      ngx::Log(ngx::Error, "Unable to open file");
       return false;
     }
     params.os = &fout;
@@ -130,15 +130,15 @@ bool saveGnuplot(const std::string& gnudump,
       OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(edge);
       (*saveGnuplot)(e, &params);
     }
-    cerr << "done." << endl;
+    ngx::Log("done.");
   }
 
   if (1) {
     string filename = baseFilename + "_vertices." + extension;
-    cerr << "# saving " << filename << " ... ";
+    ngx::Log("# saving {}", filename);
     ofstream fout(filename.c_str());
     if (!fout) {
-      cerr << "Unable to open file" << endl;
+      ngx::Log(ngx::Error, "Unable to open file");
       return false;
     }
     params.os = &fout;
@@ -148,7 +148,7 @@ bool saveGnuplot(const std::string& gnudump,
           dynamic_cast<OptimizableGraph::Vertex*>(vertice);
       (*saveGnuplot)(v, &params);
     }
-    cerr << "done." << endl;
+    ngx::Log("done.");
   }
 
   return fileStatus;
@@ -159,8 +159,7 @@ bool dumpEdges(std::ostream& os, const OptimizableGraph& optimizer) {
   HyperGraphElementAction* saveGnuplot =
       HyperGraphActionLibrary::instance()->actionByName("writeGnuplot");
   if (saveGnuplot == nullptr) {
-    cerr << __PRETTY_FUNCTION__ << ": no action \"writeGnuplot\" registered"
-         << endl;
+    ngx::Log(ngx::Error, "no action \"writeGnuplot\" registered");
     return false;
   }
   WriteGnuplotAction::Parameters params{};

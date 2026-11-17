@@ -7,6 +7,7 @@
 
 #include <g2o/core/factory.h>
 #include <g2o/core/sparse_optimizer.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/types/data/data_queue.h>
 #include <g2o/types/data/robot_laser.h>
@@ -33,7 +34,7 @@ bool Gm2dlIO::readGm2dl(const std::string& filename, SparseOptimizer& optimizer,
   // laserOffset->fixed() = true;
   laserOffset->setId(ID_LASERPOSE);
   if (!optimizer.addVertex(laserOffset)) {
-    cerr << "Unable to add laser offset" << endl;
+    ngx::Log(ngx::Error, "Unable to add laser offset");
     return false;
   }
 
@@ -54,8 +55,7 @@ bool Gm2dlIO::readGm2dl(const std::string& filename, SparseOptimizer& optimizer,
       v->setId(id);
       // cerr << "Read vertex id " << id << endl;
       if (!optimizer.addVertex(v)) {
-        cerr << "vertex " << id << " is already in the graph, reassigning "
-             << endl;
+        ngx::Log("vertex {} is already in the graph, reassigning ", id);
         delete v;
         v = dynamic_cast<VertexSE2*>(optimizer.vertex(id));
         assert(v);
@@ -65,7 +65,7 @@ bool Gm2dlIO::readGm2dl(const std::string& filename, SparseOptimizer& optimizer,
 
     } else if (tag == "EDGE" || tag == "EDGE2" || tag == "EDGE_SE2") {
       if (!laserOffsetInitDone) {
-        cerr << "Error: need laser offset" << endl;
+        ngx::Log(ngx::Error, "need laser offset");
         return false;
       }
       int id1, id2;
@@ -90,14 +90,16 @@ bool Gm2dlIO::readGm2dl(const std::string& filename, SparseOptimizer& optimizer,
       VertexSE2* v1 = dynamic_cast<VertexSE2*>(optimizer.vertex(id1));
       VertexSE2* v2 = dynamic_cast<VertexSE2*>(optimizer.vertex(id2));
       if (v1 == nullptr) {
-        cerr << "vertex " << id1 << " is not existing, cannot add edge (" << id1
-             << "," << id2 << ")" << endl;
+        ngx::Log(ngx::Error,
+                 "vertex {} is not existing, cannot add edge ({},{})", id1, id1,
+                 id2);
         delete e;
         continue;
       }
       if (v2 == nullptr) {
-        cerr << "vertex " << id2 << " is not existing, cannot add edge (" << id1
-             << "," << id2 << ")" << endl;
+        ngx::Log(ngx::Error,
+                 "vertex {} is not existing, cannot add edge ({},{})", id2, id1,
+                 id2);
         delete e;
         continue;
       }
@@ -118,7 +120,7 @@ bool Gm2dlIO::readGm2dl(const std::string& filename, SparseOptimizer& optimizer,
       e->setVertex(1, v2);
       e->setVertex(2, laserOffset);
       if (!optimizer.addEdge(e)) {
-        cerr << "error in adding edge " << id1 << "," << id2 << endl;
+        ngx::Log(ngx::Error, "error in adding edge {},{}", id1, id2);
         delete e;
       }
       // cerr << PVAR(e->inverseMeasurement().toVector().transpose()) << endl;
@@ -204,7 +206,7 @@ bool Gm2dlIO::updateLaserData(SparseOptimizer& optimizer) {
   VertexSE2* laserOffset =
       dynamic_cast<VertexSE2*>(optimizer.vertex(ID_LASERPOSE));
   if (laserOffset == nullptr) {
-    cerr << "Laser offset not found" << endl;
+    ngx::Log(ngx::Error, "Laser offset not found");
     return false;
   }
 

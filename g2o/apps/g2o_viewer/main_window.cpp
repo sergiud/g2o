@@ -12,6 +12,7 @@
 #include <g2o/core/robust_kernel.h>
 #include <g2o/core/robust_kernel_factory.h>
 #include <g2o/core/sparse_optimizer.h>
+#include <g2o/stuff/logger.h>
 
 #include <QComboBox>
 #include <QDoubleValidator>
@@ -58,22 +59,22 @@ void MainWindow::on_actionSave_triggered(bool) {
     ofstream fout(filename.toStdString().c_str());
     viewer->graph->save(fout);
     if (fout.good())
-      cerr << "Saved " << filename.toStdString() << endl;
+      ngx::Log("Saved {}", filename.toStdString());
     else
-      cerr << "Error while saving file" << endl;
+      ngx::Log(ngx::Error, "Error while saving file");
   }
 }
 
 void MainWindow::on_btnOptimize_clicked() {
   if (viewer->graph->vertices().empty() || viewer->graph->edges().empty()) {
-    cerr << "Graph has no vertices / egdes" << endl;
+    ngx::Log(ngx::Error, "Graph has no vertices / egdes");
     return;
   }
 
   bool allocatedNewSolver;
   bool allocateStatus = allocateSolver(allocatedNewSolver);
   if (!allocateStatus) {
-    cerr << "Error while allocating solver" << endl;
+    ngx::Log(ngx::Error, "Error while allocating solver");
     return;
   }
   if (allocatedNewSolver) prepare();
@@ -88,7 +89,7 @@ void MainWindow::on_btnOptimize_clicked() {
   int maxIterations = spIterations->value();
   int iter = viewer->graph->optimize(maxIterations);
   if (maxIterations > 0 && (iter == 0)) {
-    cerr << "Optimization failed, result might be invalid" << endl;
+    ngx::Log(ngx::Error, "Optimization failed, result might be invalid");
   }
 
   btnOptimize->show();
@@ -116,7 +117,7 @@ void MainWindow::on_btnInitialGuess_clicked() {
       }
       break;
     default:
-      cerr << __PRETTY_FUNCTION__ << " Unknown initialization method" << endl;
+      ngx::Log(ngx::Error, "Unknown initialization method");
       break;
   }
 
@@ -135,7 +136,7 @@ void MainWindow::on_btnSetZero_clicked() {
 
 void MainWindow::on_btnReload_clicked() {
   if (_filename.length() > 0) {
-    cerr << "reloading " << _filename << endl;
+    ngx::Log("reloading {}", _filename);
     viewer->graph->clear();
     viewer->graph->load(_filename.c_str());
     viewer->setUpdateDisplay(true);
@@ -153,14 +154,14 @@ void MainWindow::fixGraph() {
   g2o::OptimizableGraph::Vertex* gauge = viewer->graph->findGauge();
   if (gaugeFreedom) {
     if (gauge == nullptr) {
-      cerr << "cannot find a vertex to fix in this thing" << endl;
+      ngx::Log(ngx::Error, "cannot find a vertex to fix in this thing");
       return;
     } else {
-      cerr << "graph is fixed by node " << gauge->id() << endl;
+      ngx::Log("graph is fixed by node {}", gauge->id());
       gauge->setFixed(true);
     }
   } else {
-    cerr << "graph is fixed by priors or nodes are already fixed" << endl;
+    ngx::Log("graph is fixed by priors or nodes are already fixed");
   }
 
   viewer->graph->setVerbose(true);
@@ -221,7 +222,7 @@ bool MainWindow::load(const QString& filename) {
   viewer->graph->clear();
   bool loadStatus = false;
   if (filename == "-") {
-    cerr << "reading stdin" << endl;
+    ngx::Log("reading stdin");
     loadStatus = viewer->graph->load(cin);
   } else {
     ifstream ifs(filename.toStdString().c_str());
@@ -249,7 +250,7 @@ bool MainWindow::load(const QString& filename) {
 
 bool MainWindow::allocateSolver(bool& allocatedNewSolver) {
   if (coOptimizer->count() == 0) {
-    cerr << "No solvers available" << endl;
+    ngx::Log(ngx::Error, "No solvers available");
     return false;
   }
   int currentIndex = coOptimizer->currentIndex();
@@ -258,7 +259,7 @@ bool MainWindow::allocateSolver(bool& allocatedNewSolver) {
                      ->isEnabled();
 
   if (!enabled) {
-    cerr << "selected solver is not enabled" << endl;
+    ngx::Log(ngx::Error, "selected solver is not enabled");
     return false;
   }
 
@@ -287,7 +288,7 @@ bool MainWindow::allocateSolver(bool& allocatedNewSolver) {
 bool MainWindow::prepare() {
   SparseOptimizer* optimizer = viewer->graph;
   if (_currentOptimizationAlgorithmProperty.requiresMarginalize) {
-    cerr << "Marginalizing Landmarks" << endl;
+    ngx::Log("Marginalizing Landmarks");
     for (SparseOptimizer::VertexIDMap::const_iterator it =
              optimizer->vertices().begin();
          it != optimizer->vertices().end(); ++it) {
@@ -298,7 +299,7 @@ bool MainWindow::prepare() {
           (vdim == _currentOptimizationAlgorithmProperty.landmarkDim));
     }
   } else {
-    cerr << "Preparing (no marginalization of Landmarks)" << endl;
+    ngx::Log("Preparing (no marginalization of Landmarks)");
     for (SparseOptimizer::VertexIDMap::const_iterator it =
              optimizer->vertices().begin();
          it != optimizer->vertices().end(); ++it) {
@@ -324,8 +325,8 @@ void MainWindow::setRobustKernel() {
     AbstractRobustKernelCreator* creator =
         RobustKernelFactory::instance()->creator(strRobustKernel.toStdString());
     if (creator == nullptr) {
-      cerr << strRobustKernel.toStdString() << " is not a valid robust kernel"
-           << endl;
+      ngx::Log(ngx::Error, "{} is not a valid robust kernel",
+               strRobustKernel.toStdString());
       return;
     }
     for (auto it : optimizer->edges()) {
@@ -357,9 +358,9 @@ bool MainWindow::loadFromFile(const QString& filename) {
   if (loadStatus) {
     _filename = filename.toStdString();
   }
-  cerr << "loaded " << filename.toStdString() << " with "
-       << viewer->graph->vertices().size() << " vertices and "
-       << viewer->graph->edges().size() << " measurements" << endl;
+  ngx::Log("loaded {} with {} vertices and {} measurements",
+           filename.toStdString(), viewer->graph->vertices().size(),
+           viewer->graph->edges().size());
   viewer->updateDisplay();
   fixGraph();
   return loadStatus;
@@ -393,7 +394,7 @@ void MainWindow::on_btnOptimizerParamaters_clicked() {
   bool allocatedNewSolver;
   bool allocateStatus = allocateSolver(allocatedNewSolver);
   if (!allocateStatus) {
-    cerr << "Error while allocating solver" << endl;
+    ngx::Log(ngx::Error, "Error while allocating solver");
     return;
   }
   if (allocatedNewSolver) prepare();
@@ -426,8 +427,8 @@ void MainWindow::on_actionSave_Screenshot_triggered(bool) {
     }
     viewer->setSnapshotFormat(format);
     viewer->saveSnapshot(filename);
-    cerr << "saved snapshot " << filename.toStdString() << "("
-         << format.toStdString() << ")" << endl;
+    ngx::Log("saved snapshot {}({})", filename.toStdString(),
+             format.toStdString());
   }
 }
 
@@ -439,7 +440,7 @@ void MainWindow::on_actionLoad_Viewer_State_triggered(bool) {
     viewer->restoreStateFromFile();
     viewer->setStateFileName(QString{});
     viewer->updateDisplay();
-    cerr << "Loaded state from " << filename.toStdString() << endl;
+    ngx::Log("Loaded state from {}", filename.toStdString());
   }
 }
 
@@ -450,7 +451,7 @@ void MainWindow::on_actionSave_Viewer_State_triggered(bool) {
     viewer->setStateFileName(filename);
     viewer->saveStateToFile();
     viewer->setStateFileName(QString{});
-    cerr << "Saved state to " << filename.toStdString() << endl;
+    ngx::Log("Saved state to {}", filename.toStdString());
   }
 }
 

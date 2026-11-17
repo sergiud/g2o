@@ -7,12 +7,12 @@
 
 #include <g2o/config.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <sys/types.h>
 
 #include <algorithm>
 #include <cstdio>
-#include <iostream>
 
 #if defined(G2O_HAVE_DLFCN_H)
 #include <dlfcn.h>
@@ -94,14 +94,13 @@ bool DlWrapper::openLibrary(const std::string& filename) {
 #if defined(G2O_HAVE_DLFCN_H)
   void* handle = dlopen(filename.c_str(), RTLD_LAZY);
   if (handle == nullptr) {
-    cerr << __PRETTY_FUNCTION__ << " Cannot open library: " << dlerror()
-         << '\n';
+    ngx::Log(ngx::Error, "Cannot open library: {}", dlerror());
     return false;
   }
 #elif defined(_WIN32)
   HMODULE handle = LoadLibrary(filename.c_str());
   if (!handle) {
-    cerr << __PRETTY_FUNCTION__ << " Cannot open library." << endl;
+    ngx::Log(ngx::Error, "Cannot open library.");
     return false;
   }
 #endif

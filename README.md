@@ -73,6 +73,10 @@ licenses for more details.
 ### Requirements
   * cmake 3.28        http://www.cmake.org/
   * Eigen3            http://eigen.tuxfamily.org
+  * ng-log 0.9.0      https://github.com/ng-log/ng-log
+    with its experimental logging functions, which require a C++20 compiler.
+    g2o reports its diagnostics through them, and its programs write the
+    messages to the standard error.
 
   On Ubuntu / Debian these dependencies are resolved by installing the
   following packages.

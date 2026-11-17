@@ -7,10 +7,11 @@
 #include <g2o/core/solver.h>
 #include <g2o/core/sparse_block_matrix.h>
 #include <g2o/core/sparse_optimizer.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/timeutil.h>
 
-#include <iostream>
+#include <ostream>
 
 using namespace std;
 
@@ -42,8 +43,7 @@ OptimizationAlgorithm::SolverResult OptimizationAlgorithmGaussNewton::solve(
       !online) {  // built up the CCS structure, here due to easy time measure
     ok = _solver->buildStructure();
     if (!ok) {
-      cerr << __PRETTY_FUNCTION__ << ": Failure while building CCS structure"
-           << endl;
+      ngx::Log(ngx::Error, "Failure while building CCS structure");
       return OptimizationAlgorithm::Fail;
     }
   }

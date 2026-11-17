@@ -9,6 +9,7 @@
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/pcg/linear_solver_pcg.h>
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/types/slam3d/types_slam3d.h>
 #include <g2o/types/slam3d_addons/types_slam3d_addons.h>
@@ -263,6 +264,7 @@ struct LineSensor : public Sensor {
 };
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   bool verbose, robustKernel, fixLines, planarMotion, listSolvers;
   int maxIterations;
   double lambdaInit;
@@ -297,21 +299,21 @@ int main(int argc, char** argv) {
   }
 
   if (g->solver() == nullptr) {
-    std::cout << "Error allocating solver. Allocating \"" << strSolver
-              << "\" failed!" << std::endl;
+    ngx::Log(ngx::Error, "Error allocating solver. Allocating \"{}\" failed!",
+             strSolver);
     std::cout << "Available solvers: " << std::endl;
     solverFactory->listSolvers(std::cout);
     std::cout << "--------------" << std::endl;
     return 0;
   }
 
-  std::cout << "Creating simulator" << std::endl;
+  ngx::Log("Creating simulator");
   auto* sim = new Simulator(g);
 
-  std::cout << "Creating robot" << std::endl;
+  ngx::Log("Creating robot");
   auto* r = new Robot(g);
 
-  std::cout << "Creating line sensor" << std::endl;
+  ngx::Log("Creating line sensor");
   Isometry3d sensorPose = Isometry3d::Identity();
   auto* ls = new LineSensor(r, 0, sensorPose);
   ls->_nline << 0.001, 0.001, 0.001, 0.0001;
@@ -320,7 +322,7 @@ int main(int argc, char** argv) {
   sim->_robots.push_back(r);
 
   Line3D line;
-  std::cout << "Creating landmark line 1" << std::endl;
+  ngx::Log("Creating landmark line 1");
   auto* li = new LineItem(g, 1);
   Vector6d liv;
   liv << 0.0, 0.0, 5.0, 0.0, 1.0, 0.0;
@@ -329,7 +331,7 @@ int main(int argc, char** argv) {
   li->vertex()->setFixed(fixLines);
   sim->_world.insert(li);
 
-  std::cout << "Creating landmark line 2" << std::endl;
+  ngx::Log("Creating landmark line 2");
   liv << 5.0, 0.0, 0.0, 0.0, 0.0, 1.0;
   line = Line3D::fromCartesian(liv);
   li = new LineItem(g, 2);
@@ -337,7 +339,7 @@ int main(int argc, char** argv) {
   li->vertex()->setFixed(fixLines);
   sim->_world.insert(li);
 
-  std::cout << "Creating landmark line 3" << std::endl;
+  ngx::Log("Creating landmark line 3");
   liv << 0.0, 5.0, 0.0, 1.0, 0.0, 0.0;
   line = Line3D::fromCartesian(liv);
   li = new LineItem(g, 3);
@@ -383,13 +385,11 @@ int main(int argc, char** argv) {
     Isometry3d iDelta = delta.inverse();
     for (int a = 0; a < 2; ++a) {
       for (int i = 0; i < k; ++i) {
-        std::cout << "m";
         if (a == 0) {
           sim->relativeMove(0, delta);
         } else {
           sim->relativeMove(0, iDelta);
         }
-        std::cout << "s";
         sim->sense(0);
       }
     }
@@ -404,18 +404,15 @@ int main(int argc, char** argv) {
     Isometry3d iDelta = delta.inverse();
     for (int a = 0; a < 2; ++a) {
       for (int i = 0; i < k; ++i) {
-        std::cout << "m";
         if (a == 0) {
           sim->relativeMove(0, delta);
         } else {
           sim->relativeMove(0, iDelta);
         }
-        std::cout << "s";
         sim->sense(0);
       }
     }
   }
-  std::cout << std::endl;
 
   ls->_offsetVertex->setFixed(true);
   OptimizableGraph::Vertex* gauge = g->vertex(4);
@@ -425,8 +422,7 @@ int main(int argc, char** argv) {
 
   ofstream osp("line3d.g2o");
   g->save(osp);
-  std::cout << "Saved graph on file line3d.g2o, use g2o_viewer to work with it."
-            << std::endl;
+  ngx::Log("Saved graph on file line3d.g2o, use g2o_viewer to work with it.");
 
   return 0;
 }

@@ -5,8 +5,9 @@
 
 #include "simulator.h"
 
+#include <g2o/stuff/logger.h>
+
 #include <cmath>
-#include <iostream>
 #include <map>
 
 #include "rand.h"
@@ -73,7 +74,7 @@ void Simulator::simulate(int numNodes, const SE2& sensorOffset) {
   firstPose.truePose = SE2(0, 0, 0);
   firstPose.simulatorPose = SE2(0, 0, 0);
   poses.push_back(firstPose);
-  cerr << "Simulator: sampling nodes ...";
+  ngx::Log("Simulator: sampling nodes");
   while ((int)poses.size() < numNodes) {
     // add straight motions
     for (int i = 1; i < steps && (int)poses.size() < numNodes; ++i) {
@@ -114,10 +115,10 @@ void Simulator::simulate(int numNodes, const SE2& sensorOffset) {
 
     poses.push_back(nextGridPose);
   }
-  cerr << "done." << endl;
+  ngx::Log("done.");
 
   // creating landmarks along the trajectory
-  cerr << "Simulator: Creating landmarks ... ";
+  ngx::Log("Simulator: Creating landmarks");
   LandmarkGrid grid;
   for (PosesVector::const_iterator it = poses.begin(); it != poses.end();
        ++it) {
@@ -143,9 +144,9 @@ void Simulator::simulate(int numNodes, const SE2& sensorOffset) {
         }
       }
   }
-  cerr << "done." << endl;
+  ngx::Log("done.");
 
-  cerr << "Simulator: Simulating landmark observations for the poses ... ";
+  ngx::Log("Simulator: Simulating landmark observations for the poses");
   double maxSensorSqr = maxSensorRangeLandmarks * maxSensorRangeLandmarks;
   int globalId = 0;
   for (auto& pose : poses) {
@@ -182,11 +183,11 @@ void Simulator::simulate(int numNodes, const SE2& sensorOffset) {
         }
       }
   }
-  cerr << "done." << endl;
+  ngx::Log("done.");
 
   // add the odometry measurements
   _odometry.clear();
-  cerr << "Simulator: Adding odometry measurements ... ";
+  ngx::Log("Simulator: Adding odometry measurements");
   for (size_t i = 1; i < poses.size(); ++i) {
     const GridPose& prev = poses[i - 1];
     const GridPose& p = poses[i];
@@ -200,13 +201,13 @@ void Simulator::simulate(int numNodes, const SE2& sensorOffset) {
     edge.simulatorTransf = prev.simulatorPose.inverse() * p.simulatorPose;
     edge.information = information;
   }
-  cerr << "done." << endl;
+  ngx::Log("done.");
 
   _landmarks.clear();
   _landmarkObservations.clear();
   // add the landmark observations
   {
-    cerr << "Simulator: add landmark observations ... ";
+    ngx::Log("Simulator: add landmark observations");
     Matrix2d covariance;
     covariance.fill(0.);
     covariance(0, 0) = landmarkNoise[0] * landmarkNoise[0];
@@ -250,7 +251,7 @@ void Simulator::simulate(int numNodes, const SE2& sensorOffset) {
         le.information = information;
       }
     }
-    cerr << "done." << endl;
+    ngx::Log("done.");
   }
 
   // cleaning up
@@ -280,7 +281,7 @@ SE2 Simulator::getMotion(int motionDirection, double stepLen) {
     case MO_RIGHT:
       return SE2(stepLen, 0, -0.5 * M_PI);
     default:
-      cerr << "Unknown motion direction" << endl;
+      ngx::Log(ngx::Error, "Unknown motion direction");
       return SE2(stepLen, 0, -0.5 * M_PI);
   }
 }

@@ -10,6 +10,7 @@
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/command_args.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>
@@ -78,6 +79,7 @@ class EdgeCalib
 };
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   bool fixLaser;
   int maxIterations;
   bool verbose;
@@ -115,23 +117,24 @@ int main(int argc, char** argv) {
   DataQueue odometryQueue;
   int numLaserOdom = Gm2dlIO::readRobotLaser(rawFilename, odometryQueue);
   if (numLaserOdom == 0) {
-    cerr << "No raw information read" << endl;
+    ngx::Log(ngx::Warning, "No raw information read");
     return 0;
   }
-  cerr << "Read " << numLaserOdom << " laser readings from file" << endl;
+  ngx::Log("Read {} laser readings from file", numLaserOdom);
 
   Eigen::Vector3d odomCalib(1., 1., 1.);
   SE2 initialLaserPose;
   DataQueue robotLaserQueue;
   int numRobotLaser = Gm2dlIO::readRobotLaser(inputFilename, robotLaserQueue);
   if (numRobotLaser == 0) {
-    cerr << "No robot laser read" << endl;
+    ngx::Log(ngx::Warning, "No robot laser read");
     return 0;
   } else {
     RobotLaser* rl =
         dynamic_cast<RobotLaser*>(robotLaserQueue.buffer().begin()->second);
     initialLaserPose = rl->odomPose().inverse() * rl->laserPose();
-    cerr << PVAR(initialLaserPose.toVector().transpose()) << endl;
+    ngx::Log("initialLaserPose.toVector().transpose() = {}",
+             Streamed{initialLaserPose.toVector().transpose()});
   }
 
   // adding the measurements
@@ -183,25 +186,25 @@ int main(int argc, char** argv) {
       calibEdge->setInformation(Eigen::Matrix3d::Identity());
       calibEdge->setMeasurement(meas);
       if (!optimizer.addEdge(calibEdge)) {
-        cerr << "Error adding calib edge" << endl;
+        ngx::Log(ngx::Error, "Error adding calib edge");
         delete calibEdge;
       }
     }
 
     if (fixLaser) {
-      cerr << "Fix position of the laser offset" << endl;
+      ngx::Log("Fix position of the laser offset");
       laserOffset->setFixed(true);
     }
 
-    cerr << "\nPerforming full non-linear estimation" << endl;
+    ngx::Log("\nPerforming full non-linear estimation");
     optimizer.initializeOptimization();
     optimizer.computeActiveErrors();
     optimizer.optimize(maxIterations);
-    cerr << "Calibrated laser offset (x, y, theta):"
-         << laserOffset->estimate().toVector().transpose() << endl;
+    ngx::Log("Calibrated laser offset (x, y, theta):{}",
+             laserOffset->estimate().toVector().transpose());
     odomCalib = odomParamsVertex->estimate();
-    cerr << "Odometry parameters (scaling factors (v_l, v_r, b)): "
-         << odomParamsVertex->estimate().transpose() << endl;
+    ngx::Log("Odometry parameters (scaling factors (v_l, v_r, b)): {}",
+             odomParamsVertex->estimate().transpose());
     optimizer.clear();
   }
 
@@ -252,43 +255,43 @@ int main(int argc, char** argv) {
     calibEdge->setInformation(Eigen::Matrix3d::Identity());
     calibEdge->setMeasurement(meas);
     if (!optimizer.addEdge(calibEdge)) {
-      cerr << "Error adding calib edge" << endl;
+      ngx::Log(ngx::Error, "Error adding calib edge");
       delete calibEdge;
     }
   }
 
   if (fixLaser) {
-    cerr << "Fix position of the laser offset" << endl;
+    ngx::Log("Fix position of the laser offset");
     laserOffset->setFixed(true);
   }
 
-  cerr << "\nPerforming partial non-linear estimation" << endl;
+  ngx::Log("\nPerforming partial non-linear estimation");
   optimizer.initializeOptimization();
   optimizer.computeActiveErrors();
   optimizer.optimize(maxIterations);
-  cerr << "Calibrated laser offset (x, y, theta):"
-       << laserOffset->estimate().toVector().transpose() << endl;
+  ngx::Log("Calibrated laser offset (x, y, theta):{}",
+           laserOffset->estimate().toVector().transpose());
   odomCalib(0) = -1. * linearSolution(0) * odomParamsVertex->estimate();
   odomCalib(1) = linearSolution(1) * odomParamsVertex->estimate();
   odomCalib(2) = odomParamsVertex->estimate();
-  cerr << "Odometry parameters (scaling factors (v_l, v_r, b)): "
-       << odomCalib.transpose() << endl;
+  ngx::Log("Odometry parameters (scaling factors (v_l, v_r, b)): {}",
+           odomCalib.transpose());
 
   {
     SE2 closedFormLaser;
     Eigen::Vector3d closedFormOdom;
     ClosedFormCalibration::calibrate(motions, closedFormLaser, closedFormOdom);
-    cerr << "\nObtaining closed form solution" << endl;
-    cerr << "Calibrated laser offset (x, y, theta):"
-         << closedFormLaser.toVector().transpose() << endl;
-    cerr << "Odometry parameters (scaling factors (v_l, v_r, b)): "
-         << closedFormOdom.transpose() << endl;
+    ngx::Log("\nObtaining closed form solution");
+    ngx::Log("Calibrated laser offset (x, y, theta):{}",
+             closedFormLaser.toVector().transpose());
+    ngx::Log("Odometry parameters (scaling factors (v_l, v_r, b)): {}",
+             closedFormOdom.transpose());
   }
 
   if (!dumpGraphFilename.empty()) {
-    cerr << "Writing " << dumpGraphFilename << " ... ";
+    ngx::Log("Writing {}", dumpGraphFilename);
     optimizer.save(dumpGraphFilename.c_str());
-    cerr << "done." << endl;
+    ngx::Log("done.");
   }
 
   // optional input of a separate file for applying the odometry calibration
@@ -297,7 +300,7 @@ int main(int argc, char** argv) {
     int numTestOdom =
         Gm2dlIO::readRobotLaser(odomTestFilename, testRobotLaserQueue);
     if (numTestOdom == 0) {
-      cerr << "Unable to read test data" << endl;
+      ngx::Log(ngx::Error, "Unable to read test data");
     } else {
       ofstream rawStream("odometry_raw.txt");
       ofstream calibratedStream("odometry_calibrated.txt");

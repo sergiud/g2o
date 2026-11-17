@@ -4,9 +4,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/tictoc.h>
+#include <ng-log/experimental/signal_safe_log.h>
 
 #include <cassert>
 #include <csignal>
@@ -52,10 +54,9 @@ inline void solveAndPrint(G2oSlamInterface& slamInterface, bool verbose) {
   if (!verbose) {
     switch (solverState) {
       case G2oSlamInterface::SOLVED:
-        cout << ".";  //<< flush;
         break;
       case G2oSlamInterface::SOLVED_BATCH:
-        cout << "b " << slamInterface.optimizer()->vertices().size() << endl;
+        ngx::Log("b {}", slamInterface.optimizer()->vertices().size());
         break;
       default:
         break;
@@ -68,13 +69,14 @@ void sigquit_handler(int sig) {
     hasToStop = 1;
     static int cnt = 0;
     if (cnt++ == 2) {
-      cerr << __PRETTY_FUNCTION__ << " forcing exit" << endl;
+      ngx::Log(ngx::SignalSafe | ngx::Warning, "forcing exit");
       exit(1);
     }
   }
 }
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   string inputFilename;
   string outputFilename;
   int updateEachN;
@@ -104,8 +106,8 @@ int main(int argc, char** argv) {
   slamInterface.setUpdateGraphEachN(updateEachN);
   slamInterface.setBatchSolveEachN(batchEachN);
 
-  cerr << "Updating every " << updateEachN << endl;
-  cerr << "Batch step every " << batchEachN << endl;
+  ngx::Log("Updating every {}", updateEachN);
+  ngx::Log("Batch step every {}", batchEachN);
 
   if (!inputFilename.empty()) {  // operating on a file
     vector<EdgeInformation> edgesFromGraph;
@@ -121,11 +123,11 @@ int main(int argc, char** argv) {
 
     // parse the edge from the file
     int graphDimension = 0;
-    cerr << "Parsing " << inputFilename << " ... ";
+    ngx::Log("Parsing {}", inputFilename);
     tictoc("parsing");
     ifstream ifs(inputFilename.c_str());
     if (!ifs) {
-      cerr << "Failure to open " << inputFilename << endl;
+      ngx::Log(ngx::Error, "Failure to open {}", inputFilename);
       return 1;
     }
     stringstream currentLine;
@@ -157,7 +159,7 @@ int main(int argc, char** argv) {
     sort(edgesFromGraph.begin(), edgesFromGraph.end(),
          IncrementalEdgesCompare());
     tictoc("parsing");
-    cerr << "done." << endl;
+    ngx::Log("done.");
 
     // adding edges to the graph. Add all edges connecting a node and then call
     // optimize
@@ -187,7 +189,7 @@ int main(int argc, char** argv) {
   }
 
   if (!outputFilename.empty()) {
-    cerr << "Saving " << outputFilename << endl;
+    ngx::Log("Saving {}", outputFilename);
     optimizer.save(outputFilename.c_str());
   }
 

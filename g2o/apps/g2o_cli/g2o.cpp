@@ -17,9 +17,11 @@
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/command_args.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>
+#include <ng-log/experimental/signal_safe_log.h>
 
 #include <algorithm>
 #include <cassert>
@@ -69,13 +71,14 @@ void sigquit_handler(int sig) {
     hasToStop = 1;
     static int cnt = 0;
     if (cnt++ == 2) {
-      cerr << __PRETTY_FUNCTION__ << " forcing exit" << endl;
+      ngx::Log(ngx::SignalSafe | ngx::Warning, "forcing exit");
       exit(1);
     }
   }
 }
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   OptimizableGraph::initMultiThreading();
   int maxIterations;
   bool verbose;
@@ -169,7 +172,7 @@ int main(int argc, char** argv) {
   arg.parseArgs(argc, argv);
 
   if (verbose) {
-    cout << "# Used Compiler: " << G2O_CXX_COMPILER << endl;
+    ngx::Log("# Used Compiler: {}", G2O_CXX_COMPILER);
   }
 
 #ifndef G2O_DISABLE_DYNAMIC_LOADING_OF_LIBRARIES
@@ -180,7 +183,7 @@ int main(int argc, char** argv) {
   DlWrapper dlSolverWrapper;
   loadStandardSolver(dlSolverWrapper, argc, argv);
 #else
-  if (verbose) cout << "# linked version of g2o" << endl;
+  if (verbose) ngx::Log("# linked version of g2o");
 #endif
 
   OptimizationAlgorithmFactory* solverFactory =
@@ -208,8 +211,8 @@ int main(int argc, char** argv) {
 
   SparseOptimizerTerminateAction* terminateAction = nullptr;
   if (maxIterations < 0) {
-    cerr << "# setup termination criterion based on the gain of the iteration"
-         << endl;
+    ngx::Log(
+        "# setup termination criterion based on the gain of the iteration");
     maxIterations = maxIterationsWithGain;
     terminateAction = new SparseOptimizerTerminateAction;
     terminateAction->setGainThreshold(gain);
@@ -221,8 +224,8 @@ int main(int argc, char** argv) {
   OptimizationAlgorithmProperty solverProperty;
   optimizer.setAlgorithm(solverFactory->construct(strSolver, solverProperty));
   if (optimizer.solver() == nullptr) {
-    cerr << "Error allocating solver. Allocating \"" << strSolver
-         << "\" failed!" << endl;
+    ngx::Log(ngx::Error, "Error allocating solver. Allocating \"{}\" failed!",
+             strSolver);
     return 0;
   }
 
@@ -230,9 +233,9 @@ int main(int argc, char** argv) {
     bool updateStatus =
         optimizer.solver()->updatePropertiesFromString(solverProperties);
     if (!updateStatus) {
-      cerr << "Failure while updating the solver properties from the given "
-              "string"
-           << endl;
+      ngx::Log(
+          ngx::Error,
+          "Failure while updating the solver properties from the given string");
     }
   }
   if (!solverProperties.empty() || printSolverProperties) {
@@ -244,38 +247,39 @@ int main(int argc, char** argv) {
     optimizer.setRenamedTypesFromString(loadLookup);
   }
   if (inputFilename.empty()) {
-    cerr << "No input data specified" << endl;
+    ngx::Log(ngx::Error, "No input data specified");
     return 0;
   } else if (inputFilename == "-") {
-    cerr << "Read input from stdin" << endl;
+    ngx::Log("Read input from stdin");
     if (!optimizer.load(cin)) {
-      cerr << "Error loading graph" << endl;
+      ngx::Log(ngx::Error, "Error loading graph");
       return 2;
     }
   } else {
-    cerr << "Read input from " << inputFilename << endl;
+    ngx::Log("Read input from {}", inputFilename);
     ifstream ifs(inputFilename.c_str());
     if (!ifs) {
-      cerr << "Failed to open file" << endl;
+      ngx::Log(ngx::Error, "Failed to open file");
       return 1;
     }
     if (!optimizer.load(ifs)) {
-      cerr << "Error loading graph" << endl;
+      ngx::Log(ngx::Error, "Error loading graph");
       return 2;
     }
   }
-  cerr << "Loaded " << optimizer.vertices().size() << " vertices" << endl;
-  cerr << "Loaded " << optimizer.edges().size() << " edges" << endl;
+  ngx::Log("Loaded {} vertices", optimizer.vertices().size());
+  ngx::Log("Loaded {} edges", optimizer.edges().size());
 
   if (optimizer.vertices().empty()) {
-    cerr << "Graph contains no vertices" << endl;
+    ngx::Log(ngx::Error, "Graph contains no vertices");
     return 1;
   }
 
   set<int> vertexDimensions = optimizer.dimensions();
   if (!optimizer.isSolverSuitable(solverProperty, vertexDimensions)) {
-    cerr << "The selected solver is not suitable for optimizing the given graph"
-         << endl;
+    ngx::Log(
+        ngx::Error,
+        "The selected solver is not suitable for optimizing the given graph");
     return 3;
   }
   assert(optimizer.solver());
@@ -286,35 +290,36 @@ int main(int argc, char** argv) {
   bool gaugeFreedom = optimizer.gaugeFreedom();
   OptimizableGraph::Vertex* gauge = nullptr;
   if (!gaugeList.empty() != 0u) {
-    cerr << "Fixing gauges: ";
+    std::string fixedGauges;
     for (size_t i = 0; i < gaugeList.size(); i++) {
       int id = gaugeList[i];
       OptimizableGraph::Vertex* v = optimizer.vertex(id);
       if (v == nullptr) {
-        cerr << "fatal, not found the vertex of id " << id
-             << " in the gaugeList. Aborting";
+        ngx::Log(ngx::Error,
+                 "not found the vertex of id {} in the gaugeList. Aborting",
+                 id);
         return -1;
       } else {
         if (i == 0) gauge = v;
-        cerr << v->id() << " ";
+        std::format_to(std::back_inserter(fixedGauges), " {}", v->id());
         v->setFixed(1);
       }
     }
-    cerr << endl;
+    ngx::Log("Fixing gauges:{}", fixedGauges);
     gaugeFreedom = false;
   } else {
     gauge = optimizer.findGauge();
   }
   if (gaugeFreedom) {
     if (gauge == nullptr) {
-      cerr << "# cannot find a vertex to fix in this thing" << endl;
+      ngx::Log(ngx::Error, "# cannot find a vertex to fix in this thing");
       return 2;
     } else {
-      cerr << "# graph is fixed by node " << gauge->id() << endl;
+      ngx::Log("# graph is fixed by node {}", gauge->id());
       gauge->setFixed(true);
     }
   } else {
-    cerr << "# graph is fixed by priors or already fixed vertex" << endl;
+    ngx::Log("# graph is fixed by priors or already fixed vertex");
   }
 
   // if schur, we wanna marginalize the landmarks...
@@ -322,7 +327,7 @@ int main(int argc, char** argv) {
     int maxDim = *vertexDimensions.rbegin();
     int minDim = *vertexDimensions.begin();
     if (maxDim != minDim) {
-      cerr << "# Preparing Marginalization of the Landmarks ... ";
+      ngx::Log("# Preparing Marginalization of the Landmarks");
       for (auto& it : optimizer.vertices()) {
         OptimizableGraph::Vertex* v =
             dynamic_cast<OptimizableGraph::Vertex*>(it.second);
@@ -330,14 +335,14 @@ int main(int argc, char** argv) {
           v->setMarginalized(true);
         }
       }
-      cerr << "done." << endl;
+      ngx::Log("done.");
     }
   }
 
   if (!robustKernel.empty()) {
     AbstractRobustKernelCreator* creator =
         RobustKernelFactory::instance()->creator(robustKernel);
-    cerr << "# Preparing robust error function ... ";
+    ngx::Log("# Preparing robust error function");
     if (creator != nullptr) {
       if (nonSequential) {
         for (auto it : optimizer.edges()) {
@@ -355,9 +360,9 @@ int main(int argc, char** argv) {
           if (huberWidth > 0) e->robustKernel()->setDelta(huberWidth);
         }
       }
-      cerr << "done." << endl;
+      ngx::Log("done.");
     } else {
-      cerr << "Unknown Robust Kernel: " << robustKernel << endl;
+      ngx::Log(ngx::Error, "Unknown Robust Kernel: {}", robustKernel);
     }
   }
 
@@ -368,31 +373,27 @@ int main(int argc, char** argv) {
   // cerr << PVAR(d.visited().size()) << endl;
 
   if (d.visited().size() != optimizer.vertices().size()) {
-    cerr << CL_RED("Warning: d.visited().size() != optimizer.vertices().size()")
-         << endl;
-    cerr << "visited: " << d.visited().size() << endl;
-    cerr << "vertices: " << optimizer.vertices().size() << endl;
+    ngx::Log(ngx::Warning, "d.visited().size() != optimizer.vertices().size()");
+    ngx::Log("visited: {}", d.visited().size());
+    ngx::Log("vertices: {}", optimizer.vertices().size());
   }
 
   if (incremental) {
-    cerr << CL_RED(
-                "# Note: this variant performs batch steps in each time step")
-         << endl;
-    cerr << CL_RED(
-                "#       For a variant which updates the Cholesky factor use "
-                "the binary g2o_incremental")
-         << endl;
+    ngx::Log("# Note: this variant performs batch steps in each time step");
+    ngx::Log(
+        "#       For a variant which updates the Cholesky factor use the "
+        "binary g2o_incremental");
     int incIterations = maxIterations;
     if (!arg.parsedParam("i")) {
-      cerr << "# Setting default number of iterations" << endl;
+      ngx::Log("# Setting default number of iterations");
       incIterations = 1;
     }
     int updateDisplayEveryN = updateGraphEachN;
     int maxDim = 0;
 
-    cerr << "# incremental settings" << endl;
-    cerr << "#\t solve every " << updateGraphEachN << endl;
-    cerr << "#\t iterations  " << incIterations << endl;
+    ngx::Log("# incremental settings");
+    ngx::Log("#\t solve every {}", updateGraphEachN);
+    ngx::Log("#\t iterations  {}", incIterations);
 
     SparseOptimizer::VertexIDMap vertices = optimizer.vertices();
     for (SparseOptimizer::VertexIDMap::const_iterator it = vertices.begin();
@@ -434,7 +435,7 @@ int main(int argc, char** argv) {
         // cerr << "adding" << v->id() << "(" << v->dimension() << ")" << endl;
         assert(v1Added);
         if (!v1Added)
-          cerr << "Error adding vertex " << v->id() << endl;
+          ngx::Log(ngx::Error, "Error adding vertex {}", v->id());
         else
           verticesAdded.insert(v);
         doInit = 1;
@@ -448,7 +449,7 @@ int main(int argc, char** argv) {
         // cerr << "adding" << v->id() << "(" << v->dimension() << ")" << endl;
         assert(v2Added);
         if (!v2Added)
-          cerr << "Error adding vertex " << v->id() << endl;
+          ngx::Log(ngx::Error, "Error adding vertex {}", v->id());
         else
           verticesAdded.insert(v);
         doInit = 2;
@@ -460,8 +461,8 @@ int main(int argc, char** argv) {
         // cerr << " adding edge " << e->vertices()[0]->id() <<  " " <<
         // e->vertices()[1]->id() << endl;
         if (!optimizer.addEdge(e)) {
-          cerr << "Unable to add edge " << e->vertices()[0]->id() << " -> "
-               << e->vertices()[1]->id() << endl;
+          ngx::Log(ngx::Error, "Unable to add edge {} -> {}",
+                   e->vertices()[0]->id(), e->vertices()[1]->id());
         } else {
           edgesAdded.insert(e);
         }
@@ -500,7 +501,7 @@ int main(int argc, char** argv) {
               break;
             }
             default:
-              cerr << "doInit wrong value\n";
+              ngx::Log(ngx::Error, "doInit wrong value");
           }
         }
       }
@@ -511,12 +512,12 @@ int main(int argc, char** argv) {
         if (vertexCount - lastOptimizedVertexCount >= updateGraphEachN) {
           if (firstRound) {
             if (!optimizer.initializeOptimization()) {
-              cerr << "initialization failed" << endl;
+              ngx::Log(ngx::Error, "initialization failed");
               return 0;
             }
           } else {
             if (!optimizer.updateInitialization(verticesAdded, edgesAdded)) {
-              cerr << "updating initialization failed" << endl;
+              ngx::Log(ngx::Error, "updating initialization failed");
               return 0;
             }
           }
@@ -530,11 +531,11 @@ int main(int argc, char** argv) {
           // optimizer->setOptimizationTime(cumTime);
           if (verbose) {
             double chi2 = optimizer.chi2();
-            cerr << "nodes= " << optimizer.vertices().size()
-                 << "\t edges= " << optimizer.edges().size()
-                 << "\t chi2= " << chi2 << "\t time= " << dts
-                 << "\t iterations= " << currentIt << "\t cumTime= " << cumTime
-                 << endl;
+            ngx::Log(
+                "nodes= {}\t edges= {}\t chi2= {}\t time= {}\t iterations= "
+                "{}\t cumTime= {}",
+                optimizer.vertices().size(), optimizer.edges().size(), chi2,
+                dts, currentIt, cumTime);
           }
           lastOptimizedVertexCount = vertexCount;
           freshlyOptimized = true;
@@ -546,8 +547,6 @@ int main(int argc, char** argv) {
             }
           }
         }
-
-        if (!verbose) cerr << ".";
       }
 
     }  // for all edges
@@ -560,10 +559,11 @@ int main(int argc, char** argv) {
       // optimizer->setOptimizationTime(cumTime);
       if (verbose) {
         double chi2 = optimizer.chi2();
-        cerr << "nodes= " << optimizer.vertices().size()
-             << "\t edges= " << optimizer.edges().size() << "\t chi2= " << chi2
-             << "\t time= " << dts << "\t iterations= " << currentIt
-             << "\t cumTime= " << cumTime << endl;
+        ngx::Log(
+            "nodes= {}\t edges= {}\t chi2= {}\t time= {}\t iterations= {}\t "
+            "cumTime= {}",
+            optimizer.vertices().size(), optimizer.edges().size(), chi2, dts,
+            currentIt, cumTime);
       }
     }
 
@@ -577,7 +577,7 @@ int main(int argc, char** argv) {
     optimizer.initializeOptimization();
     optimizer.computeActiveErrors();
     double loadChi = optimizer.chi2();
-    cerr << "Initial chi2 = " << FIXED(loadChi) << endl;
+    ngx::Log("Initial chi2 = {:f}", loadChi);
 
     if (initialGuess) {
       optimizer.computeInitialGuess();
@@ -590,7 +590,7 @@ int main(int argc, char** argv) {
     signal(SIGINT, sigquit_handler);
     int result = optimizer.optimize(maxIterations);
     if (maxIterations > 0 && result == OptimizationAlgorithm::Fail) {
-      cerr << "Cholesky failed, result might be invalid" << endl;
+      ngx::Log(ngx::Error, "Cholesky failed, result might be invalid");
     } else if (computeMarginals) {
       std::vector<std::pair<int, int> > blockIndices;
       for (auto v : optimizer.activeVertices()) {
@@ -606,18 +606,17 @@ int main(int argc, char** argv) {
       SparseBlockMatrix<MatrixXd> spinv;
       if (optimizer.computeMarginals(spinv, blockIndices)) {
         for (auto v : optimizer.activeVertices()) {
-          cerr << "Vertex id:" << v->id() << endl;
+          ngx::Log("Vertex id:{}", v->id());
           if (v->hessianIndex() >= 0) {
-            cerr << "inv block :" << v->hessianIndex() << ", "
-                 << v->hessianIndex() << endl;
-            cerr << *(spinv.block(v->hessianIndex(), v->hessianIndex()));
-            cerr << endl;
+            ngx::Log(
+                "inv block :{}, {}\n{}", v->hessianIndex(), v->hessianIndex(),
+                Streamed{*spinv.block(v->hessianIndex(), v->hessianIndex())});
           }
           if (v->hessianIndex() > 0) {
-            cerr << "inv block :" << v->hessianIndex() - 1 << ", "
-                 << v->hessianIndex() << endl;
-            cerr << *(spinv.block(v->hessianIndex() - 1, v->hessianIndex()));
-            cerr << endl;
+            ngx::Log("inv block :{}, {}\n{}", v->hessianIndex() - 1,
+                     v->hessianIndex(),
+                     Streamed{*spinv.block(v->hessianIndex() - 1,
+                                           v->hessianIndex())});
           }
         }
       }
@@ -669,14 +668,14 @@ int main(int argc, char** argv) {
     }
 
     if (statsFile != "") {
-      cerr << "writing stats to file \"" << statsFile << "\" ... ";
+      ngx::Log("writing stats to file \"{}\"", statsFile);
       ofstream os(statsFile.c_str());
       const BatchStatisticsContainer& bsc = optimizer.batchStatistics();
 
       for (int i = 0; i < maxIterations; i++) {
         os << bsc[i] << endl;
       }
-      cerr << "done." << endl;
+      ngx::Log("done.");
     }
   }
 
@@ -684,19 +683,19 @@ int main(int argc, char** argv) {
   if (!gnudump.empty()) {
     bool gnuPlotStatus = saveGnuplot(gnudump, optimizer);
     if (!gnuPlotStatus) {
-      cerr << "Error while writing gnuplot files" << endl;
+      ngx::Log(ngx::Error, "Error while writing gnuplot files");
     }
   }
 
   if (!outputfilename.empty()) {
     if (outputfilename == "-") {
-      cerr << "saving to stdout";
+      ngx::Log("saving to stdout");
       optimizer.save(cout);
     } else {
-      cerr << "saving " << outputfilename << " ... ";
+      ngx::Log("saving {}", outputfilename);
       optimizer.save(outputfilename.c_str());
     }
-    cerr << "done." << endl;
+    ngx::Log("done.");
   }
 
   // destroy all the singletons

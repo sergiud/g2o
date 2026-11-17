@@ -14,6 +14,7 @@
 #include <g2o/solvers/csparse/csparse_helper.h>
 #include <g2o/solvers/csparse/g2o_solver_csparse_api.h>
 #include <g2o/solvers/csparse/linear_solver_csparse.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/timeutil.h>
 
 #include <iostream>
@@ -95,9 +96,9 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
                                                _csWorkspace, _csIntWorkspace);
     if (ok == 0) {
       if (_writeDebug) {
-        std::cerr << "Cholesky failure, writing debug.txt (Hessian loadable by "
-                     "Octave)"
-                  << std::endl;
+        ngx::Log(
+            ngx::Error,
+            "Cholesky failure, writing debug.txt (Hessian loadable by Octave)");
         csparse_extension::writeCs2Octave("debug.txt", _ccsA, true);
       }
       return false;
@@ -151,7 +152,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
       cs_nfree(numericCholesky);
     } else {
       ok = 0;
-      std::cerr << "inverse fail (numeric decomposition)" << std::endl;
+      ngx::Log(ngx::Error, "inverse fail (numeric decomposition)");
     }
 
     G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
@@ -194,7 +195,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
       cs_nfree(numericCholesky);
     } else {
       ok = 0;
-      std::cerr << "inverse fail (numeric decomposition)" << std::endl;
+      ngx::Log(ngx::Error, "inverse fail (numeric decomposition)");
     }
 
     G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();

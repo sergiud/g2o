@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/os_specific.h>
 
 #include <algorithm>
@@ -125,7 +126,7 @@ bool CommandArgs::parseArgs(int argc, char** argv, bool exitOnError) {
             it->parsed = true;
           } else {
             if (i >= argc - 1) {
-              cerr << "Argument " << name << "needs value.\n";
+              ngx::Log("Argument {}needs value.", name);
               printHelp(cerr);
               if (exitOnError) exit(1);
               return false;
@@ -138,8 +139,9 @@ bool CommandArgs::parseArgs(int argc, char** argv, bool exitOnError) {
         }
       }
       if (it == _args.end()) {
-        cerr << "Error: Unknown Option '" << name
-             << "' (use -help to get list of options).\n";
+        ngx::Log(ngx::Error,
+                 "Unknown Option '{}' (use -help to get list of options).",
+                 name);
         if (exitOnError) exit(1);
         return false;
       }
@@ -148,7 +150,7 @@ bool CommandArgs::parseArgs(int argc, char** argv, bool exitOnError) {
   }  // for argv[i]
 
   if ((int)_leftOvers.size() > argc - i) {
-    cerr << "Error: program requires parameters" << endl;
+    ngx::Log(ngx::Error, "program requires parameters");
     printHelp(cerr);
     if (exitOnError) exit(1);
     return false;

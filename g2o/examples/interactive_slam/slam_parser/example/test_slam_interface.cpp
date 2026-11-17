@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <g2o/stuff/logger.h>
+
 #include <iostream>
 
 #include "example_slam_interface.h"
@@ -9,6 +11,7 @@
 using namespace std;
 
 int main() {
+  g2o::initializeLogging("test_slam_interface");
   ExampleSlamInterface slamInterface;
   SlamParser::ParserInterface parserInterface(&slamInterface);
 

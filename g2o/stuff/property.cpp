@@ -3,6 +3,7 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/property.h>
 #include <g2o/stuff/string_tools.h>
@@ -65,8 +66,7 @@ bool PropertyMap::updateMapFromString(const std::string& values) {
   for (auto& i : valuesMap) {
     vector<string> m = strSplit(i, "=");
     if (m.size() != 2) {
-      cerr << __PRETTY_FUNCTION__ << ": unable to extract name=value pair from "
-           << i << endl;
+      ngx::Log(ngx::Error, "unable to extract name=value pair from {}", i);
       continue;
     }
     string name = trim(m[0]);

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <g2o/stuff/logger.h>
+
 #include <iostream>
 
 #include "commands.h"
@@ -10,6 +12,7 @@
 using namespace std;
 
 int main() {
+  g2o::initializeLogging("test_slam_parser");
   SlamParser::SlamContext slamContext;
   SlamParser::Driver driver(slamContext);
   driver.trace_parsing = true;

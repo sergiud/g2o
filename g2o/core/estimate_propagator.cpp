@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
 #include <g2o/core/estimate_propagator.h>
+#include <g2o/stuff/logger.h>
 
 #include <algorithm>
 #include <cassert>
@@ -153,7 +154,7 @@ void EstimatePropagator::propagate(
   // writing debug information like cost for reaching each vertex and the parent
   // used to initialize
 #ifdef DEBUG_ESTIMATE_PROPAGATOR
-  cerr << "Writing cost.dat" << endl;
+  ngx::Log("Writing cost.dat");
   ofstream costStream("cost.dat");
   for (AdjacencyMap::const_iterator it = _adjacencyMap.begin();
        it != _adjacencyMap.end(); ++it) {
@@ -161,7 +162,7 @@ void EstimatePropagator::propagate(
     costStream << "vertex " << u->id() << "  cost " << it->second._distance
                << endl;
   }
-  cerr << "Writing init.dat" << endl;
+  ngx::Log("Writing init.dat");
   ofstream initStream("init.dat");
   vector<AdjacencyMapEntry*> frontierLevels;
   for (AdjacencyMap::iterator it = _adjacencyMap.begin();

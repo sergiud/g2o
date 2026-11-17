@@ -10,9 +10,9 @@
 #include <g2o/core/optimization_algorithm_gauss_newton.h>
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/csparse/linear_solver_csparse.h>
+#include <g2o/stuff/logger.h>
 
 #include <cmath>
-#include <iostream>
 
 #include "edge_se2.h"
 #include "edge_se2_pointxy.h"
@@ -25,6 +25,7 @@ using namespace g2o;
 using namespace g2o::tutorial;
 
 int main() {
+  g2o::initializeLogging("tutorial_slam2d");
   // TODO simulate different sensor offset
   // simulate a robot observing landmarks while travelling on a grid
   SE2 sensorOffsetTransf(0.2, 0.1, -0.1);
@@ -56,7 +57,7 @@ int main() {
 
   // adding the odometry to the optimizer
   // first adding all the vertices
-  cerr << "Optimization: Adding robot poses ... ";
+  ngx::Log("Optimization: Adding robot poses");
   for (const auto& p : simulator.poses()) {
     const SE2& t = p.simulatorPose;
     auto* robot = new VertexSE2;
@@ -64,10 +65,10 @@ int main() {
     robot->setEstimate(t);
     optimizer.addVertex(robot);
   }
-  cerr << "done." << endl;
+  ngx::Log("done.");
 
   // second add the odometry constraints
-  cerr << "Optimization: Adding odometry measurements ... ";
+  ngx::Log("Optimization: Adding odometry measurements");
   for (const auto& simEdge : simulator.odometry()) {
     auto* odometry = new EdgeSE2;
     odometry->vertices()[0] = optimizer.vertex(simEdge.from);
@@ -76,19 +77,19 @@ int main() {
     odometry->setInformation(simEdge.information);
     optimizer.addEdge(odometry);
   }
-  cerr << "done." << endl;
+  ngx::Log("done.");
 
   // add the landmark observations
-  cerr << "Optimization: add landmark vertices ... ";
+  ngx::Log("Optimization: add landmark vertices");
   for (const auto& l : simulator.landmarks()) {
     auto* landmark = new VertexPointXY;
     landmark->setId(l.id);
     landmark->setEstimate(l.simulatedPose);
     optimizer.addVertex(landmark);
   }
-  cerr << "done." << endl;
+  ngx::Log("done.");
 
-  cerr << "Optimization: add landmark observations ... ";
+  ngx::Log("Optimization: add landmark observations");
   for (const auto& simEdge : simulator.landmarkObservations()) {
     auto* landmarkObservation = new EdgeSE2PointXY;
     landmarkObservation->vertices()[0] = optimizer.vertex(simEdge.from);
@@ -98,7 +99,7 @@ int main() {
     landmarkObservation->setParameterId(0, sensorOffset->id());
     optimizer.addEdge(landmarkObservation);
   }
-  cerr << "done." << endl;
+  ngx::Log("done.");
 
   /*********************************************************************************
    * optimization
@@ -113,10 +114,10 @@ int main() {
   firstRobotPose->setFixed(true);
   optimizer.setVerbose(true);
 
-  cerr << "Optimizing" << endl;
+  ngx::Log("Optimizing");
   optimizer.initializeOptimization();
   optimizer.optimize(10);
-  cerr << "done." << endl;
+  ngx::Log("done.");
 
   optimizer.save("tutorial_after.g2o");
 

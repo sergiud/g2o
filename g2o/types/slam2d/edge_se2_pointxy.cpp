@@ -3,6 +3,7 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <g2o/stuff/logger.h>
 #include <g2o/types/slam2d/edge_se2_pointxy.h>
 
 #ifdef G2O_HAVE_OPENGL
@@ -76,8 +77,7 @@ HyperGraphElementAction* EdgeSE2PointXYWriteGnuplotAction::operator()(
   WriteGnuplotAction::Parameters* params =
       dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
   if (params->os == nullptr) {
-    std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified"
-              << std::endl;
+    ngx::Log(ngx::Warning, "on valid os specified");
     return nullptr;
   }
 

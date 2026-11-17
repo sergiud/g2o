@@ -6,6 +6,7 @@
 #include "star.h"
 
 #include <g2o/core/optimization_algorithm_with_hessian.h>
+#include <g2o/stuff/logger.h>
 
 G2O_START_NAMESPACE
 using namespace std;
@@ -41,21 +42,22 @@ bool Star::labelStarEdges(int iterations, EdgeLabeler* labeler) {
     _optimizer->computeInitialGuess();
     int result = _optimizer->optimize(iterations);
     if (result < 1) {
-      cerr << "Vertices num: " << _optimizer->activeVertices().size()
-           << "ids: ";
+      std::string ids;
       for (auto i : _optimizer->indexMapping()) {
-        cerr << i->id() << " ";
+        std::format_to(std::back_inserter(ids), "{} ", i->id());
       }
-      cerr << endl;
-      cerr << "!!! optimization failure" << endl;
-      cerr << "star size=" << _lowLevelEdges.size() << endl;
-      cerr << "gauge: ";
+      std::string gauge;
       for (auto it : _gauge) {
         OptimizableGraph::Vertex* v =
             dynamic_cast<OptimizableGraph::Vertex*>(it);
-        cerr << "[" << v->id() << " " << v->hessianIndex() << "] ";
+        std::format_to(std::back_inserter(gauge), "[{} {}] ", v->id(),
+                       v->hessianIndex());
       }
-      cerr << endl;
+      ngx::Log(ngx::Error,
+               "!!! optimization failure, vertices num: {} ids: {}, star "
+               "size={}, gauge: {}",
+               _optimizer->activeVertices().size(), ids, _lowLevelEdges.size(),
+               gauge);
       ok = false;
     }
   } else {
@@ -68,7 +70,7 @@ bool Star::labelStarEdges(int iterations, EdgeLabeler* labeler) {
     OptimizationAlgorithmWithHessian* solverWithHessian =
         dynamic_cast<OptimizationAlgorithmWithHessian*>(optimizer()->solver());
     if (!solverWithHessian->buildLinearStructure())
-      cerr << "FATAL: failure while building linear structure" << endl;
+      ngx::Log(ngx::Error, "failure while building linear structure");
     // cerr << "errors" << endl;
     optimizer()->computeActiveErrors();
     // cerr << "system" << endl;

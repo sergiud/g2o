@@ -5,11 +5,11 @@
 
 #include <g2o/core/optimizable_graph.h>
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 
 #include <Eigen/Core>
 #include <cstdlib>
 #include <fstream>
-#include <iostream>
 
 #include "simulator3d.h"
 
@@ -21,6 +21,7 @@ using namespace std;
 using namespace Eigen;
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   CommandArgs arg;
   int nlandmarks;
   int simSteps;
@@ -174,7 +175,6 @@ int main(int argc, char** argv) {
   Eigen::Matrix3d dtheta = Eigen::Matrix3d::Identity();
   for (int i = 0; i < simSteps; i++) {
     bool boundariesReached = true;
-    cerr << "m";
     Vector3d dt;
     const Eigen::Isometry3d& pose = robot.pose();
     if (pose.translation().x() < -.5 * worldSize) {
@@ -210,7 +210,6 @@ int main(int argc, char** argv) {
     // select a random move of the robot
     robot.relativeMove(move);
     // do a sense
-    cerr << "s";
     robot.sense();
   }
   string fname = outputFilename + ss.str() + ".g2o";

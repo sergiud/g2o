@@ -10,17 +10,17 @@
 #include <g2o/core/optimization_algorithm_levenberg.h>
 #include <g2o/core/solver.h>
 #include <g2o/solvers/dense/linear_solver_dense.h>
+#include <g2o/stuff/logger.h>
 
 #define DIM_TO_SOLVER(p, l) BlockSolver<BlockSolverTraits<p, l> >
 
-#define ALLOC_DENSE(s, p, l)                                           \
-  if (1) {                                                             \
-    std::cerr << "# Using DENSE poseDim " << p << " landMarkDim " << l \
-              << std::endl;                                            \
-    DIM_TO_SOLVER(p, l)::LinearSolverType* linearSolver =              \
-        new LinearSolverDense<DIM_TO_SOLVER(p, l)::PoseMatrixType>();  \
-    s = new DIM_TO_SOLVER(p, l)(linearSolver);                         \
-  } else                                                               \
+#define ALLOC_DENSE(s, p, l)                                          \
+  if (1) {                                                            \
+    ngx::Log("# Using DENSE poseDim {} landMarkDim {}", p, l);        \
+    DIM_TO_SOLVER(p, l)::LinearSolverType* linearSolver =             \
+        new LinearSolverDense<DIM_TO_SOLVER(p, l)::PoseMatrixType>(); \
+    s = new DIM_TO_SOLVER(p, l)(linearSolver);                        \
+  } else                                                              \
     (void)0
 
 using namespace std;

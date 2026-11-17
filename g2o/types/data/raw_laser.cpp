@@ -3,9 +3,11 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <g2o/stuff/logger.h>
 #include <g2o/types/data/raw_laser.h>
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 
 using namespace std;
 
@@ -18,7 +20,7 @@ RawLaser::~RawLaser() = default;
 
 bool RawLaser::write(std::ostream& /*os*/) const {
   // TODO
-  cerr << "RawLaser::write() not implemented yet." << endl;
+  ngx::Log(ngx::Error, "RawLaser::write() not implemented yet.");
   return false;
 }
 

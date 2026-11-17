@@ -20,6 +20,7 @@
 #include "gui_hyper_graph_action.h"
 #include "main_window.h"
 #include "stream_redirect.h"
+#include "text_edit_sink.h"
 
 G2O_START_NAMESPACE
 
@@ -48,8 +49,9 @@ int RunG2OViewer::run(int argc, char** argv, CommandArgs& arg) {
   mw.updateRobustKernels();
   mw.show();
 
-  // redirect the output that normally goes to cerr to the textedit in the
-  // viewer
+  // Show the logged messages and the output that goes to cerr in the text
+  // edit of the viewer.
+  TextEditSink sink(mw.plainTextEdit);
   StreamRedirect redirect(std::cerr, mw.plainTextEdit);
 
   // setting up the optimizer

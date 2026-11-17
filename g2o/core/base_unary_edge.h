@@ -9,9 +9,9 @@
 #include <g2o/config.h>
 #include <g2o/core/base_edge.h>
 #include <g2o/core/robust_kernel.h>
+#include <g2o/stuff/logger.h>
 
 #include <cassert>
-#include <iostream>
 #include <limits>
 
 G2O_START_NAMESPACE

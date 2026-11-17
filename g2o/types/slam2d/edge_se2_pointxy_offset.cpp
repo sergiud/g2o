@@ -6,7 +6,8 @@
 #include <g2o/types/slam2d/edge_se2_pointxy_offset.h>
 #include <g2o/types/slam2d/parameter_se2_offset.h>
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 
 G2O_START_NAMESPACE
 using namespace std;
@@ -55,7 +56,6 @@ bool EdgeSE2PointXYOffset::read(std::istream& is) {
 }
 
 bool EdgeSE2PointXYOffset::write(std::ostream& os) const {
-  cerr << "W";
   os << offsetParam->id() << " ";
   for (int i = 0; i < 2; i++) os << measurement()[i] << " ";
   for (int i = 0; i < information().rows(); i++)

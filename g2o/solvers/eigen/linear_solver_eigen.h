@@ -8,11 +8,11 @@
 
 #include <g2o/core/linear_solver.h>
 #include <g2o/core/sparse_block_matrix.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/timeutil.h>
 
 #include <Eigen/Sparse>
 #include <Eigen/SparseCholesky>
-#include <iostream>
 #include <vector>
 
 G2O_START_NAMESPACE
@@ -80,9 +80,9 @@ class LinearSolverEigen : public LinearSolver<MatrixType> {
     if (_cholesky.info() !=
         Eigen::Success) {  // the matrix is not positive definite
       if (_writeDebug) {
-        std::cerr << "Cholesky failure, writing debug.txt (Hessian loadable by "
-                     "Octave)"
-                  << std::endl;
+        ngx::Log(
+            ngx::Error,
+            "Cholesky failure, writing debug.txt (Hessian loadable by Octave)");
         A.writeOctave("debug.txt");
       }
       return false;

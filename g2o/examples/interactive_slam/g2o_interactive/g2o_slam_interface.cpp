@@ -3,6 +3,7 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <g2o/stuff/logger.h>
 #include <g2o/types/slam3d/se3quat.h>
 #include <g2o_interactive/g2o_slam_interface.h>
 
@@ -145,12 +146,11 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension,
     }
 
     if (_optimizer->edges().empty()) {
-      cerr << "FIRST EDGE ";
       if (v1->id() < v2->id()) {
-        cerr << "fixing " << v1->id() << endl;
+        ngx::Log("FIRST EDGE fixing {}", v1->id());
         v1->setFixed(true);
       } else {
-        cerr << "fixing " << v2->id() << endl;
+        ngx::Log("FIRST EDGE fixing {}", v2->id());
         v2->setFixed(true);
       }
     }
@@ -187,7 +187,7 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension,
           break;
         }
         default:
-          cerr << "doInit wrong value\n";
+          ngx::Log(ngx::Error, "doInit wrong value");
       }
     }
 
@@ -248,12 +248,11 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension,
     }
 
     if (_optimizer->edges().empty()) {
-      cerr << "FIRST EDGE ";
       if (v1->id() < v2->id()) {
-        cerr << "fixing " << v1->id() << endl;
+        ngx::Log("FIRST EDGE fixing {}", v1->id());
         v1->setFixed(true);
       } else {
-        cerr << "fixing " << v2->id() << endl;
+        ngx::Log("FIRST EDGE fixing {}", v2->id());
         v2->setFixed(true);
       }
     }
@@ -290,13 +289,12 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension,
           break;
         }
         default:
-          cerr << "doInit wrong value\n";
+          ngx::Log(ngx::Error, "doInit wrong value");
       }
     }
 
   } else {
-    cerr << __PRETTY_FUNCTION__ << " not implemented for this dimension"
-         << endl;
+    ngx::Log(ngx::Error, "not implemented for this dimension");
     return false;
   }
 
@@ -421,12 +419,12 @@ G2oSlamInterface::SolveResult G2oSlamInterface::solve() {
 
     if (_firstOptimization) {
       if (!_optimizer->initializeOptimization()) {
-        cerr << "initialization failed" << endl;
+        ngx::Log(ngx::Error, "initialization failed");
         return ERROR;
       }
     } else {
       if (!_optimizer->updateInitialization(_verticesAdded, _edgesAdded)) {
-        cerr << "updating initialization failed" << endl;
+        ngx::Log(ngx::Error, "updating initialization failed");
         return ERROR;
       }
     }

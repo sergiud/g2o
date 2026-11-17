@@ -9,9 +9,9 @@
 #include <g2o/core/optimization_algorithm_levenberg.h>
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/csparse/linear_solver_csparse.h>
+#include <g2o/stuff/logger.h>
 
 #include <QApplication>
-#include <iostream>
 
 #include "main_window.h"
 using namespace std;
@@ -20,6 +20,7 @@ using namespace g2o;
 G2O_USE_TYPE_GROUP(slam2d);
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   QApplication qapp(argc, argv);
 
   MainWindow mw;

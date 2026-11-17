@@ -34,8 +34,10 @@
 #include "edge_types_cost_function.h"
 #include "star.h"
 // #include "backbone_tree_action.h"
+#include <g2o/stuff/logger.h>
 #include <g2o/types/slam3d/parameter_camera.h>
 #include <g2o/types/slam3d/parameter_se3_offset.h>
+#include <ng-log/experimental/signal_safe_log.h>
 
 #include "simple_star_ops.h"
 
@@ -52,7 +54,7 @@ void sigquit_handler(int sig) {
     hasToStop = 1;
     static int cnt = 0;
     if (cnt++ == 2) {
-      cerr << __PRETTY_FUNCTION__ << " forcing exit" << endl;
+      ngx::Log(ngx::SignalSafe | ngx::Warning, "forcing exit");
       exit(1);
     }
   }
@@ -74,6 +76,7 @@ void sigquit_handler(int sig) {
 
 */
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   int starIterations;
   int highIterations;
   int lowIterations;
@@ -196,36 +199,36 @@ int main(int argc, char** argv) {
     optimizer.setRenamedTypesFromString(loadLookup);
   }
   if (inputFilename.empty()) {
-    cerr << "No input data specified" << endl;
+    ngx::Log(ngx::Error, "No input data specified");
     return 0;
   } else if (inputFilename == "-") {
-    cerr << "Read input from stdin" << endl;
+    ngx::Log("Read input from stdin");
     if (!optimizer.load(cin)) {
-      cerr << "Error loading graph" << endl;
+      ngx::Log(ngx::Error, "Error loading graph");
       return 2;
     }
   } else {
-    cerr << "Read input from " << inputFilename << endl;
+    ngx::Log("Read input from {}", inputFilename);
     ifstream ifs(inputFilename.c_str());
     if (!ifs) {
-      cerr << "Failed to open file" << endl;
+      ngx::Log(ngx::Error, "Failed to open file");
       return 1;
     }
     if (!optimizer.load(ifs)) {
-      cerr << "Error loading graph" << endl;
+      ngx::Log(ngx::Error, "Error loading graph");
       return 2;
     }
   }
-  cerr << "Loaded " << optimizer.vertices().size() << " vertices" << endl;
-  cerr << "Loaded " << optimizer.edges().size() << " edges" << endl;
+  ngx::Log("Loaded {} vertices", optimizer.vertices().size());
+  ngx::Log("Loaded {} edges", optimizer.edges().size());
 
   OptimizableGraph::EdgeSet originalEdges = optimizer.edges();
 
   if (0 && !outputfilename.empty()) {
-    cerr << "saving " << outputfilename << " ... ";
+    ngx::Log("saving {}", outputfilename);
     ofstream os(outputfilename.c_str());
     optimizer.save(os);
-    cerr << "done." << endl;
+    ngx::Log("done.");
     return 0;
   }
 
@@ -239,7 +242,7 @@ int main(int argc, char** argv) {
   if (p0 != nullptr) {
     ParameterSE3Offset* originalParams = dynamic_cast<ParameterSE3Offset*>(p0);
     if (originalParams != nullptr) {
-      cerr << "ORIGINAL PARAMS" << endl;
+      ngx::Log("ORIGINAL PARAMS");
       auto* se3OffsetParam = new ParameterSE3Offset();
       se3OffsetParam->setId(100);
       optimizer.addParameter(se3OffsetParam);
@@ -253,7 +256,7 @@ int main(int argc, char** argv) {
   EdgeLabeler labeler(&optimizer);
 
   if (optimizer.vertices().empty()) {
-    cerr << "Graph contains no vertices" << endl;
+    ngx::Log(ngx::Error, "Graph contains no vertices");
     return 1;
   }
 
@@ -264,25 +267,27 @@ int main(int argc, char** argv) {
   OptimizationAlgorithm* hsolver =
       solverFactory->construct(strHSolver, hsolverProperty);
   if (solver == nullptr) {
-    cerr << "Error allocating solver. Allocating \"" << strSolver
-         << "\" failed!" << endl;
+    ngx::Log(ngx::Error, "Error allocating solver. Allocating \"{}\" failed!",
+             strSolver);
     return 0;
   }
   if (hsolver == nullptr) {
-    cerr << "Error allocating hsolver. Allocating \"" << strHSolver
-         << "\" failed!" << endl;
+    ngx::Log(ngx::Error, "Error allocating hsolver. Allocating \"{}\" failed!",
+             strHSolver);
     return 0;
   }
 
   set<int> vertexDimensions = optimizer.dimensions();
   if (!optimizer.isSolverSuitable(solverProperty, vertexDimensions)) {
-    cerr << "The selected solver is not suitable for optimizing the given graph"
-         << endl;
+    ngx::Log(
+        ngx::Error,
+        "The selected solver is not suitable for optimizing the given graph");
     return 3;
   }
   if (!optimizer.isSolverSuitable(hsolverProperty, vertexDimensions)) {
-    cerr << "The selected solver is not suitable for optimizing the given graph"
-         << endl;
+    ngx::Log(
+        ngx::Error,
+        "The selected solver is not suitable for optimizing the given graph");
     return 3;
   }
 
@@ -314,9 +319,10 @@ int main(int argc, char** argv) {
       }
       break;
     default:
-      cerr << "Fatal: unknown backbone type. The largest vertex dimension is: "
-           << poseDim << "." << endl
-           << "Exiting." << endl;
+      ngx::Log(ngx::Error,
+               "unknown backbone type. The largest vertex dimension is: "
+               "{}.\nExiting.",
+               poseDim);
       return -1;
   }
 
@@ -328,14 +334,14 @@ int main(int argc, char** argv) {
 
   if (gaugeFreedom) {
     if (gauge == nullptr) {
-      cerr << "# cannot find a vertex to fix in this thing" << endl;
+      ngx::Log(ngx::Error, "# cannot find a vertex to fix in this thing");
       return 2;
     } else {
-      cerr << "# graph is fixed by node " << gauge->id() << endl;
+      ngx::Log("# graph is fixed by node {}", gauge->id());
       gauge->setFixed(true);
     }
   } else {
-    cerr << "# graph is fixed by priors" << endl;
+    ngx::Log("# graph is fixed by priors");
   }
 
   // sanity check
@@ -345,10 +351,9 @@ int main(int argc, char** argv) {
   // cerr << PVAR(d.visited().size()) << endl;
 
   if (d.visited().size() != optimizer.vertices().size()) {
-    cerr << CL_RED("Warning: d.visited().size() != optimizer.vertices().size()")
-         << endl;
-    cerr << "visited: " << d.visited().size() << endl;
-    cerr << "vertices: " << optimizer.vertices().size() << endl;
+    ngx::Log(ngx::Warning, "d.visited().size() != optimizer.vertices().size()");
+    ngx::Log("visited: {}", d.visited().size());
+    ngx::Log("vertices: {}", optimizer.vertices().size());
   }
 
   // BATCH optimization
@@ -358,7 +363,7 @@ int main(int argc, char** argv) {
   optimizer.computeActiveErrors();
   double loadChi = optimizer.activeChi2();
 
-  cerr << "Initial chi2 = " << FIXED(loadChi) << endl;
+  ngx::Log("Initial chi2 = {:f}", loadChi);
 
   if (initialGuess) optimizer.computeInitialGuess();
   signal(SIGINT, sigquit_handler);
@@ -386,9 +391,9 @@ int main(int argc, char** argv) {
                      hierarchicalDiameter, 1, starIterations, uThreshold,
                      debug);
 
-  cerr << "stars computed, stars.size()= " << stars.size() << endl;
+  ngx::Log("stars computed, stars.size()= {}", stars.size());
 
-  cerr << "hierarchy done, determining border" << endl;
+  ngx::Log("hierarchy done, determining border");
   EdgeStarMap hesmap;
   constructEdgeStarMap(hesmap, stars, false);
   computeBorder(stars, hesmap);
@@ -418,8 +423,8 @@ int main(int argc, char** argv) {
       heset.insert(e);
     }
   }
-  cerr << "eset.size()= " << eset.size() << endl;
-  cerr << "heset.size()= " << heset.size() << endl;
+  ngx::Log("eset.size()= {}", eset.size());
+  ngx::Log("heset.size()= {}", heset.size());
 
   ofstream starStream("stars.g2o");
   optimizer.saveSubset(starStream, eset);
@@ -429,9 +434,9 @@ int main(int argc, char** argv) {
   optimizer.saveSubset(hstarStream, heset);
   hstarStream.close();
 
-  cerr << "stars done!" << endl;
+  ngx::Log("stars done!");
 
-  cerr << "optimizing the high layer" << endl;
+  ngx::Log("optimizing the high layer");
   for (auto it : hgauge) {
     OptimizableGraph::Vertex* g = dynamic_cast<OptimizableGraph::Vertex*>(it);
     g->setFixed(true);
@@ -449,20 +454,20 @@ int main(int argc, char** argv) {
   optimizer.computeActiveErrors();
   double hFinalChi = optimizer.activeChi2();
 
-  cerr << "done" << endl;
+  ngx::Log("done");
 
   if (kernelCreator == nullptr) {
-    cerr << "# Robust error function disabled ";
+    ngx::Log("# Robust error function disabled");
     for (auto it : optimizer.edges()) {
       SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(it);
       e->setRobustKernel(nullptr);
     }
-    cerr << "done." << endl;
+    ngx::Log("done.");
   } else {
-    cerr << "# Preparing robust error function ay low level done";
+    ngx::Log("# Preparing robust error function ay low level done");
   }
 
-  cerr << "fixing the hstructure, and optimizing the floating nodes" << endl;
+  ngx::Log("fixing the hstructure, and optimizing the floating nodes");
   for (auto it : hvset) {
     OptimizableGraph::Vertex* g = dynamic_cast<OptimizableGraph::Vertex*>(it);
     g->setFixed(true);
@@ -470,15 +475,15 @@ int main(int argc, char** argv) {
   optimizer.initializeOptimization(eset);
   optimizer.computeInitialGuess();
   optimizer.optimize(1);
-  cerr << "done" << endl;
+  ngx::Log("done");
   if (debug) {
     ofstream os("debug_low_level.g2o");
     optimizer.saveSubset(os, eset);
   }
 
-  cerr << "adding the original constraints, locking hierarchical solution and "
-          "optimizing the free variables"
-       << endl;
+  ngx::Log(
+      "adding the original constraints, locking hierarchical solution and "
+      "optimizing the free variables");
   for (auto it : vset) {
     OptimizableGraph::Vertex* g = dynamic_cast<OptimizableGraph::Vertex*>(it);
     g->setFixed(true);
@@ -492,7 +497,7 @@ int main(int argc, char** argv) {
   optimizer.computeInitialGuess();
   optimizer.optimize(lowIterations);
 
-  cerr << "relaxing the full problem" << endl;
+  ngx::Log("relaxing the full problem");
   for (auto it : vset) {
     OptimizableGraph::Vertex* g = dynamic_cast<OptimizableGraph::Vertex*>(it);
     g->setFixed(false);
@@ -504,7 +509,7 @@ int main(int argc, char** argv) {
   optimizer.setAlgorithm(solver);
   optimizer.initializeOptimization(0);
   int result = optimizer.optimize(lowIterations);
-  if (result < 0) cerr << "failure in low level optimization" << endl;
+  if (result < 0) ngx::Log(ngx::Error, "failure in low level optimization");
 
   optimizer.computeActiveErrors();
   double finalChi = optimizer.activeChi2();
@@ -565,14 +570,14 @@ int main(int argc, char** argv) {
 
   if (!outputfilename.empty()) {
     if (outputfilename == "-") {
-      cerr << "saving to stdout";
+      ngx::Log("saving to stdout");
       optimizer.saveSubset(cout, originalEdges);
     } else {
-      cerr << "saving " << outputfilename << " ... ";
+      ngx::Log("saving {}", outputfilename);
       ofstream os(outputfilename.c_str());
       optimizer.saveSubset(os, originalEdges);
     }
-    cerr << "done." << endl;
+    ngx::Log("done.");
   }
 
   // destroy all the singletons

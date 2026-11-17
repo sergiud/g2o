@@ -8,6 +8,7 @@
 #include <g2o/core/solver.h>
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/csparse/linear_solver_csparse.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/types/icp/types_icp.h>
 
 #include <Eigen/StdVector>
@@ -58,6 +59,7 @@ double Sample::gaussian(double sigma) {
 //
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   int num_points = 0;
 
   // check for arg, # of points to use in projection SBA
@@ -112,7 +114,7 @@ int main(int argc, char** argv) {
     vc->setEstimate(cam);
     vc->setId(vertex_id);  // vertex id
 
-    cerr << t.transpose() << " | " << q.coeffs().transpose() << endl;
+    ngx::Log("{} | {}", t.transpose(), q.coeffs().transpose());
 
     // set first cam pose fixed
     if (i == 0) vc->setFixed(true);
@@ -240,7 +242,7 @@ int main(int argc, char** argv) {
   vc->setEstimate(cam);
   optimizer.initializeOptimization();
   optimizer.computeActiveErrors();
-  cout << "Initial chi2 = " << FIXED(optimizer.chi2()) << endl;
+  ngx::Log("Initial chi2 = {:f}", optimizer.chi2());
 
   optimizer.setVerbose(true);
 

@@ -8,10 +8,10 @@
 
 #include <g2o/core/estimate_propagator.h>
 #include <g2o/core/sparse_optimizer.h>
+#include <g2o/stuff/logger.h>
 
 #include <QFileDialog>
 #include <fstream>
-#include <iostream>
 using namespace std;
 
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags)
@@ -28,9 +28,9 @@ void MainWindow::on_actionLoad_triggered(bool) {
   if (!filename.isNull()) {
     ifstream ifs(filename.toStdString().c_str());
     viewer->graph->load(ifs);
-    cerr << "Graph loaded with " << viewer->graph->vertices().size()
-         << " vertices and " << viewer->graph->edges().size() << " measurments"
-         << endl;
+    g2o::ngx::Log("Graph loaded with {} vertices and {} measurments",
+                  viewer->graph->vertices().size(),
+                  viewer->graph->edges().size());
   }
   viewer->update();
   fixGraph();
@@ -43,9 +43,9 @@ void MainWindow::on_actionSave_triggered(bool) {
     ofstream fout(filename.toStdString().c_str());
     viewer->graph->save(fout);
     if (fout.good())
-      cerr << "Saved " << filename.toStdString() << endl;
+      g2o::ngx::Log("Saved {}", filename.toStdString());
     else
-      cerr << "Error while saving file" << endl;
+      g2o::ngx::Log(g2o::ngx::Error, "Error while saving file");
   }
 }
 
@@ -53,7 +53,7 @@ void MainWindow::on_actionQuit_triggered(bool) { close(); }
 
 void MainWindow::on_btnOptimize_clicked() {
   if (viewer->graph->vertices().empty() || viewer->graph->edges().empty()) {
-    cerr << "Graph has no vertices / egdes" << endl;
+    g2o::ngx::Log(g2o::ngx::Error, "Graph has no vertices / egdes");
     return;
   }
 
@@ -69,7 +69,8 @@ void MainWindow::on_btnOptimize_clicked() {
   int maxIterations = spIterations->value();
   int iter = viewer->graph->optimize(maxIterations);
   if (maxIterations > 0 && (iter == 0)) {
-    cerr << "Optimization failed, result might be invalid" << endl;
+    g2o::ngx::Log(g2o::ngx::Error,
+                  "Optimization failed, result might be invalid");
   }
 
   if (cbCovariances->isChecked()) {
@@ -97,14 +98,15 @@ void MainWindow::fixGraph() {
   g2o::OptimizableGraph::Vertex* gauge = viewer->graph->findGauge();
   if (gaugeFreedom) {
     if (gauge == nullptr) {
-      cerr << "cannot find a vertex to fix in this thing" << endl;
+      g2o::ngx::Log(g2o::ngx::Error,
+                    "cannot find a vertex to fix in this thing");
       return;
     } else {
-      cerr << "graph is fixed by node " << gauge->id() << endl;
+      g2o::ngx::Log("graph is fixed by node {}", gauge->id());
       gauge->setFixed(true);
     }
   } else {
-    cerr << "graph is fixed by priors" << endl;
+    g2o::ngx::Log("graph is fixed by priors");
   }
 
   viewer->graph->setVerbose(true);

@@ -10,11 +10,11 @@
 #include <g2o/core/optimization_algorithm_gauss_newton.h>
 #include <g2o/solvers/cholmod/linear_solver_cholmod.h>
 #include <g2o/solvers/pcg/linear_solver_pcg.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 
 #include <fstream>
 #include <iomanip>
-#include <iostream>
 
 #include "types_slam2d_online.h"
 #include "types_slam3d_online.h"
@@ -23,15 +23,15 @@ using namespace Eigen;
 
 #define DIM_TO_SOLVER(p, l) BlockSolver<BlockSolverTraits<p, l> >
 
-#define ALLOC_PCG(s, p, l)                                                  \
-  if (1) {                                                                  \
-    std::cerr << "# Using PCG online poseDim " << p << " landMarkDim " << l \
-              << " blockordering 1" << std::endl;                           \
-    LinearSolverPCG<DIM_TO_SOLVER(p, l)::PoseMatrixType>* linearSolver =    \
-        new LinearSolverPCG<DIM_TO_SOLVER(p, l)::PoseMatrixType>();         \
-    linearSolver->setMaxIterations(6);                                      \
-    s = new DIM_TO_SOLVER(p, l)(linearSolver);                              \
-  } else                                                                    \
+#define ALLOC_PCG(s, p, l)                                                   \
+  if (1) {                                                                   \
+    ngx::Log("# Using PCG online poseDim {} landMarkDim {} blockordering 1", \
+             p, l);                                                          \
+    LinearSolverPCG<DIM_TO_SOLVER(p, l)::PoseMatrixType>* linearSolver =     \
+        new LinearSolverPCG<DIM_TO_SOLVER(p, l)::PoseMatrixType>();          \
+    linearSolver->setMaxIterations(6);                                       \
+    s = new DIM_TO_SOLVER(p, l)(linearSolver);                               \
+  } else                                                                     \
     (void)0
 
 G2O_START_NAMESPACE
@@ -72,8 +72,7 @@ int SparseOptimizerOnline::optimize(int iterations, bool online) {
   if (!online) {
     ok = _underlyingSolver->buildStructure();
     if (!ok) {
-      cerr << __PRETTY_FUNCTION__ << ": Failure while building CCS structure"
-           << endl;
+      ngx::Log(ngx::Error, "Failure while building CCS structure");
       return 0;
     }
   }
@@ -127,9 +126,8 @@ int SparseOptimizerOnline::optimize(int iterations, bool online) {
 
   if (verbose()) {
     computeActiveErrors();
-    cerr << "nodes = " << vertices().size()
-         << "\t edges= " << _activeEdges.size()
-         << "\t chi2= " << FIXED(activeChi2()) << endl;
+    ngx::Log("nodes = {}\t edges= {}\t chi2= {:f}", vertices().size(),
+             _activeEdges.size(), activeChi2());
   }
 
   if (vizWithGnuplot) gnuplotVisualization();
@@ -204,8 +202,8 @@ bool SparseOptimizerOnline::initSolver(int dimension, int /*batchEveryN*/) {
   _underlyingSolver = gaussNewton->solver();
 
   if (solver() == nullptr) {
-    cerr << "Error allocating solver. Allocating CHOLMOD solver failed!"
-         << endl;
+    ngx::Log(ngx::Error,
+             "Error allocating solver. Allocating CHOLMOD solver failed!");
     return false;
   }
   return true;

@@ -7,11 +7,12 @@
 #define G2O_FACTORY_H
 
 #include <g2o/core/creators.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/misc.h>
 
-#include <iostream>
 #include <map>
 #include <memory>
+#include <ostream>
 #include <string>
 
 // define to get some verbose output
@@ -83,8 +84,7 @@ class G2O_CORE_API Factory {
 
     ~CreatorInformation() {
 #ifdef G2O_DEBUG_FACTORY
-      std::cout << "Deleting " << static_cast<void*>(creator.get())
-                << std::endl;
+      ngx::Log("Deleting {}", static_cast<void*>(creator.get()));
 #endif
     }
   };
@@ -108,16 +108,14 @@ class RegisterTypeProxy {
  public:
   RegisterTypeProxy(const std::string& name) : _name(name) {
 #ifdef G2O_DEBUG_FACTORY
-    std::cout << __FUNCTION__ << ": Registering " << _name << " of type "
-              << typeid(T).name() << std::endl;
+    ngx::Log("Registering {} of type {}", _name, typeid(T).name());
 #endif
     Factory::instance()->registerType(_name, new HyperGraphElementCreator<T>);
   }
 
   ~RegisterTypeProxy() {
 #ifdef G2O_DEBUG_FACTORY
-    std::cout << __FUNCTION__ << ": Unregistering " << _name << " of type "
-              << typeid(T).name() << std::endl;
+    ngx::Log("Unregistering {} of type {}", _name, typeid(T).name());
 #endif
     Factory::instance()->unregisterType(_name);
   }

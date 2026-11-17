@@ -10,12 +10,14 @@
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/command_args.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>
 #include <g2o/types/data/types_data.h>
 #include <g2o/types/sclam2d/types_sclam2d.h>
 #include <g2o/types/slam2d/types_slam2d.h>
+#include <ng-log/experimental/signal_safe_log.h>
 
 #include <csignal>
 #include <fstream>
@@ -37,13 +39,14 @@ void sigquit_handler(int sig) {
     hasToStop = 1;
     static int cnt = 0;
     if (cnt++ == 2) {
-      cerr << __PRETTY_FUNCTION__ << " forcing exit" << endl;
+      ngx::Log(ngx::SignalSafe | ngx::Warning, "forcing exit");
       exit(1);
     }
   }
 }
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   int maxIterations;
   bool verbose;
   string inputFilename;
@@ -78,29 +81,29 @@ int main(int argc, char** argv) {
 
   // loading
   if (!Gm2dlIO::readGm2dl(inputFilename, optimizer, false)) {
-    cerr << "Error while loading gm2dl file" << endl;
+    ngx::Log(ngx::Error, "Error while loading gm2dl file");
   }
 
   VertexSE2* laserOffset =
       dynamic_cast<VertexSE2*>(optimizer.vertex(numeric_limits<int>::max()));
   // laserOffset->setEstimate(SE2()); // set to Identity
   if (laserOffset != nullptr) {
-    cerr << "Initial laser offset "
-         << laserOffset->estimate().toVector().transpose() << endl;
+    ngx::Log("Initial laser offset {}",
+             laserOffset->estimate().toVector().transpose());
   }
   bool gaugeFreedom = optimizer.gaugeFreedom();
 
   OptimizableGraph::Vertex* gauge = optimizer.findGauge();
   if (gaugeFreedom) {
     if (gauge == nullptr) {
-      cerr << "# cannot find a vertex to fix in this thing" << endl;
+      ngx::Log(ngx::Error, "# cannot find a vertex to fix in this thing");
       return 2;
     } else {
-      cerr << "# graph is fixed by node " << gauge->id() << endl;
+      ngx::Log("# graph is fixed by node {}", gauge->id());
       gauge->setFixed(true);
     }
   } else {
-    cerr << "# graph is fixed by priors" << endl;
+    ngx::Log("# graph is fixed by priors");
   }
 
   // sanity check
@@ -110,10 +113,9 @@ int main(int argc, char** argv) {
   // cerr << PVAR(d.visited().size()) << endl;
 
   if (d.visited().size() != optimizer.vertices().size()) {
-    cerr << CL_RED("Warning: d.visited().size() != optimizer.vertices().size()")
-         << endl;
-    cerr << "visited: " << d.visited().size() << endl;
-    cerr << "vertices: " << optimizer.vertices().size() << endl;
+    ngx::Log(ngx::Warning, "d.visited().size() != optimizer.vertices().size()");
+    ngx::Log("visited: {}", d.visited().size());
+    ngx::Log("vertices: {}", optimizer.vertices().size());
     if (1)
       for (SparseOptimizer::VertexIDMap::const_iterator it =
                optimizer.vertices().begin();
@@ -121,8 +123,7 @@ int main(int argc, char** argv) {
         OptimizableGraph::Vertex* v =
             dynamic_cast<OptimizableGraph::Vertex*>(it->second);
         if (d.visited().count(v) == 0) {
-          cerr << "\t unvisited vertex " << it->first << " " << (void*)v
-               << endl;
+          ngx::Log("\t unvisited vertex {} {}", it->first, (void*)v);
           v->setFixed(true);
         }
       }
@@ -130,7 +131,7 @@ int main(int argc, char** argv) {
 
   optimizer.initializeOptimization();
   optimizer.computeActiveErrors();
-  cerr << "Initial chi2 = " << FIXED(optimizer.chi2()) << endl;
+  ngx::Log("Initial chi2 = {:f}", optimizer.chi2());
 
   // if (guessCostFunction)
   // optimizer.computeInitialGuess(guessCostFunction);
@@ -139,19 +140,23 @@ int main(int argc, char** argv) {
 
   int i = optimizer.optimize(maxIterations);
   if (maxIterations > 0 && (i == 0)) {
-    cerr << "optimize failed, result might be invalid" << endl;
+    ngx::Log(ngx::Error, "optimize failed, result might be invalid");
   }
 
   if (laserOffset != nullptr) {
-    cerr << "Calibrated laser offset "
-         << laserOffset->estimate().toVector().transpose() << endl;
+    ngx::Log("Calibrated laser offset {}",
+             laserOffset->estimate().toVector().transpose());
   }
 
   if (!outputfilename.empty()) {
     Gm2dlIO::updateLaserData(optimizer);
-    cerr << "Writing " << outputfilename << " ... ";
+    ngx::Log("Writing {}", outputfilename);
     bool writeStatus = Gm2dlIO::writeGm2dl(outputfilename, optimizer);
-    cerr << (writeStatus ? "done." : "failed") << endl;
+    if (writeStatus) {
+      ngx::Log("done.");
+    } else {
+      ngx::Log(ngx::Error, "failed");
+    }
   }
 
   if (!gnudump.empty()) {

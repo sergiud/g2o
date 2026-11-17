@@ -14,6 +14,7 @@
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/command_args.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>
@@ -26,7 +27,6 @@
 #include <csignal>
 #include <fstream>
 #include <iomanip>
-#include <iostream>
 #include <sstream>
 #include <string>
 
@@ -41,7 +41,7 @@ using namespace Eigen;
 typedef SigmaPoint<VectorXd> MySigmaPoint;
 
 void testMarginals(SparseOptimizer& optimizer) {
-  cerr << "Projecting marginals" << endl;
+  ngx::Log("Projecting marginals");
   std::vector<std::pair<int, int> > blockIndices;
   for (auto v : optimizer.activeVertices()) {
     if (v->hessianIndex() >= 0) {
@@ -55,10 +55,10 @@ void testMarginals(SparseOptimizer& optimizer) {
   SparseBlockMatrix<MatrixXd> spinv;
   if (optimizer.computeMarginals(spinv, blockIndices)) {
     for (auto v : optimizer.activeVertices()) {
-      cerr << "Vertex id:" << v->id() << endl;
+      ngx::Log("Vertex id:{}", v->id());
       if (v->hessianIndex() >= 0) {
-        cerr << "increments block :" << v->hessianIndex() << ", "
-             << v->hessianIndex() << " covariance:" << endl;
+        ngx::Log("increments block :{}, {} covariance:", v->hessianIndex(),
+                 v->hessianIndex());
         VectorXd mean(
             v->minimalEstimateDimension());  // HACK: need to set identity
         mean.fill(0);
@@ -67,7 +67,7 @@ void testMarginals(SparseOptimizer& optimizer) {
         v->getMinimalEstimateData(&oldMean[0]);
         MatrixXd& cov = *(spinv.block(v->hessianIndex(), v->hessianIndex()));
         std::vector<MySigmaPoint, Eigen::aligned_allocator<MySigmaPoint> > spts;
-        cerr << cov << endl;
+        ngx::Log("{}", cov);
         if (!sampleUnscented(spts, mean, cov)) continue;
 
         // now apply the oplus operator to the sigma points,
@@ -91,14 +91,13 @@ void testMarginals(SparseOptimizer& optimizer) {
         }
         MatrixXd cov2 = cov;
         reconstructGaussian(mean, cov2, tspts);
-        cerr << "global block :" << v->hessianIndex() << ", "
-             << v->hessianIndex() << endl;
-        cerr << "mean: " << endl;
-        cerr << mean << endl;
-        cerr << "oldMean: " << endl;
-        cerr << oldMean << endl;
-        cerr << "cov: " << endl;
-        cerr << cov2 << endl;
+        ngx::Log("global block :{}, {}", v->hessianIndex(), v->hessianIndex());
+        ngx::Log("mean: ");
+        ngx::Log("{}", mean);
+        ngx::Log("oldMean: ");
+        ngx::Log("{}", oldMean);
+        ngx::Log("cov: ");
+        ngx::Log("{}", cov2);
       }
       // if (v->hessianIndex()>0){
       //   cerr << "inv block :" << v->hessianIndex()-1 << ", " <<
@@ -117,16 +116,15 @@ int unscentedTest() {
     }
   }
   m += MatrixXd::Identity(6, 6);
-  cerr << m;
+  ngx::Log("{}", Streamed{m});
   VectorXd mean(6);
   mean.fill(1);
 
   std::vector<MySigmaPoint, Eigen::aligned_allocator<MySigmaPoint> > spts;
   sampleUnscented(spts, mean, m);
   for (size_t i = 0; i < spts.size(); i++) {
-    cerr << "Point " << i << " " << endl
-         << "wi=" << spts[i]._wi << " wp=" << spts[i]._wp << " " << endl;
-    cerr << spts[i]._sample << endl;
+    ngx::Log("Point {} \nwi={} wp={} ", i, spts[i]._wi, spts[i]._wp);
+    ngx::Log("{}", spts[i]._sample);
   }
 
   VectorXd recMean(6);
@@ -134,11 +132,11 @@ int unscentedTest() {
 
   reconstructGaussian(recMean, recCov, spts);
 
-  cerr << "recMean" << endl;
-  cerr << recMean << endl;
+  ngx::Log("recMean");
+  ngx::Log("{}", recMean);
 
-  cerr << "recCov" << endl;
-  cerr << recCov << endl;
+  ngx::Log("recCov");
+  ngx::Log("{}", recCov);
 
   return 0;
 }

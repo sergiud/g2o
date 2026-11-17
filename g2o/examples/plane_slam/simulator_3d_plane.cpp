@@ -9,6 +9,7 @@
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/pcg/linear_solver_pcg.h>
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/types/slam3d/types_slam3d.h>
 #include <g2o/types/slam3d_addons/types_slam3d_addons.h>
@@ -253,6 +254,7 @@ struct PlaneSensor : public Sensor {
 };
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   int maxIterations;
   bool verbose;
   bool robustKernel;
@@ -265,7 +267,7 @@ int main(int argc, char** argv) {
   bool planarMotion;
   bool listSolvers;
   string strSolver;
-  cerr << "graph" << endl;
+  ngx::Log("graph");
   arg.param("i", maxIterations, 5, "perform n iterations");
   arg.param("v", verbose, false, "verbose output of the optimization process");
   arg.param("solver", strSolver, "lm_var", "select one specific solver");
@@ -299,21 +301,21 @@ int main(int argc, char** argv) {
   }
 
   if (g->solver() == nullptr) {
-    cerr << "Error allocating solver. Allocating \"" << strSolver
-         << "\" failed!" << endl;
-    cerr << "available solvers: " << endl;
+    ngx::Log(ngx::Error, "Error allocating solver. Allocating \"{}\" failed!",
+             strSolver);
+    ngx::Log("available solvers: ");
     solverFactory->listSolvers(cerr);
-    cerr << "--------------" << endl;
+    ngx::Log("--------------");
     return 0;
   }
 
-  cerr << "sim" << endl;
+  ngx::Log("sim");
   auto* sim = new Simulator(g);
 
-  cerr << "robot" << endl;
+  ngx::Log("robot");
   auto* r = new Robot(g);
 
-  cerr << "planeSensor" << endl;
+  ngx::Log("planeSensor");
   Matrix3d R = Matrix3d::Identity();
   R << 0, 0, 1, -1, 0, 0, 0, -1, 0;
 
@@ -325,7 +327,7 @@ int main(int argc, char** argv) {
   r->_sensors.push_back(ps);
   sim->_robots.push_back(r);
 
-  cerr << "p1" << endl;
+  ngx::Log("p1");
   Plane3D plane;
   auto* pi = new PlaneItem(g, 1);
   plane.fromVector(Eigen::Vector4d(0., 0., 1., 5.));
@@ -339,7 +341,7 @@ int main(int argc, char** argv) {
   pi->vertex()->setFixed(fixPlanes);
   sim->_world.insert(pi);
 
-  cerr << "p2" << endl;
+  ngx::Log("p2");
   pi = new PlaneItem(g, 3);
   plane.fromVector(Eigen::Vector4d(0., 1., 0., 5.));
   dynamic_cast<VertexPlane*>(pi->vertex())->setEstimate(plane);
@@ -385,12 +387,10 @@ int main(int argc, char** argv) {
     Isometry3d iDelta = delta.inverse();
     for (int a = 0; a < 2; a++) {
       for (int i = 0; i < k; i++) {
-        cerr << "m";
         if (a == 0)
           sim->relativeMove(0, delta);
         else
           sim->relativeMove(0, iDelta);
-        cerr << "s";
         sim->sense(0);
       }
     }
@@ -406,12 +406,10 @@ int main(int argc, char** argv) {
     Isometry3d iDelta = delta.inverse();
     for (int a = 0; a < 2; a++) {
       for (int i = 0; i < k; i++) {
-        cerr << "m";
         if (a == 0)
           sim->relativeMove(0, delta);
         else
           sim->relativeMove(0, iDelta);
-        cerr << "s";
         sim->sense(0);
       }
     }
@@ -462,21 +460,18 @@ int main(int argc, char** argv) {
     std::vector<std::pair<int, int> > blockIndices;
     blockIndices.push_back(indexParams);
     if (!g->computeMarginals(spinv, blockIndices)) {
-      cerr << "error in computing the covariance" << endl;
+      ngx::Log(ngx::Error, "error in computing the covariance");
     } else {
       MatrixXd m = *spinv.block(ps->_offsetVertex->hessianIndex(),
                                 ps->_offsetVertex->hessianIndex());
 
-      cerr << "Param covariance" << endl;
-      cerr << m << endl;
-      cerr << "OffsetVertex: " << endl;
-      ps->_offsetVertex->write(cerr);
-      cerr << endl;
-      cerr << "rotationDeterminant: " << m.block<3, 3>(0, 0).determinant()
-           << endl;
-      cerr << "translationDeterminant: " << m.block<3, 3>(3, 3).determinant()
-           << endl;
-      cerr << endl;
+      ngx::Log("Param covariance\n{}", Streamed{m});
+      // The vertex writes its estimate to a stream only.
+      std::ostringstream offset;
+      ps->_offsetVertex->write(offset);
+      ngx::Log("OffsetVertex: {}", offset.view());
+      ngx::Log("rotationDeterminant: {}", m.block<3, 3>(0, 0).determinant());
+      ngx::Log("translationDeterminant: {}", m.block<3, 3>(3, 3).determinant());
     }
   }
   ofstream os1("test_postOpt.g2o");

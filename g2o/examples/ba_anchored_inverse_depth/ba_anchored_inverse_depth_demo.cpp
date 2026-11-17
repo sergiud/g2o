@@ -18,6 +18,7 @@
 #include <unordered_set>
 // #include <g2o/math_groups/se3quat.h>
 #include <g2o/solvers/structure_only/structure_only_solver.h>
+#include <g2o/stuff/logger.h>
 
 using namespace Eigen;
 using namespace std;
@@ -72,6 +73,7 @@ inline Vector3d invert_depth(const Vector3d& x) {
 }
 
 int main(int argc, const char* argv[]) {
+  g2o::initializeLogging(argv[0]);
   if (argc < 2) {
     cout << endl;
     cout << "Please type: " << endl;
@@ -111,10 +113,10 @@ int main(int argc, const char* argv[]) {
     SCHUR_TRICK = atoi(argv[4]) != 0;
   }
 
-  cout << "PIXEL_NOISE: " << PIXEL_NOISE << endl;
-  cout << "OUTLIER_RATIO: " << OUTLIER_RATIO << endl;
-  cout << "ROBUST_KERNEL: " << ROBUST_KERNEL << endl;
-  cout << "SCHUR-TRICK: " << SCHUR_TRICK << endl;
+  g2o::ngx::Log("PIXEL_NOISE: {}", PIXEL_NOISE);
+  g2o::ngx::Log("OUTLIER_RATIO: {}", OUTLIER_RATIO);
+  g2o::ngx::Log("ROBUST_KERNEL: {}", ROBUST_KERNEL);
+  g2o::ngx::Log("SCHUR-TRICK: {}", SCHUR_TRICK);
 
   g2o::SparseOptimizer optimizer;
   optimizer.setVerbose(false);
@@ -177,7 +179,6 @@ int main(int argc, const char* argv[]) {
   int point_num = 0;
   double sum_diff2 = 0;
 
-  cout << endl;
   unordered_map<int, int> pointid_2_trueid;
   unordered_map<int, int> pointid_2_anchorid;
   unordered_set<int> inliers;
@@ -261,15 +262,12 @@ int main(int argc, const char* argv[]) {
       ++point_num;
     }
   }
-  cout << endl;
   optimizer.initializeOptimization();
   optimizer.setVerbose(true);
-  cout << endl;
-  cout << "Performing full BA:" << endl;
+  g2o::ngx::Log("Performing full BA:");
 
   optimizer.optimize(10);
 
-  cout << endl;
   cout << "Point error before optimisation (inliers only): "
        << sqrt(sum_diff2 / point_num) << endl;
   point_num = 0;
@@ -277,25 +275,25 @@ int main(int argc, const char* argv[]) {
   for (auto& it : pointid_2_trueid) {
     auto v_it = optimizer.vertices().find(it.first);
     if (v_it == optimizer.vertices().end()) {
-      cerr << "Vertex " << it.first << " not in graph!" << endl;
+      g2o::ngx::Log(g2o::ngx::Error, "Vertex {} not in graph!", it.first);
       exit(-1);
     }
     g2o::VertexSBAPointXYZ* v_p =
         dynamic_cast<g2o::VertexSBAPointXYZ*>(v_it->second);
     if (v_p == nullptr) {
-      cerr << "Vertex " << it.first << "is not a PointXYZ!" << endl;
+      g2o::ngx::Log(g2o::ngx::Error, "Vertex {} is not a PointXYZ!", it.first);
       exit(-1);
     }
     int anchorframe_id = pointid_2_anchorid.find(it.first)->second;
     v_it = optimizer.vertices().find(anchorframe_id);
     if (v_it == optimizer.vertices().end()) {
-      cerr << "Vertex " << it.first << " not in graph!" << endl;
+      g2o::ngx::Log(g2o::ngx::Error, "Vertex {} not in graph!", it.first);
       exit(-1);
     }
     g2o::VertexSE3Expmap* v_anchor =
         dynamic_cast<g2o::VertexSE3Expmap*>(v_it->second);
     if (v_p == nullptr) {
-      cerr << "Vertex " << it.first << "is not a SE3Expmap!" << endl;
+      g2o::ngx::Log(g2o::ngx::Error, "Vertex {} is not a SE3Expmap!", it.first);
       exit(-1);
     }
     Vector3d diff =

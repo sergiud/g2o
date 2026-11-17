@@ -7,6 +7,7 @@
 
 #include <g2o/core/block_solver.h>
 #include <g2o/core/optimization_algorithm_gauss_newton.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 
 #include "g2o/examples/interactive_slam/g2o_interactive/types_slam2d_online.h"
@@ -14,15 +15,16 @@
 
 #define DIM_TO_SOLVER(p, l) BlockSolver<BlockSolverTraits<p, l> >
 
-#define ALLOC_CHOLMOD(s, p, l)                                                \
-  if (1) {                                                                    \
-    std::cerr << "# Using CHOLMOD online poseDim " << p << " landMarkDim "    \
-              << l << " blockordering 1" << std::endl;                        \
-    LinearSolverCholmodOnline<DIM_TO_SOLVER(                                  \
-        p, l)::PoseMatrixType>* linearSolver =                                \
-        new LinearSolverCholmodOnline<DIM_TO_SOLVER(p, l)::PoseMatrixType>(); \
-    s = new DIM_TO_SOLVER(p, l)(linearSolver);                                \
-  } else                                                                      \
+#define ALLOC_CHOLMOD(s, p, l)                                                 \
+  if (1) {                                                                     \
+    ngx::Log(                                                                  \
+        "# Using CHOLMOD online poseDim {} landMarkDim {} blockordering 1", p, \
+        l);                                                                    \
+    LinearSolverCholmodOnline<DIM_TO_SOLVER(                                   \
+        p, l)::PoseMatrixType>* linearSolver =                                 \
+        new LinearSolverCholmodOnline<DIM_TO_SOLVER(p, l)::PoseMatrixType>();  \
+    s = new DIM_TO_SOLVER(p, l)(linearSolver);                                 \
+  } else                                                                       \
     (void)0
 
 using namespace std;
@@ -89,8 +91,7 @@ int SparseOptimizerIncremental::optimize(int iterations, bool online) {
     if (!online) {
       ok = _underlyingSolver->buildStructure();
       if (!ok) {
-        cerr << __PRETTY_FUNCTION__ << ": Failure while building CCS structure"
-             << endl;
+        ngx::Log(ngx::Error, "Failure while building CCS structure");
         return 0;
       }
     }
@@ -163,9 +164,8 @@ int SparseOptimizerIncremental::optimize(int iterations, bool online) {
 
   if (verbose()) {
     computeActiveErrors();
-    cerr << "nodes = " << vertices().size()
-         << "\t edges= " << _activeEdges.size()
-         << "\t chi2= " << FIXED(activeChi2()) << endl;
+    ngx::Log("nodes = {}\t edges= {}\t chi2= {:f}", vertices().size(),
+             _activeEdges.size(), activeChi2());
   }
 
   if (vizWithGnuplot) gnuplotVisualization();
@@ -320,7 +320,7 @@ bool SparseOptimizerIncremental::updateInitialization(
 
   bool updateStatus = computeCholeskyUpdate();
   if (!updateStatus) {
-    cerr << "Error while computing update" << endl;
+    ngx::Log(ngx::Error, "Error while computing update");
   }
 
   cholmod_sparse* updateAsSparseFactor =
@@ -506,8 +506,8 @@ bool SparseOptimizerIncremental::initSolver(int dimension, int batchEveryN) {
   _solverInterface->cmember = &_cmember;
   _solverInterface->batchEveryN = batchEveryN;
   if (solver() == nullptr) {
-    cerr << "Error allocating solver. Allocating CHOLMOD solver failed!"
-         << endl;
+    ngx::Log(ngx::Error,
+             "Error allocating solver. Allocating CHOLMOD solver failed!");
     return false;
   }
   return true;

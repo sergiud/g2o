@@ -8,11 +8,12 @@
 
 #include <g2o/config.h>
 #include <g2o/core/optimization_algorithm_property.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/misc.h>
 
-#include <iostream>
 #include <list>
 #include <memory>
+#include <ostream>
 #include <typeinfo>
 
 // define to get some verbose output
@@ -107,16 +108,15 @@ class RegisterOptimizationAlgorithmProxy {
   RegisterOptimizationAlgorithmProxy(AbstractOptimizationAlgorithmCreator* c) {
     _creator = c;
 #ifdef G2O_DEBUG_OPTIMIZATION_ALGORITHM_FACTORY
-    std::cout << __FUNCTION__ << ": Registering " << _creator->property().name
-              << " of type " << typeid(*_creator).name() << std::endl;
+    ngx::Log("Registering {} of type {}", _creator->property().name,
+             typeid(*_creator).name());
 #endif
     OptimizationAlgorithmFactory::instance()->registerSolver(c);
   }
 
   ~RegisterOptimizationAlgorithmProxy() {
 #ifdef G2O_DEBUG_OPTIMIZATION_ALGORITHM_FACTORY
-    std::cout << __FUNCTION__ << ": Unregistering " << _creator->property().name
-              << std::endl;
+    ngx::Log("Unregistering {}", _creator->property().name);
 #endif
     OptimizationAlgorithmFactory::instance()->unregisterSolver(_creator);
   }

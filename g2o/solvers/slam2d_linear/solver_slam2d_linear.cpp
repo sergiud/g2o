@@ -9,6 +9,7 @@
 #include <g2o/core/sparse_block_matrix.h>
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/csparse/linear_solver_csparse.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/misc.h>
 #include <g2o/stuff/scoped_pointer.h>
 #include <g2o/types/slam2d/edge_se2.h>
@@ -180,8 +181,7 @@ bool SolverSLAM2DLinear::solveOrientation() {
   linearSystemSolver.init();
   bool ok = linearSystemSolver.solve(H, x.data(), b.data());
   if (!ok) {
-    cerr << __PRETTY_FUNCTION__ << "Failure while solving linear system"
-         << endl;
+    ngx::Log(ngx::Error, "Failure while solving linear system");
     return false;
   }
 

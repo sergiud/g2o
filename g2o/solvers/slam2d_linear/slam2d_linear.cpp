@@ -11,19 +11,20 @@
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/csparse/linear_solver_csparse.h>
 #include <g2o/solvers/slam2d_linear/solver_slam2d_linear.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 
 #define DIM_TO_SOLVER(p, l) BlockSolver<BlockSolverTraits<p, l> >
 
-#define ALLOC_CSPARSE(s, p, l, blockorder)                                   \
-  if (1) {                                                                   \
-    std::cerr << "# Using CSparse poseDim " << p << " landMarkDim " << l     \
-              << " blockordering " << blockorder << std::endl;               \
-    LinearSolverCSparse<DIM_TO_SOLVER(p, l)::PoseMatrixType>* linearSolver = \
-        new LinearSolverCSparse<DIM_TO_SOLVER(p, l)::PoseMatrixType>();      \
-    linearSolver->setBlockOrdering(blockorder);                              \
-    s = new DIM_TO_SOLVER(p, l)(linearSolver);                               \
-  } else                                                                     \
+#define ALLOC_CSPARSE(s, p, l, blockorder)                                    \
+  if (1) {                                                                    \
+    ngx::Log("# Using CSparse poseDim {} landMarkDim {} blockordering {}", p, \
+             l, blockorder);                                                  \
+    LinearSolverCSparse<DIM_TO_SOLVER(p, l)::PoseMatrixType>* linearSolver =  \
+        new LinearSolverCSparse<DIM_TO_SOLVER(p, l)::PoseMatrixType>();       \
+    linearSolver->setBlockOrdering(blockorder);                               \
+    s = new DIM_TO_SOLVER(p, l)(linearSolver);                                \
+  } else                                                                      \
     (void)0
 
 G2O_START_NAMESPACE

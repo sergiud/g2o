@@ -6,11 +6,11 @@
 #include "simple_star_ops.h"
 
 #include <g2o/core/optimization_algorithm_with_hessian.h>
+#include <g2o/stuff/logger.h>
 
 #include <Eigen/Cholesky>
 #include <Eigen/Eigenvalues>
 #include <Eigen/LU>
-#include <iostream>
 
 #include "backbone_tree_action.h"
 #include "edge_types_cost_function.h"
@@ -87,10 +87,10 @@ void assignHierarchicalEdges(StarSet& stars, EdgeStarMap& esmap,
   // now construct the hierarchical edges for all the stars
   int starNum = 0;
   for (auto s : stars) {
-    cerr << "STAR# " << starNum << endl;
+    ngx::Log("STAR# {}", starNum);
     std::vector<OptimizableGraph::Vertex*> vertices(2);
     vertices[0] = dynamic_cast<OptimizableGraph::Vertex*>(*s->_gauge.begin());
-    cerr << "eIs" << endl;
+    ngx::Log("eIs");
     HyperGraph::VertexSet vNew = s->lowLevelVertices();
     for (auto vit = s->_lowLevelVertices.begin();
          vit != s->_lowLevelVertices.end(); vit++) {
@@ -110,8 +110,8 @@ void assignHierarchicalEdges(StarSet& stars, EdgeStarMap& esmap,
           optimizer->addEdge(e);
           s->_starEdges.insert(e);
         } else {
-          cerr << "THERE" << endl;
-          cerr << "FATAL, cannot create edge" << endl;
+          ngx::Log("THERE");
+          ngx::Log(ngx::Error, "cannot create edge");
         }
       } else {
         vNew.erase(v);
@@ -125,9 +125,8 @@ void assignHierarchicalEdges(StarSet& stars, EdgeStarMap& esmap,
     }
     s->lowLevelVertices() = vNew;
     // cerr << endl;
-    cerr << "gauge: " << (*s->_gauge.begin())->id()
-         << " edges:" << s->_lowLevelEdges.size() << " hedges"
-         << s->_starEdges.size() << endl;
+    ngx::Log("gauge: {} edges:{} hedges{}", (*s->_gauge.begin())->id(),
+             s->_lowLevelEdges.size(), s->_starEdges.size());
 
     const bool debug = false;
     if (debug) {
@@ -145,14 +144,14 @@ void assignHierarchicalEdges(StarSet& stars, EdgeStarMap& esmap,
         optimizer->saveSubset(starHighStream, s->_starEdges);
       }
     } else {
-      cerr << "FAILURE" << endl;
+      ngx::Log(ngx::Error, "FAILURE");
     }
     starNum++;
   }
 }
 
 void computeBorder(StarSet& stars, EdgeStarMap& hesmap) {
-  cerr << "computing edges on the border" << endl;
+  ngx::Log("computing edges on the border");
   for (auto s : stars) {
     for (auto iit = s->_starEdges.begin(); iit != s->_starEdges.end(); iit++) {
       OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(*iit);
@@ -173,7 +172,7 @@ void computeSimpleStars(StarSet& stars, SparseOptimizer* optimizer,
                         std::string vertexTag, int level, int step,
                         int backboneIterations, int starIterations,
                         double rejectionThreshold, bool debug) {
-  cerr << "preforming the tree actions" << endl;
+  ngx::Log("preforming the tree actions");
   HyperDijkstra d(optimizer);
   // compute a spanning tree based on the types of edges and vertices in the
   // pool
@@ -187,7 +186,7 @@ void computeSimpleStars(StarSet& stars, SparseOptimizer* optimizer,
   BackBoneTreeAction bact(optimizer, vertexTag, level, step);
   bact.init();
 
-  cerr << "free edges size " << bact.freeEdges().size() << endl;
+  ngx::Log("free edges size {}", bact.freeEdges().size());
 
   // perform breadth-first visit of the visit tree and create the stars on the
   // backbone
@@ -197,8 +196,8 @@ void computeSimpleStars(StarSet& stars, SparseOptimizer* optimizer,
   for (auto& it : bact.vertexStarMultiMap()) {
     stars.insert(it.second);
   }
-  cerr << "stars.size: " << stars.size() << endl;
-  cerr << "size: " << bact.vertexStarMultiMap().size() << endl;
+  ngx::Log("stars.size: {}", stars.size());
+  ngx::Log("size: {}", bact.vertexStarMultiMap().size());
 
   //  for each star
 
@@ -291,16 +290,16 @@ void computeSimpleStars(StarSet& stars, SparseOptimizer* optimizer,
       s->optimizer()->solver()->init();
       // cerr << "structure" << endl;
       if (!solverWithHessian->buildLinearStructure())
-        cerr << "FATAL: failure while building linear structure" << endl;
+        ngx::Log(ngx::Error, "failure while building linear structure");
       // cerr << "errors" << endl;
       s->optimizer()->computeActiveErrors();
       // cerr << "system" << endl;
       solverWithHessian->updateLinearSystem();
       // cerr << "directSolove" << endl;
     } else {
-      cerr << "FATAL: hierarchical thing cannot be used with a solver that "
-              "does not support the system structure construction"
-           << endl;
+      ngx::Log(ngx::Error,
+               "hierarchical thing cannot be used with a solver that does not "
+               "support the system structure construction");
     }
 
     // // then optimize the vertices one at a time to check if a solution is
@@ -334,7 +333,7 @@ void computeSimpleStars(StarSet& stars, SparseOptimizer* optimizer,
     // cerr << starOptResult << "(" << starIterations << ")  " << endl;
     double finalchi = -1.;
 
-    cerr << "computing star: " << starNum << endl;
+    ngx::Log("computing star: {}", starNum);
 
     int vKept = 0, vDropped = 0;
     if ((starIterations == 0) || starOptResult > 0) {
@@ -410,16 +409,17 @@ void computeSimpleStars(StarSet& stars, SparseOptimizer* optimizer,
           optimizer->addEdge(e);
           s->_starEdges.insert(e);
         } else {
-          cerr << "HERE" << endl;
-          cerr << "FATAL, cannot create edge" << endl;
+          ngx::Log("HERE");
+          ngx::Log(ngx::Error, "cannot create edge");
         }
       }
     }
 
-    cerr << " gauge: " << (*s->_gauge.begin())->id() << " kept: " << vKept
-         << " dropped: " << vDropped << " edges:" << s->_lowLevelEdges.size()
-         << " hedges" << s->_starEdges.size() << " initial chi " << initialChi
-         << " final chi " << finalchi << endl;
+    ngx::Log(
+        " gauge: {} kept: {} dropped: {} edges:{} hedges{} initial chi {} "
+        "final chi {}",
+        (*s->_gauge.begin())->id(), vKept, vDropped, s->_lowLevelEdges.size(),
+        s->_starEdges.size(), initialChi, finalchi);
 
     if (debug) {
       char starLowName[100];
@@ -438,7 +438,7 @@ void computeSimpleStars(StarSet& stars, SparseOptimizer* optimizer,
         optimizer->saveSubset(starHighStream, s->_starEdges);
       }
     } else {
-      cerr << "FAILURE: " << starOptResult << endl;
+      ngx::Log(ngx::Error, "FAILURE: {}", starOptResult);
     }
     starNum++;
 

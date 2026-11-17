@@ -5,6 +5,8 @@
 
 #include "slam_context_interface.h"
 
+#include <g2o/stuff/logger.h>
+
 #include <vector>
 
 #include "abstract_slam_interface.h"
@@ -45,7 +47,8 @@ bool SlamContextInterface::process(CommandNode* commandNode) {
       return _slam->fixNode(c->ids());
     }
   }
-  cerr << "SlamContextInterface::process: Unknown command type" << endl;
+  g2o::ngx::Log(g2o::ngx::Error,
+                "SlamContextInterface::process: Unknown command type");
   return false;
 }
 

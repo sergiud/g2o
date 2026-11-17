@@ -8,9 +8,10 @@
 #include <g2o/core/optimization_algorithm_dogleg.h>
 #include <g2o/core/solver.h>
 #include <g2o/core/sparse_optimizer.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/timeutil.h>
 
-#include <iostream>
+#include <ostream>
 using namespace std;
 
 G2O_START_NAMESPACE
@@ -47,8 +48,7 @@ OptimizationAlgorithm::SolverResult OptimizationAlgorithmDogleg::solve(
       !online) {  // built up the CCS structure, here due to easy time measure
     bool ok = _solver->buildStructure();
     if (!ok) {
-      cerr << __PRETTY_FUNCTION__ << ": Failure while building CCS structure"
-           << endl;
+      ngx::Log(ngx::Error, "Failure while building CCS structure");
       return OptimizationAlgorithm::Fail;
     }
 

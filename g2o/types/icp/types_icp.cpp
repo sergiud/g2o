@@ -4,10 +4,12 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
 #include <g2o/core/factory.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/types/icp/types_icp.h>
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 
 using namespace Eigen;
 
@@ -197,7 +199,7 @@ void Edge_XYZ_VSC::linearizeOplus() {
   double pz = pc(2);
   double ipz2 = 1.0 / (pz * pz);
   if (isnan(ipz2)) {
-    std::cout << "[SetJac] infinite jac" << std::endl;
+    ngx::Log(ngx::Warning, "[SetJac] infinite jac");
     *(int*)0x0 = 0;
   }
 

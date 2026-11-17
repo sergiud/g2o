@@ -9,9 +9,9 @@
 #include <g2o/config.h>
 #include <g2o/core/optimizable_graph.h>
 #include <g2o/prefix.h>
+#include <g2o/stuff/logger.h>
 
 #include <Eigen/Core>
-#include <iostream>
 #include <limits>
 
 G2O_START_NAMESPACE
@@ -55,9 +55,9 @@ class BaseEdge : public OptimizableGraph::Edge {
 
   virtual void initialEstimate(const OptimizableGraph::VertexSet&,
                                OptimizableGraph::Vertex*) {
-    std::cerr << "inititialEstimate() is not implemented, please give "
-                 "implementation in your derived class"
-              << std::endl;
+    ngx::Log(ngx::Error,
+             "inititialEstimate() is not implemented, please give "
+             "implementation in your derived class");
   }
 
  protected:
@@ -117,9 +117,9 @@ class BaseEdge<-1, E> : public OptimizableGraph::Edge {
 
   virtual void initialEstimate(const OptimizableGraph::VertexSet&,
                                OptimizableGraph::Vertex*) {
-    std::cerr << "inititialEstimate() is not implemented, please give "
-                 "implementation in your derived class"
-              << std::endl;
+    ngx::Log(ngx::Error,
+             "inititialEstimate() is not implemented, please give "
+             "implementation in your derived class");
   }
 
  protected:

@@ -4,10 +4,12 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
 #include <g2o/core/factory.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/types/sba/types_sba.h>
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 
 G2O_START_NAMESPACE
 
@@ -69,7 +71,7 @@ bool VertexCam::read(std::istream& is) {
     cam.setKcam(fx, fy, cx, cy, tx);
   } else {
     is.clear();
-    std::cerr << "cam not defined, using defaults" << std::endl;
+    ngx::Log(ngx::Warning, "cam not defined, using defaults");
     cam.setKcam(300, 300, 320, 320, 0.1);
   }
 
@@ -210,7 +212,7 @@ void EdgeProjectP2SC::linearizeOplus() {
   double pz = pc(2);
   double ipz2 = 1.0 / (pz * pz);
   if (g2o_isnan(ipz2)) {
-    std::cout << "[SetJac] infinite jac" << std::endl;
+    ngx::Log(ngx::Warning, "[SetJac] infinite jac");
     abort();
   }
 
@@ -304,7 +306,7 @@ void EdgeProjectP2MC::linearizeOplus() {
   double pz = pc(2);
   double ipz2 = 1.0 / (pz * pz);
   if (g2o_isnan(ipz2)) {
-    std::cout << "[SetJac] infinite jac" << std::endl;
+    ngx::Log(ngx::Warning, "[SetJac] infinite jac");
     abort();
   }
 
@@ -392,7 +394,7 @@ void EdgeProjectP2MC_Intrinsics::linearizeOplus() {
   double pz = pc(2);
   double ipz2 = 1.0 / (pz * pz);
   if (g2o_isnan(ipz2)) {
-    std::cout << "[SetJac] infinite jac" << std::endl;
+    ngx::Log(ngx::Warning, "[SetJac] infinite jac");
     abort();
   }
 

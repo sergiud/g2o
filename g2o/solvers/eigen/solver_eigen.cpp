@@ -11,20 +11,22 @@
 #include <g2o/core/solver.h>
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/eigen/linear_solver_eigen.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 
 #define DIM_TO_SOLVER(p, l) BlockSolver<BlockSolverTraits<p, l> >
 
-#define ALLOC_EIGEN_SPARSE_CHOLESKY(s, p, l, blockorder)                   \
-  if (1) {                                                                 \
-    std::cerr << "# Using EigenSparseCholesky poseDim " << p               \
-              << " landMarkDim " << l << " blockordering " << blockorder   \
-              << std::endl;                                                \
-    LinearSolverEigen<DIM_TO_SOLVER(p, l)::PoseMatrixType>* linearSolver = \
-        new LinearSolverEigen<DIM_TO_SOLVER(p, l)::PoseMatrixType>();      \
-    linearSolver->setBlockOrdering(blockorder);                            \
-    s = new DIM_TO_SOLVER(p, l)(linearSolver);                             \
-  } else                                                                   \
+#define ALLOC_EIGEN_SPARSE_CHOLESKY(s, p, l, blockorder)                       \
+  if (1) {                                                                     \
+    ngx::Log(                                                                  \
+        "# Using EigenSparseCholesky poseDim {} landMarkDim {} blockordering " \
+        "{}",                                                                  \
+        p, l, blockorder);                                                     \
+    LinearSolverEigen<DIM_TO_SOLVER(p, l)::PoseMatrixType>* linearSolver =     \
+        new LinearSolverEigen<DIM_TO_SOLVER(p, l)::PoseMatrixType>();          \
+    linearSolver->setBlockOrdering(blockorder);                                \
+    s = new DIM_TO_SOLVER(p, l)(linearSolver);                                 \
+  } else                                                                       \
     (void)0
 
 using namespace std;

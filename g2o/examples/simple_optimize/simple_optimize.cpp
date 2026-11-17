@@ -15,11 +15,13 @@
 // #include <g2o/types/slam2d/types_slam2d.h>
 
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 
 using namespace std;
 using namespace g2o;
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   // Command line parsing
   int maxIterations;
   string outputFilename;
@@ -54,7 +56,7 @@ int main(int argc, char** argv) {
 
   ifstream ifs(inputFilename.c_str());
   if (!ifs) {
-    cerr << "unable to open " << inputFilename << endl;
+    ngx::Log(ngx::Error, "unable to open {}", inputFilename);
     return 1;
   }
   optimizer.load(ifs);
@@ -63,13 +65,13 @@ int main(int argc, char** argv) {
 
   if (!outputFilename.empty()) {
     if (outputFilename == "-") {
-      cerr << "saving to stdout";
+      ngx::Log("saving to stdout");
       optimizer.save(cout);
     } else {
-      cerr << "saving " << outputFilename << " ... ";
+      ngx::Log("saving {}", outputFilename);
       optimizer.save(outputFilename.c_str());
     }
-    cerr << "done." << endl;
+    ngx::Log("done.");
   }
   return 0;
 }

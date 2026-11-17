@@ -5,6 +5,7 @@
 
 #include <g2o/core/optimizable_graph.h>
 #include <g2o/stuff/command_args.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/types/slam2d/types_slam2d.h>
 #include <g2o/types/slam3d/types_slam3d.h>
 
@@ -45,6 +46,7 @@ bool anonymizePoseEdge(HyperGraph::Edge* e_, OptimizableGraph& g) {
 }
 
 int main(int argc, char** argv) {
+  g2o::initializeLogging(argv[0]);
   CommandArgs arg;
   std::string outputFilename;
   std::string inputFilename;
@@ -55,23 +57,23 @@ int main(int argc, char** argv) {
   OptimizableGraph graph;
 
   if (inputFilename.empty()) {
-    cerr << "No input data specified" << endl;
+    ngx::Log(ngx::Error, "No input data specified");
     return 0;
   } else if (inputFilename == "-") {
-    cerr << "Read input from stdin" << endl;
+    ngx::Log("Read input from stdin");
     if (!graph.load(cin)) {
-      cerr << "Error loading graph" << endl;
+      ngx::Log(ngx::Error, "Error loading graph");
       return 2;
     }
   } else {
-    cerr << "Read input from " << inputFilename << endl;
+    ngx::Log("Read input from {}", inputFilename);
     ifstream ifs(inputFilename.c_str());
     if (!ifs) {
-      cerr << "Failed to open file" << endl;
+      ngx::Log(ngx::Error, "Failed to open file");
       return 1;
     }
     if (!graph.load(ifs)) {
-      cerr << "Error loading graph" << endl;
+      ngx::Log(ngx::Error, "Error loading graph");
       return 2;
     }
   }

@@ -5,11 +5,11 @@
 
 #include "properties_widget.h"
 
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/property.h>
 
 #include <QLineEdit>
 #include <cassert>
-#include <iostream>
 
 using namespace std;
 
@@ -90,7 +90,7 @@ void PropertiesWidget::applyProperties() {
           dynamic_cast<QLineEdit*>(tableWidget->cellWidget(r, 1));
       bool status = baseProp->fromString(editor->text().toStdString());
       if (!status) {
-        cerr << "Warning: unable to set property " << baseProp->name() << endl;
+        ngx::Log(ngx::Warning, "unable to set property {}", baseProp->name());
       }
     }
   }

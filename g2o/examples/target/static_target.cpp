@@ -12,6 +12,7 @@
 #include <g2o/core/solver.h>
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/cholmod/linear_solver_cholmod.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/sampler.h>
 
 #include <Eigen/StdVector>
@@ -25,6 +26,7 @@ using namespace std;
 using namespace g2o;
 
 int main() {
+  g2o::initializeLogging("static_target");
   // Set up the optimiser
   SparseOptimizer optimizer;
   optimizer.setVerbose(false);
@@ -74,10 +76,9 @@ int main() {
 
   cout << "truePoint=\n" << truePoint << endl;
 
-  cerr << "computed estimate=\n"
-       << dynamic_cast<VertexPosition3D*>(optimizer.vertices().find(0)->second)
-              ->estimate()
-       << endl;
+  ngx::Log("computed estimate=\n{}",
+           dynamic_cast<VertexPosition3D*>(optimizer.vertices().find(0)->second)
+               ->estimate());
 
   // position->setMarginalized(true);
 

@@ -6,6 +6,7 @@
 #include "edge_creator.h"
 
 #include <g2o/core/factory.h>
+#include <g2o/stuff/logger.h>
 
 G2O_START_NAMESPACE
 
@@ -44,20 +45,20 @@ OptimizableGraph::Edge* EdgeCreator::createEdge(
   }
   auto it = _vertexToEdgeMap.find(key.str());
   if (it == _vertexToEdgeMap.end()) {
-    cerr << "no thing in factory: " << key.str() << endl;
+    ngx::Log(ngx::Error, "no thing in factory: {}", key.str());
     return nullptr;
   }
   HyperGraph::HyperGraphElement* element =
       factory->construct(it->second._edgeTypeName);
   if (element == nullptr) {
-    cerr << "no thing can be created" << endl;
+    ngx::Log(ngx::Error, "no thing can be created");
     return nullptr;
   }
   OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(element);
   assert(it->second._parameterIds.size() == e->numParameters());
   for (size_t i = 0; i < it->second._parameterIds.size(); i++) {
     if (!e->setParameterId(i, it->second._parameterIds[i])) {
-      cerr << "no thing in good for setting params" << endl;
+      ngx::Log(ngx::Error, "no thing in good for setting params");
       return nullptr;
     }
   }

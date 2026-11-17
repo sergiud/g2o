@@ -10,6 +10,7 @@
 #include <g2o/core/solver.h>
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/dense/linear_solver_dense.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/types/icp/types_icp.h>
 
 #include <Eigen/StdVector>
@@ -57,6 +58,7 @@ double Sample::uniform() { return uniform_rand(0., 1.); }
 double Sample::gaussian(double sigma) { return gauss_rand(0., sigma); }
 
 int main(int argc, const char* argv[]) {
+  g2o::initializeLogging(argv[0]);
   if (argc < 2) {
     cout << endl;
     cout << "Please type: " << endl;
@@ -103,11 +105,11 @@ int main(int argc, const char* argv[]) {
     DENSE = atoi(argv[5]) != 0;
   }
 
-  cout << "PIXEL_NOISE: " << PIXEL_NOISE << endl;
-  cout << "OUTLIER_RATIO: " << OUTLIER_RATIO << endl;
-  cout << "ROBUST_KERNEL: " << ROBUST_KERNEL << endl;
-  cout << "STRUCTURE_ONLY: " << STRUCTURE_ONLY << endl;
-  cout << "DENSE: " << DENSE << endl;
+  g2o::ngx::Log("PIXEL_NOISE: {}", PIXEL_NOISE);
+  g2o::ngx::Log("OUTLIER_RATIO: {}", OUTLIER_RATIO);
+  g2o::ngx::Log("ROBUST_KERNEL: {}", ROBUST_KERNEL);
+  g2o::ngx::Log("STRUCTURE_ONLY: {}", STRUCTURE_ONLY);
+  g2o::ngx::Log("DENSE: {}", DENSE);
 
   g2o::SparseOptimizer optimizer;
   optimizer.setVerbose(false);
@@ -115,16 +117,16 @@ int main(int argc, const char* argv[]) {
   if (DENSE) {
     linearSolver =
         new g2o::LinearSolverDense<g2o::BlockSolver_6_3::PoseMatrixType>();
-    cerr << "Using DENSE" << endl;
+    g2o::ngx::Log("Using DENSE");
   } else {
 #ifdef G2O_HAVE_CHOLMOD
-    cerr << "Using CHOLMOD" << endl;
+    g2o::ngx::Log("Using CHOLMOD");
     linearSolver =
         new g2o::LinearSolverCholmod<g2o::BlockSolver_6_3::PoseMatrixType>();
 #elif defined G2O_HAVE_CSPARSE
     linearSolver =
         new g2o::LinearSolverCSparse<g2o::BlockSolver_6_3::PoseMatrixType>();
-    cerr << "Using CSPARSE" << endl;
+    g2o::ngx::Log("Using CSPARSE");
 #else
 #error neither CSparse nor Cholmod are available
 #endif
@@ -181,7 +183,6 @@ int main(int argc, const char* argv[]) {
   int point_num = 0;
   double sum_diff2 = 0;
 
-  cout << endl;
   unordered_map<int, int> pointid_2_trueid;
   unordered_set<int> inliers;
 
@@ -267,13 +268,12 @@ int main(int argc, const char* argv[]) {
     }
   }
 
-  cout << endl;
   optimizer.initializeOptimization();
 
   optimizer.setVerbose(true);
 
   if (STRUCTURE_ONLY) {
-    cout << "Performing structure-only BA:" << endl;
+    g2o::ngx::Log("Performing structure-only BA:");
     g2o::StructureOnlySolver<3> structure_only_ba;
     g2o::OptimizableGraph::VertexContainer points;
     for (g2o::OptimizableGraph::VertexIDMap::const_iterator it =
@@ -287,11 +287,9 @@ int main(int argc, const char* argv[]) {
     structure_only_ba.calc(points, 10);
   }
 
-  cout << endl;
-  cout << "Performing full BA:" << endl;
+  g2o::ngx::Log("Performing full BA:");
   optimizer.optimize(10);
 
-  cout << endl;
   cout << "Point error before optimisation (inliers only): "
        << sqrt(sum_diff2 / point_num) << endl;
 
@@ -302,7 +300,7 @@ int main(int argc, const char* argv[]) {
     auto v_it = optimizer.vertices().find(it.first);
 
     if (v_it == optimizer.vertices().end()) {
-      cerr << "Vertex " << it.first << " not in graph!" << endl;
+      g2o::ngx::Log(g2o::ngx::Error, "Vertex {} not in graph!", it.first);
       exit(-1);
     }
 
@@ -310,7 +308,7 @@ int main(int argc, const char* argv[]) {
         dynamic_cast<g2o::VertexSBAPointXYZ*>(v_it->second);
 
     if (v_p == nullptr) {
-      cerr << "Vertex " << it.first << "is not a PointXYZ!" << endl;
+      g2o::ngx::Log(g2o::ngx::Error, "Vertex {} is not a PointXYZ!", it.first);
       exit(-1);
     }
 

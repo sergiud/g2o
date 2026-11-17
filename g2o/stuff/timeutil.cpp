@@ -4,9 +4,8 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
 #include <g2o/config.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/timeutil.h>
-
-#include <iostream>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -87,8 +86,7 @@ ScopeTime::ScopeTime(const char* title)
     : _title(title), _startTime(get_monotonic_time()) {}
 
 ScopeTime::~ScopeTime() {
-  std::cerr << _title << " took " << 1000 * (get_monotonic_time() - _startTime)
-            << "ms.\n";
+  ngx::Log("{} took {}ms.", _title, 1000 * (get_monotonic_time() - _startTime));
 }
 
 double get_monotonic_time() {

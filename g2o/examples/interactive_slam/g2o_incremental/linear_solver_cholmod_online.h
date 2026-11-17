@@ -79,9 +79,9 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>,
 
     cholmod_factorize(_cholmodSparse, _cholmodFactor, &_cholmodCommon);
     if (_cholmodCommon.status == CHOLMOD_NOT_POSDEF) {
-      std::cerr << "solve(): Cholesky failure, writing debug.txt (Hessian "
-                   "loadable by Octave)"
-                << std::endl;
+      ngx::Log(ngx::Error,
+               "solve(): Cholesky failure, writing debug.txt (Hessian loadable "
+               "by Octave)");
       writeCCSMatrix("debug.txt", _cholmodSparse->nrow, _cholmodSparse->ncol,
                      (int*)_cholmodSparse->p, (int*)_cholmodSparse->i,
                      (double*)_cholmodSparse->x, true);
@@ -123,9 +123,9 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>,
     int result = cholmod_updown(1, update, _cholmodFactor, &_cholmodCommon);
     // std::cerr << __PRETTY_FUNCTION__ << " " << result << std::endl;
     if (_cholmodCommon.status == CHOLMOD_NOT_POSDEF) {
-      std::cerr
-          << "Cholesky failure, writing debug.txt (Hessian loadable by Octave)"
-          << std::endl;
+      ngx::Log(
+          ngx::Error,
+          "Cholesky failure, writing debug.txt (Hessian loadable by Octave)");
       writeCCSMatrix("debug.txt", _cholmodSparse->nrow, _cholmodSparse->ncol,
                      (int*)_cholmodSparse->p, (int*)_cholmodSparse->i,
                      (double*)_cholmodSparse->x, true);
@@ -175,7 +175,7 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>,
                                _matrixStructure.Aii, _blockPermutation.data(),
                                nullptr, nullptr, cmember->data());
     if (amdStatus != CAMD_OK) {
-      std::cerr << "Error while computing ordering" << std::endl;
+      ngx::Log(ngx::Error, "Error while computing ordering");
     }
 
     // blow up the permutation to the scalar matrix and extend to include the
@@ -273,6 +273,7 @@ class LinearSolverCholmodOnline : public LinearSolver<MatrixType>,
 
 G2O_END_NAMESPACE
 
+#include <g2o/stuff/logger.h>
 #include <g2o/suffix.h>
 
 #endif
