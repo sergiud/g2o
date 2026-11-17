@@ -14,6 +14,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 // define to get some verbose output
 // #define G2O_DEBUG_FACTORY
@@ -124,10 +125,19 @@ class RegisterTypeProxy {
   std::string _name;
 };
 
-// These macros are used to automate registering types and forcing linkage
-#define G2O_REGISTER_TYPE(name, classname)                         \
-  extern "C" void G2O_FACTORY_EXPORT g2o_type_##classname(void) {} \
-  static g2o::RegisterTypeProxy<classname> g_type_proxy_##classname(#name);
+// These macros are used to automate registering types and forcing linkage.
+// Graph files separate their tokens by whitespace, so a tag must not contain
+// any. A tag that is no identifier, such as VERTEX_SE3:QUAT, is passed as a
+// string literal, which formatting the sources leaves unchanged.
+#define G2O_REGISTER_TYPE_NAME(name, classname)                        \
+  static_assert(std::string_view(name).find_first_of(" \f\n\r\t\v") == \
+                    std::string_view::npos,                            \
+                "name contains whitespace");                           \
+  extern "C" void G2O_FACTORY_EXPORT g2o_type_##classname(void) {}     \
+  static g2o::RegisterTypeProxy<classname> g_type_proxy_##classname(name);
+
+#define G2O_REGISTER_TYPE(name, classname) \
+  G2O_REGISTER_TYPE_NAME(#name, classname)
 
 #define G2O_USE_TYPE_BY_CLASS_NAME(classname)                    \
   extern "C" void G2O_FACTORY_IMPORT g2o_type_##classname(void); \

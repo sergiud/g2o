@@ -1615,7 +1615,8 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
       unit_test/general/graph_operations.cpp
       unit_test/general/hyper_graph_action.cpp
       unit_test/general/logging.cpp
-    LINK GTest::gmock GTest::gtest_main types_slam2d types_slam3d
+    LINK GTest::gmock GTest::gtest_main types_sba types_sim3 types_slam2d
+      types_slam3d
   )
 
   g2o_add_executable (unittest_slam2d
