@@ -3,19 +3,6 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
-#include <csignal>
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <algorithm>
-#include <cassert>
-
-#include "dl_wrapper.h"
-#include "output_helper.h"
-#include "g2o_common.h"
-
 #include <g2o/config.h>
 #include <g2o/core/batch_stats.h>
 #include <g2o/core/estimate_propagator.h>
@@ -34,7 +21,20 @@
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>
 
-static bool hasToStop=false;
+#include <algorithm>
+#include <cassert>
+#include <csignal>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
+
+#include "dl_wrapper.h"
+#include "g2o_common.h"
+#include "output_helper.h"
+
+static bool hasToStop = false;
 
 using namespace std;
 using namespace g2o;
@@ -42,30 +42,29 @@ using namespace Eigen;
 
 // sort according to max id, dimension
 struct IncrementalEdgesCompare {
-  bool operator()(SparseOptimizer::Edge* const & e1, SparseOptimizer::Edge* const & e2)
-  {
-    const SparseOptimizer::Vertex* to1 = dynamic_cast<const SparseOptimizer::Vertex*>(e1->vertices()[1]);
-    const SparseOptimizer::Vertex* to2 = dynamic_cast<const SparseOptimizer::Vertex*>(e2->vertices()[1]);
+  bool operator()(SparseOptimizer::Edge* const& e1,
+                  SparseOptimizer::Edge* const& e2) {
+    const SparseOptimizer::Vertex* to1 =
+        dynamic_cast<const SparseOptimizer::Vertex*>(e1->vertices()[1]);
+    const SparseOptimizer::Vertex* to2 =
+        dynamic_cast<const SparseOptimizer::Vertex*>(e2->vertices()[1]);
 
     int i11 = e1->vertices()[0]->id(), i12 = e1->vertices()[1]->id();
-    if (i11 > i12){
+    if (i11 > i12) {
       swap(i11, i12);
     }
     int i21 = e2->vertices()[0]->id(), i22 = e2->vertices()[1]->id();
-    if (i21 > i22){
+    if (i21 > i22) {
       swap(i21, i22);
     }
-    if (i12 < i22)
-      return true;
-    if (i12 > i22)
-      return false;
+    if (i12 < i22) return true;
+    if (i12 > i22) return false;
     // push the odometry to be the first
     return to1->dimension() > to2->dimension();
   }
 };
 
-void sigquit_handler(int sig)
-{
+void sigquit_handler(int sig) {
   if (sig == SIGINT) {
     hasToStop = 1;
     static int cnt = 0;
@@ -76,8 +75,7 @@ void sigquit_handler(int sig)
   }
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
   OptimizableGraph::initMultiThreading();
   int maxIterations;
   bool verbose;
@@ -102,7 +100,7 @@ int main(int argc, char** argv)
   double huberWidth;
   double gain;
   int maxIterationsWithGain;
-  //double lambdaInit;
+  // double lambdaInit;
   int updateGraphEachN = 10;
   string statsFile;
   string summaryFile;
@@ -110,40 +108,63 @@ int main(int argc, char** argv)
   // command line parsing
   std::vector<int> gaugeList;
   CommandArgs arg;
-  arg.param("i", maxIterations, 5, "perform n iterations, if negative consider the gain");
-  arg.param("gain", gain, 1e-6, "the gain used to stop optimization (default = 1e-6)");
-  arg.param("ig",maxIterationsWithGain, std::numeric_limits<int>::max(), "Maximum number of iterations with gain enabled (default: inf)");
+  arg.param("i", maxIterations, 5,
+            "perform n iterations, if negative consider the gain");
+  arg.param("gain", gain, 1e-6,
+            "the gain used to stop optimization (default = 1e-6)");
+  arg.param("ig", maxIterationsWithGain, std::numeric_limits<int>::max(),
+            "Maximum number of iterations with gain enabled (default: inf)");
   arg.param("v", verbose, false, "verbose output of the optimization process");
-  arg.param("guess", initialGuess, false, "initial guess based on spanning tree");
-  arg.param("guessOdometry", initialGuessOdometry, false, "initial guess based on odometry");
+  arg.param("guess", initialGuess, false,
+            "initial guess based on spanning tree");
+  arg.param("guessOdometry", initialGuessOdometry, false,
+            "initial guess based on odometry");
   arg.param("inc", incremental, false, "run incremetally");
   arg.param("update", updateGraphEachN, 10, "updates after x odometry nodes");
   arg.param("guiout", guiOut, false, "gui output while running incrementally");
   arg.param("marginalize", marginalize, false, "on or off");
-  arg.param("printSolverProperties", printSolverProperties, false, "print the properties of the solver");
-  arg.param("solverProperties", solverProperties, "", "set the internal properties of a solver,\n\te.g., initialLambda=0.0001,maxTrialsAfterFailure=2");
+  arg.param("printSolverProperties", printSolverProperties, false,
+            "print the properties of the solver");
+  arg.param("solverProperties", solverProperties, "",
+            "set the internal properties of a solver,\n\te.g., "
+            "initialLambda=0.0001,maxTrialsAfterFailure=2");
   arg.param("gnudump", gnudump, "", "dump to gnuplot data file");
   arg.param("robustKernel", robustKernel, "", "use this robust error function");
-  arg.param("robustKernelWidth", huberWidth, -1., "width for the robust Kernel (only if robustKernel)");
-  arg.param("computeMarginals", computeMarginals, false, "computes the marginal covariances of something. FOR TESTING ONLY");
+  arg.param("robustKernelWidth", huberWidth, -1.,
+            "width for the robust Kernel (only if robustKernel)");
+  arg.param("computeMarginals", computeMarginals, false,
+            "computes the marginal covariances of something. FOR TESTING ONLY");
   arg.param("gaugeId", gaugeId, -1, "force the gauge");
   arg.param("o", outputfilename, "", "output final version of the graph");
-  arg.param("solver", strSolver, "gn_var", "specify which solver to use underneat\n\t {gn_var, lm_fix3_2, gn_fix6_3, lm_fix7_3}");
+  arg.param("solver", strSolver, "gn_var",
+            "specify which solver to use underneat\n\t {gn_var, lm_fix3_2, "
+            "gn_fix6_3, lm_fix7_3}");
 #ifndef G2O_DISABLE_DYNAMIC_LOADING_OF_LIBRARIES
   string dummy;
-  arg.param("solverlib", dummy, "", "specify a solver library which will be loaded");
-  arg.param("typeslib", dummy, "", "specify a types library which will be loaded");
+  arg.param("solverlib", dummy, "",
+            "specify a solver library which will be loaded");
+  arg.param("typeslib", dummy, "",
+            "specify a types library which will be loaded");
 #endif
   arg.param("stats", statsFile, "", "specify a file for the statistics");
   arg.param("listTypes", listTypes, false, "list the registered types");
-  arg.param("listRobustKernels", listRobustKernels, false, "list the registered robust kernels");
+  arg.param("listRobustKernels", listRobustKernels, false,
+            "list the registered robust kernels");
   arg.param("listSolvers", listSolvers, false, "list the available solvers");
-  arg.param("renameTypes", loadLookup, "", "create a lookup for loading types into other types,\n\t TAG_IN_FILE=INTERNAL_TAG_FOR_TYPE,TAG2=INTERNAL2\n\t e.g., VERTEX_CAM=VERTEX_SE3:EXPMAP");
-  arg.param("gaugeList", gaugeList, std::vector<int>(), "set the list of gauges separated by commas without spaces \n  e.g: 1,2,3,4,5 ");
-  arg.param("summary", summaryFile, "", "append a summary of this optimization run to the summary file passed as argument");
-  arg.paramLeftOver("graph-input", inputFilename, "", "graph file which will be processed", true);
-  arg.param("nonSequential", nonSequential, false, "apply the robust kernel only on loop closures and not odometries");
-
+  arg.param("renameTypes", loadLookup, "",
+            "create a lookup for loading types into other types,\n\t "
+            "TAG_IN_FILE=INTERNAL_TAG_FOR_TYPE,TAG2=INTERNAL2\n\t e.g., "
+            "VERTEX_CAM=VERTEX_SE3:EXPMAP");
+  arg.param("gaugeList", gaugeList, std::vector<int>(),
+            "set the list of gauges separated by commas without spaces \n  "
+            "e.g: 1,2,3,4,5 ");
+  arg.param("summary", summaryFile, "",
+            "append a summary of this optimization run to the summary file "
+            "passed as argument");
+  arg.paramLeftOver("graph-input", inputFilename, "",
+                    "graph file which will be processed", true);
+  arg.param("nonSequential", nonSequential, false,
+            "apply the robust kernel only on loop closures and not odometries");
 
   arg.parseArgs(argc, argv);
 
@@ -159,11 +180,11 @@ int main(int argc, char** argv)
   DlWrapper dlSolverWrapper;
   loadStandardSolver(dlSolverWrapper, argc, argv);
 #else
-  if (verbose)
-    cout << "# linked version of g2o" << endl;
+  if (verbose) cout << "# linked version of g2o" << endl;
 #endif
 
-  OptimizationAlgorithmFactory* solverFactory = OptimizationAlgorithmFactory::instance();
+  OptimizationAlgorithmFactory* solverFactory =
+      OptimizationAlgorithmFactory::instance();
   if (listSolvers) {
     solverFactory->listSolvers(cout);
   }
@@ -176,7 +197,7 @@ int main(int argc, char** argv)
     std::vector<std::string> kernels;
     RobustKernelFactory::instance()->fillKnownKernels(kernels);
     cout << "Robust Kernels:" << endl;
-    for (auto & kernel : kernels) {
+    for (auto& kernel : kernels) {
       cout << kernel << endl;
     }
   }
@@ -187,7 +208,8 @@ int main(int argc, char** argv)
 
   SparseOptimizerTerminateAction* terminateAction = nullptr;
   if (maxIterations < 0) {
-    cerr << "# setup termination criterion based on the gain of the iteration" << endl;
+    cerr << "# setup termination criterion based on the gain of the iteration"
+         << endl;
     maxIterations = maxIterationsWithGain;
     terminateAction = new SparseOptimizerTerminateAction;
     terminateAction->setGainThreshold(gain);
@@ -199,14 +221,18 @@ int main(int argc, char** argv)
   OptimizationAlgorithmProperty solverProperty;
   optimizer.setAlgorithm(solverFactory->construct(strSolver, solverProperty));
   if (optimizer.solver() == nullptr) {
-    cerr << "Error allocating solver. Allocating \"" << strSolver << "\" failed!" << endl;
+    cerr << "Error allocating solver. Allocating \"" << strSolver
+         << "\" failed!" << endl;
     return 0;
   }
 
   if (!solverProperties.empty()) {
-    bool updateStatus = optimizer.solver()->updatePropertiesFromString(solverProperties);
-    if (! updateStatus) {
-      cerr << "Failure while updating the solver properties from the given string" << endl;
+    bool updateStatus =
+        optimizer.solver()->updatePropertiesFromString(solverProperties);
+    if (!updateStatus) {
+      cerr << "Failure while updating the solver properties from the given "
+              "string"
+           << endl;
     }
   }
   if (!solverProperties.empty() || printSolverProperties) {
@@ -247,29 +273,29 @@ int main(int argc, char** argv)
   }
 
   set<int> vertexDimensions = optimizer.dimensions();
-  if (! optimizer.isSolverSuitable(solverProperty, vertexDimensions)) {
-    cerr << "The selected solver is not suitable for optimizing the given graph" << endl;
+  if (!optimizer.isSolverSuitable(solverProperty, vertexDimensions)) {
+    cerr << "The selected solver is not suitable for optimizing the given graph"
+         << endl;
     return 3;
   }
-  assert (optimizer.solver());
-  //optimizer.setMethod(str2method(strMethod));
-  //optimizer.setUserLambdaInit(lambdaInit);
-
+  assert(optimizer.solver());
+  // optimizer.setMethod(str2method(strMethod));
+  // optimizer.setUserLambdaInit(lambdaInit);
 
   // check for vertices to fix to remove DoF
   bool gaugeFreedom = optimizer.gaugeFreedom();
-  OptimizableGraph::Vertex* gauge=nullptr;
-  if (!gaugeList.empty() != 0u){
+  OptimizableGraph::Vertex* gauge = nullptr;
+  if (!gaugeList.empty() != 0u) {
     cerr << "Fixing gauges: ";
-    for (size_t i=0; i<gaugeList.size(); i++){
-      int id=gaugeList[i];
-      OptimizableGraph::Vertex* v=optimizer.vertex(id);
-      if (v == nullptr){
-        cerr << "fatal, not found the vertex of id " << id << " in the gaugeList. Aborting";
+    for (size_t i = 0; i < gaugeList.size(); i++) {
+      int id = gaugeList[i];
+      OptimizableGraph::Vertex* v = optimizer.vertex(id);
+      if (v == nullptr) {
+        cerr << "fatal, not found the vertex of id " << id
+             << " in the gaugeList. Aborting";
         return -1;
       } else {
-        if (i==0)
-          gauge = v;
+        if (i == 0) gauge = v;
         cerr << v->id() << " ";
         v->setFixed(1);
       }
@@ -277,11 +303,11 @@ int main(int argc, char** argv)
     cerr << endl;
     gaugeFreedom = false;
   } else {
-      gauge=optimizer.findGauge();
+    gauge = optimizer.findGauge();
   }
   if (gaugeFreedom) {
     if (gauge == nullptr) {
-      cerr <<  "# cannot find a vertex to fix in this thing" << endl;
+      cerr << "# cannot find a vertex to fix in this thing" << endl;
       return 2;
     } else {
       cerr << "# graph is fixed by node " << gauge->id() << endl;
@@ -297,8 +323,9 @@ int main(int argc, char** argv)
     int minDim = *vertexDimensions.begin();
     if (maxDim != minDim) {
       cerr << "# Preparing Marginalization of the Landmarks ... ";
-      for (auto & it : optimizer.vertices()){
-        OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second);
+      for (auto& it : optimizer.vertices()) {
+        OptimizableGraph::Vertex* v =
+            dynamic_cast<OptimizableGraph::Vertex*>(it.second);
         if (v->dimension() != maxDim) {
           v->setMarginalized(true);
         }
@@ -308,24 +335,24 @@ int main(int argc, char** argv)
   }
 
   if (!robustKernel.empty()) {
-    AbstractRobustKernelCreator* creator = RobustKernelFactory::instance()->creator(robustKernel);
+    AbstractRobustKernelCreator* creator =
+        RobustKernelFactory::instance()->creator(robustKernel);
     cerr << "# Preparing robust error function ... ";
     if (creator != nullptr) {
       if (nonSequential) {
         for (auto it : optimizer.edges()) {
           SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(it);
-          if (e->vertices().size() >= 2 && std::abs(e->vertex(0)->id() - e->vertex(1)->id()) != 1) {
+          if (e->vertices().size() >= 2 &&
+              std::abs(e->vertex(0)->id() - e->vertex(1)->id()) != 1) {
             e->setRobustKernel(creator->construct());
-            if (huberWidth > 0)
-              e->robustKernel()->setDelta(huberWidth);
+            if (huberWidth > 0) e->robustKernel()->setDelta(huberWidth);
           }
         }
       } else {
         for (auto it : optimizer.edges()) {
           SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(it);
           e->setRobustKernel(creator->construct());
-          if (huberWidth > 0)
-            e->robustKernel()->setDelta(huberWidth);
+          if (huberWidth > 0) e->robustKernel()->setDelta(huberWidth);
         }
       }
       cerr << "done." << endl;
@@ -337,20 +364,26 @@ int main(int argc, char** argv)
   // sanity check
   HyperDijkstra d(&optimizer);
   UniformCostFunction f;
-  d.shortestPaths(gauge,&f);
-  //cerr << PVAR(d.visited().size()) << endl;
+  d.shortestPaths(gauge, &f);
+  // cerr << PVAR(d.visited().size()) << endl;
 
-  if (d.visited().size()!=optimizer.vertices().size()) {
-    cerr << CL_RED("Warning: d.visited().size() != optimizer.vertices().size()") << endl;
+  if (d.visited().size() != optimizer.vertices().size()) {
+    cerr << CL_RED("Warning: d.visited().size() != optimizer.vertices().size()")
+         << endl;
     cerr << "visited: " << d.visited().size() << endl;
     cerr << "vertices: " << optimizer.vertices().size() << endl;
   }
 
   if (incremental) {
-    cerr << CL_RED("# Note: this variant performs batch steps in each time step") << endl;
-    cerr << CL_RED("#       For a variant which updates the Cholesky factor use the binary g2o_incremental") << endl;
+    cerr << CL_RED(
+                "# Note: this variant performs batch steps in each time step")
+         << endl;
+    cerr << CL_RED(
+                "#       For a variant which updates the Cholesky factor use "
+                "the binary g2o_incremental")
+         << endl;
     int incIterations = maxIterations;
-    if (! arg.parsedParam("i")) {
+    if (!arg.parsedParam("i")) {
       cerr << "# Setting default number of iterations" << endl;
       incIterations = 1;
     }
@@ -362,8 +395,10 @@ int main(int argc, char** argv)
     cerr << "#\t iterations  " << incIterations << endl;
 
     SparseOptimizer::VertexIDMap vertices = optimizer.vertices();
-    for (SparseOptimizer::VertexIDMap::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
-      const SparseOptimizer::Vertex* v = dynamic_cast<const SparseOptimizer::Vertex*>(it->second);
+    for (SparseOptimizer::VertexIDMap::const_iterator it = vertices.begin();
+         it != vertices.end(); ++it) {
+      const SparseOptimizer::Vertex* v =
+          dynamic_cast<const SparseOptimizer::Vertex*>(it->second);
       maxDim = max(maxDim, v->dimension());
     }
 
@@ -380,10 +415,10 @@ int main(int argc, char** argv)
     sort(edges.begin(), edges.end(), IncrementalEdgesCompare());
 
     double cumTime = 0.;
-    int vertexCount=0;
+    int vertexCount = 0;
     int lastOptimizedVertexCount = 0;
     int lastVisUpdateVertexCount = 0;
-    bool freshlyOptimized=false;
+    bool freshlyOptimized = false;
     bool firstRound = true;
     HyperGraph::VertexSet verticesAdded;
     HyperGraph::EdgeSet edgesAdded;
@@ -393,92 +428,94 @@ int main(int argc, char** argv)
       SparseOptimizer::Vertex* v2 = optimizer.vertex(e->vertices()[1]->id());
 
       if (v1 == nullptr) {
-        SparseOptimizer::Vertex* v = v1 = dynamic_cast<SparseOptimizer::Vertex*>(e->vertices()[0]);
+        SparseOptimizer::Vertex* v = v1 =
+            dynamic_cast<SparseOptimizer::Vertex*>(e->vertices()[0]);
         bool v1Added = optimizer.addVertex(v);
-        //cerr << "adding" << v->id() << "(" << v->dimension() << ")" << endl;
+        // cerr << "adding" << v->id() << "(" << v->dimension() << ")" << endl;
         assert(v1Added);
-        if (! v1Added)
+        if (!v1Added)
           cerr << "Error adding vertex " << v->id() << endl;
         else
           verticesAdded.insert(v);
         doInit = 1;
-        if (v->dimension() == maxDim)
-          vertexCount++;
+        if (v->dimension() == maxDim) vertexCount++;
       }
 
       if (v2 == nullptr) {
-        SparseOptimizer::Vertex* v = v2 = dynamic_cast<SparseOptimizer::Vertex*>(e->vertices()[1]);
+        SparseOptimizer::Vertex* v = v2 =
+            dynamic_cast<SparseOptimizer::Vertex*>(e->vertices()[1]);
         bool v2Added = optimizer.addVertex(v);
-        //cerr << "adding" << v->id() << "(" << v->dimension() << ")" << endl;
+        // cerr << "adding" << v->id() << "(" << v->dimension() << ")" << endl;
         assert(v2Added);
-        if (! v2Added)
+        if (!v2Added)
           cerr << "Error adding vertex " << v->id() << endl;
         else
           verticesAdded.insert(v);
         doInit = 2;
-        if (v->dimension() == maxDim)
-          vertexCount++;
+        if (v->dimension() == maxDim) vertexCount++;
       }
 
       // adding the edge and initialization of the vertices
       {
-        //cerr << " adding edge " << e->vertices()[0]->id() <<  " " << e->vertices()[1]->id() << endl;
-        if (! optimizer.addEdge(e)) {
-          cerr << "Unable to add edge " << e->vertices()[0]->id() << " -> " << e->vertices()[1]->id() << endl;
+        // cerr << " adding edge " << e->vertices()[0]->id() <<  " " <<
+        // e->vertices()[1]->id() << endl;
+        if (!optimizer.addEdge(e)) {
+          cerr << "Unable to add edge " << e->vertices()[0]->id() << " -> "
+               << e->vertices()[1]->id() << endl;
         } else {
           edgesAdded.insert(e);
         }
 
         if (doInit != 0) {
-          OptimizableGraph::Vertex* from = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
-          OptimizableGraph::Vertex* to   = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
-          switch (doInit){
-            case 1: // initialize v1 from v2
-              {
-                HyperGraph::VertexSet toSet;
-                toSet.insert(to);
-                if (e->initialEstimatePossible(toSet, from) > 0.) {
-                  //cerr << "init: "
-                    //<< to->id() << "(" << to->dimension() << ") -> "
-                    //<< from->id() << "(" << from->dimension() << ") " << endl;
-                   e->initialEstimate(toSet, from);
-                } else {
-                  assert(0 && "Added unitialized variable to the graph");
-                }
-                break;
+          OptimizableGraph::Vertex* from =
+              dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
+          OptimizableGraph::Vertex* to =
+              dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
+          switch (doInit) {
+            case 1:  // initialize v1 from v2
+            {
+              HyperGraph::VertexSet toSet;
+              toSet.insert(to);
+              if (e->initialEstimatePossible(toSet, from) > 0.) {
+                // cerr << "init: "
+                //<< to->id() << "(" << to->dimension() << ") -> "
+                //<< from->id() << "(" << from->dimension() << ") " << endl;
+                e->initialEstimate(toSet, from);
+              } else {
+                assert(0 && "Added unitialized variable to the graph");
               }
-            case 2:
-              {
-                HyperGraph::VertexSet fromSet;
-                fromSet.insert(from);
-                if (e->initialEstimatePossible(fromSet, to) > 0.) {
-                  //cerr << "init: "
-                    //<< from->id() << "(" << from->dimension() << ") -> "
-                    //<< to->id() << "(" << to->dimension() << ") " << endl;
-                  e->initialEstimate(fromSet, to);
-                } else {
-                  assert(0 && "Added unitialized variable to the graph");
-                }
-                break;
+              break;
+            }
+            case 2: {
+              HyperGraph::VertexSet fromSet;
+              fromSet.insert(from);
+              if (e->initialEstimatePossible(fromSet, to) > 0.) {
+                // cerr << "init: "
+                //<< from->id() << "(" << from->dimension() << ") -> "
+                //<< to->id() << "(" << to->dimension() << ") " << endl;
+                e->initialEstimate(fromSet, to);
+              } else {
+                assert(0 && "Added unitialized variable to the graph");
               }
-            default: cerr << "doInit wrong value\n";
+              break;
+            }
+            default:
+              cerr << "doInit wrong value\n";
           }
-
         }
-
       }
 
-      freshlyOptimized=false;
+      freshlyOptimized = false;
       {
-        //cerr << "Optimize" << endl;
+        // cerr << "Optimize" << endl;
         if (vertexCount - lastOptimizedVertexCount >= updateGraphEachN) {
           if (firstRound) {
-            if (!optimizer.initializeOptimization()){
+            if (!optimizer.initializeOptimization()) {
               cerr << "initialization failed" << endl;
               return 0;
             }
           } else {
-            if (! optimizer.updateInitialization(verticesAdded, edgesAdded)) {
+            if (!optimizer.updateInitialization(verticesAdded, edgesAdded)) {
               cerr << "updating initialization failed" << endl;
               return 0;
             }
@@ -486,15 +523,18 @@ int main(int argc, char** argv)
           verticesAdded.clear();
           edgesAdded.clear();
           double ts = get_monotonic_time();
-          int currentIt=optimizer.optimize(incIterations, !firstRound);
+          int currentIt = optimizer.optimize(incIterations, !firstRound);
           double dts = get_monotonic_time() - ts;
           cumTime += dts;
           firstRound = false;
-          //optimizer->setOptimizationTime(cumTime);
+          // optimizer->setOptimizationTime(cumTime);
           if (verbose) {
             double chi2 = optimizer.chi2();
-            cerr << "nodes= " << optimizer.vertices().size() << "\t edges= " << optimizer.edges().size() << "\t chi2= " << chi2
-              << "\t time= " << dts << "\t iterations= " << currentIt <<  "\t cumTime= " << cumTime << endl;
+            cerr << "nodes= " << optimizer.vertices().size()
+                 << "\t edges= " << optimizer.edges().size()
+                 << "\t chi2= " << chi2 << "\t time= " << dts
+                 << "\t iterations= " << currentIt << "\t cumTime= " << cumTime
+                 << endl;
           }
           lastOptimizedVertexCount = vertexCount;
           freshlyOptimized = true;
@@ -505,34 +545,32 @@ int main(int argc, char** argv)
               lastVisUpdateVertexCount = vertexCount;
             }
           }
-
         }
 
-        if (! verbose)
-          cerr << ".";
+        if (!verbose) cerr << ".";
       }
 
-    } // for all edges
+    }  // for all edges
 
-    if (! freshlyOptimized) {
+    if (!freshlyOptimized) {
       double ts = get_monotonic_time();
-      int currentIt=optimizer.optimize(incIterations, !firstRound);
+      int currentIt = optimizer.optimize(incIterations, !firstRound);
       double dts = get_monotonic_time() - ts;
       cumTime += dts;
-      //optimizer->setOptimizationTime(cumTime);
+      // optimizer->setOptimizationTime(cumTime);
       if (verbose) {
         double chi2 = optimizer.chi2();
-        cerr << "nodes= " << optimizer.vertices().size() << "\t edges= " << optimizer.edges().size() << "\t chi2= " << chi2
-          << "\t time= " << dts << "\t iterations= " << currentIt <<  "\t cumTime= " << cumTime << endl;
+        cerr << "nodes= " << optimizer.vertices().size()
+             << "\t edges= " << optimizer.edges().size() << "\t chi2= " << chi2
+             << "\t time= " << dts << "\t iterations= " << currentIt
+             << "\t cumTime= " << cumTime << endl;
       }
-
     }
 
   } else {
-
     // BATCH optimization
 
-    if (statsFile!=""){
+    if (statsFile != "") {
       // allocate buffer for statistics;
       optimizer.setComputeBatchStatistics(true);
     }
@@ -550,31 +588,35 @@ int main(int argc, char** argv)
     double initChi = optimizer.chi2();
 
     signal(SIGINT, sigquit_handler);
-    int result=optimizer.optimize(maxIterations);
-    if (maxIterations > 0 && result==OptimizationAlgorithm::Fail){
+    int result = optimizer.optimize(maxIterations);
+    if (maxIterations > 0 && result == OptimizationAlgorithm::Fail) {
       cerr << "Cholesky failed, result might be invalid" << endl;
-    } else if (computeMarginals){
+    } else if (computeMarginals) {
       std::vector<std::pair<int, int> > blockIndices;
-      for (auto v : optimizer.activeVertices()){
-        if (v->hessianIndex()>=0){
-          blockIndices.push_back(make_pair(v->hessianIndex(), v->hessianIndex()));
+      for (auto v : optimizer.activeVertices()) {
+        if (v->hessianIndex() >= 0) {
+          blockIndices.push_back(
+              make_pair(v->hessianIndex(), v->hessianIndex()));
         }
-        if (v->hessianIndex()>0){
-          blockIndices.push_back(make_pair(v->hessianIndex()-1, v->hessianIndex()));
+        if (v->hessianIndex() > 0) {
+          blockIndices.push_back(
+              make_pair(v->hessianIndex() - 1, v->hessianIndex()));
         }
       }
       SparseBlockMatrix<MatrixXd> spinv;
       if (optimizer.computeMarginals(spinv, blockIndices)) {
-        for (auto v : optimizer.activeVertices()){
+        for (auto v : optimizer.activeVertices()) {
           cerr << "Vertex id:" << v->id() << endl;
-          if (v->hessianIndex()>=0){
-            cerr << "inv block :" << v->hessianIndex() << ", " << v->hessianIndex()<< endl;
+          if (v->hessianIndex() >= 0) {
+            cerr << "inv block :" << v->hessianIndex() << ", "
+                 << v->hessianIndex() << endl;
             cerr << *(spinv.block(v->hessianIndex(), v->hessianIndex()));
             cerr << endl;
           }
-          if (v->hessianIndex()>0){
-            cerr << "inv block :" << v->hessianIndex()-1 << ", " << v->hessianIndex()<< endl;
-            cerr << *(spinv.block(v->hessianIndex()-1, v->hessianIndex()));
+          if (v->hessianIndex() > 0) {
+            cerr << "inv block :" << v->hessianIndex() - 1 << ", "
+                 << v->hessianIndex() << endl;
+            cerr << *(spinv.block(v->hessianIndex() - 1, v->hessianIndex()));
             cerr << endl;
           }
         }
@@ -582,31 +624,33 @@ int main(int argc, char** argv)
     }
 
     optimizer.computeActiveErrors();
-    double finalChi=optimizer.chi2();
+    double finalChi = optimizer.chi2();
 
-    if  (summaryFile!="") {
+    if (summaryFile != "") {
       PropertyMap summary;
       summary.makeProperty<StringProperty>("filename", inputFilename);
-      summary.makeProperty<IntProperty>("n_vertices", optimizer.vertices().size());
+      summary.makeProperty<IntProperty>("n_vertices",
+                                        optimizer.vertices().size());
       summary.makeProperty<IntProperty>("n_edges", optimizer.edges().size());
 
-      int nLandmarks=0;
-      int nPoses=0;
+      int nLandmarks = 0;
+      int nPoses = 0;
       int maxDim = *vertexDimensions.rbegin();
-      for (auto & it : optimizer.vertices()){
-	OptimizableGraph::Vertex* v=dynamic_cast<OptimizableGraph::Vertex*>(it.second);
-	if (v->dimension() != maxDim) {
-	  nLandmarks++;
-	} else
-	  nPoses++;
+      for (auto& it : optimizer.vertices()) {
+        OptimizableGraph::Vertex* v =
+            dynamic_cast<OptimizableGraph::Vertex*>(it.second);
+        if (v->dimension() != maxDim) {
+          nLandmarks++;
+        } else
+          nPoses++;
       }
       set<string> edgeTypes;
-      for (auto it : optimizer.edges()){
-	edgeTypes.insert(Factory::instance()->tag(it));
+      for (auto it : optimizer.edges()) {
+        edgeTypes.insert(Factory::instance()->tag(it));
       }
       stringstream edgeTypesString;
-      for (const auto & edgeType : edgeTypes){
-	edgeTypesString << edgeType << " ";
+      for (const auto& edgeType : edgeTypes) {
+        edgeTypesString << edgeType << " ";
       }
 
       summary.makeProperty<IntProperty>("n_poses", nPoses);
@@ -624,24 +668,22 @@ int main(int argc, char** argv)
       summary.writeToCSV(os);
     }
 
-
-    if (statsFile!=""){
+    if (statsFile != "") {
       cerr << "writing stats to file \"" << statsFile << "\" ... ";
       ofstream os(statsFile.c_str());
       const BatchStatisticsContainer& bsc = optimizer.batchStatistics();
 
-      for (int i=0; i<maxIterations; i++) {
+      for (int i = 0; i < maxIterations; i++) {
         os << bsc[i] << endl;
       }
       cerr << "done." << endl;
     }
-
   }
 
   // saving again
   if (!gnudump.empty()) {
     bool gnuPlotStatus = saveGnuplot(gnudump, optimizer);
-    if (! gnuPlotStatus) {
+    if (!gnuPlotStatus) {
       cerr << "Error while writing gnuplot files" << endl;
     }
   }
@@ -658,9 +700,9 @@ int main(int argc, char** argv)
   }
 
   // destroy all the singletons
-  //Factory::destroy();
-  //OptimizationAlgorithmFactory::destroy();
-  //HyperGraphActionLibrary::destroy();
+  // Factory::destroy();
+  // OptimizationAlgorithmFactory::destroy();
+  // HyperGraphActionLibrary::destroy();
 
   return 0;
 }

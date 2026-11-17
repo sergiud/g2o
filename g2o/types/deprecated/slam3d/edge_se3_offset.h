@@ -7,71 +7,73 @@
 #define G2O_DEPRECATED_EDGE_SE3_OFFSET_H_
 
 #include <g2o/core/base_binary_edge.h>
+#include <g2o/prefix.h>
 
 #include "vertex_se3_quat.h"
-
-#include <g2o/prefix.h>
 
 G2O_START_NAMESPACE
 namespace deprecated {
 
-  class ParameterSE3Offset;
-  class CacheSE3Offset;
+class ParameterSE3Offset;
+class CacheSE3Offset;
 
-  /**
-   * \brief Offset edge
-   */
-  // first two args are the measurement type, second two the connection classes
-  class G2O_DEPRECATED_TYPES_SLAM3D_API EdgeSE3Offset : public BaseBinaryEdge<6, SE3Quat, VertexSE3, VertexSE3> {
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
-      EdgeSE3Offset();
-      virtual bool read(std::istream& is);
-      virtual bool write(std::ostream& os) const;
+/**
+ * \brief Offset edge
+ */
+// first two args are the measurement type, second two the connection classes
+class G2O_DEPRECATED_TYPES_SLAM3D_API EdgeSE3Offset
+    : public BaseBinaryEdge<6, SE3Quat, VertexSE3, VertexSE3> {
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+  EdgeSE3Offset();
+  virtual bool read(std::istream& is);
+  virtual bool write(std::ostream& os) const;
 
-      void computeError();
+  void computeError();
 
-      // jacobian
-      //virtual void linearizeOplus();
+  // jacobian
+  // virtual void linearizeOplus();
 
-      virtual void setMeasurement(const SE3Quat& m){
-        _measurement = m;
-        _inverseMeasurement = m.inverse();
-      }
+  virtual void setMeasurement(const SE3Quat& m) {
+    _measurement = m;
+    _inverseMeasurement = m.inverse();
+  }
 
-      virtual bool setMeasurementData(const double* d){
-        Eigen::Map<const Vector7d> v(d);
-        _measurement.fromVector(v);
-        _inverseMeasurement = _measurement.inverse();
-        return true;
-      }
+  virtual bool setMeasurementData(const double* d) {
+    Eigen::Map<const Vector7d> v(d);
+    _measurement.fromVector(v);
+    _inverseMeasurement = _measurement.inverse();
+    return true;
+  }
 
-      virtual bool getMeasurementData(double* d) const{
-        Eigen::Map<Vector7d> v(d);
-        v = _measurement.toVector();
-        return true;
-      }
+  virtual bool getMeasurementData(double* d) const {
+    Eigen::Map<Vector7d> v(d);
+    v = _measurement.toVector();
+    return true;
+  }
 
-      void linearizeOplus();
+  void linearizeOplus();
 
-      virtual int measurementDimension() const {return 7;}
+  virtual int measurementDimension() const { return 7; }
 
-      virtual bool setMeasurementFromState() ;
+  virtual bool setMeasurementFromState();
 
-      virtual double initialEstimatePossible(const OptimizableGraph::VertexSet& /*from*/, 
-          OptimizableGraph::Vertex* /*to*/) { 
-        return 1.;
-      }
+  virtual double initialEstimatePossible(
+      const OptimizableGraph::VertexSet& /*from*/,
+      OptimizableGraph::Vertex* /*to*/) {
+    return 1.;
+  }
 
-      virtual void initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* to);
+  virtual void initialEstimate(const OptimizableGraph::VertexSet& from,
+                               OptimizableGraph::Vertex* to);
 
-    protected:
-      SE3Quat _inverseMeasurement;
-      virtual bool resolveCaches();
-      ParameterSE3Offset *_offsetFrom, *_offsetTo;
-      CacheSE3Offset  *_cacheFrom, *_cacheTo;
-  };
+ protected:
+  SE3Quat _inverseMeasurement;
+  virtual bool resolveCaches();
+  ParameterSE3Offset *_offsetFrom, *_offsetTo;
+  CacheSE3Offset *_cacheFrom, *_cacheTo;
+};
 
-} // end namespace
-} // end namespace
+}  // end namespace
+}  // end namespace
 #endif

@@ -19,51 +19,49 @@
 
 G2O_START_NAMESPACE
 
-  bool EdgeSE2Segment2D::read(std::istream& is)
-  {
-    for (size_t i = 0; i < 4 ; i++)
-      is >> _measurement[i];
-    for (size_t i = 0; i < 4 ; i++)
-      for (size_t j = i; j < 4 ; j++) {
-        is >> _information (i,j);
-        _information (j,i) = _information (i,j);
-      }
-    return true;
-  }
-
-  bool EdgeSE2Segment2D::write(std::ostream& os) const
-  {
-    for (size_t i = 0; i < 4 ; i++)
-      os << _measurement[i] << " ";
-    for (size_t i = 0; i < 4 ; i++)
-      for (size_t j = i; j < 4 ; j++) {
-        os << _information (i,j) << " ";
-      }
-    return os.good();
-  }
-
-  void EdgeSE2Segment2D::initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* to)
-  {
-    assert(from.size() == 1 && from.count(_vertices[0]) == 1 && "Can not initialize VertexSE2 position by VertexSegment2D. I could if i wanted. Not now");
-
-    VertexSE2* vi     = dynamic_cast<VertexSE2*>(_vertices[0]);
-    VertexSegment2D* vj = dynamic_cast<VertexSegment2D*>(_vertices[1]);
-    if (from.count(vi) > 0 && to == vj) {
-      vj->setEstimateP1(vi->estimate() * measurementP1());
-      vj->setEstimateP2(vi->estimate() * measurementP2());
+bool EdgeSE2Segment2D::read(std::istream& is) {
+  for (size_t i = 0; i < 4; i++) is >> _measurement[i];
+  for (size_t i = 0; i < 4; i++)
+    for (size_t j = i; j < 4; j++) {
+      is >> _information(i, j);
+      _information(j, i) = _information(i, j);
     }
+  return true;
+}
+
+bool EdgeSE2Segment2D::write(std::ostream& os) const {
+  for (size_t i = 0; i < 4; i++) os << _measurement[i] << " ";
+  for (size_t i = 0; i < 4; i++)
+    for (size_t j = i; j < 4; j++) {
+      os << _information(i, j) << " ";
+    }
+  return os.good();
+}
+
+void EdgeSE2Segment2D::initialEstimate(const OptimizableGraph::VertexSet& from,
+                                       OptimizableGraph::Vertex* to) {
+  assert(from.size() == 1 && from.count(_vertices[0]) == 1 &&
+         "Can not initialize VertexSE2 position by VertexSegment2D. I could if "
+         "i wanted. Not now");
+
+  VertexSE2* vi = dynamic_cast<VertexSE2*>(_vertices[0]);
+  VertexSegment2D* vj = dynamic_cast<VertexSegment2D*>(_vertices[1]);
+  if (from.count(vi) > 0 && to == vj) {
+    vj->setEstimateP1(vi->estimate() * measurementP1());
+    vj->setEstimateP2(vi->estimate() * measurementP2());
   }
+}
 
 // #ifndef NUMERIC_JACOBIAN_TWO_D_TYPES
 //   void EdgeSE2Segment2D::linearizeOplus()
 //   {
 //     const VertexSE2* vi     = static_cast<const VertexSE2*>(_vertices[0]);
-//     const VertexSegment2D* vj = static_cast<const VertexSegment2D*>(_vertices[1]);
-//     const double& x1        = vi->estimate().translation()[0];
-//     const double& y1        = vi->estimate().translation()[1];
-//     const double& th1       = vi->estimate().rotation().angle();
-//     const double& x2        = vj->estimate()[0];
-//     const double& y2        = vj->estimate()[1];
+//     const VertexSegment2D* vj = static_cast<const
+//     VertexSegment2D*>(_vertices[1]); const double& x1        =
+//     vi->estimate().translation()[0]; const double& y1        =
+//     vi->estimate().translation()[1]; const double& th1       =
+//     vi->estimate().rotation().angle(); const double& x2        =
+//     vj->estimate()[0]; const double& y2        = vj->estimate()[1];
 
 //     double aux_1 = cos(th1) ;
 //     double aux_2 = -aux_1 ;
@@ -83,31 +81,40 @@ G2O_START_NAMESPACE
 //   }
 // #endif
 
-//   EdgeSE2Segment2DWriteGnuplotAction::EdgeSE2Segment2DWriteGnuplotAction(): WriteGnuplotAction(typeid(EdgeSE2Segment2D).name()){}
+//   EdgeSE2Segment2DWriteGnuplotAction::EdgeSE2Segment2DWriteGnuplotAction():
+//   WriteGnuplotAction(typeid(EdgeSE2Segment2D).name()){}
 
-//   HyperGraphElementAction* EdgeSE2Segment2DWriteGnuplotAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_){
+//   HyperGraphElementAction*
+//   EdgeSE2Segment2DWriteGnuplotAction::operator()(HyperGraph::HyperGraphElement*
+//   element, HyperGraphElementAction::Parameters* params_){
 //     if (typeid(*element).name()!=_typeName)
 //       return 0;
-//     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
-//     if (!params->os){
-//       std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified" << std::endl;
-//       return 0;
+//     WriteGnuplotAction::Parameters*
+//     params=static_cast<WriteGnuplotAction::Parameters*>(params_); if
+//     (!params->os){
+//       std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified"
+//       << std::endl; return 0;
 //     }
 
 //     EdgeSE2Segment2D* e =  static_cast<EdgeSE2Segment2D*>(element);
 //     VertexSE2* fromEdge = static_cast<VertexSE2*>(e->vertex(0));
 //     VertexSegment2D* toEdge   = static_cast<VertexSegment2D*>(e->vertex(1));
-//     *(params->os) << fromEdge->estimate().translation().x() << " " << fromEdge->estimate().translation().y()
+//     *(params->os) << fromEdge->estimate().translation().x() << " " <<
+//     fromEdge->estimate().translation().y()
 //       << " " << fromEdge->estimate().rotation().angle() << std::endl;
-//     *(params->os) << toEdge->estimate().x() << " " << toEdge->estimate().y() << std::endl;
+//     *(params->os) << toEdge->estimate().x() << " " << toEdge->estimate().y()
+//     << std::endl;
 //     *(params->os) << std::endl;
 //     return this;
 //   }
 
 // #ifdef G2O_HAVE_OPENGL
-//   EdgeSE2Segment2DDrawAction::EdgeSE2Segment2DDrawAction(): DrawAction(typeid(EdgeSE2Segment2D).name()){}
+//   EdgeSE2Segment2DDrawAction::EdgeSE2Segment2DDrawAction():
+//   DrawAction(typeid(EdgeSE2Segment2D).name()){}
 
-//   HyperGraphElementAction* EdgeSE2Segment2DDrawAction::operator()(HyperGraph::HyperGraphElement* element,
+//   HyperGraphElementAction*
+//   EdgeSE2Segment2DDrawAction::operator()(HyperGraph::HyperGraphElement*
+//   element,
 //                 HyperGraphElementAction::Parameters*  params_){
 //     if (typeid(*element).name()!=_typeName)
 //       return 0;
@@ -118,7 +125,6 @@ G2O_START_NAMESPACE
 
 //     if (_show && !_show->value())
 //       return this;
-
 
 //     EdgeSE2Segment2D* e =  static_cast<EdgeSE2Segment2D*>(element);
 //     VertexSE2* fromEdge = static_cast<VertexSE2*>(e->vertex(0));

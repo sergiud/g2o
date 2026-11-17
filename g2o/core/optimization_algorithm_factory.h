@@ -15,117 +15,119 @@
 #include <memory>
 #include <typeinfo>
 
-
 // define to get some verbose output
-//#define G2O_DEBUG_OPTIMIZATION_ALGORITHM_FACTORY
+// #define G2O_DEBUG_OPTIMIZATION_ALGORITHM_FACTORY
 
 #include <g2o/prefix.h>
 
 G2O_START_NAMESPACE
 
-  // forward decl
-  class OptimizationAlgorithm;
-  class SparseOptimizer;
+// forward decl
+class OptimizationAlgorithm;
+class SparseOptimizer;
+
+/**
+ * \brief base for allocating an optimization algorithm
+ *
+ * Allocating a solver for a given optimizer. The method construct() has to be
+ * implemented in your derived class to allocate the desired solver.
+ */
+class G2O_CORE_API AbstractOptimizationAlgorithmCreator {
+ public:
+  explicit AbstractOptimizationAlgorithmCreator(
+      const OptimizationAlgorithmProperty& p);
+  virtual ~AbstractOptimizationAlgorithmCreator() = default;
+  //! allocate a solver operating on optimizer, re-implement for your creator
+  virtual OptimizationAlgorithm* construct() = 0;
+  //! return the properties of the solver
+  const OptimizationAlgorithmProperty& property() const { return _property; }
+
+ protected:
+  OptimizationAlgorithmProperty _property;
+};
+
+/**
+ * \brief create solvers based on their short name
+ *
+ * Factory to allocate solvers based on their short name.
+ * The Factory is implemented as a sigleton and the single
+ * instance can be accessed via the instance() function.
+ */
+class G2O_CORE_API OptimizationAlgorithmFactory {
+ public:
+  typedef std::list<std::unique_ptr<AbstractOptimizationAlgorithmCreator> >
+      CreatorList;
+
+  //! return the instance
+  static OptimizationAlgorithmFactory* instance();
+
+  //! free the instance
+  G2O_CORE_DEPRECATED static void destroy();
 
   /**
-   * \brief base for allocating an optimization algorithm
-   *
-   * Allocating a solver for a given optimizer. The method construct() has to be
-   * implemented in your derived class to allocate the desired solver.
+   * register a specific creator for allocating a solver
    */
-  class G2O_CORE_API AbstractOptimizationAlgorithmCreator
-  {
-    public:
-      explicit AbstractOptimizationAlgorithmCreator(const OptimizationAlgorithmProperty& p);
-      virtual ~AbstractOptimizationAlgorithmCreator() = default;
-      //! allocate a solver operating on optimizer, re-implement for your creator
-      virtual OptimizationAlgorithm* construct() = 0;
-      //! return the properties of the solver
-      const OptimizationAlgorithmProperty& property() const { return _property;}
-    protected:
-      OptimizationAlgorithmProperty _property;
-  };
+  void registerSolver(AbstractOptimizationAlgorithmCreator* c);
 
   /**
-   * \brief create solvers based on their short name
-   *
-   * Factory to allocate solvers based on their short name.
-   * The Factory is implemented as a sigleton and the single
-   * instance can be accessed via the instance() function.
+   * unregister a specific creator for allocating a solver
    */
-  class G2O_CORE_API OptimizationAlgorithmFactory
-  {
-    public:
-      typedef std::list<std::unique_ptr<AbstractOptimizationAlgorithmCreator> >      CreatorList;
+  void unregisterSolver(AbstractOptimizationAlgorithmCreator* c);
 
-      //! return the instance
-      static OptimizationAlgorithmFactory* instance();
+  /**
+   * construct a solver based on its name, e.g., var, fix3_2_cholmod
+   */
+  OptimizationAlgorithm* construct(
+      const std::string& tag,
+      OptimizationAlgorithmProperty& solverProperty) const;
 
-      //! free the instance
-      G2O_CORE_DEPRECATED static void destroy();
+  //! list the known solvers into a stream
+  void listSolvers(std::ostream& os) const;
 
-      /**
-       * register a specific creator for allocating a solver
-       */
-      void registerSolver(AbstractOptimizationAlgorithmCreator* c);
+  //! return the underlying list of creators
+  const CreatorList& creatorList() const { return _creator; }
 
-      /**
-       * unregister a specific creator for allocating a solver
-       */
-      void unregisterSolver(AbstractOptimizationAlgorithmCreator* c);
+ protected:
+  OptimizationAlgorithmFactory() = default;
+  ~OptimizationAlgorithmFactory() = default;
 
-      /**
-       * construct a solver based on its name, e.g., var, fix3_2_cholmod
-       */
-      OptimizationAlgorithm* construct(const std::string& tag, OptimizationAlgorithmProperty& solverProperty) const;
+  CreatorList _creator;
 
-      //! list the known solvers into a stream
-      void listSolvers(std::ostream& os) const;
+  CreatorList::const_iterator findSolver(const std::string& name) const;
+  CreatorList::iterator findSolver(const std::string& name);
 
-      //! return the underlying list of creators
-      const CreatorList& creatorList() const { return _creator;}
+ private:
+  OptimizationAlgorithmFactory(const OptimizationAlgorithmFactory&) = delete;
+  OptimizationAlgorithmFactory& operator=(const OptimizationAlgorithmFactory&) =
+      delete;
+};
 
-    protected:
-      OptimizationAlgorithmFactory() = default;
-      ~OptimizationAlgorithmFactory() = default;
-
-      CreatorList _creator;
-
-      CreatorList::const_iterator findSolver(const std::string& name) const;
-      CreatorList::iterator findSolver(const std::string& name);
-
-  private:
-	  OptimizationAlgorithmFactory(const OptimizationAlgorithmFactory&) = delete;
-	  OptimizationAlgorithmFactory& operator=(const OptimizationAlgorithmFactory&) = delete;
-  };
-
-  class RegisterOptimizationAlgorithmProxy
-  {
-    public:
-      RegisterOptimizationAlgorithmProxy(AbstractOptimizationAlgorithmCreator* c)
-      {
-        _creator = c;
+class RegisterOptimizationAlgorithmProxy {
+ public:
+  RegisterOptimizationAlgorithmProxy(AbstractOptimizationAlgorithmCreator* c) {
+    _creator = c;
 #ifdef G2O_DEBUG_OPTIMIZATION_ALGORITHM_FACTORY
-        std::cout << __FUNCTION__ << ": Registering " << _creator->property().name << " of type " << typeid(*_creator).name() << std::endl;
+    std::cout << __FUNCTION__ << ": Registering " << _creator->property().name
+              << " of type " << typeid(*_creator).name() << std::endl;
 #endif
-        OptimizationAlgorithmFactory::instance()->registerSolver(c);
-      }
+    OptimizationAlgorithmFactory::instance()->registerSolver(c);
+  }
 
-      ~RegisterOptimizationAlgorithmProxy()
-      {
+  ~RegisterOptimizationAlgorithmProxy() {
 #ifdef G2O_DEBUG_OPTIMIZATION_ALGORITHM_FACTORY
-        std::cout << __FUNCTION__ << ": Unregistering " << _creator->property().name << std::endl;
+    std::cout << __FUNCTION__ << ": Unregistering " << _creator->property().name
+              << std::endl;
 #endif
-        OptimizationAlgorithmFactory::instance()->unregisterSolver(_creator);
-      }
-    private:
-      AbstractOptimizationAlgorithmCreator* _creator;
-  };
+    OptimizationAlgorithmFactory::instance()->unregisterSolver(_creator);
+  }
+
+ private:
+  AbstractOptimizationAlgorithmCreator* _creator;
+};
 
 G2O_END_NAMESPACE
 
 #include <g2o/suffix.h>
-
 
 /**
  * Use the following macro to register a whole library of
@@ -137,8 +139,9 @@ G2O_END_NAMESPACE
  * G2O_REGISTER_OPTIMIZATION_LIBRARY() macro. Here, you
  * should then provide the same name as to the macro before.
  */
-#define G2O_REGISTER_OPTIMIZATION_LIBRARY(libraryname) \
-    extern "C" void G2O_FACTORY_EXPORT g2o_optimization_library_##libraryname(void) {}
+#define G2O_REGISTER_OPTIMIZATION_LIBRARY(libraryname)                       \
+  extern "C" void G2O_FACTORY_EXPORT g2o_optimization_library_##libraryname( \
+      void) {}
 
 /**
  * see the documentation to G2O_FACTORY_IMPORT() above.
@@ -147,9 +150,12 @@ G2O_END_NAMESPACE
  * to the library containing the solver. Hence, the usage of the macro
  * should enforce that the library is actually linked with the binary.
  */
-#define G2O_USE_OPTIMIZATION_LIBRARY(libraryname) \
-    extern "C" void G2O_FACTORY_IMPORT g2o_optimization_library_##libraryname(void); \
-    static g2o::ForceLinker g2o_force_optimization_algorithm_library_##libraryname(g2o_optimization_library_##libraryname);
+#define G2O_USE_OPTIMIZATION_LIBRARY(libraryname)                            \
+  extern "C" void G2O_FACTORY_IMPORT g2o_optimization_library_##libraryname( \
+      void);                                                                 \
+  static g2o::ForceLinker                                                    \
+      g2o_force_optimization_algorithm_library_##libraryname(                \
+          g2o_optimization_library_##libraryname);
 
 /**
  * Similarly to G2O_FACTORY_EXPORT this macro allows to register a singla
@@ -157,16 +163,21 @@ G2O_END_NAMESPACE
  * corresponds to a specific instance of csparse based solver for example
  */
 #define G2O_REGISTER_OPTIMIZATION_ALGORITHM(optimizername, instance) \
-    extern "C" void G2O_FACTORY_EXPORT g2o_optimization_algorithm_##optimizername(void) {} \
-    static g2o::RegisterOptimizationAlgorithmProxy g_optimization_algorithm_proxy_##optimizername(instance);
+  extern "C" void G2O_FACTORY_EXPORT                                 \
+  g2o_optimization_algorithm_##optimizername(void) {}                \
+  static g2o::RegisterOptimizationAlgorithmProxy                     \
+      g_optimization_algorithm_proxy_##optimizername(instance);
 
 /**
  * see the documentation of the macros above.
  * It allows to enforce linking to library that contains a specific
  * solver instance and guarantees its usage with the factory
  */
-#define G2O_USE_OPTIMIZATION_ALGORITHM(optimizername) \
-    extern "C" void G2O_FACTORY_IMPORT g2o_optimization_algorithm_##optimizername(void); \
-    static g2o::ForceLinker g2o_force_optimization_algorithm_link_##optimizername(g2o_optimization_algorithm_##optimizername);
+#define G2O_USE_OPTIMIZATION_ALGORITHM(optimizername)        \
+  extern "C" void G2O_FACTORY_IMPORT                         \
+  g2o_optimization_algorithm_##optimizername(void);          \
+  static g2o::ForceLinker                                    \
+      g2o_force_optimization_algorithm_link_##optimizername( \
+          g2o_optimization_algorithm_##optimizername);
 
 #endif

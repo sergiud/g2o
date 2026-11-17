@@ -13,25 +13,23 @@
 
 G2O_START_NAMESPACE
 
-  struct Line2D : public Vector2D{
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    Line2D() {
-      setZero();
-    }
-    Line2D(const Vector2D& v) {
-      (*this)(0) = v(0);
-      (*this)(1) = v(1);
-    }
-  };
-
-  inline Line2D operator * (const SE2 & t, const Line2D& l){
-    Line2D est = l;
-    est[0] += t.rotation().angle();
-    est[0] = normalize_theta(est[0]);
-    Vector2D n(cos(est[0]), sin(est[0]));
-    est[1] += n.dot(t.translation());
-    return est;
+struct Line2D : public Vector2D {
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  Line2D() { setZero(); }
+  Line2D(const Vector2D& v) {
+    (*this)(0) = v(0);
+    (*this)(1) = v(1);
   }
+};
+
+inline Line2D operator*(const SE2& t, const Line2D& l) {
+  Line2D est = l;
+  est[0] += t.rotation().angle();
+  est[0] = normalize_theta(est[0]);
+  Vector2D n(cos(est[0]), sin(est[0]));
+  est[1] += n.dot(t.translation());
+  return est;
+}
 
 G2O_END_NAMESPACE
 

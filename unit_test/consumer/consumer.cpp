@@ -134,8 +134,7 @@ int main() {
 
 #ifdef G2O_CONSUMER_HAVE_CSPARSE_EXTENSION
   check("g2o::csparse_extension::writeCs2Octave",
-        reinterpret_cast<const void*>(
-            &g2o::csparse_extension::writeCs2Octave));
+        reinterpret_cast<const void*>(&g2o::csparse_extension::writeCs2Octave));
 #endif
 
 #ifdef G2O_CONSUMER_HAVE_TYPES_SLAM2D

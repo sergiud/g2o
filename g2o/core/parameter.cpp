@@ -7,13 +7,8 @@
 
 G2O_START_NAMESPACE
 
-  Parameter::Parameter() : _id(-1)
-  {
-  }
+Parameter::Parameter() : _id(-1) {}
 
-  void Parameter::setId(int id_)
-  {
-    _id = id_;
-  }
-  
+void Parameter::setId(int id_) { _id = id_; }
+
 G2O_END_NAMESPACE

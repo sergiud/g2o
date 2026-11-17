@@ -6,105 +6,91 @@
 #ifndef G2O_GAUSSIAN_SAMPLER_
 #define G2O_GAUSSIAN_SAMPLER_
 
-#include <Eigen/StdVector>
+#include <g2o/core/abi.h>
+#include <g2o/prefix.h>
+#include <g2o/stuff/g2o_stuff_api.h>
 
-#include <cstdlib>
+#include <Eigen/StdVector>
 #include <cmath>
+#include <cstdlib>
 #include <ctime>
 #include <random>
 
-#include <g2o/core/abi.h>
-#include <g2o/stuff/g2o_stuff_api.h>
-
-#include <g2o/prefix.h>
-
 G2O_START_NAMESPACE
 
-  double G2O_STUFF_API sampleUniform(double min=0, double max=1, std::mt19937* generator=nullptr);
-  double G2O_STUFF_API sampleGaussian(std::mt19937* generator = nullptr);
+double G2O_STUFF_API sampleUniform(double min = 0, double max = 1,
+                                   std::mt19937* generator = nullptr);
+double G2O_STUFF_API sampleGaussian(std::mt19937* generator = nullptr);
 
-  template <class SampleType, class CovarianceType>
-  class GaussianSampler {
-  public:
-    GaussianSampler(bool hasGenerator=true) :
-      _generator(nullptr)
-    {
-      if (hasGenerator){
-        _generator = new std::mt19937;
-      }
+template <class SampleType, class CovarianceType>
+class GaussianSampler {
+ public:
+  GaussianSampler(bool hasGenerator = true) : _generator(nullptr) {
+    if (hasGenerator) {
+      _generator = new std::mt19937;
     }
-    ~GaussianSampler() {
-      delete _generator;
+  }
+  ~GaussianSampler() { delete _generator; }
+  void setDistribution(const CovarianceType& cov) {
+    Eigen::LLT<CovarianceType> cholDecomp;
+    cholDecomp.compute(cov);
+    if (cholDecomp.info() == Eigen::NumericalIssue) return;
+    _cholesky = cholDecomp.matrixL();
+  }
+  SampleType generateSample() {
+    SampleType s;
+    for (int i = 0; i < s.size(); i++) {
+      s(i) = (_generator) ? sampleGaussian(_generator) : sampleGaussian();
     }
-    void setDistribution(const CovarianceType& cov){
-      Eigen::LLT<CovarianceType> cholDecomp;
-      cholDecomp.compute(cov);
-      if (cholDecomp.info()==Eigen::NumericalIssue)
-        return;
-      _cholesky=cholDecomp.matrixL();
-    }
-    SampleType generateSample() {
-      SampleType s;
-      for (int i=0; i<s.size(); i++){
-        s(i) = (_generator) ? sampleGaussian(_generator) : sampleGaussian();
-      }
-      return _cholesky*s;
-    }
-    bool seed(int s)
-    {
-      if (_generator == nullptr)
-        return false;
-      _generator->seed(s);
-      return true;
-    }
-  protected:
-    CovarianceType _cholesky;
-    std::mt19937* _generator;
-  };
+    return _cholesky * s;
+  }
+  bool seed(int s) {
+    if (_generator == nullptr) return false;
+    _generator->seed(s);
+    return true;
+  }
 
-  class G2O_STUFF_API Sampler
-  {
-    public:
-      /**
-       * Gaussian random with a mean and standard deviation. Uses the
-       * Polar method of Marsaglia.
-       */
-      static double gaussRand(double mean, double sigma)
-      {
-        double x, y, r2;
-        do {
-          x = -1.0 + 2.0 * uniformRand(0.0, 1.0);
-          y = -1.0 + 2.0 * uniformRand(0.0, 1.0);
-          r2 = x * x + y * y;
-        } while (r2 > 1.0 || r2 == 0.0);
-        return mean + sigma * y * std::sqrt(-2.0 * log(r2) / r2);
-      }
+ protected:
+  CovarianceType _cholesky;
+  std::mt19937* _generator;
+};
 
-      /**
-       * sample a number from a uniform distribution
-       */
-      static double uniformRand(double lowerBndr, double upperBndr)
-      {
-        return lowerBndr + ((double) std::rand() / (RAND_MAX + 1.0)) * (upperBndr - lowerBndr);
-      }
-      /**
-       * default seed function using the current time in seconds
-       */
-      static void seedRand()
-      {
-        seedRand(static_cast<unsigned int>(std::time(nullptr)));
-      }
+class G2O_STUFF_API Sampler {
+ public:
+  /**
+   * Gaussian random with a mean and standard deviation. Uses the
+   * Polar method of Marsaglia.
+   */
+  static double gaussRand(double mean, double sigma) {
+    double x, y, r2;
+    do {
+      x = -1.0 + 2.0 * uniformRand(0.0, 1.0);
+      y = -1.0 + 2.0 * uniformRand(0.0, 1.0);
+      r2 = x * x + y * y;
+    } while (r2 > 1.0 || r2 == 0.0);
+    return mean + sigma * y * std::sqrt(-2.0 * log(r2) / r2);
+  }
 
-      /** seed the random number generator */
-      static void seedRand(unsigned int seed)
-      {
-        std::srand(seed);
-      }
-  };
+  /**
+   * sample a number from a uniform distribution
+   */
+  static double uniformRand(double lowerBndr, double upperBndr) {
+    return lowerBndr +
+           ((double)std::rand() / (RAND_MAX + 1.0)) * (upperBndr - lowerBndr);
+  }
+  /**
+   * default seed function using the current time in seconds
+   */
+  static void seedRand() {
+    seedRand(static_cast<unsigned int>(std::time(nullptr)));
+  }
+
+  /** seed the random number generator */
+  static void seedRand(unsigned int seed) { std::srand(seed); }
+};
 
 G2O_END_NAMESPACE
 
 #include <g2o/suffix.h>
-
 
 #endif

@@ -3,124 +3,118 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
-#include <iostream>
+#include <g2o/stuff/opengl_wrapper.h>
 #include <g2o/types/slam3d_addons/edge_se3_plane_calib.h>
 
-#include <g2o/stuff/opengl_wrapper.h>
+#include <iostream>
 
 G2O_START_NAMESPACE
-  using namespace std;
-  using namespace Eigen;
+using namespace std;
+using namespace Eigen;
 
-  EdgeSE3PlaneSensorCalib::EdgeSE3PlaneSensorCalib() :
-    BaseMultiEdge<3, Plane3D>()
-  {
-    resize(3);
-    color << 0.1, 0.1, 0.1;
-  }
+EdgeSE3PlaneSensorCalib::EdgeSE3PlaneSensorCalib()
+    : BaseMultiEdge<3, Plane3D>() {
+  resize(3);
+  color << 0.1, 0.1, 0.1;
+}
 
-  bool EdgeSE3PlaneSensorCalib::read(std::istream& is)
-  {
-    Vector4D v;
-    is >> v(0) >> v(1) >> v(2) >> v(3);
-    setMeasurement(Plane3D(v));
-    is >> color(0) >> color(1) >> color(2);
-    for (int i = 0; i < information().rows(); ++i)
-      for (int j = i; j < information().cols(); ++j) {
-        is >> information()(i, j);
-        if (i != j)
-          information()(j, i) = information()(i, j);
-      }
-    return true;
-  }
+bool EdgeSE3PlaneSensorCalib::read(std::istream& is) {
+  Vector4D v;
+  is >> v(0) >> v(1) >> v(2) >> v(3);
+  setMeasurement(Plane3D(v));
+  is >> color(0) >> color(1) >> color(2);
+  for (int i = 0; i < information().rows(); ++i)
+    for (int j = i; j < information().cols(); ++j) {
+      is >> information()(i, j);
+      if (i != j) information()(j, i) = information()(i, j);
+    }
+  return true;
+}
 
-  bool EdgeSE3PlaneSensorCalib::write(std::ostream& os) const
-  {
-    Vector4D v = _measurement.toVector();
-    os << v(0) << " " << v(1) << " " << v(2) << " " << v(3) << " ";
-    os << color(0) << " " << color(1) << " " << color(2) << " ";
-    for (int i = 0; i < information().rows(); ++i)
-      for (int j = i; j < information().cols(); ++j)
-        os << " " << information()(i, j);
-    return os.good();
-  }
-
+bool EdgeSE3PlaneSensorCalib::write(std::ostream& os) const {
+  Vector4D v = _measurement.toVector();
+  os << v(0) << " " << v(1) << " " << v(2) << " " << v(3) << " ";
+  os << color(0) << " " << color(1) << " " << color(2) << " ";
+  for (int i = 0; i < information().rows(); ++i)
+    for (int j = i; j < information().cols(); ++j)
+      os << " " << information()(i, j);
+  return os.good();
+}
 
 #ifdef G2O_HAVE_OPENGL
 
-  EdgeSE3PlaneSensorCalibDrawAction::EdgeSE3PlaneSensorCalibDrawAction(): DrawAction(typeid(EdgeSE3PlaneSensorCalib).name()){
+EdgeSE3PlaneSensorCalibDrawAction::EdgeSE3PlaneSensorCalibDrawAction()
+    : DrawAction(typeid(EdgeSE3PlaneSensorCalib).name()) {}
+
+bool EdgeSE3PlaneSensorCalibDrawAction::refreshPropertyPtrs(
+    HyperGraphElementAction::Parameters* params_) {
+  if (!DrawAction::refreshPropertyPtrs(params_)) return false;
+  if (_previousParams != nullptr) {
+    _planeWidth = _previousParams->makeProperty<FloatProperty>(
+        _typeName + "::PLANE_WIDTH", 3.0f);
+    _planeHeight = _previousParams->makeProperty<FloatProperty>(
+        _typeName + "::PLANE_HEIGHT", 3.0f);
+  } else {
+    _planeWidth = nullptr;
+    _planeHeight = nullptr;
+  }
+  return true;
+}
+
+HyperGraphElementAction* EdgeSE3PlaneSensorCalibDrawAction::operator()(
+    HyperGraph::HyperGraphElement* element,
+    HyperGraphElementAction::Parameters* params_) {
+  if (typeid(*element).name() != _typeName) return nullptr;
+
+  refreshPropertyPtrs(params_);
+  if (_previousParams == nullptr) return this;
+
+  if ((_show != nullptr) && !_show->value()) return this;
+
+  EdgeSE3PlaneSensorCalib* that =
+      dynamic_cast<EdgeSE3PlaneSensorCalib*>(element);
+
+  if (that == nullptr) return this;
+
+  const VertexSE3* robot = dynamic_cast<const VertexSE3*>(that->vertex(0));
+  const VertexSE3* sensor = dynamic_cast<const VertexSE3*>(that->vertex(2));
+
+  if ((robot == nullptr) || (sensor == nullptr)) return nullptr;
+
+  double d = that->measurement().distance();
+  double azimuth = Plane3D::azimuth(that->measurement().normal());
+  double elevation = Plane3D::elevation(that->measurement().normal());
+
+  glColor3f(float(that->color(0)), float(that->color(1)),
+            float(that->color(2)));
+  glPushMatrix();
+  Isometry3D robotAndSensor = robot->estimate() * sensor->estimate();
+  glMultMatrixd(robotAndSensor.matrix().data());
+
+  glRotatef(float(RAD2DEG(azimuth)), 0.f, 0.f, 1.f);
+  glRotatef(float(RAD2DEG(elevation)), 0.f, -1.f, 0.f);
+  glTranslatef(float(d), 0.f, 0.f);
+
+  float planeWidth = 0.5f;
+  float planeHeight = 0.5f;
+  if (0) {
+    planeWidth = _planeWidth->value();
+    planeHeight = _planeHeight->value();
+  }
+  if ((_planeWidth != nullptr) && (_planeHeight != nullptr)) {
+    glBegin(GL_QUADS);
+    glNormal3f(-1, 0, 0);
+    glVertex3f(0, -planeWidth, -planeHeight);
+    glVertex3f(0, planeWidth, -planeHeight);
+    glVertex3f(0, planeWidth, planeHeight);
+    glVertex3f(0, -planeWidth, planeHeight);
+    glEnd();
   }
 
-  bool EdgeSE3PlaneSensorCalibDrawAction::refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_){
-    if (!DrawAction::refreshPropertyPtrs(params_))
-      return false;
-    if (_previousParams != nullptr){
-      _planeWidth = _previousParams->makeProperty<FloatProperty>(_typeName + "::PLANE_WIDTH", 3.0f);
-      _planeHeight = _previousParams->makeProperty<FloatProperty>(_typeName + "::PLANE_HEIGHT", 3.0f);
-    } else {
-      _planeWidth = nullptr;
-      _planeHeight = nullptr;
-    }
-    return true;
-  }
+  glPopMatrix();
 
-  HyperGraphElementAction* EdgeSE3PlaneSensorCalibDrawAction::operator()(HyperGraph::HyperGraphElement* element,
-                 HyperGraphElementAction::Parameters* params_)
-  {
-    if (typeid(*element).name()!=_typeName)
-      return nullptr;
-
-    refreshPropertyPtrs(params_);
-    if (_previousParams == nullptr)
-      return this;
-
-    if ((_show != nullptr) && !_show->value())
-      return this;
-
-    EdgeSE3PlaneSensorCalib* that = dynamic_cast<EdgeSE3PlaneSensorCalib*>(element);
-
-    if (that == nullptr)
-      return this;
-
-    const VertexSE3* robot  = dynamic_cast<const VertexSE3*>(that->vertex(0));
-    const VertexSE3* sensor = dynamic_cast<const VertexSE3*>(that->vertex(2));
-
-    if ((robot == nullptr)|| (sensor == nullptr))
-      return nullptr;
-
-    double d=that->measurement().distance();
-    double azimuth=Plane3D::azimuth(that->measurement().normal());
-    double elevation=Plane3D::elevation(that->measurement().normal());
-
-    glColor3f(float(that->color(0)), float(that->color(1)), float(that->color(2)));
-    glPushMatrix();
-    Isometry3D robotAndSensor = robot->estimate() * sensor->estimate();
-    glMultMatrixd(robotAndSensor.matrix().data());
-
-    glRotatef(float(RAD2DEG(azimuth)), 0.f, 0.f, 1.f);
-    glRotatef(float(RAD2DEG(elevation)), 0.f, -1.f, 0.f);
-    glTranslatef(float(d), 0.f, 0.f);
-
-    float planeWidth = 0.5f;
-    float planeHeight = 0.5f;
-    if (0) {
-      planeWidth = _planeWidth->value();
-      planeHeight = _planeHeight->value();
-    }
-    if ((_planeWidth != nullptr) && (_planeHeight != nullptr)){
-      glBegin(GL_QUADS);
-      glNormal3f(-1,0,0);
-      glVertex3f(0,-planeWidth, -planeHeight);
-      glVertex3f(0, planeWidth, -planeHeight);
-      glVertex3f(0, planeWidth,  planeHeight);
-      glVertex3f(0,-planeWidth,  planeHeight);
-      glEnd();
-    }
-
-    glPopMatrix();
-
-    return this;
-  }
+  return this;
+}
 #endif
 
 G2O_END_NAMESPACE

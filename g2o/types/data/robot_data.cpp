@@ -7,33 +7,19 @@
 
 G2O_START_NAMESPACE
 
-  RobotData::RobotData() :
-    HyperGraph::Data(),
-    _timestamp(-1.), _loggerTimestamp(-1.)
-  {
-  }
+RobotData::RobotData()
+    : HyperGraph::Data(), _timestamp(-1.), _loggerTimestamp(-1.) {}
 
-  RobotData::~RobotData()
-  = default;
+RobotData::~RobotData() = default;
 
-  void RobotData::setTimestamp(double ts)
-  {
-    _timestamp = ts;
-  }
+void RobotData::setTimestamp(double ts) { _timestamp = ts; }
 
-  void RobotData::setLoggerTimestamp(double ts)
-  {
-    _loggerTimestamp = ts;
-  }
+void RobotData::setLoggerTimestamp(double ts) { _loggerTimestamp = ts; }
 
-  void RobotData::setTag(const std::string& tag)
-  {
-    _tag = tag;
-  }
+void RobotData::setTag(const std::string& tag) { _tag = tag; }
 
-  void RobotData::setHostname(const std::string& hostname)
-  {
-    _hostname = hostname;
-  }
+void RobotData::setHostname(const std::string& hostname) {
+  _hostname = hostname;
+}
 
 G2O_END_NAMESPACE

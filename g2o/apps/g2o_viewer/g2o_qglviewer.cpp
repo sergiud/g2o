@@ -4,22 +4,25 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "g2o_qglviewer.h"
-#include <g2o/stuff/opengl_primitives.h>
-#include <g2o/core/sparse_optimizer.h>
+
 #include <g2o/core/hyper_graph_action.h>
+#include <g2o/core/sparse_optimizer.h>
+#include <g2o/stuff/opengl_primitives.h>
 
 // some macro helpers for identifying the version number of QGLViewer
 // QGLViewer changed some parts of its API in version 2.6.
 // The following preprocessor hack accounts for this. THIS SUCKS!!!
-#if (((QGLVIEWER_VERSION & 0xff0000) >> 16) >= 2 && ((QGLVIEWER_VERSION & 0x00ff00) >> 8) >= 6)
+#if (((QGLVIEWER_VERSION & 0xff0000) >> 16) >= 2 && \
+     ((QGLVIEWER_VERSION & 0x00ff00) >> 8) >= 6)
 #define qglv_real qreal
 #else
 #define qglv_real float
 #endif
 
-// Again, some API changes in QGLViewer which produce annoying text in the console
-// if the old API is used.
-#if (((QGLVIEWER_VERSION & 0xff0000) >> 16) >= 2 && ((QGLVIEWER_VERSION & 0x00ff00) >> 8) >= 5)
+// Again, some API changes in QGLViewer which produce annoying text in the
+// console if the old API is used.
+#if (((QGLVIEWER_VERSION & 0xff0000) >> 16) >= 2 && \
+     ((QGLVIEWER_VERSION & 0x00ff00) >> 8) >= 5)
 #define QGLVIEWER_DEPRECATED_MOUSEBINDING
 #endif
 
@@ -37,63 +40,59 @@ G2O_START_NAMESPACE
 
 namespace {
 
-  /**
-   * \brief helper for setting up a camera for qglviewer
-   */
-  class StandardCamera : public qglviewer::Camera
-  {
-    public:
-      StandardCamera() : _standard(true) {};
+/**
+ * \brief helper for setting up a camera for qglviewer
+ */
+class StandardCamera : public qglviewer::Camera {
+ public:
+  StandardCamera() : _standard(true) {};
 
-      qglv_real zNear() const {
-        if (_standard)
-          return qglv_real(0.001);
-        else
-          return Camera::zNear();
-      }
+  qglv_real zNear() const {
+    if (_standard)
+      return qglv_real(0.001);
+    else
+      return Camera::zNear();
+  }
 
-      qglv_real zFar() const
-      {
-        if (_standard)
-          return qglv_real(10000.0);
-        else
-          return Camera::zFar();
-      }
+  qglv_real zFar() const {
+    if (_standard)
+      return qglv_real(10000.0);
+    else
+      return Camera::zFar();
+  }
 
-      bool standard() const {return _standard;}
-      void setStandard(bool s) { _standard = s;}
+  bool standard() const { return _standard; }
+  void setStandard(bool s) { _standard = s; }
 
-    private:
-      bool _standard;
-  };
+ private:
+  bool _standard;
+};
 
-} // end anonymous namespace
+}  // end anonymous namespace
 
-G2oQGLViewer::G2oQGLViewer(QWidget* parent, Qt::WindowFlags flags) :
-  QGLViewer(parent, flags),
-  graph(nullptr), _drawActions(nullptr), _drawList(0)
-{
+G2oQGLViewer::G2oQGLViewer(QWidget* parent, Qt::WindowFlags flags)
+    : QGLViewer(parent, flags),
+      graph(nullptr),
+      _drawActions(nullptr),
+      _drawList(0) {
   setAxisIsDrawn(false);
   _drawActionParameters = new DrawAction::Parameters();
 }
 
-G2oQGLViewer::~G2oQGLViewer()
-{
+G2oQGLViewer::~G2oQGLViewer() {
   delete _drawActionParameters;
   glDeleteLists(_drawList, 1);
 }
 
-void G2oQGLViewer::draw()
-{
-  if (graph == nullptr)
-    return;
+void G2oQGLViewer::draw() {
+  if (graph == nullptr) return;
 
   if (_drawActions == nullptr) {
     _drawActions = HyperGraphActionLibrary::instance()->actionByName("draw");
     assert(_drawActions);
   }
 
-  if (_drawActions == nullptr) // avoid segmentation fault in release build
+  if (_drawActions == nullptr)  // avoid segmentation fault in release build
     return;
   if (_updateDisplay) {
     _updateDisplay = false;
@@ -105,11 +104,10 @@ void G2oQGLViewer::draw()
   }
 }
 
-void G2oQGLViewer::init()
-{
+void G2oQGLViewer::init() {
   QGLViewer::init();
-  //glDisable(GL_LIGHT0);
- //glDisable(GL_LIGHTING);
+  // glDisable(GL_LIGHT0);
+  // glDisable(GL_LIGHTING);
 
   setBackgroundColor(QColor::fromRgb(51, 51, 51));
 
@@ -118,9 +116,9 @@ void G2oQGLViewer::init()
   glEnable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
-  //glEnable(GL_CULL_FACE);
+  // glEnable(GL_CULL_FACE);
   glShadeModel(GL_FLAT);
-  //glShadeModel(GL_SMOOTH);
+  // glShadeModel(GL_SMOOTH);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   setAxisIsDrawn();
@@ -140,7 +138,7 @@ void G2oQGLViewer::init()
   // keyboard shortcuts
   setShortcut(CAMERA_MODE, 0);
   setShortcut(EXIT_VIEWER, 0);
-  //setShortcut(SAVE_SCREENSHOT, 0);
+  // setShortcut(SAVE_SCREENSHOT, 0);
 
   // replace camera
   qglviewer::Camera* oldcam = camera();
@@ -155,8 +153,7 @@ void G2oQGLViewer::init()
   _drawList = glGenLists(1);
 }
 
-void G2oQGLViewer::setUpdateDisplay(bool updateDisplay)
-{
+void G2oQGLViewer::setUpdateDisplay(bool updateDisplay) {
   _updateDisplay = updateDisplay;
 }
 

@@ -8,35 +8,34 @@
 
 #include <g2o/core/abi.h>
 #include <g2o/core/hyper_graph_action.h>
-#include <g2o/viewer/g2o_viewer_api.h>
-
 #include <g2o/prefix.h>
+#include <g2o/viewer/g2o_viewer_api.h>
 
 G2O_START_NAMESPACE
 
-  class G2oQGLViewer;
+class G2oQGLViewer;
+
+/**
+ * \brief action which calls an GUI update after each iteration
+ */
+class G2O_VIEWER_API GuiHyperGraphAction : public HyperGraphAction {
+ public:
+  GuiHyperGraphAction();
+  ~GuiHyperGraphAction();
 
   /**
-   * \brief action which calls an GUI update after each iteration
+   * calling updateGL, processEvents to visualize the current state after each
+   * iteration
    */
-  class G2O_VIEWER_API GuiHyperGraphAction : public HyperGraphAction
-  {
-    public:
-      GuiHyperGraphAction();
-      ~GuiHyperGraphAction();
+  HyperGraphAction* operator()(const HyperGraph* graph,
+                               Parameters* parameters = nullptr);
 
-      /**
-       * calling updateGL, processEvents to visualize the current state after each iteration
-       */
-      HyperGraphAction* operator()(const HyperGraph* graph, Parameters* parameters = nullptr);
-
-      G2oQGLViewer* viewer;   ///< the viewer which visualizes the graph
-      bool dumpScreenshots;
-  };
+  G2oQGLViewer* viewer;  ///< the viewer which visualizes the graph
+  bool dumpScreenshots;
+};
 
 G2O_END_NAMESPACE
 
 #include <g2o/suffix.h>
-
 
 #endif

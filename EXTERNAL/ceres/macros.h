@@ -50,7 +50,7 @@
 // are broken semantically, one should either use disallow both or
 // neither. Try to avoid these in new code.
 #define CERES_DISALLOW_COPY_AND_ASSIGN(TypeName) \
-  TypeName(const TypeName&);               \
+  TypeName(const TypeName&);                     \
   void operator=(const TypeName&)
 
 // A macro to disallow all the implicit constructors, namely the
@@ -60,7 +60,7 @@
 // that wants to prevent anyone from instantiating it. This is
 // especially useful for classes containing only static methods.
 #define CERES_DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName) \
-  TypeName();                                    \
+  TypeName();                                          \
   CERES_DISALLOW_COPY_AND_ASSIGN(TypeName)
 
 // The arraysize(arr) macro returns the # of elements in an array arr.
@@ -135,8 +135,8 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
 // the definition comes from the over-broad windows.h header that
 // introduces a macro, ERROR, that conflicts with the logging framework
 // that Ceres uses. Instead, rename ARRAYSIZE to CERES_ARRAYSIZE.
-#define CERES_ARRAYSIZE(a)                              \
-  ((sizeof(a) / sizeof(*(a))) /                         \
+#define CERES_ARRAYSIZE(a)      \
+  ((sizeof(a) / sizeof(*(a))) / \
    static_cast<size_t>(!(sizeof(a) % sizeof(*(a)))))
 
 // Tell the compiler to warn about unused return values for functions
@@ -145,9 +145,9 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
 //
 //   Sprocket* AllocateSprocket() MUST_USE_RESULT;
 //
-#if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)) \
-  && !defined(COMPILER_ICC)
-#define CERES_MUST_USE_RESULT __attribute__ ((warn_unused_result))
+#if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)) && \
+    !defined(COMPILER_ICC)
+#define CERES_MUST_USE_RESULT __attribute__((warn_unused_result))
 #else
 #define CERES_MUST_USE_RESULT
 #endif

@@ -5,29 +5,24 @@
 
 #include "properties_widget.h"
 
-#include <QLineEdit>
-
-#include <iostream>
-#include <cassert>
-
 #include <g2o/stuff/property.h>
+
+#include <QLineEdit>
+#include <cassert>
+#include <iostream>
 
 using namespace std;
 
 using namespace g2o;
 
-PropertiesWidget::PropertiesWidget(QWidget * parent, Qt::WindowFlags f) :
-  QDialog(parent, f),
-  _properties(nullptr)
-{
+PropertiesWidget::PropertiesWidget(QWidget* parent, Qt::WindowFlags f)
+    : QDialog(parent, f), _properties(nullptr) {
   setupUi(this);
 }
 
-PropertiesWidget::~PropertiesWidget()
-= default;
+PropertiesWidget::~PropertiesWidget() = default;
 
-void PropertiesWidget::updateDisplayedProperties()
-{
+void PropertiesWidget::updateDisplayedProperties() {
   tableWidget->clear();
   _propNames.clear();
 
@@ -41,13 +36,11 @@ void PropertiesWidget::updateDisplayedProperties()
   tableWidget->verticalHeader()->hide();
 
   PropertyMap* properties = _properties;
-  if (properties == nullptr)
-    return;
+  if (properties == nullptr) return;
   tableWidget->setRowCount(properties->size());
 
   int r = 0;
   for (auto it = properties->begin(); it != properties->end(); ++it, ++r) {
-
     auto* textItem = new QTableWidgetItem;
     textItem->setText(QString::fromStdString(humanReadablePropName(it->first)));
     textItem->setFlags(textItem->flags() & ~Qt::ItemIsEditable);
@@ -69,62 +62,53 @@ void PropertiesWidget::updateDisplayedProperties()
       editor->setText(QString::fromStdString(it->second->toString()));
       if (dynamic_cast<Property<int>*>(it->second) != nullptr) {
         editor->setValidator(new QIntValidator(editor));
-      }
-      else if (dynamic_cast<Property<float>*>(it->second) != nullptr) {
+      } else if (dynamic_cast<Property<float>*>(it->second) != nullptr) {
         editor->setValidator(new QDoubleValidator(editor));
-      }
-      else if (dynamic_cast<Property<double>*>(it->second) != nullptr) {
+      } else if (dynamic_cast<Property<double>*>(it->second) != nullptr) {
         editor->setValidator(new QDoubleValidator(editor));
       }
       tableWidget->setCellWidget(r, 1, editor);
     }
-
   }
   tableWidget->resizeColumnToContents(0);
 }
 
-void PropertiesWidget::applyProperties()
-{
-  assert(tableWidget->rowCount() == (int) _propNames.size());
+void PropertiesWidget::applyProperties() {
+  assert(tableWidget->rowCount() == (int)_propNames.size());
   PropertyMap* properties = _properties;
   for (int r = 0; r < tableWidget->rowCount(); ++r) {
     const std::string& propName = _propNames[r];
     BaseProperty* baseProp = properties->getProperty<BaseProperty>(propName);
-    if (baseProp == nullptr)
-      continue;
+    if (baseProp == nullptr) continue;
 
     if (dynamic_cast<Property<bool>*>(baseProp) != nullptr) {
       Property<bool>* prop = dynamic_cast<Property<bool>*>(baseProp);
       QTableWidgetItem* checkItem = tableWidget->item(r, 1);
       prop->setValue(checkItem->checkState() == Qt::Checked);
     } else {
-      QLineEdit* editor = dynamic_cast<QLineEdit*>(tableWidget->cellWidget(r, 1));
+      QLineEdit* editor =
+          dynamic_cast<QLineEdit*>(tableWidget->cellWidget(r, 1));
       bool status = baseProp->fromString(editor->text().toStdString());
-      if (! status) {
+      if (!status) {
         cerr << "Warning: unable to set property " << baseProp->name() << endl;
       }
     }
   }
 }
 
-void PropertiesWidget::on_btnApply_clicked()
-{
-  applyProperties();
-}
+void PropertiesWidget::on_btnApply_clicked() { applyProperties(); }
 
-void PropertiesWidget::on_btnOK_clicked()
-{
+void PropertiesWidget::on_btnOK_clicked() {
   applyProperties();
   close();
 }
 
-std::string PropertiesWidget::humanReadablePropName(const std::string& propertyName) const
-{
+std::string PropertiesWidget::humanReadablePropName(
+    const std::string& propertyName) const {
   return propertyName;
 }
 
-void PropertiesWidget::setProperties(PropertyMap* properties)
-{
+void PropertiesWidget::setProperties(PropertyMap* properties) {
   _properties = properties;
   updateDisplayedProperties();
 }

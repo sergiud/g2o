@@ -7,7 +7,7 @@
 #define G2O_TYPES_DATA_H
 
 #include <g2o/types/data/robot_laser.h>
-#include <g2o/types/data/vertex_tag.h>
 #include <g2o/types/data/vertex_ellipse.h>
+#include <g2o/types/data/vertex_tag.h>
 
 #endif

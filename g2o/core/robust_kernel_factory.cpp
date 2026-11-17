@@ -3,8 +3,8 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
-#include <g2o/core/robust_kernel_factory.h>
 #include <g2o/core/robust_kernel.h>
+#include <g2o/core/robust_kernel_factory.h>
 
 #include <cassert>
 
@@ -12,25 +12,24 @@ using namespace std;
 
 G2O_START_NAMESPACE
 
-RobustKernelFactory* RobustKernelFactory::instance()
-{
+RobustKernelFactory* RobustKernelFactory::instance() {
   static RobustKernelFactory factoryInstance;
   return &factoryInstance;
 }
 
-void RobustKernelFactory::registerRobustKernel(const std::string& tag, AbstractRobustKernelCreator* c)
-{
+void RobustKernelFactory::registerRobustKernel(const std::string& tag,
+                                               AbstractRobustKernelCreator* c) {
   auto foundIt = _creator.find(tag);
   if (foundIt != _creator.end()) {
-    cerr << "RobustKernelFactory WARNING: Overwriting robust kernel tag " << tag << endl;
+    cerr << "RobustKernelFactory WARNING: Overwriting robust kernel tag " << tag
+         << endl;
     assert(0);
   }
 
   _creator[tag].reset(c);
 }
 
-void RobustKernelFactory::unregisterType(const std::string& tag)
-{
+void RobustKernelFactory::unregisterType(const std::string& tag) {
   auto tagPosition = _creator.find(tag);
   if (tagPosition != _creator.end()) {
     tagPosition->second.release();
@@ -38,8 +37,7 @@ void RobustKernelFactory::unregisterType(const std::string& tag)
   }
 }
 
-RobustKernel* RobustKernelFactory::construct(const std::string& tag) const
-{
+RobustKernel* RobustKernelFactory::construct(const std::string& tag) const {
   auto foundIt = _creator.find(tag);
   if (foundIt != _creator.end()) {
     return foundIt->second->construct();
@@ -47,8 +45,8 @@ RobustKernel* RobustKernelFactory::construct(const std::string& tag) const
   return nullptr;
 }
 
-AbstractRobustKernelCreator* RobustKernelFactory::creator(const std::string& tag) const
-{
+AbstractRobustKernelCreator* RobustKernelFactory::creator(
+    const std::string& tag) const {
   auto foundIt = _creator.find(tag);
   if (foundIt != _creator.end()) {
     return foundIt->second.get();
@@ -56,17 +54,14 @@ AbstractRobustKernelCreator* RobustKernelFactory::creator(const std::string& tag
   return nullptr;
 }
 
-void RobustKernelFactory::fillKnownKernels(std::vector<std::string>& types) const
-{
+void RobustKernelFactory::fillKnownKernels(
+    std::vector<std::string>& types) const {
   types.clear();
   types.reserve(_creator.size());
 
-  for (const auto& c : _creator)
-    types.push_back(c.first);
+  for (const auto& c : _creator) types.push_back(c.first);
 }
 
-void RobustKernelFactory::destroy()
-{
-}
+void RobustKernelFactory::destroy() {}
 
 G2O_END_NAMESPACE

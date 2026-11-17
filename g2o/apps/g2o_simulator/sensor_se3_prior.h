@@ -5,31 +5,33 @@
 
 #ifndef G2O_SENSOR_SE3_PRIOR_H_
 #define G2O_SENSOR_SE3_PRIOR_H_
-#include "pointsensorparameters.h"
-#include "simulator3d_base.h"
+#include <g2o/prefix.h>
 #include <g2o/simulator/g2o_simulator_api.h>
 
-#include <g2o/prefix.h>
+#include "pointsensorparameters.h"
+#include "simulator3d_base.h"
 
 G2O_START_NAMESPACE
 
-  class G2O_SIMULATOR_API SensorSE3Prior: public PointSensorParameters, public UnarySensor<Robot3D, EdgeSE3Prior>{
-  public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+class G2O_SIMULATOR_API SensorSE3Prior
+    : public PointSensorParameters,
+      public UnarySensor<Robot3D, EdgeSE3Prior> {
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   typedef PoseVertexType::EstimateType RobotPoseType;
-    SensorSE3Prior(const std::string& name_);
-    virtual void sense();
-    virtual void addParameters();
-    ParameterSE3Offset* offsetParam() {return _offsetParam;};
-    void addNoise(EdgeType* e);
-  protected:
-    RobotPoseType _sensorPose;
-    ParameterSE3Offset* _offsetParam;
-  };
+  SensorSE3Prior(const std::string& name_);
+  virtual void sense();
+  virtual void addParameters();
+  ParameterSE3Offset* offsetParam() { return _offsetParam; };
+  void addNoise(EdgeType* e);
+
+ protected:
+  RobotPoseType _sensorPose;
+  ParameterSE3Offset* _offsetParam;
+};
 
 G2O_END_NAMESPACE
 
 #include <g2o/suffix.h>
-
 
 #endif

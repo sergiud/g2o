@@ -4,16 +4,17 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
 #include "types_slam3d.h"
+
 #include <g2o/core/factory.h>
 
 G2O_START_NAMESPACE
 namespace deprecated {
 
-  G2O_REGISTER_TYPE_GROUP(deprecated_slam3d);
+G2O_REGISTER_TYPE_GROUP(deprecated_slam3d);
 
-  // cannot register the types right now, as the macros use the class name
-  // which declares duplicate functions, if also linking with the default
-  // slam3d types
+// cannot register the types right now, as the macros use the class name
+// which declares duplicate functions, if also linking with the default
+// slam3d types
 #if 0
   G2O_REGISTER_TYPE(DEPRECATED_VERTEX_SE3:QUAT, VertexSE3);
   G2O_REGISTER_TYPE(DEPRECATED_EDGE_SE3:QUAT, EdgeSE3);
@@ -43,5 +44,5 @@ namespace deprecated {
 #endif
 #endif
 
-} // end namespace
-} // end namespace
+}  // end namespace
+}  // end namespace

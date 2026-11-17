@@ -1,5 +1,5 @@
-#ifndef  __FREEGLUT_EXT_H__
-#define  __FREEGLUT_EXT_H__
+#ifndef __FREEGLUT_EXT_H__
+#define __FREEGLUT_EXT_H__
 
 /*
  * freeglut_ext.h
@@ -33,59 +33,52 @@
 
 namespace freeglut_minimal {
 
-  enum FontID {
-    GLUT_STROKE_ROMAN,
-    GLUT_STROKE_MONO_ROMAN
-  };
+enum FontID { GLUT_STROKE_ROMAN, GLUT_STROKE_MONO_ROMAN };
 
-  /* The stroke font structures */
+/* The stroke font structures */
 
-  typedef struct tagSFG_StrokeVertex SFG_StrokeVertex;
-  struct tagSFG_StrokeVertex
-  {
-    GLfloat         X, Y;
-  };
+typedef struct tagSFG_StrokeVertex SFG_StrokeVertex;
+struct tagSFG_StrokeVertex {
+  GLfloat X, Y;
+};
 
-  typedef struct tagSFG_StrokeStrip SFG_StrokeStrip;
-  struct tagSFG_StrokeStrip
-  {
-    int             Number;
-    const SFG_StrokeVertex* Vertices;
-  };
+typedef struct tagSFG_StrokeStrip SFG_StrokeStrip;
+struct tagSFG_StrokeStrip {
+  int Number;
+  const SFG_StrokeVertex* Vertices;
+};
 
-  typedef struct tagSFG_StrokeChar SFG_StrokeChar;
-  struct tagSFG_StrokeChar
-  {
-    GLfloat         Right;
-    int             Number;
-    const SFG_StrokeStrip* Strips;
-  };
+typedef struct tagSFG_StrokeChar SFG_StrokeChar;
+struct tagSFG_StrokeChar {
+  GLfloat Right;
+  int Number;
+  const SFG_StrokeStrip* Strips;
+};
 
-  typedef struct tagSFG_StrokeFont SFG_StrokeFont;
-  struct tagSFG_StrokeFont
-  {
-    char*           Name;                       /* The source font name      */
-    int             Quantity;                   /* Number of chars in font   */
-    GLfloat         Height;                     /* Height of the characters  */
-    const SFG_StrokeChar** Characters;          /* The characters mapping    */
-  };
+typedef struct tagSFG_StrokeFont SFG_StrokeFont;
+struct tagSFG_StrokeFont {
+  char* Name;                        /* The source font name      */
+  int Quantity;                      /* Number of chars in font   */
+  GLfloat Height;                    /* Height of the characters  */
+  const SFG_StrokeChar** Characters; /* The characters mapping    */
+};
 
-  extern const SFG_StrokeFont fgStrokeRoman;
-  extern const SFG_StrokeFont fgStrokeMonoRoman;
+extern const SFG_StrokeFont fgStrokeRoman;
+extern const SFG_StrokeFont fgStrokeMonoRoman;
 
-  G2O_FGAPI void glutStrokeString(FontID font, const char* string);
+G2O_FGAPI void glutStrokeString(FontID font, const char* string);
 
-  /*
-   * Font stuff, see freeglut_font.c
-   */
-  G2O_FGAPI GLfloat glutStrokeHeight(FontID font);
+/*
+ * Font stuff, see freeglut_font.c
+ */
+G2O_FGAPI GLfloat glutStrokeHeight(FontID font);
 
-  /*
-   * Return the width of a string drawn using a stroke font
-   */
-  G2O_FGAPI int glutStrokeLength(FontID fontID, const char* string);
+/*
+ * Return the width of a string drawn using a stroke font
+ */
+G2O_FGAPI int glutStrokeLength(FontID fontID, const char* string);
 
-} // namespace freeglut_minimal
+}  // namespace freeglut_minimal
 
 /*** END OF FILE ***/
 

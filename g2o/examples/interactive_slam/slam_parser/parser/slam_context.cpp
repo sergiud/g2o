@@ -5,21 +5,18 @@
 
 #include "slam_context.h"
 
-#include "commands.h"
-
 #include <iostream>
+
+#include "commands.h"
 using namespace std;
 
 namespace SlamParser {
 
-SlamContext::SlamContext()
-= default;
+SlamContext::SlamContext() = default;
 
-SlamContext::~SlamContext()
-= default;
+SlamContext::~SlamContext() = default;
 
-bool SlamContext::process(CommandNode* commandNode)
-{
+bool SlamContext::process(CommandNode* commandNode) {
   cerr << "SlamContext::process -> ";
   switch (commandNode->commandType()) {
     case CT_ADD_NODE:
@@ -41,4 +38,4 @@ bool SlamContext::process(CommandNode* commandNode)
   return true;
 }
 
-} // namespace SlamParser
+}  // namespace SlamParser

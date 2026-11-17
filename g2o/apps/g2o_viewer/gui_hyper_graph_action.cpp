@@ -5,24 +5,20 @@
 
 #include "gui_hyper_graph_action.h"
 
-#include "g2o_qglviewer.h"
-
 #include <QApplication>
+
+#include "g2o_qglviewer.h"
 
 G2O_START_NAMESPACE
 
-GuiHyperGraphAction::GuiHyperGraphAction() :
-  HyperGraphAction(),
-  viewer(nullptr), dumpScreenshots(false)
-{
-}
+GuiHyperGraphAction::GuiHyperGraphAction()
+    : HyperGraphAction(), viewer(nullptr), dumpScreenshots(false) {}
 
-GuiHyperGraphAction::~GuiHyperGraphAction()
-= default;
+GuiHyperGraphAction::~GuiHyperGraphAction() = default;
 
-HyperGraphAction* GuiHyperGraphAction::operator()(const HyperGraph* graph, Parameters* parameters)
-{
-  (void) graph;
+HyperGraphAction* GuiHyperGraphAction::operator()(const HyperGraph* graph,
+                                                  Parameters* parameters) {
+  (void)graph;
   if (viewer != nullptr) {
     viewer->setUpdateDisplay(true);
     viewer->updateDisplay();
@@ -32,7 +28,8 @@ HyperGraphAction* GuiHyperGraphAction::operator()(const HyperGraph* graph, Param
       if (p != nullptr) {
         viewer->setSnapshotFormat(QString("PNG"));
         viewer->setSnapshotQuality(-1);
-        viewer->saveSnapshot(QString::asprintf("g2o%.6d.png", p->iteration), true);
+        viewer->saveSnapshot(QString::asprintf("g2o%.6d.png", p->iteration),
+                             true);
       }
     }
 

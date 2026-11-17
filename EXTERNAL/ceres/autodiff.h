@@ -142,9 +142,9 @@
 
 #include <cstddef>
 
-#include "jet.h"
 #include "eigen.h"
 #include "fixed_array.h"
+#include "jet.h"
 #include "variadic_evaluate.h"
 
 namespace ceres {
@@ -176,7 +176,7 @@ inline void Make1stOrderPerturbation(int offset, const T* src, JetT* dst) {
 // Takes the 0th order part of src, assumed to be a Jet type, and puts it in
 // dst. This is used to pick out the "vector" part of the extended y.
 template <typename JetT, typename T>
-inline void Take0thOrderPart(int M, const JetT *src, T dst) {
+inline void Take0thOrderPart(int M, const JetT* src, T dst) {
   for (int i = 0; i < M; ++i) {
     dst[i] = src[i].a;
   }
@@ -185,7 +185,7 @@ inline void Take0thOrderPart(int M, const JetT *src, T dst) {
 // Takes N 1st order parts, starting at index N0, and puts them in the M x N
 // matrix 'dst'. This is used to pick out the "matrix" parts of the extended y.
 template <typename JetT, typename T, int N0, int N>
-inline void Take1stOrderPart(const int M, const JetT *src, T *dst) {
+inline void Take1stOrderPart(const int M, const JetT* src, T* dst) {
   for (int i = 0; i < M; ++i) {
     Eigen::Map<Eigen::Matrix<T, N, 1> >(dst + N * i, N) =
         src[i].v.template segment<N>(N0);
@@ -196,42 +196,32 @@ inline void Take1stOrderPart(const int M, const JetT *src, T *dst) {
 // function are not supported in C++03 (though it is available in
 // C++0x). N0 through N5 are the dimension of the input arguments to
 // the user supplied functor.
-template <typename Functor, typename T,
-          int N0 = 0, int N1 = 0, int N2 = 0, int N3 = 0, int N4 = 0,
-          int N5 = 0, int N6 = 0, int N7 = 0, int N8 = 0, int N9 = 0>
+template <typename Functor, typename T, int N0 = 0, int N1 = 0, int N2 = 0,
+          int N3 = 0, int N4 = 0, int N5 = 0, int N6 = 0, int N7 = 0,
+          int N8 = 0, int N9 = 0>
 struct AutoDiff {
-  static bool Differentiate(const Functor& functor,
-                            T const *const *parameters,
-                            int num_outputs,
-                            T *function_value,
-                            T **jacobians) {
+  static bool Differentiate(const Functor& functor, T const* const* parameters,
+                            int num_outputs, T* function_value, T** jacobians) {
     typedef Jet<T, N0 + N1 + N2 + N3 + N4 + N5 + N6 + N7 + N8 + N9> JetT;
     FixedArray<JetT, (256 * 7) / sizeof(JetT)> x(
         N0 + N1 + N2 + N3 + N4 + N5 + N6 + N7 + N8 + N9 + num_outputs);
 
     // These are the positions of the respective jets in the fixed array x.
-    const int jet0  = 0;
-    const int jet1  = N0;
-    const int jet2  = N0 + N1;
-    const int jet3  = N0 + N1 + N2;
-    const int jet4  = N0 + N1 + N2 + N3;
-    const int jet5  = N0 + N1 + N2 + N3 + N4;
-    const int jet6  = N0 + N1 + N2 + N3 + N4 + N5;
-    const int jet7  = N0 + N1 + N2 + N3 + N4 + N5 + N6;
-    const int jet8  = N0 + N1 + N2 + N3 + N4 + N5 + N6 + N7;
-    const int jet9  = N0 + N1 + N2 + N3 + N4 + N5 + N6 + N7 + N8;
+    const int jet0 = 0;
+    const int jet1 = N0;
+    const int jet2 = N0 + N1;
+    const int jet3 = N0 + N1 + N2;
+    const int jet4 = N0 + N1 + N2 + N3;
+    const int jet5 = N0 + N1 + N2 + N3 + N4;
+    const int jet6 = N0 + N1 + N2 + N3 + N4 + N5;
+    const int jet7 = N0 + N1 + N2 + N3 + N4 + N5 + N6;
+    const int jet8 = N0 + N1 + N2 + N3 + N4 + N5 + N6 + N7;
+    const int jet9 = N0 + N1 + N2 + N3 + N4 + N5 + N6 + N7 + N8;
 
-    const JetT *unpacked_parameters[10] = {
-        x.get() + jet0,
-        x.get() + jet1,
-        x.get() + jet2,
-        x.get() + jet3,
-        x.get() + jet4,
-        x.get() + jet5,
-        x.get() + jet6,
-        x.get() + jet7,
-        x.get() + jet8,
-        x.get() + jet9,
+    const JetT* unpacked_parameters[10] = {
+        x.get() + jet0, x.get() + jet1, x.get() + jet2, x.get() + jet3,
+        x.get() + jet4, x.get() + jet5, x.get() + jet6, x.get() + jet7,
+        x.get() + jet8, x.get() + jet9,
     };
 
     JetT* output = x.get() + N0 + N1 + N2 + N3 + N4 + N5 + N6 + N7 + N8 + N9;
@@ -243,13 +233,11 @@ struct AutoDiff {
       output[i].v.setConstant(kImpossibleValue);
     }
 
-#define CERES_MAKE_1ST_ORDER_PERTURBATION(i)                            \
-    if (N ## i) {                                                       \
-      internal::Make1stOrderPerturbation<JetT, T, N ## i>(              \
-          jet ## i,                                                     \
-          parameters[i],                                                \
-          x.get() + jet ## i);                                          \
-    }
+#define CERES_MAKE_1ST_ORDER_PERTURBATION(i)                                 \
+  if (N##i) {                                                                \
+    internal::Make1stOrderPerturbation<JetT, T, N##i>(jet##i, parameters[i], \
+                                                      x.get() + jet##i);     \
+  }
     CERES_MAKE_1ST_ORDER_PERTURBATION(0);
     CERES_MAKE_1ST_ORDER_PERTURBATION(1);
     CERES_MAKE_1ST_ORDER_PERTURBATION(2);
@@ -262,24 +250,20 @@ struct AutoDiff {
     CERES_MAKE_1ST_ORDER_PERTURBATION(9);
 #undef CERES_MAKE_1ST_ORDER_PERTURBATION
 
-    if (!VariadicEvaluate<Functor, JetT,
-                          N0, N1, N2, N3, N4, N5, N6, N7, N8, N9>::Call(
-        functor, unpacked_parameters, output)) {
+    if (!VariadicEvaluate<Functor, JetT, N0, N1, N2, N3, N4, N5, N6, N7, N8,
+                          N9>::Call(functor, unpacked_parameters, output)) {
       return false;
     }
 
     internal::Take0thOrderPart(num_outputs, output, function_value);
 
-#define CERES_TAKE_1ST_ORDER_PERTURBATION(i) \
-    if (N ## i) { \
-      if (jacobians[i]) { \
-        internal::Take1stOrderPart<JetT, T, \
-                                   jet ## i, \
-                                   N ## i>(num_outputs, \
-                                           output, \
-                                           jacobians[i]); \
-      } \
-    }
+#define CERES_TAKE_1ST_ORDER_PERTURBATION(i)                                 \
+  if (N##i) {                                                                \
+    if (jacobians[i]) {                                                      \
+      internal::Take1stOrderPart<JetT, T, jet##i, N##i>(num_outputs, output, \
+                                                        jacobians[i]);       \
+    }                                                                        \
+  }
     CERES_TAKE_1ST_ORDER_PERTURBATION(0);
     CERES_TAKE_1ST_ORDER_PERTURBATION(1);
     CERES_TAKE_1ST_ORDER_PERTURBATION(2);

@@ -9,10 +9,10 @@
 
 // Robot2D
 G2O_START_NAMESPACE
-  PointSensorParameters::PointSensorParameters(){
-    _maxRange2 = 25;
-    _minRange2 = 0.01;
-    _fov = M_PI/2;
-    _maxAngularDifference = M_PI/2;
-  }
+PointSensorParameters::PointSensorParameters() {
+  _maxRange2 = 25;
+  _minRange2 = 0.01;
+  _fov = M_PI / 2;
+  _maxAngularDifference = M_PI / 2;
+}
 G2O_END_NAMESPACE

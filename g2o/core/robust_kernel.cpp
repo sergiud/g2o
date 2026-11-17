@@ -7,19 +7,10 @@
 
 G2O_START_NAMESPACE
 
-RobustKernel::RobustKernel() :
-  _delta(1.)
-{
-}
+RobustKernel::RobustKernel() : _delta(1.) {}
 
-RobustKernel::RobustKernel(double delta) :
-  _delta(delta)
-{
-}
+RobustKernel::RobustKernel(double delta) : _delta(delta) {}
 
-void RobustKernel::setDelta(double delta)
-{
-  _delta = delta;
-}
+void RobustKernel::setDelta(double delta) { _delta = delta; }
 
 G2O_END_NAMESPACE

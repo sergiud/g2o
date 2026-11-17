@@ -6,28 +6,26 @@
 #ifndef G2O_MATH_STUFF
 #define G2O_MATH_STUFF
 
+#include <g2o/core/eigen_types.h>
+#include <g2o/prefix.h>
+#include <g2o/types/slam3d/g2o_types_slam3d_api.h>
+
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include <g2o/core/eigen_types.h>
-#include <g2o/types/slam3d/g2o_types_slam3d_api.h>
-
-#include <g2o/prefix.h>
-
 G2O_START_NAMESPACE
 
-  inline G2O_TYPES_SLAM3D_API Matrix3D skew(const Vector3D&v);
-  inline G2O_TYPES_SLAM3D_API Vector3D deltaR(const Matrix3D& R);
-  inline G2O_TYPES_SLAM3D_API Vector2D project(const Vector3D&);
-  inline G2O_TYPES_SLAM3D_API Vector3D project(const Vector4D&);
-  inline G2O_TYPES_SLAM3D_API Vector3D unproject(const Vector2D&);
-  inline G2O_TYPES_SLAM3D_API Vector4D unproject(const Vector3D&);
+inline G2O_TYPES_SLAM3D_API Matrix3D skew(const Vector3D& v);
+inline G2O_TYPES_SLAM3D_API Vector3D deltaR(const Matrix3D& R);
+inline G2O_TYPES_SLAM3D_API Vector2D project(const Vector3D&);
+inline G2O_TYPES_SLAM3D_API Vector3D project(const Vector4D&);
+inline G2O_TYPES_SLAM3D_API Vector3D unproject(const Vector2D&);
+inline G2O_TYPES_SLAM3D_API Vector4D unproject(const Vector3D&);
 
-  #include "se3_ops.hpp"
+#include "se3_ops.hpp"
 
 G2O_END_NAMESPACE
 
 #include <g2o/suffix.h>
 
-
-#endif //MATH_STUFF
+#endif  // MATH_STUFF

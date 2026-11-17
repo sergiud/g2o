@@ -19,35 +19,30 @@
 
 G2O_START_NAMESPACE
 
-  EdgeSE2Segment2DPointLine::EdgeSE2Segment2DPointLine() :
-    BaseBinaryEdge<3, Vector3D, VertexSE2, VertexSegment2D>()
-  {
-    _pointNum = 0;
-  }
+EdgeSE2Segment2DPointLine::EdgeSE2Segment2DPointLine()
+    : BaseBinaryEdge<3, Vector3D, VertexSE2, VertexSegment2D>() {
+  _pointNum = 0;
+}
 
-  bool EdgeSE2Segment2DPointLine::read(std::istream& is)
-  {
-    is >> _pointNum;
-    for (size_t i = 0; i < 3 ; i++)
-      is >> _measurement[i];
-    for (size_t i = 0; i < 3 ; i++)
-      for (size_t j = i; j < 3 ; j++) {
-        is >> _information (i,j);
-        _information (j,i) = _information (i,j);
-      }
-    return true;
-  }
+bool EdgeSE2Segment2DPointLine::read(std::istream& is) {
+  is >> _pointNum;
+  for (size_t i = 0; i < 3; i++) is >> _measurement[i];
+  for (size_t i = 0; i < 3; i++)
+    for (size_t j = i; j < 3; j++) {
+      is >> _information(i, j);
+      _information(j, i) = _information(i, j);
+    }
+  return true;
+}
 
-  bool EdgeSE2Segment2DPointLine::write(std::ostream& os) const
-  {
-    os << _pointNum << " ";
-    for (size_t i = 0; i < 3 ; i++)
-      os << _measurement[i] << " ";
-    for (size_t i = 0; i < 3 ; i++)
-      for (size_t j = i; j < 3 ; j++) {
-        os << _information (i,j) << " ";
-      }
-    return os.good();
-  }
+bool EdgeSE2Segment2DPointLine::write(std::ostream& os) const {
+  os << _pointNum << " ";
+  for (size_t i = 0; i < 3; i++) os << _measurement[i] << " ";
+  for (size_t i = 0; i < 3; i++)
+    for (size_t j = i; j < 3; j++) {
+      os << _information(i, j) << " ";
+    }
+  return os.good();
+}
 
 G2O_END_NAMESPACE

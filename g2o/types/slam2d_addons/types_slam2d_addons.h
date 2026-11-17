@@ -15,8 +15,8 @@
 #include <g2o/types/slam2d_addons/edge_se2_segment2d_line.h>
 
 // line slam ver 2
-#include <g2o/types/slam2d_addons/edge_se2_line2d.h>
-#include <g2o/types/slam2d_addons/edge_line2d_pointxy.h>
 #include <g2o/types/slam2d_addons/edge_line2d.h>
+#include <g2o/types/slam2d_addons/edge_line2d_pointxy.h>
+#include <g2o/types/slam2d_addons/edge_se2_line2d.h>
 
 #endif

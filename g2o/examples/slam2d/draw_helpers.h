@@ -6,21 +6,20 @@
 #ifndef G2O_DRAW_HELPERS_H
 #define G2O_DRAW_HELPERS_H
 
-#include <g2o/stuff/opengl_wrapper.h>
-
 #include <g2o/core/abi.h>
+#include <g2o/stuff/opengl_wrapper.h>
 
 G2O_START_NAMESPACE
 
-  /**
-   * draw a disk
-   */
-  void drawDisk(GLfloat radius);
+/**
+ * draw a disk
+ */
+void drawDisk(GLfloat radius);
 
-  /**
-   * draw a circle using GL_LINES
-   */
-  void drawCircle(GLfloat radius, int segments = 32);
+/**
+ * draw a circle using GL_LINES
+ */
+void drawCircle(GLfloat radius, int segments = 32);
 
 G2O_END_NAMESPACE
 

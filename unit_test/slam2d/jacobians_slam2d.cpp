@@ -3,29 +3,23 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
-#include "gtest/gtest.h"
-
 #include <random>
-
-#include "unit_test/test_helper/evaluate_jacobian.h"
 
 #include "g2o/types/slam2d/edge_pointxy.h"
 #include "g2o/types/slam2d/edge_se2.h"
 #include "g2o/types/slam2d/edge_se2_pointxy.h"
 #include "g2o/types/slam2d/edge_se2_pointxy_bearing.h"
 #include "g2o/types/slam2d/edge_se2_prior.h"
+#include "gtest/gtest.h"
+#include "unit_test/test_helper/evaluate_jacobian.h"
 
 using namespace std;
 using namespace g2o;
 using namespace Eigen;
 
-static SE2 randomSE2()
-{
-  return SE2(Vector3d::Random());
-}
+static SE2 randomSE2() { return SE2(Vector3d::Random()); }
 
-TEST(Slam2D, EdgeSE2Jacobian)
-{
+TEST(Slam2D, EdgeSE2Jacobian) {
   VertexSE2 v1;
   v1.setId(0);
 
@@ -51,8 +45,7 @@ TEST(Slam2D, EdgeSE2Jacobian)
   }
 }
 
-TEST(Slam2D, EdgeSE2Prior)
-{
+TEST(Slam2D, EdgeSE2Prior) {
   VertexSE2 v1;
   v1.setId(0);
 
@@ -73,8 +66,7 @@ TEST(Slam2D, EdgeSE2Prior)
   }
 }
 
-TEST(Slam2D, EdgePointXY)
-{
+TEST(Slam2D, EdgePointXY) {
   VertexPointXY v1;
   v1.setId(0);
 
@@ -100,8 +92,7 @@ TEST(Slam2D, EdgePointXY)
   }
 }
 
-TEST(Slam2D, EdgeSE2PointXY)
-{
+TEST(Slam2D, EdgeSE2PointXY) {
   VertexSE2 v1;
   v1.setId(0);
 
@@ -127,8 +118,7 @@ TEST(Slam2D, EdgeSE2PointXY)
   }
 }
 
-TEST(Slam2D, EdgeSE2PointXYBearing)
-{
+TEST(Slam2D, EdgeSE2PointXYBearing) {
   VertexSE2 v1;
   v1.setId(0);
 

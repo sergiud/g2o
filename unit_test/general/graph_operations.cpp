@@ -2,31 +2,29 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
-#include "gtest/gtest.h"
-
-#include "g2o/types/slam2d/types_slam2d.h"
-#include "g2o/types/slam3d/types_slam3d.h"
-
 #include "g2o/core/block_solver.h"
 #include "g2o/core/optimization_algorithm_gauss_newton.h"
 #include "g2o/solvers/eigen/linear_solver_eigen.h"
+#include "g2o/types/slam2d/types_slam2d.h"
+#include "g2o/types/slam3d/types_slam3d.h"
+#include "gtest/gtest.h"
 
-typedef g2o::BlockSolver< g2o::BlockSolverTraits<-1, -1> > SlamBlockSolver;
-typedef g2o::LinearSolverEigen<SlamBlockSolver::PoseMatrixType> SlamLinearSolver;
+typedef g2o::BlockSolver<g2o::BlockSolverTraits<-1, -1> > SlamBlockSolver;
+typedef g2o::LinearSolverEigen<SlamBlockSolver::PoseMatrixType>
+    SlamLinearSolver;
 
-static g2o::SparseOptimizer* createOptimizer()
-{
+static g2o::SparseOptimizer* createOptimizer() {
   // Initialize the SparseOptimizer
   g2o::SparseOptimizer* mOptimizer = new g2o::SparseOptimizer();
   SlamLinearSolver* linearSolver = new SlamLinearSolver();
   linearSolver->setBlockOrdering(false);
   SlamBlockSolver* blockSolver = new SlamBlockSolver(linearSolver);
-  mOptimizer->setAlgorithm(new g2o::OptimizationAlgorithmGaussNewton(blockSolver));
+  mOptimizer->setAlgorithm(
+      new g2o::OptimizationAlgorithmGaussNewton(blockSolver));
   return mOptimizer;
 }
 
-TEST(General, BinaryEdgeConstructor)
-{
+TEST(General, BinaryEdgeConstructor) {
   g2o::EdgeSE3 e1;
   ASSERT_EQ(NULL, e1.vertices()[0]);
   ASSERT_EQ(NULL, e1.vertices()[1]);
@@ -36,8 +34,7 @@ TEST(General, BinaryEdgeConstructor)
   ASSERT_EQ(NULL, e2.vertices()[1]);
 }
 
-TEST(General, GraphAddVertex)
-{
+TEST(General, GraphAddVertex) {
   g2o::SparseOptimizer* optimizer = createOptimizer();
 
   g2o::VertexSE2* v1 = new g2o::VertexSE2();
@@ -60,8 +57,7 @@ TEST(General, GraphAddVertex)
   delete optimizer;
 }
 
-TEST(General, GraphAddEdge)
-{
+TEST(General, GraphAddEdge) {
   g2o::SparseOptimizer* optimizer = createOptimizer();
 
   g2o::VertexSE2* v1 = new g2o::VertexSE2();
@@ -85,7 +81,8 @@ TEST(General, GraphAddEdge)
   ASSERT_EQ(size_t(1), v2->edges().count(e1));
 
   g2o::EdgeSE2* e2 = new g2o::EdgeSE2();
-  ASSERT_FALSE(optimizer->addEdge(e2)) << "Adding edge with unset vertices was possible";
+  ASSERT_FALSE(optimizer->addEdge(e2))
+      << "Adding edge with unset vertices was possible";
   ASSERT_EQ(size_t(1), optimizer->edges().size());
   ASSERT_EQ(NULL, e2->graph());
 

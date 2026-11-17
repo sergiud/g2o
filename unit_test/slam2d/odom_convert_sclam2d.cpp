@@ -2,16 +2,14 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
-#include "gtest/gtest.h"
-
 #include "g2o/types/sclam2d/odometry_measurement.h"
+#include "gtest/gtest.h"
 
 using namespace std;
 using namespace g2o;
 using namespace Eigen;
 
-TEST(Sclam2D, MotionMeasurementCtor)
-{
+TEST(Sclam2D, MotionMeasurementCtor) {
   MotionMeasurement m1(0.1, 0.2, 0.3, 0.5);
   ASSERT_DOUBLE_EQ(0.1, m1.x());
   ASSERT_DOUBLE_EQ(0.2, m1.y());
@@ -23,16 +21,14 @@ TEST(Sclam2D, MotionMeasurementCtor)
   ASSERT_DOUBLE_EQ(0.3, m2.theta());
   ASSERT_DOUBLE_EQ(0.5, m2.dt());
 }
-TEST(Sclam2D, VelocityMeasurementCtor)
-{
+TEST(Sclam2D, VelocityMeasurementCtor) {
   VelocityMeasurement v1(0.1, 0.2, 0.7);
   ASSERT_DOUBLE_EQ(0.1, v1.vl());
   ASSERT_DOUBLE_EQ(0.2, v1.vr());
   ASSERT_DOUBLE_EQ(0.7, v1.dt());
 }
 
-TEST(Sclam2D, OdomConvertStraightLine)
-{
+TEST(Sclam2D, OdomConvertStraightLine) {
   MotionMeasurement m1(0.1, 0.0, 0.0, 0.5);
   ASSERT_DOUBLE_EQ(0.1, m1.x());
   ASSERT_DOUBLE_EQ(0.0, m1.y());
@@ -47,8 +43,7 @@ TEST(Sclam2D, OdomConvertStraightLine)
   ASSERT_DOUBLE_EQ(0.5, m2.dt());
 }
 
-TEST(Sclam2D, OdomConvert)
-{
+TEST(Sclam2D, OdomConvert) {
   VelocityMeasurement v1(0.1, 0.2, 0.7);
   MotionMeasurement m1 = OdomConvert::convertToMotion(v1);
   VelocityMeasurement v2 = OdomConvert::convertToVelocity(m1);

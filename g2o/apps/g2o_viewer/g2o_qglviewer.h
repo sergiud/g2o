@@ -6,51 +6,48 @@
 #ifndef G2O_QGL_GRAPH_VIEWER_H
 #define G2O_QGL_GRAPH_VIEWER_H
 
-#include "qglviewer.h"
-
 #include <g2o/core/abi.h>
 #include <g2o/core/hyper_graph_action.h>
+#include <g2o/prefix.h>
 #include <g2o/viewer/g2o_viewer_api.h>
 
-#include <g2o/prefix.h>
+#include "qglviewer.h"
 
 G2O_START_NAMESPACE
 
-  class SparseOptimizer;
+class SparseOptimizer;
+
+/**
+ * \brief OpenGL based viewer for the graph
+ */
+class G2O_VIEWER_API G2oQGLViewer : public QGLViewer {
+ public:
+  explicit G2oQGLViewer(QWidget* parent = nullptr, Qt::WindowFlags flags = {});
+  ~G2oQGLViewer();
+  void draw();
+  void init();
 
   /**
-   * \brief OpenGL based viewer for the graph
+   * the viewer uses a display list to cache the drawing, use setUpdateDisplay()
+   * to force the creation of an updated display list.
    */
-  class G2O_VIEWER_API G2oQGLViewer : public QGLViewer
-  {
-    public:
-      explicit G2oQGLViewer(QWidget* parent = nullptr, Qt::WindowFlags flags = {});
-      ~G2oQGLViewer();
-      void draw();
-      void init();
+  bool updateDisplay() const { return _updateDisplay; }
+  void setUpdateDisplay(bool updateDisplay);
 
-      /**
-       * the viewer uses a display list to cache the drawing, use setUpdateDisplay() to force
-       * the creation of an updated display list.
-       */
-      bool updateDisplay() const { return _updateDisplay;}
-      void setUpdateDisplay(bool updateDisplay);
+  DrawAction::Parameters* parameters() { return _drawActionParameters; }
 
-      DrawAction::Parameters* parameters() { return _drawActionParameters;}
+ public:
+  SparseOptimizer* graph;
 
-    public:
-      SparseOptimizer* graph;
-
-    protected:
-      HyperGraphElementAction* _drawActions;
-      GLuint _drawList;
-      bool _updateDisplay{};
-      DrawAction::Parameters* _drawActionParameters;
-  };
+ protected:
+  HyperGraphElementAction* _drawActions;
+  GLuint _drawList;
+  bool _updateDisplay{};
+  DrawAction::Parameters* _drawActionParameters;
+};
 
 G2O_END_NAMESPACE
 
 #include <g2o/suffix.h>
-
 
 #endif

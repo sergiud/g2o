@@ -32,10 +32,11 @@
 #ifndef CERES_PUBLIC_INTERNAL_FIXED_ARRAY_H_
 #define CERES_PUBLIC_INTERNAL_FIXED_ARRAY_H_
 
+#include <cstddef>
+
 #include "Eigen/Core"
 #include "macros.h"
 #include "manual_constructor.h"
-#include <cstddef>
 
 namespace ceres {
 namespace internal {
@@ -69,9 +70,9 @@ namespace internal {
 // arrays.
 
 #if defined(_WIN64)
-   typedef __int64      ssize_t;
+typedef __int64 ssize_t;
 #elif defined(_WIN32)
-   typedef __int32      ssize_t;
+typedef __int32 ssize_t;
 #endif
 
 template <typename T, ssize_t inline_elements = -1>
@@ -111,15 +112,11 @@ class FixedArray {
 
   // REQUIRES: 0 <= i < size()
   // Returns a reference to the "i"th element.
-  inline T& operator[](size_type i) {
-    return array_[i].element;
-  }
+  inline T& operator[](size_type i) { return array_[i].element; }
 
   // REQUIRES: 0 <= i < size()
   // Returns a reference to the "i"th element.
-  inline const T& operator[](size_type i) const {
-    return array_[i].element;
-  }
+  inline const T& operator[](size_type i) const { return array_[i].element; }
 
   inline iterator begin() { return &array_[0].element; }
   inline iterator end() { return &array_[size_].element; }
@@ -142,12 +139,12 @@ class FixedArray {
   //      stack pollution, while still allowing stack allocation for
   //      reasonably long character arrays.
   //   b. Never use 0 length arrays (not ISO C++)
-  static const size_type S1 = ((inline_elements < 0)
-                               ? (256/sizeof(T)) : inline_elements);
+  static const size_type S1 =
+      ((inline_elements < 0) ? (256 / sizeof(T)) : inline_elements);
   static const size_type S2 = (S1 <= 0) ? 1 : S1;
   static const size_type kInlineElements = S2;
 
-  size_type const       size_;
+  size_type const size_;
   InnerContainer* const array_;
 
   // Allocate some space, not an array of elements of type T, so that we can
@@ -161,8 +158,8 @@ template <class T, ssize_t S>
 inline FixedArray<T, S>::FixedArray(typename FixedArray<T, S>::size_type n)
     : size_(n),
       array_((n <= kInlineElements
-              ? reinterpret_cast<InnerContainer*>(inline_space_)
-              : new InnerContainer[n])) {
+                  ? reinterpret_cast<InnerContainer*>(inline_space_)
+                  : new InnerContainer[n])) {
   // Construct only the elements actually used.
   if (array_ == reinterpret_cast<InnerContainer*>(inline_space_)) {
     for (size_t i = 0; i != size_; ++i) {

@@ -3,32 +3,32 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
-#include <Eigen/Core>
-#include <Eigen/StdVector>
-#include <Eigen/Geometry>
-#include <iostream>
-
-#include <g2o/stuff/sampler.h>
-#include <g2o/stuff/command_args.h>
-#include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/base_unary_edge.h>
+#include <g2o/core/base_vertex.h>
 #include <g2o/core/block_solver.h>
+#include <g2o/core/optimization_algorithm_gauss_newton.h>
 #include <g2o/core/optimization_algorithm_levenberg.h>
 #include <g2o/core/solver.h>
-#include <g2o/core/optimization_algorithm_gauss_newton.h>
-#include <g2o/core/base_vertex.h>
-#include <g2o/core/base_unary_edge.h>
+#include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/csparse/linear_solver_csparse.h>
+#include <g2o/stuff/command_args.h>
+#include <g2o/stuff/sampler.h>
+
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+#include <Eigen/StdVector>
+#include <iostream>
 
 using namespace std;
 
-double errorOfSolution(int numPoints, Eigen::Vector2d* points, const Eigen::Vector3d& circle)
-{
+double errorOfSolution(int numPoints, Eigen::Vector2d* points,
+                       const Eigen::Vector3d& circle) {
   Eigen::Vector2d center = circle.head<2>();
   double radius = circle(2);
   double error = 0.;
   for (int i = 0; i < numPoints; ++i) {
     double d = (points[i] - center).norm() - radius;
-    error += d*d;
+    error += d * d;
   }
   return error;
 }
@@ -36,36 +36,29 @@ double errorOfSolution(int numPoints, Eigen::Vector2d* points, const Eigen::Vect
 /**
  * \brief a circle located at x,y with radius r
  */
-class VertexCircle : public g2o::BaseVertex<3, Eigen::Vector3d>
-{
-  public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
-    VertexCircle()
-    {
-    }
+class VertexCircle : public g2o::BaseVertex<3, Eigen::Vector3d> {
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+  VertexCircle() {}
 
-    virtual bool read(std::istream& /*is*/)
-    {
-      cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
-      return false;
-    }
+  virtual bool read(std::istream& /*is*/) {
+    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    return false;
+  }
 
-    virtual bool write(std::ostream& /*os*/) const
-    {
-      cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
-      return false;
-    }
+  virtual bool write(std::ostream& /*os*/) const {
+    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    return false;
+  }
 
-    virtual void setToOriginImpl()
-    {
-      cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
-    }
+  virtual void setToOriginImpl() {
+    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+  }
 
-    virtual void oplusImpl(const double* update)
-    {
-      Eigen::Vector3d::ConstMapType v(update);
-      _estimate += v;
-    }
+  virtual void oplusImpl(const double* update) {
+    Eigen::Vector3d::ConstMapType v(update);
+    _estimate += v;
+  }
 };
 
 /**
@@ -75,43 +68,38 @@ class VertexCircle : public g2o::BaseVertex<3, Eigen::Vector3d>
  * The error function computes the distance of the point to
  * the center minus the radius of the circle.
  */
-class EdgePointOnCircle : public g2o::BaseUnaryEdge<1, Eigen::Vector2d, VertexCircle>
-{
-  public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    EdgePointOnCircle()
-    {
-    }
-    virtual bool read(std::istream& /*is*/)
-    {
-      cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
-      return false;
-    }
-    virtual bool write(std::ostream& /*os*/) const
-    {
-      cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
-      return false;
-    }
+class EdgePointOnCircle
+    : public g2o::BaseUnaryEdge<1, Eigen::Vector2d, VertexCircle> {
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  EdgePointOnCircle() {}
+  virtual bool read(std::istream& /*is*/) {
+    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    return false;
+  }
+  virtual bool write(std::ostream& /*os*/) const {
+    cerr << __PRETTY_FUNCTION__ << " not implemented yet" << endl;
+    return false;
+  }
 
-    void computeError()
-    {
-      const VertexCircle* circle = dynamic_cast<const VertexCircle*>(vertex(0));
+  void computeError() {
+    const VertexCircle* circle = dynamic_cast<const VertexCircle*>(vertex(0));
 
-      const Eigen::Vector2d& center = circle->estimate().head<2>();
-      const double& radius = circle->estimate()(2);
+    const Eigen::Vector2d& center = circle->estimate().head<2>();
+    const double& radius = circle->estimate()(2);
 
-      _error(0) = (measurement() - center).norm() - radius;
-    }
+    _error(0) = (measurement() - center).norm() - radius;
+  }
 };
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
   int numPoints;
   int maxIterations;
   bool verbose;
   std::vector<int> gaugeList;
   g2o::CommandArgs arg;
-  arg.param("numPoints", numPoints, 100, "number of points sampled from the circle");
+  arg.param("numPoints", numPoints, 100,
+            "number of points sampled from the circle");
   arg.param("i", maxIterations, 10, "perform n iterations");
   arg.param("v", verbose, false, "verbose output of the optimization process");
 
@@ -131,8 +119,11 @@ int main(int argc, char** argv)
   }
 
   // some handy typedefs
-  typedef g2o::BlockSolver< g2o::BlockSolverTraits<Eigen::Dynamic, Eigen::Dynamic> >  MyBlockSolver;
-  typedef g2o::LinearSolverCSparse<MyBlockSolver::PoseMatrixType> MyLinearSolver;
+  typedef g2o::BlockSolver<
+      g2o::BlockSolverTraits<Eigen::Dynamic, Eigen::Dynamic> >
+      MyBlockSolver;
+  typedef g2o::LinearSolverCSparse<MyBlockSolver::PoseMatrixType>
+      MyLinearSolver;
 
   // setup the solver
   g2o::SparseOptimizer optimizer;
@@ -140,14 +131,16 @@ int main(int argc, char** argv)
   auto* linearSolver = new MyLinearSolver();
   auto* solver_ptr = new MyBlockSolver(linearSolver);
   auto* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
-  //g2o::OptimizationAlgorithmGaussNewton* solver = new g2o::OptimizationAlgorithmGaussNewton(solver_ptr);
+  // g2o::OptimizationAlgorithmGaussNewton* solver = new
+  // g2o::OptimizationAlgorithmGaussNewton(solver_ptr);
   optimizer.setAlgorithm(solver);
 
   // build the optimization problem given the points
   // 1. add the circle vertex
   auto* circle = new VertexCircle();
   circle->setId(0);
-  circle->setEstimate(Eigen::Vector3d(3.0, 3.0, 3.0)); // some initial value for the circle
+  circle->setEstimate(
+      Eigen::Vector3d(3.0, 3.0, 3.0));  // some initial value for the circle
   optimizer.addVertex(circle);
   // 2. add the points we measured
   for (int i = 0; i < numPoints; ++i) {
@@ -163,14 +156,15 @@ int main(int argc, char** argv)
   optimizer.setVerbose(verbose);
   optimizer.optimize(maxIterations);
 
-  if (verbose)
-    cout << endl;
+  if (verbose) cout << endl;
 
   // print out the result
   cout << "Iterative least squares solution" << endl;
-  cout << "center of the circle " << circle->estimate().head<2>().transpose() << endl;
+  cout << "center of the circle " << circle->estimate().head<2>().transpose()
+       << endl;
   cout << "radius of the cirlce " << circle->estimate()(2) << endl;
-  cout << "error " << errorOfSolution(numPoints, points, circle->estimate()) << endl;
+  cout << "error " << errorOfSolution(numPoints, points, circle->estimate())
+       << endl;
   cout << endl;
 
   // solve by linear least squares
@@ -186,12 +180,13 @@ int main(int argc, char** argv)
   Eigen::MatrixXd A(numPoints, 3);
   Eigen::VectorXd b(numPoints);
   for (int i = 0; i < numPoints; ++i) {
-    A(i, 0) = -2*points[i].x();
-    A(i, 1) = -2*points[i].y();
+    A(i, 0) = -2 * points[i].x();
+    A(i, 1) = -2 * points[i].y();
     A(i, 2) = 1;
     b(i) = -pow(points[i].x(), 2) - pow(points[i].y(), 2);
   }
-  Eigen::Vector3d solution = (A.transpose()*A).ldlt().solve(A.transpose() * b);
+  Eigen::Vector3d solution =
+      (A.transpose() * A).ldlt().solve(A.transpose() * b);
   // calculate the radius of the circle given the solution so far
   solution(2) = sqrt(pow(solution(0), 2) + pow(solution(1), 2) - solution(2));
   cout << "Linear least squares solution" << endl;

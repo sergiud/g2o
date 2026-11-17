@@ -4,54 +4,57 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "main_window.h"
-#include "viewer_properties_widget.h"
 
-#include <g2o/core/optimization_algorithm_factory.h>
-#include <g2o/core/optimization_algorithm_property.h>
-#include <g2o/core/sparse_optimizer.h>
 #include <g2o/core/estimate_propagator.h>
 #include <g2o/core/optimization_algorithm.h>
-#include <g2o/core/robust_kernel_factory.h>
+#include <g2o/core/optimization_algorithm_factory.h>
+#include <g2o/core/optimization_algorithm_property.h>
 #include <g2o/core/robust_kernel.h>
+#include <g2o/core/robust_kernel_factory.h>
+#include <g2o/core/sparse_optimizer.h>
 
+#include <QComboBox>
+#include <QDoubleValidator>
 #include <QFileDialog>
 #include <QStandardItemModel>
-#include <QDoubleValidator>
-#include <QComboBox>
-
 #include <cassert>
 #include <fstream>
 #include <iostream>
+
+#include "viewer_properties_widget.h"
 using namespace std;
 using namespace g2o;
 
-MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
-  QMainWindow(parent, flags),
-  _lastSolver(-1), _currentSolver(nullptr), _viewerPropertiesWidget(nullptr), _optimizerPropertiesWidget(nullptr),
-  _filename("")
-{
+MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags)
+    : QMainWindow(parent, flags),
+      _lastSolver(-1),
+      _currentSolver(nullptr),
+      _viewerPropertiesWidget(nullptr),
+      _optimizerPropertiesWidget(nullptr),
+      _filename("") {
   setupUi(this);
-  leKernelWidth->setValidator(new QDoubleValidator(-numeric_limits<double>::max(), numeric_limits<double>::max(), 7, this));
+  leKernelWidth->setValidator(new QDoubleValidator(
+      -numeric_limits<double>::max(), numeric_limits<double>::max(), 7, this));
   plainTextEdit->setMaximumBlockCount(1000);
   btnForceStop->hide();
-  QObject::connect(cbDrawAxis, SIGNAL(toggled(bool)), viewer, SLOT(setAxisIsDrawn(bool)));
+  QObject::connect(cbDrawAxis, SIGNAL(toggled(bool)), viewer,
+                   SLOT(setAxisIsDrawn(bool)));
 }
 
-MainWindow::~MainWindow()
-= default;
+MainWindow::~MainWindow() = default;
 
-void MainWindow::on_actionLoad_triggered(bool)
-{
-  QString filename = QFileDialog::getOpenFileName(this, "Load g2o file", "", "g2o files (*.g2o);;All Files (*)");
-  if (! filename.isNull()) {
+void MainWindow::on_actionLoad_triggered(bool) {
+  QString filename = QFileDialog::getOpenFileName(
+      this, "Load g2o file", "", "g2o files (*.g2o);;All Files (*)");
+  if (!filename.isNull()) {
     loadFromFile(filename);
   }
 }
 
-void MainWindow::on_actionSave_triggered(bool)
-{
-  QString filename = QFileDialog::getSaveFileName(this, "Save g2o file", "", "g2o files (*.g2o)");
-  if (! filename.isNull()) {
+void MainWindow::on_actionSave_triggered(bool) {
+  QString filename = QFileDialog::getSaveFileName(this, "Save g2o file", "",
+                                                  "g2o files (*.g2o)");
+  if (!filename.isNull()) {
     ofstream fout(filename.toStdString().c_str());
     viewer->graph->save(fout);
     if (fout.good())
@@ -61,8 +64,7 @@ void MainWindow::on_actionSave_triggered(bool)
   }
 }
 
-void MainWindow::on_btnOptimize_clicked()
-{
+void MainWindow::on_btnOptimize_clicked() {
   if (viewer->graph->vertices().empty() || viewer->graph->edges().empty()) {
     cerr << "Graph has no vertices / egdes" << endl;
     return;
@@ -70,12 +72,11 @@ void MainWindow::on_btnOptimize_clicked()
 
   bool allocatedNewSolver;
   bool allocateStatus = allocateSolver(allocatedNewSolver);
-  if (! allocateStatus) {
+  if (!allocateStatus) {
     cerr << "Error while allocating solver" << endl;
     return;
   }
-  if (allocatedNewSolver)
-    prepare();
+  if (allocatedNewSolver) prepare();
   setRobustKernel();
 
   btnOptimize->hide();
@@ -86,7 +87,7 @@ void MainWindow::on_btnOptimize_clicked()
 
   int maxIterations = spIterations->value();
   int iter = viewer->graph->optimize(maxIterations);
-  if (maxIterations > 0 && (iter == 0)){
+  if (maxIterations > 0 && (iter == 0)) {
     cerr << "Optimization failed, result might be invalid" << endl;
   }
 
@@ -98,8 +99,7 @@ void MainWindow::on_btnOptimize_clicked()
   _forceStopFlag = false;
 }
 
-void MainWindow::on_btnInitialGuess_clicked()
-{
+void MainWindow::on_btnInitialGuess_clicked() {
   if (viewer->graph->activeEdges().empty())
     viewer->graph->initializeOptimization();
 
@@ -124,8 +124,7 @@ void MainWindow::on_btnInitialGuess_clicked()
   viewer->updateDisplay();
 }
 
-void MainWindow::on_btnSetZero_clicked()
-{
+void MainWindow::on_btnSetZero_clicked() {
   if (viewer->graph->activeEdges().empty())
     viewer->graph->initializeOptimization();
 
@@ -134,9 +133,8 @@ void MainWindow::on_btnSetZero_clicked()
   viewer->updateDisplay();
 }
 
-void MainWindow::on_btnReload_clicked()
-{
-  if (_filename.length()>0){
+void MainWindow::on_btnReload_clicked() {
+  if (_filename.length() > 0) {
     cerr << "reloading " << _filename << endl;
     viewer->graph->clear();
     viewer->graph->load(_filename.c_str());
@@ -145,8 +143,7 @@ void MainWindow::on_btnReload_clicked()
   }
 }
 
-void MainWindow::fixGraph()
-{
+void MainWindow::fixGraph() {
   if (viewer->graph->vertices().empty() || viewer->graph->edges().empty()) {
     return;
   }
@@ -156,7 +153,7 @@ void MainWindow::fixGraph()
   g2o::OptimizableGraph::Vertex* gauge = viewer->graph->findGauge();
   if (gaugeFreedom) {
     if (gauge == nullptr) {
-      cerr <<  "cannot find a vertex to fix in this thing" << endl;
+      cerr << "cannot find a vertex to fix in this thing" << endl;
       return;
     } else {
       cerr << "graph is fixed by node " << gauge->id() << endl;
@@ -167,23 +164,20 @@ void MainWindow::fixGraph()
   }
 
   viewer->graph->setVerbose(true);
-  //viewer->graph->computeActiveErrors();
+  // viewer->graph->computeActiveErrors();
 }
 
-void MainWindow::on_actionQuit_triggered(bool)
-{
-  close();
-}
+void MainWindow::on_actionQuit_triggered(bool) { close(); }
 
-void MainWindow::updateDisplayedSolvers()
-{
+void MainWindow::updateDisplayedSolvers() {
   coOptimizer->clear();
   _knownSolvers.clear();
-  const OptimizationAlgorithmFactory::CreatorList& knownSolvers = OptimizationAlgorithmFactory::instance()->creatorList();
+  const OptimizationAlgorithmFactory::CreatorList& knownSolvers =
+      OptimizationAlgorithmFactory::instance()->creatorList();
 
   bool varFound = false;
   string varType = "";
-  for (const auto & knownSolver : knownSolvers) {
+  for (const auto& knownSolver : knownSolvers) {
     const OptimizationAlgorithmProperty& sp = knownSolver->property();
     if (sp.name == "gn_var" || sp.name == "gn_var_cholmod") {
       varType = sp.type;
@@ -193,7 +187,7 @@ void MainWindow::updateDisplayedSolvers()
   }
 
   if (varFound) {
-    for (const auto & knownSolver : knownSolvers) {
+    for (const auto& knownSolver : knownSolvers) {
       const OptimizationAlgorithmProperty& sp = knownSolver->property();
       if (sp.type == varType) {
         coOptimizer->addItem(QString::fromStdString(sp.name));
@@ -204,28 +198,26 @@ void MainWindow::updateDisplayedSolvers()
 
   map<string, vector<OptimizationAlgorithmProperty> > solverLookUp;
 
-  for (const auto & knownSolver : knownSolvers) {
+  for (const auto& knownSolver : knownSolvers) {
     const OptimizationAlgorithmProperty& sp = knownSolver->property();
-    if (varFound && varType == sp.type)
-      continue;
+    if (varFound && varType == sp.type) continue;
     solverLookUp[sp.type].push_back(sp);
   }
 
-  for (auto & it : solverLookUp) {
+  for (auto& it : solverLookUp) {
     if (!_knownSolvers.empty()) {
       coOptimizer->insertSeparator(coOptimizer->count());
       _knownSolvers.emplace_back();
     }
     const vector<OptimizationAlgorithmProperty>& vsp = it.second;
-    for (const auto & j : vsp) {
+    for (const auto& j : vsp) {
       coOptimizer->addItem(QString::fromStdString(j.name));
       _knownSolvers.push_back(j);
     }
   }
 }
 
-bool MainWindow::load(const QString& filename)
-{
+bool MainWindow::load(const QString& filename) {
   viewer->graph->clear();
   bool loadStatus = false;
   if (filename == "-") {
@@ -233,12 +225,10 @@ bool MainWindow::load(const QString& filename)
     loadStatus = viewer->graph->load(cin);
   } else {
     ifstream ifs(filename.toStdString().c_str());
-    if (! ifs)
-      return false;
+    if (!ifs) return false;
     loadStatus = viewer->graph->load(ifs);
   }
-  if (! loadStatus)
-    return false;
+  if (!loadStatus) return false;
   _lastSolver = -1;
   viewer->setUpdateDisplay(true);
   SparseOptimizer* optimizer = viewer->graph;
@@ -247,64 +237,73 @@ bool MainWindow::load(const QString& filename)
   set<int> vertDims = optimizer->dimensions();
   for (size_t i = 0; i < _knownSolvers.size(); ++i) {
     const OptimizationAlgorithmProperty& sp = _knownSolvers[i];
-    if (sp.name == "" && sp.desc == "")
-      continue;
+    if (sp.name == "" && sp.desc == "") continue;
 
     bool suitableSolver = optimizer->isSolverSuitable(sp, vertDims);
-    qobject_cast<QStandardItemModel *>(coOptimizer->model())->item(i)->setEnabled(suitableSolver);
+    qobject_cast<QStandardItemModel*>(coOptimizer->model())
+        ->item(i)
+        ->setEnabled(suitableSolver);
   }
   return loadStatus;
 }
 
-bool MainWindow::allocateSolver(bool& allocatedNewSolver)
-{
+bool MainWindow::allocateSolver(bool& allocatedNewSolver) {
   if (coOptimizer->count() == 0) {
     cerr << "No solvers available" << endl;
     return false;
   }
   int currentIndex = coOptimizer->currentIndex();
-  bool enabled = qobject_cast<QStandardItemModel *>(coOptimizer->model())->item(currentIndex)->isEnabled();
+  bool enabled = qobject_cast<QStandardItemModel*>(coOptimizer->model())
+                     ->item(currentIndex)
+                     ->isEnabled();
 
-  if (! enabled) {
+  if (!enabled) {
     cerr << "selected solver is not enabled" << endl;
     return false;
   }
 
-  if (currentIndex == _lastSolver)
-    return true;
+  if (currentIndex == _lastSolver) return true;
 
   allocatedNewSolver = true;
   QString strSolver = coOptimizer->currentText();
 
   // delete the old optimization algorithm
-  OptimizationAlgorithm* algorithmPointer = const_cast<OptimizationAlgorithm*>(viewer->graph->algorithm());
+  OptimizationAlgorithm* algorithmPointer =
+      const_cast<OptimizationAlgorithm*>(viewer->graph->algorithm());
   viewer->graph->setAlgorithm(nullptr);
   delete algorithmPointer;
 
   // create the new algorithm
-  OptimizationAlgorithmFactory* solverFactory = OptimizationAlgorithmFactory::instance();
-  _currentSolver = solverFactory->construct(strSolver.toStdString(), _currentOptimizationAlgorithmProperty);
+  OptimizationAlgorithmFactory* solverFactory =
+      OptimizationAlgorithmFactory::instance();
+  _currentSolver = solverFactory->construct(
+      strSolver.toStdString(), _currentOptimizationAlgorithmProperty);
   viewer->graph->setAlgorithm(_currentSolver);
 
   _lastSolver = currentIndex;
   return true;
 }
 
-bool MainWindow::prepare()
-{
+bool MainWindow::prepare() {
   SparseOptimizer* optimizer = viewer->graph;
   if (_currentOptimizationAlgorithmProperty.requiresMarginalize) {
     cerr << "Marginalizing Landmarks" << endl;
-    for (SparseOptimizer::VertexIDMap::const_iterator it = optimizer->vertices().begin(); it != optimizer->vertices().end(); ++it) {
-      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it->second);
+    for (SparseOptimizer::VertexIDMap::const_iterator it =
+             optimizer->vertices().begin();
+         it != optimizer->vertices().end(); ++it) {
+      OptimizableGraph::Vertex* v =
+          dynamic_cast<OptimizableGraph::Vertex*>(it->second);
       int vdim = v->dimension();
-      v->setMarginalized((vdim == _currentOptimizationAlgorithmProperty.landmarkDim));
+      v->setMarginalized(
+          (vdim == _currentOptimizationAlgorithmProperty.landmarkDim));
     }
-  }
-  else {
+  } else {
     cerr << "Preparing (no marginalization of Landmarks)" << endl;
-    for (SparseOptimizer::VertexIDMap::const_iterator it = optimizer->vertices().begin(); it != optimizer->vertices().end(); ++it) {
-      OptimizableGraph::Vertex* v = dynamic_cast<OptimizableGraph::Vertex*>(it->second);
+    for (SparseOptimizer::VertexIDMap::const_iterator it =
+             optimizer->vertices().begin();
+         it != optimizer->vertices().end(); ++it) {
+      OptimizableGraph::Vertex* v =
+          dynamic_cast<OptimizableGraph::Vertex*>(it->second);
       v->setMarginalized(false);
     }
   }
@@ -312,26 +311,28 @@ bool MainWindow::prepare()
   return true;
 }
 
-void MainWindow::setRobustKernel()
-{
+void MainWindow::setRobustKernel() {
   SparseOptimizer* optimizer = viewer->graph;
   bool robustKernel = cbRobustKernel->isChecked();
   double huberWidth = leKernelWidth->text().toDouble();
-  //odometry edges are those whose node ids differ by 1
+  // odometry edges are those whose node ids differ by 1
 
   bool onlyLoop = cbOnlyLoop->isChecked();
 
   if (robustKernel) {
     QString strRobustKernel = coRobustKernel->currentText();
-    AbstractRobustKernelCreator* creator = RobustKernelFactory::instance()->creator(strRobustKernel.toStdString());
+    AbstractRobustKernelCreator* creator =
+        RobustKernelFactory::instance()->creator(strRobustKernel.toStdString());
     if (creator == nullptr) {
-      cerr << strRobustKernel.toStdString() << " is not a valid robust kernel" << endl;
+      cerr << strRobustKernel.toStdString() << " is not a valid robust kernel"
+           << endl;
       return;
     }
     for (auto it : optimizer->edges()) {
       OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
       if (onlyLoop) {
-        if (e->vertices().size() >= 2 && std::abs(e->vertex(0)->id() - e->vertex(1)->id()) != 1) {
+        if (e->vertices().size() >= 2 &&
+            std::abs(e->vertex(0)->id() - e->vertex(1)->id()) != 1) {
           e->setRobustKernel(creator->construct());
           e->robustKernel()->setDelta(huberWidth);
         }
@@ -348,39 +349,33 @@ void MainWindow::setRobustKernel()
   }
 }
 
-void MainWindow::on_btnForceStop_clicked()
-{
-  _forceStopFlag = true;
-}
+void MainWindow::on_btnForceStop_clicked() { _forceStopFlag = true; }
 
-bool MainWindow::loadFromFile(const QString& filename)
-{
+bool MainWindow::loadFromFile(const QString& filename) {
   viewer->graph->clear();
   bool loadStatus = load(filename);
-  if (loadStatus){
+  if (loadStatus) {
     _filename = filename.toStdString();
   }
-  cerr << "loaded " << filename.toStdString() << " with " << viewer->graph->vertices().size()
-    << " vertices and " << viewer->graph->edges().size() << " measurements" << endl;
+  cerr << "loaded " << filename.toStdString() << " with "
+       << viewer->graph->vertices().size() << " vertices and "
+       << viewer->graph->edges().size() << " measurements" << endl;
   viewer->updateDisplay();
   fixGraph();
   return loadStatus;
 }
 
-void MainWindow::on_actionWhite_Background_triggered(bool)
-{
+void MainWindow::on_actionWhite_Background_triggered(bool) {
   viewer->setBackgroundColor(QColor::fromRgb(255, 255, 255));
   viewer->updateDisplay();
 }
 
-void MainWindow::on_actionDefault_Background_triggered(bool)
-{
+void MainWindow::on_actionDefault_Background_triggered(bool) {
   viewer->setBackgroundColor(QColor::fromRgb(51, 51, 51));
   viewer->updateDisplay();
 }
 
-void MainWindow::on_actionProperties_triggered(bool)
-{
+void MainWindow::on_actionProperties_triggered(bool) {
   if (_viewerPropertiesWidget == nullptr) {
     _viewerPropertiesWidget = new ViewerPropertiesWidget(this);
     _viewerPropertiesWidget->setWindowTitle(tr("Drawing Options"));
@@ -389,35 +384,36 @@ void MainWindow::on_actionProperties_triggered(bool)
   _viewerPropertiesWidget->show();
 }
 
-void MainWindow::on_btnOptimizerParamaters_clicked()
-{
+void MainWindow::on_btnOptimizerParamaters_clicked() {
   if (_optimizerPropertiesWidget == nullptr) {
     _optimizerPropertiesWidget = new PropertiesWidget(this);
-    _optimizerPropertiesWidget->setWindowTitle(tr("Internal Solver Properties"));
+    _optimizerPropertiesWidget->setWindowTitle(
+        tr("Internal Solver Properties"));
   }
   bool allocatedNewSolver;
   bool allocateStatus = allocateSolver(allocatedNewSolver);
-  if (! allocateStatus) {
+  if (!allocateStatus) {
     cerr << "Error while allocating solver" << endl;
     return;
   }
-  if (allocatedNewSolver)
-    prepare();
+  if (allocatedNewSolver) prepare();
   if (_currentSolver != nullptr) {
-    _optimizerPropertiesWidget->setProperties(const_cast<g2o::PropertyMap*>(&_currentSolver->properties()));
+    _optimizerPropertiesWidget->setProperties(
+        const_cast<g2o::PropertyMap*>(&_currentSolver->properties()));
   } else {
     _optimizerPropertiesWidget->setProperties(nullptr);
   }
   _optimizerPropertiesWidget->show();
 }
 
-void MainWindow::on_actionSave_Screenshot_triggered(bool)
-{
+void MainWindow::on_actionSave_Screenshot_triggered(bool) {
   QString selectedFilter;
-  QString filename = QFileDialog::getSaveFileName(this, "Save screen to a file", "viewer.png",
-      "PNG files (*.png);;JPG files (*.jpg);;EPS files (*.eps)", &selectedFilter);
+  QString filename = QFileDialog::getSaveFileName(
+      this, "Save screen to a file", "viewer.png",
+      "PNG files (*.png);;JPG files (*.jpg);;EPS files (*.eps)",
+      &selectedFilter);
 
-  if (! filename.isNull()) {
+  if (!filename.isNull()) {
     // extract the file format from the filter options
     int spacePos = selectedFilter.indexOf(' ');
     assert(spacePos > 0 && "extracting the image format failed");
@@ -430,13 +426,14 @@ void MainWindow::on_actionSave_Screenshot_triggered(bool)
     }
     viewer->setSnapshotFormat(format);
     viewer->saveSnapshot(filename);
-    cerr << "saved snapshot " << filename.toStdString() << "(" << format.toStdString() << ")" << endl;
+    cerr << "saved snapshot " << filename.toStdString() << "("
+         << format.toStdString() << ")" << endl;
   }
 }
 
-void MainWindow::on_actionLoad_Viewer_State_triggered(bool)
-{
-  QString filename = QFileDialog::getOpenFileName(this, "Load State", "camera.xml", "Camera/State file (*.xml)");
+void MainWindow::on_actionLoad_Viewer_State_triggered(bool) {
+  QString filename = QFileDialog::getOpenFileName(
+      this, "Load State", "camera.xml", "Camera/State file (*.xml)");
   if (!filename.isEmpty()) {
     viewer->setStateFileName(filename);
     viewer->restoreStateFromFile();
@@ -446,9 +443,9 @@ void MainWindow::on_actionLoad_Viewer_State_triggered(bool)
   }
 }
 
-void MainWindow::on_actionSave_Viewer_State_triggered(bool)
-{
-  QString filename = QFileDialog::getSaveFileName(this, "Save State", "camera.xml", "Camera/State file (*.xml)");
+void MainWindow::on_actionSave_Viewer_State_triggered(bool) {
+  QString filename = QFileDialog::getSaveFileName(
+      this, "Save State", "camera.xml", "Camera/State file (*.xml)");
   if (!filename.isEmpty()) {
     viewer->setStateFileName(filename);
     viewer->saveStateToFile();
@@ -457,12 +454,11 @@ void MainWindow::on_actionSave_Viewer_State_triggered(bool)
   }
 }
 
-void MainWindow::updateRobustKernels()
-{
+void MainWindow::updateRobustKernels() {
   coRobustKernel->clear();
   std::vector<std::string> kernels;
   RobustKernelFactory::instance()->fillKnownKernels(kernels);
-  for (auto & kernel : kernels) {
+  for (auto& kernel : kernels) {
     coRobustKernel->addItem(QString::fromStdString(kernel));
   }
 }

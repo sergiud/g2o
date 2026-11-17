@@ -3,35 +3,34 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
-#include <iostream>
-#include <fstream>
-
-#include <g2o/stuff/macros.h>
-#include <g2o/stuff/command_args.h>
-
 #include <g2o/core/optimizable_graph.h>
-
+#include <g2o/stuff/command_args.h>
+#include <g2o/stuff/macros.h>
 #include <g2o/types/sba/types_sba.h>
-#include <g2o/types/slam3d/parameter_camera.h>
 #include <g2o/types/slam3d/edge_se3_pointxyz_disparity.h>
+#include <g2o/types/slam3d/parameter_camera.h>
+
+#include <fstream>
+#include <iostream>
 
 using namespace std;
 using namespace g2o;
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
   string inputFilename;
   string outputFilename;
   // command line parsing
   CommandArgs commandLineArguments;
-  commandLineArguments.paramLeftOver("gm2dl-input", inputFilename, "", "gm2dl file which will be processed");
-  commandLineArguments.paramLeftOver("gm2dl-output", outputFilename, "", "name of the output file");
+  commandLineArguments.paramLeftOver("gm2dl-input", inputFilename, "",
+                                     "gm2dl file which will be processed");
+  commandLineArguments.paramLeftOver("gm2dl-output", outputFilename, "",
+                                     "name of the output file");
 
   commandLineArguments.parseArgs(argc, argv);
 
   OptimizableGraph inputGraph;
   bool loadStatus = inputGraph.load(inputFilename.c_str());
-  if (! loadStatus) {
+  if (!loadStatus) {
     cerr << "Error while loading input data" << endl;
     return 1;
   }
@@ -42,7 +41,9 @@ int main(int argc, char** argv)
   double fx = -1;
   double baseline = -1;
   bool firstCam = true;
-  for (OptimizableGraph::VertexIDMap::const_iterator it = inputGraph.vertices().begin(); it != inputGraph.vertices().end(); ++it) {
+  for (OptimizableGraph::VertexIDMap::const_iterator it =
+           inputGraph.vertices().begin();
+       it != inputGraph.vertices().end(); ++it) {
     if (dynamic_cast<VertexCam*>(it->second) != nullptr) {
       VertexCam* v = dynamic_cast<VertexCam*>(it->second);
       if (firstCam) {
@@ -51,8 +52,9 @@ int main(int argc, char** argv)
         camParams->setId(0);
         const SBACam& c = v->estimate();
         baseline = c.baseline;
-        fx = c.Kcam(0,0);
-        camParams->setKcam(c.Kcam(0,0), c.Kcam(1,1), c.Kcam(0,2), c.Kcam(1,2));
+        fx = c.Kcam(0, 0);
+        camParams->setKcam(c.Kcam(0, 0), c.Kcam(1, 1), c.Kcam(0, 2),
+                           c.Kcam(1, 2));
         outputGraph.addParameter(camParams);
       }
 
@@ -62,22 +64,21 @@ int main(int argc, char** argv)
       p = v->estimate().rotation();
       p.translation() = v->estimate().translation();
       ov->setEstimate(p);
-      if (! outputGraph.addVertex(ov)) {
+      if (!outputGraph.addVertex(ov)) {
         assert(0 && "Failure adding camera vertex");
       }
-    }
-    else if (dynamic_cast<VertexSBAPointXYZ*>(it->second) != nullptr) {
+    } else if (dynamic_cast<VertexSBAPointXYZ*>(it->second) != nullptr) {
       VertexSBAPointXYZ* v = dynamic_cast<VertexSBAPointXYZ*>(it->second);
 
       auto* ov = new VertexPointXYZ;
       ov->setId(v->id());
       ov->setEstimate(v->estimate());
-      if (! outputGraph.addVertex(ov)) {
+      if (!outputGraph.addVertex(ov)) {
         assert(0 && "Failure adding camera vertex");
       }
     }
   }
-  
+
   for (auto it : inputGraph.edges()) {
     if (dynamic_cast<EdgeProjectP2SC*>(it) != nullptr) {
       EdgeProjectP2SC* e = dynamic_cast<EdgeProjectP2SC*>(it);
@@ -91,16 +92,18 @@ int main(int argc, char** argv)
       double disparity = kx - e->measurement()(2);
 
       oe->setMeasurement(Eigen::Vector3d(kx, ky, disparity / (fx * baseline)));
-      oe->setInformation(e->information()); // TODO convert information matrix
-      oe->setParameterId(0,0);
-      if (! outputGraph.addEdge(oe)) {
+      oe->setInformation(e->information());  // TODO convert information matrix
+      oe->setParameterId(0, 0);
+      if (!outputGraph.addEdge(oe)) {
         assert(0 && "error adding edge");
       }
     }
   }
 
-  cout << "Vertices in/out:\t" << inputGraph.vertices().size() << " " << outputGraph.vertices().size() << endl;
-  cout << "Edges in/out:\t" << inputGraph.edges().size() << " " << outputGraph.edges().size() << endl;
+  cout << "Vertices in/out:\t" << inputGraph.vertices().size() << " "
+       << outputGraph.vertices().size() << endl;
+  cout << "Edges in/out:\t" << inputGraph.edges().size() << " "
+       << outputGraph.edges().size() << endl;
 
   cout << "Writing output ... " << flush;
   outputGraph.save(outputFilename.c_str());

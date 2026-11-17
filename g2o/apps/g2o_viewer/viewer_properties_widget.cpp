@@ -5,16 +5,16 @@
 
 #include "viewer_properties_widget.h"
 
-#include "g2o_qglviewer.h"
 #include <g2o/stuff/property.h>
 
 #include <QLineEdit>
-
 #include <cassert>
 #include <iostream>
 
+#include "g2o_qglviewer.h"
+
 #ifdef __GNUC__
-  #include <cxxabi.h>
+#include <cxxabi.h>
 #endif
 
 using namespace std;
@@ -24,8 +24,7 @@ using namespace g2o;
 /**
  * demangle the name of a type, depends on the used compiler
  */
-static std::string demangleName(const std::string& fullPropName)
-{
+static std::string demangleName(const std::string& fullPropName) {
 #ifdef __GNUC__
   // find :: and extract the mangled class name from the whole string
   string mangledName;
@@ -33,7 +32,7 @@ static std::string demangleName(const std::string& fullPropName)
   string::size_type found = fullPropName.rfind("::");
   if (found != string::npos) {
     mangledName = fullPropName.substr(0, found);
-    propName    = fullPropName.substr(found);
+    propName = fullPropName.substr(found);
   } else {
     mangledName = propName;
   }
@@ -54,16 +53,13 @@ static std::string demangleName(const std::string& fullPropName)
 #endif
 }
 
-ViewerPropertiesWidget::ViewerPropertiesWidget(QWidget * parent, Qt::WindowFlags f) :
-  PropertiesWidget(parent, f)
-{
-}
+ViewerPropertiesWidget::ViewerPropertiesWidget(QWidget* parent,
+                                               Qt::WindowFlags f)
+    : PropertiesWidget(parent, f) {}
 
-ViewerPropertiesWidget::~ViewerPropertiesWidget()
-= default;
+ViewerPropertiesWidget::~ViewerPropertiesWidget() = default;
 
-void ViewerPropertiesWidget::applyProperties()
-{
+void ViewerPropertiesWidget::applyProperties() {
   PropertiesWidget::applyProperties();
 
   // draw with the new properties
@@ -71,13 +67,12 @@ void ViewerPropertiesWidget::applyProperties()
   _viewer->updateDisplay();
 }
 
-void ViewerPropertiesWidget::setViewer(g2o::G2oQGLViewer* viewer)
-{
+void ViewerPropertiesWidget::setViewer(g2o::G2oQGLViewer* viewer) {
   _viewer = viewer;
   setProperties(viewer->parameters());
 }
 
-std::string ViewerPropertiesWidget::humanReadablePropName(const std::string& propertyName) const
-{
+std::string ViewerPropertiesWidget::humanReadablePropName(
+    const std::string& propertyName) const {
   return demangleName(propertyName);
 }

@@ -6,134 +6,136 @@
 #include <g2o/types/slam2d/edge_se2_pointxy.h>
 
 #ifdef G2O_HAVE_OPENGL
-#include <g2o/stuff/opengl_wrapper.h>
 #include <g2o/stuff/opengl_primitives.h>
+#include <g2o/stuff/opengl_wrapper.h>
 #endif
 
 G2O_START_NAMESPACE
 
-  bool EdgeSE2PointXY::read(std::istream& is)
-  {
-    is >> _measurement[0] >> _measurement[1];
-    is >> information()(0,0) >> information()(0,1) >> information()(1,1);
-    information()(1,0) = information()(0,1);
-    return true;
-  }
+bool EdgeSE2PointXY::read(std::istream& is) {
+  is >> _measurement[0] >> _measurement[1];
+  is >> information()(0, 0) >> information()(0, 1) >> information()(1, 1);
+  information()(1, 0) = information()(0, 1);
+  return true;
+}
 
-  bool EdgeSE2PointXY::write(std::ostream& os) const
-  {
-    os << measurement()[0] << " " << measurement()[1] << " ";
-    os << information()(0,0) << " " << information()(0,1) << " " << information()(1,1);
-    return os.good();
-  }
+bool EdgeSE2PointXY::write(std::ostream& os) const {
+  os << measurement()[0] << " " << measurement()[1] << " ";
+  os << information()(0, 0) << " " << information()(0, 1) << " "
+     << information()(1, 1);
+  return os.good();
+}
 
-  void EdgeSE2PointXY::initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* to)
-  {
-    assert(from.size() == 1 && from.count(_vertices[0]) == 1 && "Can not initialize VertexSE2 position by VertexPointXY");
+void EdgeSE2PointXY::initialEstimate(const OptimizableGraph::VertexSet& from,
+                                     OptimizableGraph::Vertex* to) {
+  assert(from.size() == 1 && from.count(_vertices[0]) == 1 &&
+         "Can not initialize VertexSE2 position by VertexPointXY");
 
-    VertexSE2* vi     = dynamic_cast<VertexSE2*>(_vertices[0]);
-    VertexPointXY* vj = dynamic_cast<VertexPointXY*>(_vertices[1]);
-    if (from.count(vi) > 0 && to == vj) {
-      vj->setEstimate(vi->estimate() * _measurement);
-    }
+  VertexSE2* vi = dynamic_cast<VertexSE2*>(_vertices[0]);
+  VertexPointXY* vj = dynamic_cast<VertexPointXY*>(_vertices[1]);
+  if (from.count(vi) > 0 && to == vj) {
+    vj->setEstimate(vi->estimate() * _measurement);
   }
+}
 
 #ifndef NUMERIC_JACOBIAN_TWO_D_TYPES
-  void EdgeSE2PointXY::linearizeOplus()
-  {
-    const VertexSE2* vi     = dynamic_cast<const VertexSE2*>(_vertices[0]);
-    const VertexPointXY* vj = dynamic_cast<const VertexPointXY*>(_vertices[1]);
-    const double& x1        = vi->estimate().translation()[0];
-    const double& y1        = vi->estimate().translation()[1];
-    const double& th1       = vi->estimate().rotation().angle();
-    const double& x2        = vj->estimate()[0];
-    const double& y2        = vj->estimate()[1];
+void EdgeSE2PointXY::linearizeOplus() {
+  const VertexSE2* vi = dynamic_cast<const VertexSE2*>(_vertices[0]);
+  const VertexPointXY* vj = dynamic_cast<const VertexPointXY*>(_vertices[1]);
+  const double& x1 = vi->estimate().translation()[0];
+  const double& y1 = vi->estimate().translation()[1];
+  const double& th1 = vi->estimate().rotation().angle();
+  const double& x2 = vj->estimate()[0];
+  const double& y2 = vj->estimate()[1];
 
-    double aux_1 = cos(th1) ;
-    double aux_2 = -aux_1 ;
-    double aux_3 = sin(th1) ;
+  double aux_1 = cos(th1);
+  double aux_2 = -aux_1;
+  double aux_3 = sin(th1);
 
-    _jacobianOplusXi( 0 , 0 ) = aux_2 ;
-    _jacobianOplusXi( 0 , 1 ) = -aux_3 ;
-    _jacobianOplusXi( 0 , 2 ) = aux_1*y2-aux_1*y1-aux_3*x2+aux_3*x1 ;
-    _jacobianOplusXi( 1 , 0 ) = aux_3 ;
-    _jacobianOplusXi( 1 , 1 ) = aux_2 ;
-    _jacobianOplusXi( 1 , 2 ) = -aux_3*y2+aux_3*y1-aux_1*x2+aux_1*x1 ;
+  _jacobianOplusXi(0, 0) = aux_2;
+  _jacobianOplusXi(0, 1) = -aux_3;
+  _jacobianOplusXi(0, 2) = aux_1 * y2 - aux_1 * y1 - aux_3 * x2 + aux_3 * x1;
+  _jacobianOplusXi(1, 0) = aux_3;
+  _jacobianOplusXi(1, 1) = aux_2;
+  _jacobianOplusXi(1, 2) = -aux_3 * y2 + aux_3 * y1 - aux_1 * x2 + aux_1 * x1;
 
-    _jacobianOplusXj( 0 , 0 ) = aux_1 ;
-    _jacobianOplusXj( 0 , 1 ) = aux_3 ;
-    _jacobianOplusXj( 1 , 0 ) = -aux_3 ;
-    _jacobianOplusXj( 1 , 1 ) = aux_1 ;
-  }
+  _jacobianOplusXj(0, 0) = aux_1;
+  _jacobianOplusXj(0, 1) = aux_3;
+  _jacobianOplusXj(1, 0) = -aux_3;
+  _jacobianOplusXj(1, 1) = aux_1;
+}
 #endif
 
-  EdgeSE2PointXYWriteGnuplotAction::EdgeSE2PointXYWriteGnuplotAction(): WriteGnuplotAction(typeid(EdgeSE2PointXY).name()){}
+EdgeSE2PointXYWriteGnuplotAction::EdgeSE2PointXYWriteGnuplotAction()
+    : WriteGnuplotAction(typeid(EdgeSE2PointXY).name()) {}
 
-  HyperGraphElementAction* EdgeSE2PointXYWriteGnuplotAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_){
-    if (typeid(*element).name()!=_typeName)
-      return nullptr;
-    WriteGnuplotAction::Parameters* params=dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
-    if (params->os == nullptr){
-      std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified" << std::endl;
-      return nullptr;
-    }
-
-    EdgeSE2PointXY* e =  dynamic_cast<EdgeSE2PointXY*>(element);
-    if (e->numUndefinedVertices() != 0)
-      return this;
-    VertexSE2* fromEdge = dynamic_cast<VertexSE2*>(e->vertex(0));
-    VertexPointXY* toEdge   = dynamic_cast<VertexPointXY*>(e->vertex(1));
-    *(params->os) << fromEdge->estimate().translation().x() << " " << fromEdge->estimate().translation().y()
-      << " " << fromEdge->estimate().rotation().angle() << std::endl;
-    *(params->os) << toEdge->estimate().x() << " " << toEdge->estimate().y() << std::endl;
-    *(params->os) << std::endl;
-    return this;
+HyperGraphElementAction* EdgeSE2PointXYWriteGnuplotAction::operator()(
+    HyperGraph::HyperGraphElement* element,
+    HyperGraphElementAction::Parameters* params_) {
+  if (typeid(*element).name() != _typeName) return nullptr;
+  WriteGnuplotAction::Parameters* params =
+      dynamic_cast<WriteGnuplotAction::Parameters*>(params_);
+  if (params->os == nullptr) {
+    std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified"
+              << std::endl;
+    return nullptr;
   }
+
+  EdgeSE2PointXY* e = dynamic_cast<EdgeSE2PointXY*>(element);
+  if (e->numUndefinedVertices() != 0) return this;
+  VertexSE2* fromEdge = dynamic_cast<VertexSE2*>(e->vertex(0));
+  VertexPointXY* toEdge = dynamic_cast<VertexPointXY*>(e->vertex(1));
+  *(params->os) << fromEdge->estimate().translation().x() << " "
+                << fromEdge->estimate().translation().y() << " "
+                << fromEdge->estimate().rotation().angle() << std::endl;
+  *(params->os) << toEdge->estimate().x() << " " << toEdge->estimate().y()
+                << std::endl;
+  *(params->os) << std::endl;
+  return this;
+}
 
 #ifdef G2O_HAVE_OPENGL
-  EdgeSE2PointXYDrawAction::EdgeSE2PointXYDrawAction(): DrawAction(typeid(EdgeSE2PointXY).name()){}
+EdgeSE2PointXYDrawAction::EdgeSE2PointXYDrawAction()
+    : DrawAction(typeid(EdgeSE2PointXY).name()) {}
 
-  HyperGraphElementAction* EdgeSE2PointXYDrawAction::operator()(HyperGraph::HyperGraphElement* element, 
-                HyperGraphElementAction::Parameters*  params_){
-    if (typeid(*element).name()!=_typeName)
-      return nullptr;
+HyperGraphElementAction* EdgeSE2PointXYDrawAction::operator()(
+    HyperGraph::HyperGraphElement* element,
+    HyperGraphElementAction::Parameters* params_) {
+  if (typeid(*element).name() != _typeName) return nullptr;
 
-    refreshPropertyPtrs(params_);
-    if (_previousParams == nullptr)
-      return this;
-    
-    if ((_show != nullptr) && !_show->value())
-      return this;
+  refreshPropertyPtrs(params_);
+  if (_previousParams == nullptr) return this;
 
+  if ((_show != nullptr) && !_show->value()) return this;
 
-    EdgeSE2PointXY* e =  dynamic_cast<EdgeSE2PointXY*>(element);
-    VertexSE2* fromEdge = dynamic_cast<VertexSE2*>(e->vertex(0));
-    VertexPointXY* toEdge   = dynamic_cast<VertexPointXY*>(e->vertex(1));
-    if (fromEdge == nullptr)
-      return this;
-    Vector2D p=e->measurement();
-    glPushAttrib(GL_ENABLE_BIT|GL_LIGHTING|GL_COLOR);
-    glDisable(GL_LIGHTING);
-    if (toEdge == nullptr){
-      p=fromEdge->estimate()*p;
-      glColor3f(LANDMARK_EDGE_GHOST_COLOR);
-      glPushAttrib(GL_POINT_SIZE);
-      glPointSize(3);
-      glBegin(GL_POINTS);
-      glVertex3f((float)p.x(),(float)p.y(),0.f);
-      glEnd();
-      glPopAttrib();
-    } else {
-      p=toEdge->estimate();
-      glColor3f(LANDMARK_EDGE_COLOR);
-    }
-    glBegin(GL_LINES);
-    glVertex3f((float)fromEdge->estimate().translation().x(),(float)fromEdge->estimate().translation().y(),0.f);
-    glVertex3f((float)p.x(),(float)p.y(),0.f);
+  EdgeSE2PointXY* e = dynamic_cast<EdgeSE2PointXY*>(element);
+  VertexSE2* fromEdge = dynamic_cast<VertexSE2*>(e->vertex(0));
+  VertexPointXY* toEdge = dynamic_cast<VertexPointXY*>(e->vertex(1));
+  if (fromEdge == nullptr) return this;
+  Vector2D p = e->measurement();
+  glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING | GL_COLOR);
+  glDisable(GL_LIGHTING);
+  if (toEdge == nullptr) {
+    p = fromEdge->estimate() * p;
+    glColor3f(LANDMARK_EDGE_GHOST_COLOR);
+    glPushAttrib(GL_POINT_SIZE);
+    glPointSize(3);
+    glBegin(GL_POINTS);
+    glVertex3f((float)p.x(), (float)p.y(), 0.f);
     glEnd();
     glPopAttrib();
-    return this;
+  } else {
+    p = toEdge->estimate();
+    glColor3f(LANDMARK_EDGE_COLOR);
   }
+  glBegin(GL_LINES);
+  glVertex3f((float)fromEdge->estimate().translation().x(),
+             (float)fromEdge->estimate().translation().y(), 0.f);
+  glVertex3f((float)p.x(), (float)p.y(), 0.f);
+  glEnd();
+  glPopAttrib();
+  return this;
+}
 #endif
 
 G2O_END_NAMESPACE

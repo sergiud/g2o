@@ -8,54 +8,52 @@
 
 #include <g2o/config.h>
 #include <g2o/core/base_multi_edge.h>
+#include <g2o/prefix.h>
 #include <g2o/types/slam2d/g2o_types_slam2d_api.h>
 #include <g2o/types/slam2d/vertex_point_xy.h>
 #include <g2o/types/slam2d/vertex_se2.h>
 
-#include <g2o/prefix.h>
-
 G2O_START_NAMESPACE
 
-  class G2O_TYPES_SLAM2D_API EdgeSE2LotsOfXY : public BaseMultiEdge<-1,VectorXD>
-  {
-    protected:
-      unsigned int _observedPoints{};
+class G2O_TYPES_SLAM2D_API EdgeSE2LotsOfXY
+    : public BaseMultiEdge<-1, VectorXD> {
+ protected:
+  unsigned int _observedPoints{};
 
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
-      EdgeSE2LotsOfXY();
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+  EdgeSE2LotsOfXY();
 
-      void setDimension(int dimension_)
-      {
-        _dimension = dimension_;
-        _information.resize(dimension_, dimension_);
-        _error.resize(dimension_, 1);
-        _measurement.resize(dimension_, 1);
-      }
+  void setDimension(int dimension_) {
+    _dimension = dimension_;
+    _information.resize(dimension_, dimension_);
+    _error.resize(dimension_, 1);
+    _measurement.resize(dimension_, 1);
+  }
 
-      void setSize(int vertices)
-      {
-        resize(vertices);
-        _observedPoints = vertices-1;
-        setDimension(_observedPoints*2);
-      }
+  void setSize(int vertices) {
+    resize(vertices);
+    _observedPoints = vertices - 1;
+    setDimension(_observedPoints * 2);
+  }
 
-      virtual void computeError();
+  virtual void computeError();
 
-      virtual bool read(std::istream& is);
-      virtual bool write(std::ostream& os) const;
+  virtual bool read(std::istream& is);
+  virtual bool write(std::ostream& os) const;
 
-      virtual bool setMeasurementFromState();
+  virtual bool setMeasurementFromState();
 
-      virtual void initialEstimate(const OptimizableGraph::VertexSet&, OptimizableGraph::Vertex*);
-      virtual double initialEstimatePossible(const OptimizableGraph::VertexSet&, OptimizableGraph::Vertex*);
+  virtual void initialEstimate(const OptimizableGraph::VertexSet&,
+                               OptimizableGraph::Vertex*);
+  virtual double initialEstimatePossible(const OptimizableGraph::VertexSet&,
+                                         OptimizableGraph::Vertex*);
 
-      virtual void linearizeOplus();
-  };
+  virtual void linearizeOplus();
+};
 
 G2O_END_NAMESPACE
 
 #include <g2o/suffix.h>
 
-
-#endif	// G2O_EDGE_SE2_LOTSOF_XY
+#endif  // G2O_EDGE_SE2_LOTSOF_XY

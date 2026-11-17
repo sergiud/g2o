@@ -2,11 +2,12 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include "g2o/core/hyper_graph_action.h"
+
 #include <memory>
 #include <string>
 
 #include "gtest/gtest.h"
-#include "g2o/core/hyper_graph_action.h"
 
 namespace {
 

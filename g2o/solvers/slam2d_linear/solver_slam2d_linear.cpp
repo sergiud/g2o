@@ -5,189 +5,197 @@
 
 #include "solver_slam2d_linear.h"
 
-#include <Eigen/Core>
-
+#include <g2o/core/hyper_dijkstra.h>
 #include <g2o/core/sparse_block_matrix.h>
 #include <g2o/core/sparse_optimizer.h>
-#include <g2o/core/hyper_dijkstra.h>
-
-#include <g2o/types/slam2d/edge_se2.h>
-
+#include <g2o/solvers/csparse/linear_solver_csparse.h>
 #include <g2o/stuff/misc.h>
 #include <g2o/stuff/scoped_pointer.h>
+#include <g2o/types/slam2d/edge_se2.h>
 
-#include <g2o/solvers/csparse/linear_solver_csparse.h>
+#include <Eigen/Core>
 
 using namespace std;
 
 G2O_START_NAMESPACE
 
-  /**
-   * \brief compute the initial guess of theta while travelling along the MST
-   */
-  class ThetaTreeAction : public HyperDijkstra::TreeAction
-  {
-    public:
-      ThetaTreeAction(double* theta) : HyperDijkstra::TreeAction(), _thetaGuess(theta) {}
-      virtual double perform(HyperGraph::Vertex* v, HyperGraph::Vertex* vParent, HyperGraph::Edge* e)
-      {
-        if (vParent == nullptr)
-          return 0.;
-        EdgeSE2* odom    = dynamic_cast<EdgeSE2*>(e);
-        VertexSE2* from  = dynamic_cast<VertexSE2*>(vParent);
-        VertexSE2* to    = dynamic_cast<VertexSE2*>(v);
-        assert(to->hessianIndex() >= 0);
-        double fromTheta = from->hessianIndex() < 0 ? 0. : _thetaGuess[from->hessianIndex()];
-        bool direct      = odom->vertices()[0] == from;
-        if (direct)
-          _thetaGuess[to->hessianIndex()] = fromTheta + odom->measurement().rotation().angle();
-        else
-          _thetaGuess[to->hessianIndex()] = fromTheta - odom->measurement().rotation().angle();
-        return 1.;
-      }
-    protected:
-      double* _thetaGuess;
-  };
-
-  SolverSLAM2DLinear::SolverSLAM2DLinear(Solver* solver) :
-    OptimizationAlgorithmGaussNewton(solver)
-  {
+/**
+ * \brief compute the initial guess of theta while travelling along the MST
+ */
+class ThetaTreeAction : public HyperDijkstra::TreeAction {
+ public:
+  ThetaTreeAction(double* theta)
+      : HyperDijkstra::TreeAction(), _thetaGuess(theta) {}
+  virtual double perform(HyperGraph::Vertex* v, HyperGraph::Vertex* vParent,
+                         HyperGraph::Edge* e) {
+    if (vParent == nullptr) return 0.;
+    EdgeSE2* odom = dynamic_cast<EdgeSE2*>(e);
+    VertexSE2* from = dynamic_cast<VertexSE2*>(vParent);
+    VertexSE2* to = dynamic_cast<VertexSE2*>(v);
+    assert(to->hessianIndex() >= 0);
+    double fromTheta =
+        from->hessianIndex() < 0 ? 0. : _thetaGuess[from->hessianIndex()];
+    bool direct = odom->vertices()[0] == from;
+    if (direct)
+      _thetaGuess[to->hessianIndex()] =
+          fromTheta + odom->measurement().rotation().angle();
+    else
+      _thetaGuess[to->hessianIndex()] =
+          fromTheta - odom->measurement().rotation().angle();
+    return 1.;
   }
 
-  SolverSLAM2DLinear::~SolverSLAM2DLinear()
-  = default;
+ protected:
+  double* _thetaGuess;
+};
 
-  OptimizationAlgorithm::SolverResult SolverSLAM2DLinear::solve(int iteration, bool online)
-  {
-    if (iteration == 0) {
-      bool status = solveOrientation();
-      if (! status)
-        return OptimizationAlgorithm::Fail;
-    }
+SolverSLAM2DLinear::SolverSLAM2DLinear(Solver* solver)
+    : OptimizationAlgorithmGaussNewton(solver) {}
 
-    return OptimizationAlgorithmGaussNewton::solve(iteration, online);
+SolverSLAM2DLinear::~SolverSLAM2DLinear() = default;
+
+OptimizationAlgorithm::SolverResult SolverSLAM2DLinear::solve(int iteration,
+                                                              bool online) {
+  if (iteration == 0) {
+    bool status = solveOrientation();
+    if (!status) return OptimizationAlgorithm::Fail;
   }
 
-  bool SolverSLAM2DLinear::solveOrientation()
-  {
-    assert(_optimizer->indexMapping().size() + 1 == _optimizer->vertices().size() && "Needs to operate on full graph");
-    assert(_optimizer->vertex(0)->fixed() && "Graph is not fixed by vertex 0");
-    VectorXD b, x; // will be used for theta and x/y update
-    b.setZero(_optimizer->indexMapping().size());
-    x.setZero(_optimizer->indexMapping().size());
+  return OptimizationAlgorithmGaussNewton::solve(iteration, online);
+}
 
-    typedef Eigen::Matrix<double, 1, 1, Eigen::ColMajor> ScalarMatrix;
+bool SolverSLAM2DLinear::solveOrientation() {
+  assert(_optimizer->indexMapping().size() + 1 ==
+             _optimizer->vertices().size() &&
+         "Needs to operate on full graph");
+  assert(_optimizer->vertex(0)->fixed() && "Graph is not fixed by vertex 0");
+  VectorXD b, x;  // will be used for theta and x/y update
+  b.setZero(_optimizer->indexMapping().size());
+  x.setZero(_optimizer->indexMapping().size());
 
-    ScopedArray<int> blockIndeces(new int[_optimizer->indexMapping().size()]);
-    for (size_t i = 0; i < _optimizer->indexMapping().size(); ++i)
-      blockIndeces[i] = i+1;
+  typedef Eigen::Matrix<double, 1, 1, Eigen::ColMajor> ScalarMatrix;
 
-    SparseBlockMatrix<ScalarMatrix> H(blockIndeces.get(), blockIndeces.get(), _optimizer->indexMapping().size(), _optimizer->indexMapping().size());
+  ScopedArray<int> blockIndeces(new int[_optimizer->indexMapping().size()]);
+  for (size_t i = 0; i < _optimizer->indexMapping().size(); ++i)
+    blockIndeces[i] = i + 1;
 
-    // building the structure, diagonal for each active vertex
-    for (auto v : _optimizer->indexMapping()) {
-      int poseIdx = v->hessianIndex();
-      ScalarMatrix* m = H.block(poseIdx, poseIdx, true);
-      m->setZero();
+  SparseBlockMatrix<ScalarMatrix> H(blockIndeces.get(), blockIndeces.get(),
+                                    _optimizer->indexMapping().size(),
+                                    _optimizer->indexMapping().size());
+
+  // building the structure, diagonal for each active vertex
+  for (auto v : _optimizer->indexMapping()) {
+    int poseIdx = v->hessianIndex();
+    ScalarMatrix* m = H.block(poseIdx, poseIdx, true);
+    m->setZero();
+  }
+
+  HyperGraph::VertexSet fixedSet;
+
+  // off diagonal for each edge
+  for (auto it : _optimizer->activeEdges()) {
+#ifndef NDEBUG
+    EdgeSE2* e = dynamic_cast<EdgeSE2*>(it);
+    assert(e && "Active edges contain non-odometry edge");  //
+#else
+    EdgeSE2* e = dynamic_cast<EdgeSE2*>(it);
+#endif
+    OptimizableGraph::Vertex* from =
+        dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
+    OptimizableGraph::Vertex* to =
+        dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
+
+    int ind1 = from->hessianIndex();
+    int ind2 = to->hessianIndex();
+    if (ind1 == -1 || ind2 == -1) {
+      if (ind1 == -1) fixedSet.insert(from);  // collect the fixed vertices
+      if (ind2 == -1) fixedSet.insert(to);
+      continue;
     }
 
-    HyperGraph::VertexSet fixedSet;
-
-    // off diagonal for each edge
-    for (auto it : _optimizer->activeEdges()) {
-#    ifndef NDEBUG
-      EdgeSE2* e = dynamic_cast<EdgeSE2*>(it);
-      assert(e && "Active edges contain non-odometry edge"); //
-#    else
-      EdgeSE2* e = dynamic_cast<EdgeSE2*>(it);
-#    endif
-      OptimizableGraph::Vertex* from = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
-      OptimizableGraph::Vertex* to   = dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
-
-      int ind1 = from->hessianIndex();
-      int ind2 = to->hessianIndex();
-      if (ind1 == -1 || ind2 == -1) {
-        if (ind1 == -1) fixedSet.insert(from); // collect the fixed vertices
-        if (ind2 == -1) fixedSet.insert(to);
-        continue;
-      }
-
-      bool transposedBlock = ind1 > ind2;
-      if (transposedBlock){ // make sure, we allocate the upper triangle block
-        std::swap(ind1, ind2);
-      }
-
-      ScalarMatrix* m = H.block(ind1, ind2, true);
-      m->setZero();
+    bool transposedBlock = ind1 > ind2;
+    if (transposedBlock) {  // make sure, we allocate the upper triangle block
+      std::swap(ind1, ind2);
     }
 
-    // walk along the Minimal Spanning Tree to compute the guess for the robot orientation
-    assert(fixedSet.size() == 1);
-    VertexSE2* root = dynamic_cast<VertexSE2*>(*fixedSet.begin());
-    VectorXD thetaGuess;
-    thetaGuess.setZero(_optimizer->indexMapping().size());
-    UniformCostFunction uniformCost;
-    HyperDijkstra hyperDijkstra(_optimizer);
-    hyperDijkstra.shortestPaths(root, &uniformCost);
+    ScalarMatrix* m = H.block(ind1, ind2, true);
+    m->setZero();
+  }
 
-    HyperDijkstra::computeTree(hyperDijkstra.adjacencyMap());
-    ThetaTreeAction thetaTreeAction(thetaGuess.data());
-    HyperDijkstra::visitAdjacencyMap(hyperDijkstra.adjacencyMap(), &thetaTreeAction);
+  // walk along the Minimal Spanning Tree to compute the guess for the robot
+  // orientation
+  assert(fixedSet.size() == 1);
+  VertexSE2* root = dynamic_cast<VertexSE2*>(*fixedSet.begin());
+  VectorXD thetaGuess;
+  thetaGuess.setZero(_optimizer->indexMapping().size());
+  UniformCostFunction uniformCost;
+  HyperDijkstra hyperDijkstra(_optimizer);
+  hyperDijkstra.shortestPaths(root, &uniformCost);
 
-    // construct for the orientation
-    for (auto it : _optimizer->activeEdges()) {
-      EdgeSE2* e = dynamic_cast<EdgeSE2*>(it);
-      VertexSE2* from = dynamic_cast<VertexSE2*>(e->vertices()[0]);
-      VertexSE2* to   = dynamic_cast<VertexSE2*>(e->vertices()[1]);
+  HyperDijkstra::computeTree(hyperDijkstra.adjacencyMap());
+  ThetaTreeAction thetaTreeAction(thetaGuess.data());
+  HyperDijkstra::visitAdjacencyMap(hyperDijkstra.adjacencyMap(),
+                                   &thetaTreeAction);
 
-      double omega = e->information()(2,2);
+  // construct for the orientation
+  for (auto it : _optimizer->activeEdges()) {
+    EdgeSE2* e = dynamic_cast<EdgeSE2*>(it);
+    VertexSE2* from = dynamic_cast<VertexSE2*>(e->vertices()[0]);
+    VertexSE2* to = dynamic_cast<VertexSE2*>(e->vertices()[1]);
 
-      double fromThetaGuess = from->hessianIndex() < 0 ? 0. : thetaGuess[from->hessianIndex()];
-      double toThetaGuess   = to->hessianIndex() < 0 ? 0. : thetaGuess[to->hessianIndex()];
-      double error          = normalize_theta(-e->measurement().rotation().angle() + toThetaGuess - fromThetaGuess);
+    double omega = e->information()(2, 2);
 
-      bool fromNotFixed = !(from->fixed());
-      bool toNotFixed   = !(to->fixed());
+    double fromThetaGuess =
+        from->hessianIndex() < 0 ? 0. : thetaGuess[from->hessianIndex()];
+    double toThetaGuess =
+        to->hessianIndex() < 0 ? 0. : thetaGuess[to->hessianIndex()];
+    double error = normalize_theta(-e->measurement().rotation().angle() +
+                                   toThetaGuess - fromThetaGuess);
 
-      if (fromNotFixed || toNotFixed) {
-        double omega_r = - omega * error;
-        if (fromNotFixed) {
-          b(from->hessianIndex()) -= omega_r;
-          (*H.block(from->hessianIndex(), from->hessianIndex()))(0,0) += omega;
-          if (toNotFixed) {
-            if (from->hessianIndex() > to->hessianIndex())
-              (*H.block(to->hessianIndex(), from->hessianIndex()))(0,0) -= omega;
-            else
-              (*H.block(from->hessianIndex(), to->hessianIndex()))(0,0) -= omega;
-          }
+    bool fromNotFixed = !(from->fixed());
+    bool toNotFixed = !(to->fixed());
+
+    if (fromNotFixed || toNotFixed) {
+      double omega_r = -omega * error;
+      if (fromNotFixed) {
+        b(from->hessianIndex()) -= omega_r;
+        (*H.block(from->hessianIndex(), from->hessianIndex()))(0, 0) += omega;
+        if (toNotFixed) {
+          if (from->hessianIndex() > to->hessianIndex())
+            (*H.block(to->hessianIndex(), from->hessianIndex()))(0, 0) -= omega;
+          else
+            (*H.block(from->hessianIndex(), to->hessianIndex()))(0, 0) -= omega;
         }
-        if (toNotFixed ) {
-          b(to->hessianIndex()) += omega_r;
-          (*H.block(to->hessianIndex(), to->hessianIndex()))(0,0) += omega;
-        }
+      }
+      if (toNotFixed) {
+        b(to->hessianIndex()) += omega_r;
+        (*H.block(to->hessianIndex(), to->hessianIndex()))(0, 0) += omega;
       }
     }
-
-    // solve orientation
-    typedef LinearSolverCSparse<ScalarMatrix> SystemSolver;
-    SystemSolver linearSystemSolver;
-    linearSystemSolver.init();
-    bool ok = linearSystemSolver.solve(H, x.data(), b.data());
-    if (!ok) {
-      cerr << __PRETTY_FUNCTION__ << "Failure while solving linear system" << endl;
-      return false;
-    }
-
-    // update the orientation of the 2D poses and set translation to 0, GN shall solve that
-    root->setToOrigin();
-    for (auto i : _optimizer->indexMapping()) {
-      VertexSE2* v = dynamic_cast<VertexSE2*>(i);
-      int poseIdx = v->hessianIndex();
-      SE2 poseUpdate(0, 0, normalize_theta(thetaGuess(poseIdx) + x(poseIdx)));
-      v->setEstimate(poseUpdate);
-    }
-
-    return true;
   }
+
+  // solve orientation
+  typedef LinearSolverCSparse<ScalarMatrix> SystemSolver;
+  SystemSolver linearSystemSolver;
+  linearSystemSolver.init();
+  bool ok = linearSystemSolver.solve(H, x.data(), b.data());
+  if (!ok) {
+    cerr << __PRETTY_FUNCTION__ << "Failure while solving linear system"
+         << endl;
+    return false;
+  }
+
+  // update the orientation of the 2D poses and set translation to 0, GN shall
+  // solve that
+  root->setToOrigin();
+  for (auto i : _optimizer->indexMapping()) {
+    VertexSE2* v = dynamic_cast<VertexSE2*>(i);
+    int poseIdx = v->hessianIndex();
+    SE2 poseUpdate(0, 0, normalize_theta(thetaGuess(poseIdx) + x(poseIdx)));
+    v->setEstimate(poseUpdate);
+  }
+
+  return true;
+}
 
 G2O_END_NAMESPACE
