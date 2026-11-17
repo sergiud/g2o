@@ -214,10 +214,9 @@ IF(BUILD_TESTING AND GTest_FOUND)
   ADD_SUBDIRECTORY(unit_test)
 ENDIF()
 
-# Include the subdirectories
-if (BUILD_APPS)
-  add_subdirectory(EXTERNAL)
-endif (BUILD_APPS)
+# Include the subdirectories. The bundled libraries decide by their own
+# options whether they are needed.
+add_subdirectory(EXTERNAL)
 
 add_subdirectory(g2o)
 
