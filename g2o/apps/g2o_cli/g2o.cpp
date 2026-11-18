@@ -426,6 +426,21 @@ int main(int argc, char** argv) {
            return IncrementalEdgesCompare()(e1.get(), e2.get());
          });
 
+    // The run adds the vertices in the order of the edges, so a gauge added
+    // late leaves the earlier steps without one and their system singular. The
+    // first vertex the run adds is the gauge instead, unless the user chose it.
+    if (gaugeFreedom && gaugeList.empty() && gauge != nullptr &&
+        !edges.empty()) {
+      auto* first =
+          dynamic_cast<OptimizableGraph::Vertex*>(edges.front()->vertices()[0]);
+      if (first != nullptr && first->dimension() == gauge->dimension()) {
+        gauge->setFixed(false);
+        gauge = first;
+        gauge->setFixed(true);
+        ngx::Log("# incremental graph is fixed by node {}", gauge->id());
+      }
+    }
+
     double cumTime = 0.;
     int vertexCount = 0;
     int lastOptimizedVertexCount = 0;

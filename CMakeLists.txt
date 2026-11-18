@@ -1737,21 +1737,37 @@ if (BUILD_TESTING)
 
   # In incremental mode, the command line tool takes the vertices and edges out
   # of the graph it loaded and adds them back one by one. The tool exits
-  # successfully even when it cannot allocate the solver or add an element, so
-  # these messages fail the test.
+  # successfully even when it cannot allocate the solver, add an element or
+  # factorize the system, so these messages fail the test.
   if (BUILD_APPS AND BUILD_EXAMPLES)
+    # A sphere of 5 laps with 20 poses each has 99 odometry edges and 220 loop
+    # closures. The incremental run reports the size of the graph and its chi2
+    # after each step with -v. The last report shows the complete graph, whose
+    # chi2 stays below 10000 for the fixed seed of the sphere.
+    add_test (NAME g2o_sphere_clean
+      COMMAND ${CMAKE_COMMAND} -E rm -f ${g2o_BINARY_DIR}/sphere.g2o
+    )
     add_test (NAME g2o_sphere
       COMMAND create_sphere -laps 5 -nodesPerLevel 20
         -o ${g2o_BINARY_DIR}/sphere.g2o
     )
     add_test (NAME g2o_incremental
-      COMMAND g2o_cli_application -inc -update 10 ${g2o_BINARY_DIR}/sphere.g2o
+      COMMAND g2o_cli_application -v -inc -update 10
+        ${g2o_BINARY_DIR}/sphere.g2o
     )
-    set_tests_properties (g2o_sphere PROPERTIES FIXTURES_SETUP g2o_sphere)
+    set_tests_properties (g2o_sphere_clean PROPERTIES
+      FIXTURES_SETUP g2o_sphere_clean
+    )
+    set_tests_properties (g2o_sphere PROPERTIES
+      FIXTURES_REQUIRED g2o_sphere_clean
+      FIXTURES_SETUP g2o_sphere
+    )
     set_tests_properties (g2o_incremental PROPERTIES
       FAIL_REGULAR_EXPRESSION
-        "Error allocating;Error adding vertex;Unable to add edge;initialization failed"
+        "Error allocating;Error adding vertex;Unable to add edge;initialization failed;Cholesky failure"
       FIXTURES_REQUIRED g2o_sphere
+      PASS_REGULAR_EXPRESSION
+        "nodes= 100\t edges= 319\t chi2= [0-9][0-9]?[0-9]?[0-9]?\\."
     )
   endif (BUILD_APPS AND BUILD_EXAMPLES)
 endif (BUILD_TESTING)
