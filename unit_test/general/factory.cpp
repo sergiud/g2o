@@ -4,6 +4,7 @@
 
 #include "g2o/core/factory.h"
 
+#include <array>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -45,6 +46,10 @@ TEST(General, FactoryTagsContainNoWhitespace) {
 
   g2o::Factory::instance()->printRegisteredTypes(listing, false);
 
+  // The tags with a colon are the ones that formatting can break.
+  EXPECT_THAT(listing.str(), testing::HasSubstr("\tVERTEX_SE3:QUAT\n"));
+  EXPECT_THAT(listing.str(), testing::HasSubstr("\tVERTEX_SE3:EXPMAP\n"));
+  EXPECT_THAT(listing.str(), testing::HasSubstr("\tVERTEX_SIM3:EXPMAP\n"));
   std::istringstream lines(listing.str());
   std::string line;
   std::getline(lines, line);  // The heading of the listing.
@@ -60,15 +65,27 @@ TEST(General, FactoryTagsContainNoWhitespace) {
  * vertices and edges.
  */
 TEST(General, GraphOfSE3PosesSurvivesSaveAndLoad) {
+  // The precision of the numbers written to the file.
+  constexpr double precision = 1e-6;
+  const std::array<Eigen::Isometry3d, 2> poses = {
+      Eigen::Translation3d(1., 2., 3.) *
+          Eigen::AngleAxisd(0.3, Eigen::Vector3d::UnitZ()),
+      Eigen::Translation3d(-2., 0.5, 1.) *
+          Eigen::AngleAxisd(-0.7, Eigen::Vector3d::UnitX())};
+  const Eigen::Isometry3d measurement =
+      Eigen::Translation3d(0.1, -0.2, 0.3) *
+      Eigen::AngleAxisd(0.2, Eigen::Vector3d::UnitY());
   g2o::SparseOptimizer graph;
   for (int id = 0; id < 2; ++id) {
     auto vertex = std::make_unique<g2o::VertexSE3>();
     vertex->setId(id);
+    vertex->setEstimate(poses[id]);
     ASSERT_TRUE(graph.addVertex(std::move(vertex)));
   }
   auto edge = std::make_unique<g2o::EdgeSE3>();
   edge->setVertex(0, graph.vertex(0));
   edge->setVertex(1, graph.vertex(1));
+  edge->setMeasurement(measurement);
   ASSERT_TRUE(graph.addEdge(std::move(edge)));
   std::stringstream file;
   ASSERT_TRUE(graph.save(file));
@@ -76,6 +93,17 @@ TEST(General, GraphOfSE3PosesSurvivesSaveAndLoad) {
   g2o::SparseOptimizer loaded;
   ASSERT_TRUE(loaded.load(file));
 
-  EXPECT_EQ(loaded.vertices().size(), 2U);
-  EXPECT_EQ(loaded.edges().size(), 1U);
+  ASSERT_EQ(loaded.vertices().size(), 2U);
+  ASSERT_EQ(loaded.edges().size(), 1U);
+  for (int id = 0; id < 2; ++id) {
+    const auto* vertex = dynamic_cast<const g2o::VertexSE3*>(loaded.vertex(id));
+    ASSERT_NE(vertex, nullptr);
+    EXPECT_TRUE(vertex->estimate().isApprox(poses[id], precision));
+  }
+  const auto* loadedEdge =
+      dynamic_cast<const g2o::EdgeSE3*>(loaded.edges().begin()->get());
+  ASSERT_NE(loadedEdge, nullptr);
+  EXPECT_EQ(loadedEdge->vertex(0)->id(), 0);
+  EXPECT_EQ(loadedEdge->vertex(1)->id(), 1);
+  EXPECT_TRUE(loadedEdge->measurement().isApprox(measurement, precision));
 }

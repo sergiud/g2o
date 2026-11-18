@@ -9,8 +9,8 @@ using namespace std;
 using namespace g2o;
 
 TEST(MappingsSlam2D, SE2) {
-  SE2 s1(0., 1., 2.);
-  EXPECT_DOUBLE_EQ(0., s1[0]);
-  EXPECT_DOUBLE_EQ(1., s1[1]);
-  EXPECT_DOUBLE_EQ(2., s1[2]);
+  SE2 s1(1., 2., 0.5);
+  EXPECT_DOUBLE_EQ(1., s1[0]);
+  EXPECT_DOUBLE_EQ(2., s1[1]);
+  EXPECT_DOUBLE_EQ(0.5, s1[2]);
 }

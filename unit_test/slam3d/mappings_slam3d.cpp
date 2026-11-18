@@ -17,13 +17,15 @@ TEST(MappingsSlam3D, EulerConversion) {
 }
 
 TEST(MappingsSlam3D, QuaternionConversion) {
-  Eigen::Vector3d eulerAngles(.1, .2, .3);
+  // A yaw near pi gives a quaternion with a negative real part, which the
+  // compact form normalizes.
+  Eigen::Vector3d eulerAngles(.1, .2, -3.);
   Eigen::Matrix3d m1 = g2o::internal::fromEuler(eulerAngles);
 
   Eigen::Vector3d q = g2o::internal::toCompactQuaternion(m1);
   Eigen::Matrix3d m2 = g2o::internal::fromCompactQuaternion(q);
   for (int r = 0; r < 3; ++r)
-    for (int c = 0; c < 3; ++c) EXPECT_DOUBLE_EQ(m1(r, c), m2(r, c));
+    for (int c = 0; c < 3; ++c) EXPECT_NEAR(m1(r, c), m2(r, c), 1e-12);
 }
 
 TEST(MappingsSlam3D, ET) {
@@ -44,7 +46,8 @@ TEST(MappingsSlam3D, ET) {
 }
 
 TEST(MappingsSlam3D, MQT) {
-  Eigen::Vector3d eulerAngles(.1, .2, .3);
+  // A yaw near pi gives a quaternion with a negative real part.
+  Eigen::Vector3d eulerAngles(.1, .2, -3.);
   Eigen::Matrix<double, 6, 1> et;
   Eigen::Vector3d t(1., 2., 3.);
   et.block<3, 1>(0, 0) = t;

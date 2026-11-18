@@ -242,6 +242,34 @@ static_assert(!GraphAcceptsVertex<g2o::HyperGraph::Vertex*>);
 static_assert(GraphAcceptsEdge<std::unique_ptr<g2o::EdgeSE3PointXYZ>>);
 static_assert(!GraphAcceptsEdge<g2o::EdgeSE3PointXYZ*>);
 static_assert(!GraphAcceptsEdge<g2o::HyperGraph::Edge*>);
+
+//! Whether the base graph accepts a vertex passed as the given type.
+template <typename Vertex>
+concept HyperGraphAcceptsVertex =
+    requires(g2o::HyperGraph& graph, Vertex vertex) {
+      graph.addVertex(std::move(vertex));
+    };
+
+//! Whether the base graph accepts an edge passed as the given type.
+template <typename Edge>
+concept HyperGraphAcceptsEdge = requires(g2o::HyperGraph& graph, Edge edge) {
+  graph.addEdge(std::move(edge));
+};
+
+//! Whether the action library accepts an action passed as the given type.
+template <typename Action>
+concept LibraryAcceptsAction =
+    requires(g2o::HyperGraphActionLibrary& library, Action action) {
+      library.registerAction(std::move(action));
+    };
+
+static_assert(HyperGraphAcceptsVertex<std::unique_ptr<g2o::VertexSE3>>);
+static_assert(!HyperGraphAcceptsVertex<g2o::HyperGraph::Vertex*>);
+static_assert(HyperGraphAcceptsEdge<std::unique_ptr<g2o::EdgeSE3PointXYZ>>);
+static_assert(!HyperGraphAcceptsEdge<g2o::HyperGraph::Edge*>);
+static_assert(
+    LibraryAcceptsAction<std::unique_ptr<g2o::HyperGraphElementAction>>);
+static_assert(!LibraryAcceptsAction<g2o::HyperGraphElementAction*>);
 static_assert(FactoryAcceptsCreator<
               std::unique_ptr<g2o::AbstractHyperGraphElementCreator>>);
 static_assert(!FactoryAcceptsCreator<g2o::AbstractHyperGraphElementCreator*>);
@@ -289,6 +317,8 @@ TEST(General, OptimizerDeletesItsAlgorithm) {
     g2o::SparseOptimizer optimizer;
     optimizer.setAlgorithm(
         std::make_unique<CountedAlgorithm>(createSolver(), destructions));
+    EXPECT_EQ(destructions, 0);
+    EXPECT_NE(optimizer.algorithm(), nullptr);
   }
 
   EXPECT_EQ(destructions, 1);
@@ -296,15 +326,20 @@ TEST(General, OptimizerDeletesItsAlgorithm) {
 
 //! An optimizer frees the algorithm that another algorithm replaces.
 TEST(General, OptimizerDeletesTheAlgorithmItReplaces) {
-  int destructions = 0;
+  int replacedDestructions = 0;
+  int replacingDestructions = 0;
   g2o::SparseOptimizer optimizer;
   optimizer.setAlgorithm(
-      std::make_unique<CountedAlgorithm>(createSolver(), destructions));
+      std::make_unique<CountedAlgorithm>(createSolver(), replacedDestructions));
+  auto replacing =
+      std::make_unique<CountedAlgorithm>(createSolver(), replacingDestructions);
+  const CountedAlgorithm* replacingPointer = replacing.get();
 
-  optimizer.setAlgorithm(
-      std::make_unique<CountedAlgorithm>(createSolver(), destructions));
+  optimizer.setAlgorithm(std::move(replacing));
 
-  EXPECT_EQ(destructions, 1);
+  EXPECT_EQ(replacedDestructions, 1);
+  EXPECT_EQ(replacingDestructions, 0);
+  EXPECT_EQ(optimizer.algorithm(), replacingPointer);
 }
 
 //! A vertex frees its user data and the data chained to it.
@@ -314,6 +349,9 @@ TEST(General, VertexDeletesItsUserData) {
     g2o::VertexSE2 vertex;
     vertex.addUserData(std::make_unique<CountedData>(destructions));
     vertex.addUserData(std::make_unique<CountedData>(destructions));
+    EXPECT_EQ(destructions, 0);
+    ASSERT_NE(vertex.userData(), nullptr);
+    EXPECT_NE(vertex.userData()->next(), nullptr);
   }
 
   EXPECT_EQ(destructions, 2);
@@ -321,13 +359,18 @@ TEST(General, VertexDeletesItsUserData) {
 
 //! A vertex frees the user data that other user data replaces.
 TEST(General, VertexDeletesTheUserDataItReplaces) {
-  int destructions = 0;
+  int replacedDestructions = 0;
+  int replacingDestructions = 0;
   g2o::VertexSE2 vertex;
-  vertex.setUserData(std::make_unique<CountedData>(destructions));
+  vertex.setUserData(std::make_unique<CountedData>(replacedDestructions));
+  auto replacing = std::make_unique<CountedData>(replacingDestructions);
+  const CountedData* replacingPointer = replacing.get();
 
-  vertex.setUserData(std::make_unique<CountedData>(destructions));
+  vertex.setUserData(std::move(replacing));
 
-  EXPECT_EQ(destructions, 1);
+  EXPECT_EQ(replacedDestructions, 1);
+  EXPECT_EQ(replacingDestructions, 0);
+  EXPECT_EQ(vertex.userData(), replacingPointer);
 }
 
 //! A graph frees its parameters when it is destroyed.
@@ -337,6 +380,8 @@ TEST(General, GraphDeletesItsParameters) {
     g2o::SparseOptimizer graph;
     ASSERT_TRUE(graph.addParameter(
         std::make_unique<CountedParameter>(0, destructions)));
+    EXPECT_EQ(destructions, 0);
+    EXPECT_NE(graph.parameter(0), nullptr);
   }
 
   EXPECT_EQ(destructions, 1);
@@ -344,28 +389,36 @@ TEST(General, GraphDeletesItsParameters) {
 
 //! A graph frees a parameter whose id another parameter already has.
 TEST(General, GraphDeletesARejectedParameter) {
-  int destructions = 0;
+  int keptDestructions = 0;
+  int rejectedDestructions = 0;
   g2o::SparseOptimizer graph;
-  ASSERT_TRUE(
-      graph.addParameter(std::make_unique<CountedParameter>(0, destructions)));
+  auto kept = std::make_unique<CountedParameter>(0, keptDestructions);
+  const CountedParameter* keptPointer = kept.get();
+  ASSERT_TRUE(graph.addParameter(std::move(kept)));
 
-  EXPECT_FALSE(
-      graph.addParameter(std::make_unique<CountedParameter>(0, destructions)));
+  EXPECT_FALSE(graph.addParameter(
+      std::make_unique<CountedParameter>(0, rejectedDestructions)));
 
-  EXPECT_EQ(destructions, 1);
+  EXPECT_EQ(keptDestructions, 0);
+  EXPECT_EQ(rejectedDestructions, 1);
+  EXPECT_EQ(graph.parameter(0), keptPointer);
 }
 
 //! A graph frees a vertex whose id another vertex already has.
 TEST(General, GraphDeletesARejectedVertex) {
-  int destructions = 0;
+  int keptDestructions = 0;
+  int rejectedDestructions = 0;
   g2o::SparseOptimizer graph;
-  ASSERT_TRUE(
-      graph.addVertex(std::make_unique<CountedVertex>(0, destructions)));
+  auto kept = std::make_unique<CountedVertex>(0, keptDestructions);
+  const CountedVertex* keptPointer = kept.get();
+  ASSERT_TRUE(graph.addVertex(std::move(kept)));
 
-  EXPECT_FALSE(
-      graph.addVertex(std::make_unique<CountedVertex>(0, destructions)));
+  EXPECT_FALSE(graph.addVertex(
+      std::make_unique<CountedVertex>(0, rejectedDestructions)));
 
-  EXPECT_EQ(destructions, 1);
+  EXPECT_EQ(keptDestructions, 0);
+  EXPECT_EQ(rejectedDestructions, 1);
+  EXPECT_EQ(graph.vertex(0), keptPointer);
   EXPECT_EQ(graph.vertices().size(), 1U);
 }
 
@@ -400,15 +453,19 @@ TEST(General, GraphDeletesAnEdgeWithoutItsParameter) {
 
 //! A property map frees a property whose name another property already has.
 TEST(General, PropertyMapDeletesARejectedProperty) {
-  int destructions = 0;
+  int keptDestructions = 0;
+  int rejectedDestructions = 0;
   g2o::PropertyMap properties;
-  ASSERT_TRUE(properties.addProperty(
-      std::make_unique<CountedProperty>("name", destructions)));
+  auto kept = std::make_unique<CountedProperty>("name", keptDestructions);
+  const CountedProperty* keptPointer = kept.get();
+  ASSERT_TRUE(properties.addProperty(std::move(kept)));
 
   EXPECT_FALSE(properties.addProperty(
-      std::make_unique<CountedProperty>("name", destructions)));
+      std::make_unique<CountedProperty>("name", rejectedDestructions)));
 
-  EXPECT_EQ(destructions, 1);
+  EXPECT_EQ(keptDestructions, 0);
+  EXPECT_EQ(rejectedDestructions, 1);
+  EXPECT_EQ(properties.getProperty<CountedProperty>("name"), keptPointer);
   EXPECT_EQ(properties.size(), 1U);
 }
 
@@ -419,6 +476,8 @@ TEST(General, DataQueueDeletesItsData) {
     g2o::DataQueue queue;
     queue.add(std::make_unique<CountedRobotData>(1., destructions));
     queue.add(std::make_unique<CountedRobotData>(2., destructions));
+    EXPECT_EQ(destructions, 0);
+    EXPECT_EQ(queue.buffer().size(), 2U);
   }
 
   EXPECT_EQ(destructions, 2);
@@ -426,27 +485,34 @@ TEST(General, DataQueueDeletesItsData) {
 
 //! A data queue frees the data that data with the same timestamp replaces.
 TEST(General, DataQueueDeletesReplacedData) {
-  int destructions = 0;
+  int replacedDestructions = 0;
+  int replacingDestructions = 0;
   g2o::DataQueue queue;
-  queue.add(std::make_unique<CountedRobotData>(1., destructions));
+  queue.add(std::make_unique<CountedRobotData>(1., replacedDestructions));
+  auto replacing =
+      std::make_unique<CountedRobotData>(1., replacingDestructions);
+  const CountedRobotData* replacingPointer = replacing.get();
 
-  queue.add(std::make_unique<CountedRobotData>(1., destructions));
+  queue.add(std::move(replacing));
 
-  EXPECT_EQ(destructions, 1);
+  EXPECT_EQ(replacedDestructions, 1);
+  EXPECT_EQ(replacingDestructions, 0);
+  EXPECT_EQ(queue.buffer().at(1.).get(), replacingPointer);
   EXPECT_EQ(queue.buffer().size(), 1U);
 }
 
 //! A hyper graph keeps a vertex it owns already when it is added again.
 TEST(General, HyperGraphKeepsAVertexAddedTwice) {
+  int destructions = 0;
   g2o::HyperGraph graph;
-  auto vertex = std::make_unique<g2o::VertexSE2>();
-  vertex->setId(0);
-  g2o::VertexSE2* added = vertex.get();
+  auto vertex = std::make_unique<CountedVertex>(0, destructions);
+  CountedVertex* added = vertex.get();
   ASSERT_TRUE(graph.addVertex(std::move(vertex)));
 
   EXPECT_FALSE(
       graph.addVertex(std::unique_ptr<g2o::HyperGraph::Vertex>(added)));
 
+  EXPECT_EQ(destructions, 0);
   EXPECT_EQ(graph.vertex(0), added);
   EXPECT_EQ(graph.vertices().size(), 1U);
 }

@@ -33,14 +33,19 @@ class CountingAction : public g2o::HyperGraphElementAction {
  * type is rejected, and the collection frees it.
  */
 TEST(General, ActionCollectionDeletesARejectedDuplicate) {
-  int destructions = 0;
+  int keptDestructions = 0;
+  int rejectedDestructions = 0;
   g2o::HyperGraphElementActionCollection collection("draw");
-  ASSERT_TRUE(collection.registerAction(
-      std::make_unique<CountingAction>("draw", "VertexSE3", destructions)));
+  auto kept =
+      std::make_unique<CountingAction>("draw", "VertexSE3", keptDestructions);
+  const CountingAction* keptPointer = kept.get();
+  ASSERT_TRUE(collection.registerAction(std::move(kept)));
 
-  EXPECT_FALSE(collection.registerAction(
-      std::make_unique<CountingAction>("draw", "VertexSE3", destructions)));
+  EXPECT_FALSE(collection.registerAction(std::make_unique<CountingAction>(
+      "draw", "VertexSE3", rejectedDestructions)));
 
-  EXPECT_EQ(destructions, 1);
+  EXPECT_EQ(keptDestructions, 0);
+  EXPECT_EQ(rejectedDestructions, 1);
+  EXPECT_EQ(collection.actionMap().at("VertexSE3").get(), keptPointer);
   EXPECT_EQ(collection.actionMap().size(), 1U);
 }

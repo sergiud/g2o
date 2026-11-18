@@ -53,3 +53,33 @@ TEST(Slam3D, OrthogonalMatrix) {
   for (int i = 0; i < 3; ++i)
     EXPECT_NEAR(1.0, approxSolution.col(i).norm(), 1e-6);
 }
+
+/**
+ * One step of the approximation reduces the deviation of a perturbed rotation
+ * from an orthogonal matrix quadratically.
+ */
+TEST(Slam3D, ApproximateNearestOrthogonalMatrixReducesDeviation) {
+  constexpr double perturbation = 1e-3;
+  // The quadratic convergence leaves at most this multiple of the squared
+  // initial deviation.
+  constexpr double convergenceFactor = 10.;
+  const Eigen::Matrix3d rotation =
+      Eigen::AngleAxisd(0.4, Eigen::Vector3d(1., 2., 3.).normalized())
+          .toRotationMatrix();
+  Eigen::Matrix3d noise;
+  noise << 0.3, -0.7, 0.2, 0.9, 0.1, -0.4, -0.5, 0.6, 0.8;
+  Eigen::Matrix3d R = rotation + perturbation * noise;
+  const auto deviation = [](const Eigen::Matrix3d& m) {
+    return (m * m.transpose() - Eigen::Matrix3d::Identity())
+        .array()
+        .abs()
+        .maxCoeff();
+  };
+  const double initialDeviation = deviation(R);
+  ASSERT_GT(initialDeviation, perturbation / convergenceFactor);
+
+  g2o::internal::approximateNearestOrthogonalMatrix(R);
+
+  EXPECT_LT(deviation(R),
+            convergenceFactor * initialDeviation * initialDeviation);
+}

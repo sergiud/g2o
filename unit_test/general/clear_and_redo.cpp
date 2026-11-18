@@ -38,19 +38,19 @@ TEST(General, ClearAndRedo) {
     v0->setEstimate(
         Eigen::Transform<double, 3, 1>(Eigen::Translation<double, 3>(0, 0, 0)));
     v0->setId(0);
-    mOptimizer.addVertex(std::move(v0Owner));
+    ASSERT_TRUE(mOptimizer.addVertex(std::move(v0Owner)));
 
     auto v1 = std::make_unique<g2o::VertexSE3>();
     v1->setEstimate(
         Eigen::Transform<double, 3, 1>(Eigen::Translation<double, 3>(0, 0, 0)));
     v1->setId(1);
-    mOptimizer.addVertex(std::move(v1));
+    ASSERT_TRUE(mOptimizer.addVertex(std::move(v1)));
 
     auto v2 = std::make_unique<g2o::VertexSE3>();
     v2->setEstimate(
         Eigen::Transform<double, 3, 1>(Eigen::Translation<double, 3>(0, 0, 0)));
     v2->setId(2);
-    mOptimizer.addVertex(std::move(v2));
+    ASSERT_TRUE(mOptimizer.addVertex(std::move(v2)));
 
     // Add edges
     auto e1 = std::make_unique<g2o::EdgeSE3>();
@@ -59,7 +59,7 @@ TEST(General, ClearAndRedo) {
     e1->setMeasurement(
         Eigen::Isometry3d(Eigen::Translation<double, 3>(1, 0, 0)));
     e1->setInformation(Eigen::Matrix<double, 6, 6>::Identity());
-    mOptimizer.addEdge(std::move(e1));
+    ASSERT_TRUE(mOptimizer.addEdge(std::move(e1)));
 
     auto e2 = std::make_unique<g2o::EdgeSE3>();
     e2->vertices()[0] = mOptimizer.vertex(1);
@@ -67,7 +67,7 @@ TEST(General, ClearAndRedo) {
     e2->setMeasurement(
         Eigen::Isometry3d(Eigen::Translation<double, 3>(0, 1, 0)));
     e2->setInformation(Eigen::Matrix<double, 6, 6>::Identity());
-    mOptimizer.addEdge(std::move(e2));
+    ASSERT_TRUE(mOptimizer.addEdge(std::move(e2)));
 
     auto e3 = std::make_unique<g2o::EdgeSE3>();
     e3->vertices()[0] = mOptimizer.vertex(2);
@@ -75,7 +75,7 @@ TEST(General, ClearAndRedo) {
     e3->setMeasurement(
         Eigen::Isometry3d(Eigen::Translation<double, 3>(-0.8, -0.7, 0.1)));
     e3->setInformation(Eigen::Matrix<double, 6, 6>::Identity());
-    mOptimizer.addEdge(std::move(e3));
+    ASSERT_TRUE(mOptimizer.addEdge(std::move(e3)));
 
     v0->setFixed(true);
 
@@ -84,12 +84,10 @@ TEST(General, ClearAndRedo) {
     mOptimizer.computeInitialGuess();
     mOptimizer.computeActiveErrors();
     int iter = mOptimizer.optimize(10);
-    if (iter <= 0) {
-      ADD_FAILURE();
-    } else {
-      SUCCEED();
-    }
+    EXPECT_GT(iter, 0);
 
     mOptimizer.clear();
+    EXPECT_TRUE(mOptimizer.vertices().empty());
+    EXPECT_TRUE(mOptimizer.edges().empty());
   }
 }
