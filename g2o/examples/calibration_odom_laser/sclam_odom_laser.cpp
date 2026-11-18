@@ -197,11 +197,11 @@ int main(int argc, char** argv) {
                                       ? odomParamsVertex->estimate()
                                       : Vector3d::Ones();
       RobotLaser* prev = dynamic_cast<RobotLaser*>(
-          testRobotLaserQueue.buffer().begin()->second);
+          testRobotLaserQueue.buffer().begin()->second.get());
       SE2 prevCalibratedPose = prev->odomPose();
 
       for (const auto& it : testRobotLaserQueue.buffer()) {
-        RobotLaser* cur = dynamic_cast<RobotLaser*>(it.second);
+        RobotLaser* cur = dynamic_cast<RobotLaser*>(it.second.get());
         assert(cur);
 
         double dt = cur->timestamp() - prev->timestamp();

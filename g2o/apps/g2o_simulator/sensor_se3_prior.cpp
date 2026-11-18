@@ -5,6 +5,9 @@
 
 #include "sensor_se3_prior.h"
 
+#include <memory>
+#include <utility>
+
 G2O_START_NAMESPACE
 using namespace std;
 
@@ -19,9 +22,12 @@ SensorSE3Prior::SensorSE3Prior(const std::string& name_)
 }
 
 void SensorSE3Prior::addParameters() {
-  if (_offsetParam == nullptr) _offsetParam = new ParameterSE3Offset();
-  assert(world());
-  world()->addParameter(_offsetParam);
+  if (_offsetParam == nullptr) {
+    auto offsetParam = std::make_unique<ParameterSE3Offset>();
+    _offsetParam = offsetParam.get();
+    assert(world());
+    world()->addParameter(std::move(offsetParam));
+  }
 }
 
 void SensorSE3Prior::addNoise(EdgeType* e) {
@@ -46,12 +52,15 @@ void SensorSE3Prior::sense() {
   }
   if (_robotPoseObject == nullptr) return;
   _sensorPose = _robotPoseObject->vertex()->estimate() * _offsetParam->offset();
-  EdgeType* e = mkEdge();
+  std::unique_ptr<EdgeType> e = mkEdge();
   e->setParameterId(0, _offsetParam->id());
   if ((e != nullptr) && (graph() != nullptr)) {
-    graph()->addEdge(e);
-    e->setMeasurementFromState();
-    addNoise(e);
+    EdgeType* edge = e.get();
+    // The graph resolves the parameters that the measurement needs.
+    if (graph()->addEdge(std::move(e))) {
+      edge->setMeasurementFromState();
+      addNoise(edge);
+    }
   }
 }
 

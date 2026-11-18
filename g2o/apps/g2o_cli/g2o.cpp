@@ -29,8 +29,10 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include "dl_wrapper.h"
 #include "g2o_common.h"
@@ -209,15 +211,16 @@ int main(int argc, char** argv) {
   optimizer.setVerbose(verbose);
   optimizer.setForceStopFlag(&hasToStop);
 
-  SparseOptimizerTerminateAction* terminateAction = nullptr;
+  // The optimizer uses the action, which the program owns.
+  std::unique_ptr<SparseOptimizerTerminateAction> terminateAction;
   if (maxIterations < 0) {
     ngx::Log(
         "# setup termination criterion based on the gain of the iteration");
     maxIterations = maxIterationsWithGain;
-    terminateAction = new SparseOptimizerTerminateAction;
+    terminateAction = std::make_unique<SparseOptimizerTerminateAction>();
     terminateAction->setGainThreshold(gain);
     terminateAction->setMaxIterations(maxIterationsWithGain);
-    optimizer.addPostIterationAction(terminateAction);
+    optimizer.addPostIterationAction(terminateAction.get());
   }
 
   // allocating the desired solver + testing whether the solver is okay
@@ -403,22 +406,25 @@ int main(int argc, char** argv) {
       maxDim = max(maxDim, v->dimension());
     }
 
-    // The incremental mode adds the vertices and edges back one by one, so
-    // the graph gives up its ownership of them first.
-    vector<SparseOptimizer::Edge*> edges;
+    // The incremental mode adds the vertices and edges back one by one, so it
+    // takes them out of the graph and owns them until then.
+    SparseOptimizer::VertexIDMap removedVertices =
+        std::move(optimizer.vertices());
+    optimizer.vertices().clear();
+    vector<std::unique_ptr<SparseOptimizer::Edge>> edges;
     while (!optimizer.edges().empty()) {
       auto node = optimizer.edges().extract(optimizer.edges().begin());
-      edges.push_back(
-          dynamic_cast<SparseOptimizer::Edge*>(node.value().release()));
+      edges.emplace_back(
+          static_cast<SparseOptimizer::Edge*>(node.value().release()));
     }
-    for (auto& it : optimizer.vertices()) {
-      static_cast<void>(it.second.release());
-    }
-    optimizer.vertices().clear();
     optimizer.setVerbose(false);
 
     // sort the edges in a way that inserting them makes sense
-    sort(edges.begin(), edges.end(), IncrementalEdgesCompare());
+    sort(edges.begin(), edges.end(),
+         [](const std::unique_ptr<SparseOptimizer::Edge>& e1,
+            const std::unique_ptr<SparseOptimizer::Edge>& e2) {
+           return IncrementalEdgesCompare()(e1.get(), e2.get());
+         });
 
     double cumTime = 0.;
     int vertexCount = 0;
@@ -428,7 +434,8 @@ int main(int argc, char** argv) {
     bool firstRound = true;
     HyperGraph::VertexSet verticesAdded;
     HyperGraph::EdgeSet edgesAdded;
-    for (auto e : edges) {
+    for (auto& edge : edges) {
+      SparseOptimizer::Edge* e = edge.get();
       int doInit = 0;
       SparseOptimizer::Vertex* v1 = optimizer.vertex(e->vertices()[0]->id());
       SparseOptimizer::Vertex* v2 = optimizer.vertex(e->vertices()[1]->id());
@@ -436,7 +443,8 @@ int main(int argc, char** argv) {
       if (v1 == nullptr) {
         SparseOptimizer::Vertex* v = v1 =
             dynamic_cast<SparseOptimizer::Vertex*>(e->vertices()[0]);
-        bool v1Added = optimizer.addVertex(v);
+        bool v1Added =
+            optimizer.addVertex(std::move(removedVertices.at(v->id())));
         // cerr << "adding" << v->id() << "(" << v->dimension() << ")" << endl;
         assert(v1Added);
         if (!v1Added)
@@ -450,7 +458,8 @@ int main(int argc, char** argv) {
       if (v2 == nullptr) {
         SparseOptimizer::Vertex* v = v2 =
             dynamic_cast<SparseOptimizer::Vertex*>(e->vertices()[1]);
-        bool v2Added = optimizer.addVertex(v);
+        bool v2Added =
+            optimizer.addVertex(std::move(removedVertices.at(v->id())));
         // cerr << "adding" << v->id() << "(" << v->dimension() << ")" << endl;
         assert(v2Added);
         if (!v2Added)
@@ -465,9 +474,12 @@ int main(int argc, char** argv) {
       {
         // cerr << " adding edge " << e->vertices()[0]->id() <<  " " <<
         // e->vertices()[1]->id() << endl;
-        if (!optimizer.addEdge(e)) {
-          ngx::Log(ngx::Error, "Unable to add edge {} -> {}",
-                   e->vertices()[0]->id(), e->vertices()[1]->id());
+        const int fromId = e->vertices()[0]->id();
+        const int toId = e->vertices()[1]->id();
+        if (!optimizer.addEdge(std::move(edge))) {
+          ngx::Log(ngx::Error, "Unable to add edge {} -> {}", fromId, toId);
+          // The graph freed the edge, which therefore initializes no vertex.
+          doInit = 0;
         } else {
           edgesAdded.insert(e);
         }
@@ -597,7 +609,7 @@ int main(int argc, char** argv) {
     if (maxIterations > 0 && result == OptimizationAlgorithm::Fail) {
       ngx::Log(ngx::Error, "Cholesky failed, result might be invalid");
     } else if (computeMarginals) {
-      std::vector<std::pair<int, int> > blockIndices;
+      std::vector<std::pair<int, int>> blockIndices;
       for (auto v : optimizer.activeVertices()) {
         if (v->hessianIndex() >= 0) {
           blockIndices.push_back(

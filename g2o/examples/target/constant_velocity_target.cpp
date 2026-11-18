@@ -19,6 +19,8 @@
 #include <Eigen/StdVector>
 #include <cstdint>
 #include <iostream>
+#include <memory>
+#include <utility>
 
 #include "continuous_to_discrete.h"
 #include "targetTypes6D.hpp"
@@ -40,13 +42,14 @@ int main() {
   SparseOptimizer optimizer;
   optimizer.setVerbose(false);
 
-  typedef BlockSolver<BlockSolverTraits<6, 6> > BlockSolver;
-  BlockSolver::LinearSolverType* linearSolver =
-      new LinearSolverCholmod<BlockSolver::PoseMatrixType>();
-  auto* blockSolver = new BlockSolver(linearSolver);
-  OptimizationAlgorithm* optimizationAlgorithm =
-      new OptimizationAlgorithmGaussNewton(blockSolver);
-  optimizer.setAlgorithm(optimizationAlgorithm);
+  typedef BlockSolver<BlockSolverTraits<6, 6>> BlockSolver;
+  auto linearSolver =
+      std::make_unique<LinearSolverCholmod<BlockSolver::PoseMatrixType>>();
+  auto blockSolver = std::make_unique<BlockSolver>(std::move(linearSolver));
+  auto optimizationAlgorithm =
+      std::make_unique<OptimizationAlgorithmGaussNewton>(
+          std::move(blockSolver));
+  optimizer.setAlgorithm(std::move(optimizationAlgorithm));
 
   // Sample the start location of the target
   Vector6d state;
@@ -57,10 +60,11 @@ int main() {
 
   // Construct the first vertex; this corresponds to the initial
   // condition and register it with the optimiser
-  auto* stateNode = new VertexPositionVelocity3D();
+  auto stateNodeOwner = std::make_unique<VertexPositionVelocity3D>();
+  auto* stateNode = stateNodeOwner.get();
   stateNode->setEstimate(state);
   stateNode->setId(0);
-  optimizer.addVertex(stateNode);
+  optimizer.addVertex(std::move(stateNodeOwner));
 
   // Set up last estimate
   VertexPositionVelocity3D* lastStateNode = stateNode;
@@ -94,13 +98,16 @@ int main() {
     }
 
     // Construct vertex which corresponds to the current state of the target
-    auto* stateNode = new VertexPositionVelocity3D();
+    auto stateNodeOwner = std::make_unique<VertexPositionVelocity3D>();
+    auto* stateNode = stateNodeOwner.get();
 
     stateNode->setId(k);
     stateNode->setMarginalized(false);
-    optimizer.addVertex(stateNode);
+    optimizer.addVertex(std::move(stateNodeOwner));
 
-    auto* toe = new TargetOdometry3DEdge(dt, accelerometerNoiseSigma);
+    auto toeOwner =
+        std::make_unique<TargetOdometry3DEdge>(dt, accelerometerNoiseSigma);
+    auto* toe = toeOwner.get();
     toe->setVertex(0, lastStateNode);
     toe->setVertex(1, stateNode);
     VertexPositionVelocity3D* vPrev =
@@ -108,7 +115,7 @@ int main() {
     VertexPositionVelocity3D* vCurr =
         dynamic_cast<VertexPositionVelocity3D*>(stateNode);
     toe->setMeasurement(accelerometerMeasurement);
-    optimizer.addEdge(toe);
+    optimizer.addEdge(std::move(toeOwner));
 
     // compute the initial guess via the odometry
     g2o::OptimizableGraph::VertexSet vPrevSet;
@@ -118,10 +125,10 @@ int main() {
     lastStateNode = stateNode;
 
     // Add the GPS observation
-    auto* goe =
-        new GPSObservationEdgePositionVelocity3D(gpsMeasurement, gpsNoiseSigma);
+    auto goe = std::make_unique<GPSObservationEdgePositionVelocity3D>(
+        gpsMeasurement, gpsNoiseSigma);
     goe->setVertex(0, stateNode);
-    optimizer.addEdge(goe);
+    optimizer.addEdge(std::move(goe));
   }
 
   // Configure and set things going

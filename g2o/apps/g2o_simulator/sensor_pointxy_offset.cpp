@@ -7,6 +7,9 @@
 
 #include <g2o/core/factory.h>
 
+#include <memory>
+#include <utility>
+
 G2O_START_NAMESPACE
 using namespace std;
 using namespace Eigen;
@@ -39,9 +42,12 @@ bool SensorPointXYOffset::isVisible(SensorPointXYOffset::WorldObjectType* to) {
 }
 
 void SensorPointXYOffset::addParameters() {
-  if (_offsetParam == nullptr) _offsetParam = new ParameterSE2Offset();
-  assert(world());
-  world()->addParameter(_offsetParam);
+  if (_offsetParam == nullptr) {
+    auto offsetParam = std::make_unique<ParameterSE2Offset>();
+    _offsetParam = offsetParam.get();
+    assert(world());
+    world()->addParameter(std::move(offsetParam));
+  }
 }
 
 void SensorPointXYOffset::addNoise(EdgeType* e) {
@@ -65,15 +71,18 @@ void SensorPointXYOffset::sense() {
   }
   if (_robotPoseObject == nullptr) return;
   _sensorPose = _robotPoseObject->vertex()->estimate() * _offsetParam->offset();
-  for (auto it : world()->objects()) {
-    WorldObjectType* o = dynamic_cast<WorldObjectType*>(it);
+  for (const auto& it : world()->objects()) {
+    WorldObjectType* o = dynamic_cast<WorldObjectType*>(it.get());
     if ((o != nullptr) && isVisible(o)) {
-      EdgeType* e = mkEdge(o);
+      std::unique_ptr<EdgeType> e = mkEdge(o);
       e->setParameterId(0, _offsetParam->id());
       if ((e != nullptr) && (graph() != nullptr)) {
-        graph()->addEdge(e);
-        e->setMeasurementFromState();
-        addNoise(e);
+        EdgeType* edge = e.get();
+        // The graph resolves the parameters that the measurement needs.
+        if (graph()->addEdge(std::move(e))) {
+          edge->setMeasurementFromState();
+          addNoise(edge);
+        }
       }
     }
   }

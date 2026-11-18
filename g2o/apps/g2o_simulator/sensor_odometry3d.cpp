@@ -8,6 +8,9 @@
 #include <g2o/stuff/logger.h>
 #include <g2o/types/slam3d/isometry3d_mappings.h>
 
+#include <memory>
+#include <utility>
+
 G2O_START_NAMESPACE
 using namespace std;
 
@@ -49,12 +52,15 @@ void SensorOdometry3D::sense() {
     return;
   }
   _robotPoseObject = pprev;
-  EdgeType* e = mkEdge(pcurr);
+  std::unique_ptr<EdgeType> e = mkEdge(pcurr);
   if (e != nullptr) {
     if (graph() != nullptr) {
-      graph()->addEdge(e);
-      e->setMeasurementFromState();
-      addNoise(e);
+      EdgeType* edge = e.get();
+      // The graph resolves the parameters that the measurement needs.
+      if (graph()->addEdge(std::move(e))) {
+        edge->setMeasurementFromState();
+        addNoise(edge);
+      }
     }
   }
   _robotPoseObject = pcurr;

@@ -12,6 +12,8 @@
 #include <g2o/types/slam3d/parameter_camera.h>
 
 #include <fstream>
+#include <memory>
+#include <utility>
 
 using namespace std;
 using namespace g2o;
@@ -49,32 +51,32 @@ int main(int argc, char** argv) {
       VertexCam* v = dynamic_cast<VertexCam*>(it->second.get());
       if (firstCam) {
         firstCam = false;
-        auto* camParams = new g2o::ParameterCamera;
+        auto camParams = std::make_unique<g2o::ParameterCamera>();
         camParams->setId(0);
         const SBACam& c = v->estimate();
         baseline = c.baseline;
         fx = c.Kcam(0, 0);
         camParams->setKcam(c.Kcam(0, 0), c.Kcam(1, 1), c.Kcam(0, 2),
                            c.Kcam(1, 2));
-        outputGraph.addParameter(camParams);
+        outputGraph.addParameter(std::move(camParams));
       }
 
-      auto* ov = new VertexSE3;
+      auto ov = std::make_unique<VertexSE3>();
       ov->setId(v->id());
       Eigen::Isometry3d p;
       p = v->estimate().rotation();
       p.translation() = v->estimate().translation();
       ov->setEstimate(p);
-      if (!outputGraph.addVertex(ov)) {
+      if (!outputGraph.addVertex(std::move(ov))) {
         assert(0 && "Failure adding camera vertex");
       }
     } else if (dynamic_cast<VertexSBAPointXYZ*>(it->second.get()) != nullptr) {
       VertexSBAPointXYZ* v = dynamic_cast<VertexSBAPointXYZ*>(it->second.get());
 
-      auto* ov = new VertexPointXYZ;
+      auto ov = std::make_unique<VertexPointXYZ>();
       ov->setId(v->id());
       ov->setEstimate(v->estimate());
-      if (!outputGraph.addVertex(ov)) {
+      if (!outputGraph.addVertex(std::move(ov))) {
         assert(0 && "Failure adding camera vertex");
       }
     }
@@ -84,7 +86,7 @@ int main(int argc, char** argv) {
     if (dynamic_cast<EdgeProjectP2SC*>(it.get()) != nullptr) {
       EdgeProjectP2SC* e = dynamic_cast<EdgeProjectP2SC*>(it.get());
 
-      auto* oe = new EdgeSE3PointXYZDisparity;
+      auto oe = std::make_unique<EdgeSE3PointXYZDisparity>();
       oe->vertices()[0] = outputGraph.vertex(e->vertices()[1]->id());
       oe->vertices()[1] = outputGraph.vertex(e->vertices()[0]->id());
 
@@ -95,7 +97,7 @@ int main(int argc, char** argv) {
       oe->setMeasurement(Eigen::Vector3d(kx, ky, disparity / (fx * baseline)));
       oe->setInformation(e->information());  // TODO convert information matrix
       oe->setParameterId(0, 0);
-      if (!outputGraph.addEdge(oe)) {
+      if (!outputGraph.addEdge(std::move(oe))) {
         assert(0 && "error adding edge");
       }
     }

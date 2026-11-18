@@ -461,7 +461,6 @@ g2o_add_library (stuff
     g2o/stuff/os_specific.h
     g2o/stuff/property.h
     g2o/stuff/sampler.h
-    g2o/stuff/scoped_pointer.h
     g2o/stuff/sparse_helper.h
     g2o/stuff/streamed.h
     g2o/stuff/string_tools.h
@@ -1321,10 +1320,8 @@ if (BUILD_EXAMPLES)
       g2o/examples/interactive_slam/slam_parser/parser/commands.h
       g2o/examples/interactive_slam/slam_parser/parser/driver.h
       g2o/examples/interactive_slam/slam_parser/parser/location.hh
-      g2o/examples/interactive_slam/slam_parser/parser/position.hh
       g2o/examples/interactive_slam/slam_parser/parser/scanner.h
       g2o/examples/interactive_slam/slam_parser/parser/slam_context.h
-      g2o/examples/interactive_slam/slam_parser/parser/stack.hh
   )
 
   # The generated scanner includes the bundled FlexLexer.h with angle
@@ -1633,8 +1630,9 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
       unit_test/general/graph_operations.cpp
       unit_test/general/hyper_graph_action.cpp
       unit_test/general/logging.cpp
-    LINK GTest::gmock GTest::gtest_main types_sba types_sim3 types_slam2d
-      types_slam3d
+      unit_test/general/ownership.cpp
+    LINK GTest::gmock GTest::gtest_main types_data types_sba types_sim3
+      types_slam2d types_slam3d
   )
 
   g2o_add_executable (unittest_slam2d

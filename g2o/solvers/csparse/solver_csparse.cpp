@@ -14,18 +14,21 @@
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 
+#include <memory>
+#include <utility>
+
 // #define ADD_SCALAR_ORDERING
 
-#define DIM_TO_SOLVER(p, l) BlockSolver<BlockSolverTraits<p, l> >
+#define DIM_TO_SOLVER(p, l) BlockSolver<BlockSolverTraits<p, l>>
 
 #define ALLOC_CSPARSE(s, p, l, blockorder)                                    \
   if (1) {                                                                    \
     ngx::Log("# Using CSparse poseDim {} landMarkDim {} blockordering {}", p, \
              l, blockorder);                                                  \
-    LinearSolverCSparse<DIM_TO_SOLVER(p, l)::PoseMatrixType>* linearSolver =  \
-        new LinearSolverCSparse<DIM_TO_SOLVER(p, l)::PoseMatrixType>();       \
+    auto linearSolver = std::make_unique<                                     \
+        LinearSolverCSparse<DIM_TO_SOLVER(p, l)::PoseMatrixType>>();          \
     linearSolver->setBlockOrdering(blockorder);                               \
-    s = new DIM_TO_SOLVER(p, l)(linearSolver);                                \
+    s = std::make_unique<DIM_TO_SOLVER(p, l)>(std::move(linearSolver));       \
   } else                                                                      \
     (void)0
 
@@ -36,8 +39,9 @@ G2O_START_NAMESPACE
 /**
  * helper function for allocating
  */
-static OptimizationAlgorithm* createSolver(const std::string& fullSolverName) {
-  g2o::Solver* s = nullptr;
+static std::unique_ptr<OptimizationAlgorithm> createSolver(
+    const std::string& fullSolverName) {
+  std::unique_ptr<BlockSolverBase> s;
 
   string methodName = fullSolverName.substr(0, 2);
   string solverName = fullSolverName.substr(3);
@@ -61,14 +65,13 @@ static OptimizationAlgorithm* createSolver(const std::string& fullSolverName) {
   }
 #endif
 
-  OptimizationAlgorithm* snl = nullptr;
+  std::unique_ptr<OptimizationAlgorithm> snl;
   if (methodName == "gn") {
-    snl = new OptimizationAlgorithmGaussNewton(s);
+    snl = std::make_unique<OptimizationAlgorithmGaussNewton>(std::move(s));
   } else if (methodName == "lm") {
-    snl = new OptimizationAlgorithmLevenberg(s);
+    snl = std::make_unique<OptimizationAlgorithmLevenberg>(std::move(s));
   } else if (methodName == "dl") {
-    BlockSolverBase* blockSolver = dynamic_cast<BlockSolverBase*>(s);
-    snl = new OptimizationAlgorithmDogleg(blockSolver);
+    snl = std::make_unique<OptimizationAlgorithmDogleg>(std::move(s));
   }
 
   return snl;
@@ -78,7 +81,7 @@ class CSparseSolverCreator : public AbstractOptimizationAlgorithmCreator {
  public:
   CSparseSolverCreator(const OptimizationAlgorithmProperty& p)
       : AbstractOptimizationAlgorithmCreator(p) {}
-  virtual OptimizationAlgorithm* construct() {
+  std::unique_ptr<OptimizationAlgorithm> construct() override {
     return createSolver(property().name);
   }
 };
@@ -87,91 +90,101 @@ G2O_REGISTER_OPTIMIZATION_LIBRARY(csparse);
 
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
     gn_var,
-    new CSparseSolverCreator(OptimizationAlgorithmProperty(
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
         "gn_var",
         "Gauss-Newton: Cholesky solver using CSparse (variable blocksize)",
         "CSparse", false, Eigen::Dynamic, Eigen::Dynamic)));
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
     gn_fix3_2,
-    new CSparseSolverCreator(OptimizationAlgorithmProperty(
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
         "gn_fix3_2",
         "Gauss-Newton: Cholesky solver using CSparse (fixed blocksize)",
         "CSparse", true, 3, 2)));
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
     gn_fix6_3,
-    new CSparseSolverCreator(OptimizationAlgorithmProperty(
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
         "gn_fix6_3",
         "Gauss-Newton: Cholesky solver using CSparse (fixed blocksize)",
         "CSparse", true, 6, 3)));
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
     gn_fix7_3,
-    new CSparseSolverCreator(OptimizationAlgorithmProperty(
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
         "gn_fix7_3",
         "Gauss-Newton: Cholesky solver using CSparse (fixed blocksize)",
         "CSparse", true, 7, 3)));
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
-    lm_var, new CSparseSolverCreator(OptimizationAlgorithmProperty(
-                "lm_var",
-                "Levenberg: Cholesky solver using CSparse (variable blocksize)",
-                "CSparse", false, Eigen::Dynamic, Eigen::Dynamic)));
+    lm_var,
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
+        "lm_var",
+        "Levenberg: Cholesky solver using CSparse (variable blocksize)",
+        "CSparse", false, Eigen::Dynamic, Eigen::Dynamic)));
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
-    lm_fix3_2, new CSparseSolverCreator(OptimizationAlgorithmProperty(
-                   "lm_fix3_2",
-                   "Levenberg: Cholesky solver using CSparse (fixed blocksize)",
-                   "CSparse", true, 3, 2)));
+    lm_fix3_2,
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
+        "lm_fix3_2",
+        "Levenberg: Cholesky solver using CSparse (fixed blocksize)", "CSparse",
+        true, 3, 2)));
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
-    lm_fix6_3, new CSparseSolverCreator(OptimizationAlgorithmProperty(
-                   "lm_fix6_3",
-                   "Levenberg: Cholesky solver using CSparse (fixed blocksize)",
-                   "CSparse", true, 6, 3)));
+    lm_fix6_3,
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
+        "lm_fix6_3",
+        "Levenberg: Cholesky solver using CSparse (fixed blocksize)", "CSparse",
+        true, 6, 3)));
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
-    lm_fix7_3, new CSparseSolverCreator(OptimizationAlgorithmProperty(
-                   "lm_fix7_3",
-                   "Levenberg: Cholesky solver using CSparse (fixed blocksize)",
-                   "CSparse", true, 7, 3)));
+    lm_fix7_3,
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
+        "lm_fix7_3",
+        "Levenberg: Cholesky solver using CSparse (fixed blocksize)", "CSparse",
+        true, 7, 3)));
 
 #ifdef ADD_SCALAR_ORDERING
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
-    gn_fix3_2_scalar, new CSparseSolverCreator(OptimizationAlgorithmProperty(
-                          "gn_fix3_2_scalar",
-                          "Gauss-Newton: Cholesky solver using CSparse (fixed "
-                          "blocksize, scalar ordering)",
-                          "CSparse", true, 3, 2)));
+    gn_fix3_2_scalar,
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
+        "gn_fix3_2_scalar",
+        "Gauss-Newton: Cholesky solver using CSparse (fixed "
+        "blocksize, scalar ordering)",
+        "CSparse", true, 3, 2)));
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
-    gn_fix6_3_scalar, new CSparseSolverCreator(OptimizationAlgorithmProperty(
-                          "gn_fix6_3_scalar",
-                          "Gauss-Newton: Cholesky solver using CSparse (fixed "
-                          "blocksize, scalar ordering)",
-                          "CSparse", true, 6, 3)));
+    gn_fix6_3_scalar,
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
+        "gn_fix6_3_scalar",
+        "Gauss-Newton: Cholesky solver using CSparse (fixed "
+        "blocksize, scalar ordering)",
+        "CSparse", true, 6, 3)));
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
-    gn_fix7_3_scalar, new CSparseSolverCreator(OptimizationAlgorithmProperty(
-                          "gn_fix7_3_scalar",
-                          "Gauss-Newton: Cholesky solver using CSparse (fixed "
-                          "blocksize, scalar ordering)",
-                          "CSparse", true, 7, 3)));
+    gn_fix7_3_scalar,
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
+        "gn_fix7_3_scalar",
+        "Gauss-Newton: Cholesky solver using CSparse (fixed "
+        "blocksize, scalar ordering)",
+        "CSparse", true, 7, 3)));
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
-    lm_fix3_2_scalar, new CSparseSolverCreator(OptimizationAlgorithmProperty(
-                          "lm_fix3_2_scalar",
-                          "Levenberg: Cholesky solver using CSparse (fixed "
-                          "blocksize, scalar ordering)",
-                          "CSparse", true, 3, 2)));
+    lm_fix3_2_scalar,
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
+        "lm_fix3_2_scalar",
+        "Levenberg: Cholesky solver using CSparse (fixed "
+        "blocksize, scalar ordering)",
+        "CSparse", true, 3, 2)));
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
-    lm_fix6_3_scalar, new CSparseSolverCreator(OptimizationAlgorithmProperty(
-                          "lm_fix6_3_scalar",
-                          "Levenberg: Cholesky solver using CSparse (fixed "
-                          "blocksize, scalar ordering)",
-                          "CSparse", true, 6, 3)));
+    lm_fix6_3_scalar,
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
+        "lm_fix6_3_scalar",
+        "Levenberg: Cholesky solver using CSparse (fixed "
+        "blocksize, scalar ordering)",
+        "CSparse", true, 6, 3)));
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
-    lm_fix7_3_scalar, new CSparseSolverCreator(OptimizationAlgorithmProperty(
-                          "lm_fix7_3_scalar",
-                          "Levenberg: Cholesky solver using CSparse (fixed "
-                          "blocksize, scalar ordering)",
-                          "CSparse", true, 7, 3)));
+    lm_fix7_3_scalar,
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
+        "lm_fix7_3_scalar",
+        "Levenberg: Cholesky solver using CSparse (fixed "
+        "blocksize, scalar ordering)",
+        "CSparse", true, 7, 3)));
 #endif
 
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
     dl_var,
-    new CSparseSolverCreator(OptimizationAlgorithmProperty(
+    std::make_unique<CSparseSolverCreator>(OptimizationAlgorithmProperty(
         "dl_var", "Dogleg: Cholesky solver using CSparse (variable blocksize)",
         "CSparse", false, Eigen::Dynamic, Eigen::Dynamic)));
 G2O_END_NAMESPACE

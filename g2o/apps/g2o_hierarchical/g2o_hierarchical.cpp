@@ -26,8 +26,11 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "edge_creator.h"
 #include "edge_labeler.h"
@@ -243,9 +246,10 @@ int main(int argc, char** argv) {
     ParameterSE3Offset* originalParams = dynamic_cast<ParameterSE3Offset*>(p0);
     if (originalParams != nullptr) {
       ngx::Log("ORIGINAL PARAMS");
-      auto* se3OffsetParam = new ParameterSE3Offset();
+      auto se3OffsetParamOwner = std::make_unique<ParameterSE3Offset>();
+      auto* se3OffsetParam = se3OffsetParamOwner.get();
       se3OffsetParam->setId(100);
-      optimizer.addParameter(se3OffsetParam);
+      optimizer.addParameter(std::move(se3OffsetParamOwner));
       std::vector<int> depthCamHParamsIds(1);
       depthCamHParamsIds[0] = se3OffsetParam->id();
       creator.addAssociation("VERTEX_SE3:QUAT;VERTEX_TRACKXYZ;",
@@ -262,9 +266,9 @@ int main(int argc, char** argv) {
 
   // allocating the desired solver + testing whether the solver is okay
   OptimizationAlgorithmProperty solverProperty, hsolverProperty;
-  OptimizationAlgorithm* solver =
+  std::unique_ptr<OptimizationAlgorithm> solver =
       solverFactory->construct(strSolver, solverProperty);
-  OptimizationAlgorithm* hsolver =
+  std::unique_ptr<OptimizationAlgorithm> hsolver =
       solverFactory->construct(strHSolver, hsolverProperty);
   if (solver == nullptr) {
     ngx::Log(ngx::Error, "Error allocating solver. Allocating \"{}\" failed!",
@@ -291,7 +295,7 @@ int main(int argc, char** argv) {
     return 3;
   }
 
-  optimizer.setAlgorithm(solver);
+  optimizer.setAlgorithm(std::move(solver));
 
   int poseDim = *vertexDimensions.rbegin();
   string backboneVertexType;
@@ -385,8 +389,10 @@ int main(int argc, char** argv) {
   optimizer.computeActiveErrors();
 
   StarSet stars;
+  // The stars refer to the graph, so they are destroyed before it.
+  std::vector<std::unique_ptr<Star>> starStorage;
 
-  computeSimpleStars(stars, &optimizer, &labeler, &creator, gauge,
+  computeSimpleStars(stars, starStorage, &optimizer, &labeler, &creator, gauge,
                      backboneEdgeType, backboneVertexType, 0,
                      hierarchicalDiameter, 1, starIterations, uThreshold,
                      debug);
@@ -441,7 +447,7 @@ int main(int argc, char** argv) {
     OptimizableGraph::Vertex* g = dynamic_cast<OptimizableGraph::Vertex*>(it);
     g->setFixed(true);
   }
-  optimizer.setAlgorithm(hsolver);
+  optimizer.setAlgorithm(std::move(hsolver));
   optimizer.initializeOptimization(heset);
   optimizer.setVerbose(true);
   if (initialGuess) optimizer.computeInitialGuess();
@@ -492,7 +498,9 @@ int main(int argc, char** argv) {
     OptimizableGraph::Vertex* g = dynamic_cast<OptimizableGraph::Vertex*>(it);
     g->setFixed(true);
   }
-  optimizer.setAlgorithm(solver);
+  // The high-level algorithm replaced the first one, so the
+  // optimizer gets a new one.
+  optimizer.setAlgorithm(solverFactory->construct(strSolver, solverProperty));
   optimizer.initializeOptimization(0);
   optimizer.computeInitialGuess();
   optimizer.optimize(lowIterations);
@@ -506,7 +514,6 @@ int main(int argc, char** argv) {
     OptimizableGraph::Vertex* g = dynamic_cast<OptimizableGraph::Vertex*>(it);
     g->setFixed(true);
   }
-  optimizer.setAlgorithm(solver);
   optimizer.initializeOptimization(0);
   int result = optimizer.optimize(lowIterations);
   if (result < 0) ngx::Log(ngx::Error, "failure in low level optimization");

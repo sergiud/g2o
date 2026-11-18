@@ -25,20 +25,20 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 using namespace std;
 using namespace g2o;
 using namespace Eigen;
 
+//! The vertices that replace a segment, which the output graph owns.
 struct LineInfo {
-  LineInfo(VertexSegment2D* s) {
-    line = new VertexLine2D();
-    line->setId(s->id());
-    line->setEstimate(computeLineParameters(s->estimateP1(), s->estimateP2()));
+  explicit LineInfo(VertexLine2D* line_) : line(line_) {
     p1 = nullptr;
     p2 = nullptr;
   }
@@ -98,10 +98,11 @@ int main(int argc, char** argv) {
 
     VertexSE2* pose = dynamic_cast<VertexSE2*>(it.second.get());
     if (pose != nullptr) {
-      auto* npose = new VertexSE2();
+      auto nposeOwner = std::make_unique<VertexSE2>();
+      auto* npose = nposeOwner.get();
       npose->setEstimate(pose->estimate());
       npose->setId(pose->id());
-      outGraph.addVertex(npose);
+      outGraph.addVertex(std::move(nposeOwner));
       if (!firstVertexFound) {
         firstVertexFound = true;
         npose->setFixed(true);
@@ -110,9 +111,12 @@ int main(int argc, char** argv) {
 
     VertexSegment2D* s = dynamic_cast<VertexSegment2D*>(it.second.get());
     if (s != nullptr) {
-      LineInfo linfo(s);
-      outGraph.addVertex(linfo.line);
-      lmap.insert(make_pair(s->id(), linfo));
+      auto line = std::make_unique<VertexLine2D>();
+      line->setId(s->id());
+      line->setEstimate(
+          computeLineParameters(s->estimateP1(), s->estimateP2()));
+      lmap.insert(make_pair(s->id(), LineInfo(line.get())));
+      outGraph.addVertex(std::move(line));
     }
   }
 
@@ -122,12 +126,12 @@ int main(int argc, char** argv) {
   for (const auto& it : inGraph.edges()) {
     EdgeSE2* ods = dynamic_cast<EdgeSE2*>(it.get());
     if (ods != nullptr) {
-      auto* ods2 = new EdgeSE2();
+      auto ods2 = std::make_unique<EdgeSE2>();
       ods2->setMeasurement(ods->measurement());
       ods2->setInformation(ods->information());
       ods2->vertices()[0] = outGraph.vertex(ods->vertices()[0]->id());
       ods2->vertices()[1] = outGraph.vertex(ods->vertices()[1]->id());
-      outGraph.addEdge(ods2);
+      outGraph.addEdge(std::move(ods2));
     }
 
     EdgeSE2Segment2D* es = dynamic_cast<EdgeSE2Segment2D*>(it.get());
@@ -148,73 +152,72 @@ int main(int argc, char** argv) {
       VertexPointXY*& p1 = linfo.p1;
       VertexPointXY*& p2 = linfo.p2;
 
-      auto* el2 = new EdgeSE2Line2D();
+      auto el2 = std::make_unique<EdgeSE2Line2D>();
       el2->vertices()[0] = pose;
       el2->vertices()[1] = line;
       if (el != nullptr) {
         el2->setMeasurement(el->measurement());
         el2->setInformation(el->information());
-        outGraph.addEdge(el2);
-      }
-      if (es != nullptr) {
+        outGraph.addEdge(std::move(el2));
+      } else if (es != nullptr) {
         el2->setMeasurement(
             computeLineParameters(es->measurementP1(), es->measurementP2()));
         Matrix2d el2info;
         el2info << 10000, 0, 0, 1000;
         el2->setInformation(el2info);
-        outGraph.addEdge(el2);
+        outGraph.addEdge(std::move(el2));
         Matrix4d si = es->information();
         if (p1 == nullptr) {
-          p1 = new VertexPointXY();
+          auto p1Owner = std::make_unique<VertexPointXY>();
+          p1 = p1Owner.get();
           p1->setEstimate(segment->estimateP1());
           p1->setId(currentId++);
-          outGraph.addVertex(p1);
+          outGraph.addVertex(std::move(p1Owner));
           line->p1Id = p1->id();
 
-          auto* p1e = new EdgeLine2DPointXY();
+          auto p1e = std::make_unique<EdgeLine2DPointXY>();
           p1e->vertices()[0] = line;
           p1e->vertices()[1] = p1;
           p1e->setMeasurement(0);
           Eigen::Matrix<double, 1, 1> p1i;
           p1i(0, 0) = 1e6;
           p1e->setInformation(p1i);
-          outGraph.addEdge(p1e);
+          outGraph.addEdge(std::move(p1e));
         }
         if (p2 == nullptr) {
-          p2 = new VertexPointXY();
+          auto p2Owner = std::make_unique<VertexPointXY>();
+          p2 = p2Owner.get();
           p2->setEstimate(segment->estimateP2());
           p2->setId(currentId++);
-          outGraph.addVertex(p2);
+          outGraph.addVertex(std::move(p2Owner));
           line->p2Id = p2->id();
 
-          auto* p2e = new EdgeLine2DPointXY();
+          auto p2e = std::make_unique<EdgeLine2DPointXY>();
           p2e->vertices()[0] = line;
           p2e->vertices()[1] = p2;
           p2e->setMeasurement(0);
           Eigen::Matrix<double, 1, 1> p2i;
           p2i(0, 0) = 1e6;
           p2e->setInformation(p2i);
-          outGraph.addEdge(p2e);
+          outGraph.addEdge(std::move(p2e));
         }
 
-        auto* p1e = new EdgeSE2PointXY();
+        auto p1e = std::make_unique<EdgeSE2PointXY>();
         p1e->vertices()[0] = pose;
         p1e->vertices()[1] = p1;
         p1e->setMeasurement(es->measurementP1());
         Matrix2d p1i = si.block<2, 2>(0, 0);
         p1e->setInformation(p1i);
-        outGraph.addEdge(p1e);
+        outGraph.addEdge(std::move(p1e));
 
-        auto* p2e = new EdgeSE2PointXY();
+        auto p2e = std::make_unique<EdgeSE2PointXY>();
         p2e->vertices()[0] = pose;
         p2e->vertices()[1] = p2;
         p2e->setMeasurement(es->measurementP2());
         Matrix2d p2i = si.block<2, 2>(2, 2);
         p2e->setInformation(p2i);
-        outGraph.addEdge(p2e);
-      }
-
-      if (espl != nullptr) {
+        outGraph.addEdge(std::move(p2e));
+      } else if (espl != nullptr) {
         Matrix3d si = espl->information();
         Vector2d lparams;
         lparams[0] = espl->theta();
@@ -224,14 +227,15 @@ int main(int argc, char** argv) {
         li << si(2, 2), 0, 0, 1000;
         el2->setMeasurement(lparams);
         el2->setInformation(li);
-        outGraph.addEdge(el2);
+        outGraph.addEdge(std::move(el2));
 
         VertexPointXY*& pX = (espl->pointNum() == 0) ? p1 : p2;
         if (pX == nullptr) {
           ngx::Log("mkp: {}", line->id());
-          pX = new VertexPointXY();
+          auto pXOwner = std::make_unique<VertexPointXY>();
+          pX = pXOwner.get();
           pX->setId(currentId++);
-          outGraph.addVertex(pX);
+          outGraph.addVertex(std::move(pXOwner));
 
           Vector2d estPx;
           if (espl->pointNum() != 0) {
@@ -243,23 +247,23 @@ int main(int argc, char** argv) {
           }
           pX->setEstimate(estPx);
 
-          auto* pXe = new EdgeLine2DPointXY();
+          auto pXe = std::make_unique<EdgeLine2DPointXY>();
           pXe->vertices()[0] = line;
           pXe->vertices()[1] = pX;
           pXe->setMeasurement(0);
           Eigen::Matrix<double, 1, 1> pXi;
           pXi(0, 0) = 1e6;
           pXe->setInformation(pXi);
-          outGraph.addEdge(pXe);
+          outGraph.addEdge(std::move(pXe));
         }
 
-        auto* pXe = new EdgeSE2PointXY();
+        auto pXe = std::make_unique<EdgeSE2PointXY>();
         pXe->vertices()[0] = pose;
         pXe->vertices()[1] = pX;
         pXe->setMeasurement(espl->point());
         Matrix2d pXi = si.block<2, 2>(0, 0);
         pXe->setInformation(pXi);
-        outGraph.addEdge(pXe);
+        outGraph.addEdge(std::move(pXe));
       }
     }
   }

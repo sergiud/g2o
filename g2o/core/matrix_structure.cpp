@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <memory>
 #include <string>
 #include <vector>
 using namespace std;
@@ -20,8 +21,7 @@ struct ColSort {
   }
 };
 
-MatrixStructure::MatrixStructure()
-    : n(0), m(0), Ap(nullptr), Aii(nullptr), maxN(0), maxNz(0) {}
+MatrixStructure::MatrixStructure() : n(0), m(0), maxN(0), maxNz(0) {}
 
 MatrixStructure::~MatrixStructure() { free(); }
 
@@ -29,19 +29,17 @@ void MatrixStructure::alloc(int n_, int nz) {
   if (n == 0) {
     maxN = n = n_;
     maxNz = nz;
-    Ap = new int[maxN + 1];
-    Aii = new int[maxNz];
+    Ap = std::make_unique<int[]>(maxN + 1);
+    Aii = std::make_unique<int[]>(maxNz);
   } else {
     n = n_;
     if (maxNz < nz) {
       maxNz = 2 * nz;
-      delete[] Aii;
-      Aii = new int[maxNz];
+      Aii = std::make_unique<int[]>(maxNz);
     }
     if (maxN < n) {
       maxN = 2 * n;
-      delete[] Ap;
-      Ap = new int[maxN + 1];
+      Ap = std::make_unique<int[]>(maxN + 1);
     }
   }
 }
@@ -51,10 +49,8 @@ void MatrixStructure::free() {
   m = 0;
   maxN = 0;
   maxNz = 0;
-  delete[] Aii;
-  Aii = nullptr;
-  delete[] Ap;
-  Ap = nullptr;
+  Aii.reset();
+  Ap.reset();
 }
 
 bool MatrixStructure::write(const char* filename) const {

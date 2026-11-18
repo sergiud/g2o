@@ -11,8 +11,10 @@
 #include <g2o/stuff/string_tools.h>
 
 #include <map>
+#include <memory>
 #include <sstream>
 #include <string>
+#include <utility>
 
 G2O_START_NAMESPACE
 
@@ -55,9 +57,10 @@ class Property : public BaseProperty {
  * \brief a collection of properties mapping from name to the property itself
  */
 class G2O_STUFF_API PropertyMap
-    : protected std::map<std::string, BaseProperty*> {
+    : protected std::map<std::string, std::unique_ptr<BaseProperty>> {
  public:
-  typedef std::map<std::string, BaseProperty*> BaseClass;
+  //! the properties by their name, which the map owns
+  typedef std::map<std::string, std::unique_ptr<BaseProperty>> BaseClass;
   typedef BaseClass::iterator PropertyMapIterator;
   typedef BaseClass::const_iterator PropertyMapConstIterator;
 
@@ -67,7 +70,8 @@ class G2O_STUFF_API PropertyMap
   /**
    * add a property to the map
    */
-  bool addProperty(BaseProperty* p);
+  //! adds the property and frees it if the name is taken
+  bool addProperty(std::unique_ptr<BaseProperty> p);
 
   /**
    * remove a property from the map
@@ -81,13 +85,13 @@ class G2O_STUFF_API PropertyMap
   P* getProperty(const std::string& name_) {
     auto it = find(name_);
     if (it == end()) return nullptr;
-    return dynamic_cast<P*>(it->second);
+    return dynamic_cast<P*>(it->second.get());
   }
   template <typename P>
   const P* getProperty(const std::string& name_) const {
     auto it = find(name_);
-    if (it == end()) return 0;
-    return dynamic_cast<P*>(it->second);
+    if (it == end()) return nullptr;
+    return dynamic_cast<P*>(it->second.get());
   }
 
   /**
@@ -97,11 +101,12 @@ class G2O_STUFF_API PropertyMap
   P* makeProperty(const std::string& name_, const typename P::ValueType& v) {
     auto it = find(name_);
     if (it == end()) {
-      auto* p = new P(name_, v);
-      addProperty(p);
-      return p;
+      auto p = std::make_unique<P>(name_, v);
+      P* added = p.get();
+      addProperty(std::move(p));
+      return added;
     } else
-      return dynamic_cast<P*>(it->second);
+      return dynamic_cast<P*>(it->second.get());
   }
 
   /**

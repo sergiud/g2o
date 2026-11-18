@@ -11,6 +11,8 @@
 #include <g2o/solvers/csparse/linear_solver_csparse.h>
 
 #include <iostream>
+#include <memory>
+#include <utility>
 // #include <g2o/types/slam3d/types_slam3d.h>
 // #include <g2o/types/slam2d/types_slam2d.h>
 
@@ -35,16 +37,17 @@ int main(int argc, char** argv) {
   arg.parseArgs(argc, argv);
 
   // create the linear solver
-  BlockSolverX::LinearSolverType* linearSolver =
-      new LinearSolverCSparse<BlockSolverX::PoseMatrixType>();
+  auto linearSolver =
+      std::make_unique<LinearSolverCSparse<BlockSolverX::PoseMatrixType>>();
 
   // create the block solver on top of the linear solver
-  auto* blockSolver = new BlockSolverX(linearSolver);
+  auto blockSolver = std::make_unique<BlockSolverX>(std::move(linearSolver));
 
   // create the algorithm to carry out the optimization
   // OptimizationAlgorithmGaussNewton* optimizationAlgorithm = new
   // OptimizationAlgorithmGaussNewton(blockSolver);
-  auto* optimizationAlgorithm = new OptimizationAlgorithmLevenberg(blockSolver);
+  auto optimizationAlgorithm =
+      std::make_unique<OptimizationAlgorithmLevenberg>(std::move(blockSolver));
 
   // NOTE: We skip to fix a variable here, either this is stored in the file
   // itself or Levenberg will handle it.
@@ -52,7 +55,7 @@ int main(int argc, char** argv) {
   // create the optimizer to load the data and carry out the optimization
   SparseOptimizer optimizer;
   optimizer.setVerbose(true);
-  optimizer.setAlgorithm(optimizationAlgorithm);
+  optimizer.setAlgorithm(std::move(optimizationAlgorithm));
 
   ifstream ifs(inputFilename.c_str());
   if (!ifs) {

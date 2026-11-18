@@ -8,6 +8,8 @@
 #include <g2o/core/factory.h>
 #include <g2o/stuff/logger.h>
 
+#include <memory>
+
 G2O_START_NAMESPACE
 
 using namespace std;
@@ -36,7 +38,7 @@ bool EdgeCreator::removeAssociation(std::string vertexTypes) {
   return true;
 }
 
-OptimizableGraph::Edge* EdgeCreator::createEdge(
+std::unique_ptr<OptimizableGraph::Edge> EdgeCreator::createEdge(
     std::vector<OptimizableGraph::Vertex*>& vertices) {
   std::stringstream key;
   Factory* factory = Factory::instance();
@@ -48,13 +50,14 @@ OptimizableGraph::Edge* EdgeCreator::createEdge(
     ngx::Log(ngx::Error, "no thing in factory: {}", key.str());
     return nullptr;
   }
-  HyperGraph::HyperGraphElement* element =
+  std::unique_ptr<HyperGraph::HyperGraphElement> element =
       factory->construct(it->second._edgeTypeName);
   if (element == nullptr) {
     ngx::Log(ngx::Error, "no thing can be created");
     return nullptr;
   }
-  OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(element);
+  std::unique_ptr<OptimizableGraph::Edge> e =
+      castElement<OptimizableGraph::Edge>(element);
   assert(it->second._parameterIds.size() == e->numParameters());
   for (size_t i = 0; i < it->second._parameterIds.size(); i++) {
     if (!e->setParameterId(i, it->second._parameterIds[i])) {

@@ -19,6 +19,7 @@
 #include <memory>
 #include <set>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 /** @addtogroup graph */
@@ -70,7 +71,7 @@ class G2O_CORE_API HyperGraph {
      * returns the type of the graph element, see HyperGraphElementType
      */
     virtual HyperGraphElementType elementType() const = 0;
-    HyperGraphElement* clone() const { return nullptr; }
+    std::unique_ptr<HyperGraphElement> clone() const { return nullptr; }
   };
 
   /**
@@ -81,7 +82,7 @@ class G2O_CORE_API HyperGraph {
   class G2O_CORE_API Data : public HyperGraph::HyperGraphElement {
    public:
     Data();
-    ~Data();
+    ~Data() override;
     //! read the data from a stream
     virtual bool read(std::istream& is) = 0;
     //! write the data to a stream
@@ -89,9 +90,12 @@ class G2O_CORE_API HyperGraph {
     virtual HyperGraph::HyperGraphElementType elementType() const {
       return HyperGraph::HGET_DATA;
     }
-    inline const Data* next() const { return _next; }
-    inline Data* next() { return _next; }
-    inline void setNext(Data* next_) { _next = next_; }
+    inline const Data* next() const { return _next.get(); }
+    inline Data* next() { return _next.get(); }
+    //! sets the data that follows this one, which this data owns
+    inline void setNext(std::unique_ptr<Data> next_) {
+      _next = std::move(next_);
+    }
     inline DataContainer* dataContainer() { return _dataContainer; }
     inline const DataContainer* dataContainer() const { return _dataContainer; }
     inline void setDataContainer(DataContainer* dataContainer_) {
@@ -99,7 +103,7 @@ class G2O_CORE_API HyperGraph {
     }
 
    protected:
-    Data* _next;  // linked list of multiple data;
+    std::unique_ptr<Data> _next;  // linked list of multiple data;
     DataContainer* _dataContainer;
   };
 
@@ -109,21 +113,24 @@ class G2O_CORE_API HyperGraph {
    */
   class G2O_CORE_API DataContainer {
    public:
-    DataContainer() { _userData = nullptr; }
-    virtual ~DataContainer() { delete _userData; }
+    DataContainer() = default;
+    virtual ~DataContainer() = default;
     //! the user data associated with this vertex
-    const Data* userData() const { return _userData; }
-    Data* userData() { return _userData; }
-    void setUserData(Data* obs) { _userData = obs; }
-    void addUserData(Data* obs) {
+    const Data* userData() const { return _userData.get(); }
+    Data* userData() { return _userData.get(); }
+    //! sets the user data, which the container owns, and frees the previous
+    //! data
+    void setUserData(std::unique_ptr<Data> obs) { _userData = std::move(obs); }
+    //! adds the user data in front of the existing data, which it then owns
+    void addUserData(std::unique_ptr<Data> obs) {
       if (obs != nullptr) {
-        obs->setNext(_userData);
-        _userData = obs;
+        obs->setNext(std::move(_userData));
+        _userData = std::move(obs);
       }
     }
 
    protected:
-    Data* _userData;
+    std::unique_ptr<Data> _userData;
   };
 
   typedef std::set<Edge*> EdgeSet;
@@ -270,17 +277,17 @@ class G2O_CORE_API HyperGraph {
    * adds a vertex to the graph. The id of the vertex should be set before
    * invoking this function. the function fails if another vertex
    * with the same id is already in the graph.
-   * returns true, on success, or false on failure. On success, the graph owns
-   * the vertex, and the caller keeps owning it otherwise.
+   * returns true, on success, or false on failure. The graph owns the vertex
+   * and frees it if it rejects it.
    */
-  virtual bool addVertex(Vertex* v);
+  virtual bool addVertex(std::unique_ptr<Vertex> v);
 
   /**
    * Adds an edge  to the graph. If the edge is already in the graph, it
-   * does nothing and returns false. Otherwise it returns true. On success, the
-   * graph owns the edge, and the caller keeps owning it otherwise.
+   * does nothing and returns false. Otherwise it returns true. The graph owns
+   * the edge and frees it if it rejects it.
    */
-  virtual bool addEdge(Edge* e);
+  virtual bool addEdge(std::unique_ptr<Edge> e);
 
   /**
    * Sets the vertex un position "pos" within the edge and keeps the bookkeeping

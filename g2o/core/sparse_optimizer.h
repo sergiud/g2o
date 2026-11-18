@@ -12,6 +12,7 @@
 #include <g2o/prefix.h>
 
 #include <map>
+#include <memory>
 
 G2O_START_NAMESPACE
 
@@ -207,9 +208,10 @@ class G2O_CORE_API SparseOptimizer : public OptimizableGraph {
       const OptimizableGraph::Edge* e) const;
 
   //! the solver used by the optimizer
-  const OptimizationAlgorithm* algorithm() const { return _algorithm; }
-  OptimizationAlgorithm* solver() { return _algorithm; }
-  void setAlgorithm(OptimizationAlgorithm* algorithm);
+  const OptimizationAlgorithm* algorithm() const { return _algorithm.get(); }
+  OptimizationAlgorithm* solver() { return _algorithm.get(); }
+  //! sets the algorithm, which the optimizer owns, and frees the previous one
+  void setAlgorithm(std::unique_ptr<OptimizationAlgorithm> algorithm);
 
   //! push the estimate of a subset of the variables onto a stack
   void push(SparseOptimizer::VertexContainer& vlist);
@@ -290,7 +292,7 @@ class G2O_CORE_API SparseOptimizer : public OptimizableGraph {
 
   void sortVectorContainers();
 
-  OptimizationAlgorithm* _algorithm;
+  std::unique_ptr<OptimizationAlgorithm> _algorithm;
 
   /**
    * builds the mapping of the active vertices to the (block) row / column in

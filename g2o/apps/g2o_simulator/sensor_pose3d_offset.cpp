@@ -7,6 +7,9 @@
 
 #include <g2o/types/slam3d/isometry3d_mappings.h>
 
+#include <memory>
+#include <utility>
+
 G2O_START_NAMESPACE
 using namespace std;
 using namespace Eigen;
@@ -24,11 +27,18 @@ SensorPose3DOffset::SensorPose3DOffset(const std::string& name_)
 }
 
 void SensorPose3DOffset::addParameters() {
-  if (_offsetParam1 == nullptr) _offsetParam1 = new ParameterSE3Offset();
-  if (_offsetParam2 == nullptr) _offsetParam2 = new ParameterSE3Offset();
-  assert(world());
-  world()->addParameter(_offsetParam1);
-  world()->addParameter(_offsetParam2);
+  if (_offsetParam1 == nullptr) {
+    auto offsetParam1 = std::make_unique<ParameterSE3Offset>();
+    _offsetParam1 = offsetParam1.get();
+    assert(world());
+    world()->addParameter(std::move(offsetParam1));
+  }
+  if (_offsetParam2 == nullptr) {
+    auto offsetParam2 = std::make_unique<ParameterSE3Offset>();
+    _offsetParam2 = offsetParam2.get();
+    assert(world());
+    world()->addParameter(std::move(offsetParam2));
+  }
 }
 
 void SensorPose3DOffset::addNoise(EdgeType* e) {
@@ -71,16 +81,19 @@ void SensorPose3DOffset::sense() {
     it++;
     count++;
   }
-  for (auto it : world()->objects()) {
-    WorldObjectType* o = dynamic_cast<WorldObjectType*>(it);
+  for (const auto& it : world()->objects()) {
+    WorldObjectType* o = dynamic_cast<WorldObjectType*>(it.get());
     if ((o != nullptr) && isVisible(o)) {
-      EdgeType* e = mkEdge(o);
+      std::unique_ptr<EdgeType> e = mkEdge(o);
       if ((e != nullptr) && (graph() != nullptr)) {
         e->setParameterId(0, _offsetParam1->id());
         e->setParameterId(1, _offsetParam2->id());
-        graph()->addEdge(e);
-        e->setMeasurementFromState();
-        addNoise(e);
+        EdgeType* edge = e.get();
+        // The graph resolves the parameters that the measurement needs.
+        if (graph()->addEdge(std::move(e))) {
+          edge->setMeasurementFromState();
+          addNoise(edge);
+        }
       }
     }
   }

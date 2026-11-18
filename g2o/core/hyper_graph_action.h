@@ -17,6 +17,7 @@
 #include <set>
 #include <string>
 #include <typeinfo>
+#include <utility>
 
 // define to get verbose output
 // #define G2O_DEBUG_ACTIONLIB
@@ -116,7 +117,9 @@ class G2O_CORE_API HyperGraphElementActionCollection
   //! inserts an action in the pool. The action should have the same name of the
   //! container. returns false on failure (the container has a different name
   //! than the action);
-  bool registerAction(HyperGraphElementAction* action);
+  //! registers the action, which is then owned, and frees a rejected action
+  bool registerAction(std::unique_ptr<HyperGraphElementAction> action);
+  //! removes and frees the action
   bool unregisterAction(HyperGraphElementAction* action);
 
  protected:
@@ -145,7 +148,9 @@ class G2O_CORE_API HyperGraphActionLibrary {
   // returns a pointer to a collection indexed by name
   HyperGraphElementAction* actionByName(const std::string& name);
   // registers a basic action in the pool. If necessary a container is created
-  bool registerAction(HyperGraphElementAction* action);
+  //! registers the action, which is then owned, and frees a rejected action
+  bool registerAction(std::unique_ptr<HyperGraphElementAction> action);
+  //! removes and frees the action
   bool unregisterAction(HyperGraphElementAction* action);
 
   inline HyperGraphElementAction::ActionMap& actionMap() { return _actionMap; }
@@ -213,19 +218,26 @@ class RegisterActionProxy {
 #ifdef G2O_DEBUG_ACTIONLIB
     ngx::Log("Registering action of type {}", typeid(T).name());
 #endif
-    _action.reset(new T());
-    HyperGraphActionLibrary::instance()->registerAction(_action.get());
+    auto action = std::make_unique<T>();
+    T* registered = action.get();
+    if (HyperGraphActionLibrary::instance()->registerAction(
+            std::move(action))) {
+      _action = registered;
+    }
   }
 
   ~RegisterActionProxy() {
 #ifdef G2O_DEBUG_ACTIONLIB
     ngx::Log("Unregistering action of type {}", typeid(T).name());
 #endif
-    HyperGraphActionLibrary::instance()->unregisterAction(_action.get());
+    if (_action != nullptr) {
+      HyperGraphActionLibrary::instance()->unregisterAction(_action);
+    }
   }
 
  private:
-  std::unique_ptr<HyperGraphElementAction> _action;
+  //! the registered action, which the library owns
+  HyperGraphElementAction* _action = nullptr;
 };
 
 #define G2O_REGISTER_ACTION(classname)            \

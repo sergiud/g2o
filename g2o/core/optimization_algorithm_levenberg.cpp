@@ -9,13 +9,16 @@
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/timeutil.h>
 
+#include <memory>
 #include <ostream>
+#include <utility>
 using namespace std;
 
 G2O_START_NAMESPACE
 
-OptimizationAlgorithmLevenberg::OptimizationAlgorithmLevenberg(Solver* solver)
-    : OptimizationAlgorithmWithHessian(solver) {
+OptimizationAlgorithmLevenberg::OptimizationAlgorithmLevenberg(
+    std::unique_ptr<Solver> solver)
+    : OptimizationAlgorithmWithHessian(std::move(solver)) {
   _currentLambda = -1.;
   _tau = 1e-5;
   _goodStepUpperScale = 2. / 3.;

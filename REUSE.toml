@@ -130,11 +130,10 @@ SPDX-License-Identifier = "BSD-3-Clause"
 path = [
   "g2o/examples/interactive_slam/slam_parser/parser/bison_parser.cpp",
   "g2o/examples/interactive_slam/slam_parser/parser/bison_parser.h",
-  "g2o/examples/interactive_slam/slam_parser/parser/stack.hh",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = [
-  "2002-2008 Free Software Foundation, Inc.",
+  "2002-2015, 2018-2021 Free Software Foundation, Inc.",
   "2017 Sergiu Deitsch",
 ]
 SPDX-License-Identifier = "GPL-3.0-or-later WITH Bison-exception-2.2"
@@ -151,11 +150,10 @@ SPDX-License-Identifier = "BSD-2-Clause"
 [[annotations]]
 path = [
   "g2o/examples/interactive_slam/slam_parser/parser/location.hh",
-  "g2o/examples/interactive_slam/slam_parser/parser/position.hh",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = [
-  "2002-2006 Free Software Foundation, Inc.",
+  "2002-2015, 2018-2021 Free Software Foundation, Inc.",
   "2017 Sergiu Deitsch",
 ]
 SPDX-License-Identifier = "GPL-3.0-or-later WITH Bison-exception-2.2"

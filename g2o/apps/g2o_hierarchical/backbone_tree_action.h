@@ -11,7 +11,10 @@
 #include <g2o/core/sparse_optimizer.h>
 
 #include <map>
+#include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "star.h"
 
@@ -44,6 +47,10 @@ struct BackBoneTreeAction : public HyperDijkstra::TreeAction {
   inline VertexStarMultimap& vertexStarMultiMap() { return _vsMmap; }
   //! edges that are not yet assigned to any star
   inline HyperGraph::EdgeSet& freeEdges() { return _freeEdges; }
+  //! passes the ownership of the stars the action created to the caller
+  std::vector<std::unique_ptr<Star>> releaseStars() {
+    return std::move(_stars);
+  }
 
   /**
    * action to be performed during the descent of the dijkstra tree.  it
@@ -73,6 +80,8 @@ struct BackBoneTreeAction : public HyperDijkstra::TreeAction {
   //! helper function that adds to a star an edge and all its vertices
   bool fillStar(Star* s, HyperGraph::Edge* e_);
 
+  //! the stars the action created until it passes them on
+  std::vector<std::unique_ptr<Star>> _stars;
   SparseOptimizer* _optimizer;
   std::string _vertexTag;
   int _level;

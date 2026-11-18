@@ -18,6 +18,7 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <vector>
 
 G2O_START_NAMESPACE
@@ -52,7 +53,8 @@ class SparseBlockMatrix {
     return !_rowBlockIndices.empty() ? _rowBlockIndices.back() : 0;
   }
 
-  typedef std::map<int, SparseMatrixBlock*> IntBlockMap;
+  //! the blocks of a column by their row, which the matrix owns
+  typedef std::map<int, std::unique_ptr<SparseMatrixBlock>> IntBlockMap;
 
   /**
    * constructs a sparse block matrix having a specific layout
@@ -68,12 +70,14 @@ class SparseBlockMatrix {
    * deletes it on destruction. if false the matrix is only a "view" over an
    * existing structure.
    */
-  SparseBlockMatrix(const int* rbi, const int* cbi, int rb, int cb,
-                    bool hasStorage = true);
+  SparseBlockMatrix(const int* rbi, const int* cbi, int rb, int cb);
 
   SparseBlockMatrix();
 
   ~SparseBlockMatrix();
+
+  SparseBlockMatrix(SparseBlockMatrix&&) noexcept = default;
+  SparseBlockMatrix& operator=(SparseBlockMatrix&&) noexcept = default;
 
   //! this zeroes all the blocks. If dealloc=true the blocks are removed from
   //! memory
@@ -113,7 +117,7 @@ class SparseBlockMatrix {
   size_t nonZeroBlocks() const;
 
   //! deep copy of a sparse-block-matrix;
-  SparseBlockMatrix* clone() const;
+  std::unique_ptr<SparseBlockMatrix> clone() const;
 
   /**
    * returns a view or a copy of the block matrix
@@ -123,34 +127,35 @@ class SparseBlockMatrix {
    * @param cmax: ending  block col
    * @param alloc: if true it makes a deep copy, if false it creates a view.
    */
-  SparseBlockMatrix* slice(int rmin, int rmax, int cmin, int cmax,
-                           bool alloc = true) const;
+  std::unique_ptr<SparseBlockMatrix> slice(int rmin, int rmax, int cmin,
+                                           int cmax) const;
 
   //! transposes a block matrix, The transposed type should match the argument
   //! false on failure
   template <class MatrixTransposedType>
-  bool transpose(SparseBlockMatrix<MatrixTransposedType>*& dest) const;
+  bool transpose(
+      std::unique_ptr<SparseBlockMatrix<MatrixTransposedType>>& dest) const;
 
   //! adds the current matrix to the destination
-  bool add(SparseBlockMatrix<MatrixType>*& dest) const;
+  bool add(std::unique_ptr<SparseBlockMatrix<MatrixType>>& dest) const;
 
   //! dest = (*this) *  M
   template <class MatrixResultType, class MatrixFactorType>
-  bool multiply(SparseBlockMatrix<MatrixResultType>*& dest,
+  bool multiply(std::unique_ptr<SparseBlockMatrix<MatrixResultType>>& dest,
                 const SparseBlockMatrix<MatrixFactorType>* M) const;
 
   //! dest = (*this) *  src
-  void multiply(double*& dest, const double* src) const;
+  void multiply(double* dest, const double* src) const;
 
   /**
    * compute dest = (*this) *  src
    * However, assuming that this is a symmetric matrix where only the upper
    * triangle is stored
    */
-  void multiplySymmetricUpperTriangle(double*& dest, const double* src) const;
+  void multiplySymmetricUpperTriangle(double* dest, const double* src) const;
 
   //! dest = M * (*this)
-  void rightMultiply(double*& dest, const double* src) const;
+  void rightMultiply(double* dest, const double* src) const;
 
   //! *this *= a
   void scale(double a);
@@ -159,8 +164,8 @@ class SparseBlockMatrix {
    * writes in dest a block permutaton specified by pinv.
    * @param pinv: array such that new_block[i] = old_block[pinv[i]]
    */
-  bool symmPermutation(SparseBlockMatrix<MatrixType>*& dest, const int* pinv,
-                       bool onlyUpper = false) const;
+  bool symmPermutation(std::unique_ptr<SparseBlockMatrix<MatrixType>>& dest,
+                       const int* pinv, bool onlyUpper = false) const;
 
   /**
    * fill the CCS arrays of a matrix, arrays have to be allocated beforehand
@@ -225,7 +230,6 @@ class SparseBlockMatrix {
   //! of the matrix and the block column is stored as a map row_block ->
   //! matrix_block_ptr.
   std::vector<IntBlockMap> _blockCols;
-  bool _hasStorage;
 };
 
 template <class MatrixType>

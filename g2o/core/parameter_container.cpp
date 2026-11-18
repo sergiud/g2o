@@ -12,48 +12,44 @@
 #include <g2o/stuff/string_tools.h>
 
 #include <iostream>
+#include <memory>
+#include <utility>
 
 G2O_START_NAMESPACE
 
 using namespace std;
 
-ParameterContainer::ParameterContainer(bool isMainStorage_)
-    : _isMainStorage(isMainStorage_) {}
+ParameterContainer::ParameterContainer() = default;
 
-void ParameterContainer::clear() {
-  if (!_isMainStorage) return;
-  for (auto& it : *this) {
-    delete it.second;
-  }
-  BaseClass::clear();
-}
+void ParameterContainer::clear() { BaseClass::clear(); }
 
 ParameterContainer::~ParameterContainer() { clear(); }
 
-bool ParameterContainer::addParameter(Parameter* p) {
+bool ParameterContainer::addParameter(std::unique_ptr<Parameter> p) {
   if (p->id() < 0) return false;
   auto it = find(p->id());
   if (it != end()) return false;
-  insert(make_pair(p->id(), p));
+  const int id = p->id();
+  emplace(id, std::move(p));
   return true;
 }
 
 Parameter* ParameterContainer::getParameter(int id) {
   auto it = find(id);
   if (it == end()) return nullptr;
-  return it->second;
+  return it->second.get();
 }
 
 const Parameter* ParameterContainer::getParameter(int id) const {
   auto it = find(id);
   if (it == end()) return nullptr;
-  return it->second;
+  return it->second.get();
 }
 
-Parameter* ParameterContainer::detachParameter(int id) {
+std::unique_ptr<Parameter> ParameterContainer::detachParameter(int id) {
   auto it = find(id);
   if (it == end()) return nullptr;
-  Parameter* p = it->second;
+  std::unique_ptr<Parameter> p = std::move(it->second);
   erase(it);
   return p;
 }
@@ -61,7 +57,7 @@ Parameter* ParameterContainer::detachParameter(int id) {
 bool ParameterContainer::write(std::ostream& os) const {
   Factory* factory = Factory::instance();
   for (const auto& it : *this) {
-    os << factory->tag(it.second) << " ";
+    os << factory->tag(it.second.get()) << " ";
     os << it.second->id() << " ";
     it.second->write(os);
     os << endl;
@@ -91,14 +87,14 @@ bool ParameterContainer::read(
       }
     }
 
-    HyperGraph::HyperGraphElement* element =
+    std::unique_ptr<HyperGraph::HyperGraphElement> element =
         factory->construct(token, elemBitset);
     if (element == nullptr)  // not a parameter or otherwise unknown tag
       continue;
     assert(element->elementType() == HyperGraph::HGET_PARAMETER &&
            "Should be a param");
 
-    Parameter* p = dynamic_cast<Parameter*>(element);
+    std::unique_ptr<Parameter> p = castElement<Parameter>(element);
     int pid;
     currentLine >> pid;
     p->setId(pid);
@@ -106,9 +102,8 @@ bool ParameterContainer::read(
     if (!r) {
       ngx::Log(ngx::Error, "Error reading data {} for parameter {}", token,
                pid);
-      delete p;
     } else {
-      if (!addParameter(p)) {
+      if (!addParameter(std::move(p))) {
         ngx::Log(ngx::Warning, "Parameter of type:{} id:{} already defined",
                  token, pid);
       }

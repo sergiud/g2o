@@ -16,6 +16,8 @@
 
 #include <Eigen/Core>
 #include <iostream>
+#include <memory>
+#include <utility>
 
 using namespace std;
 
@@ -98,7 +100,7 @@ int main(int argc, char** argv) {
   double a = 2.;
   double b = 0.4;
   double lambda = 0.2;
-  auto* points = new Eigen::Vector2d[numPoints];
+  std::vector<Eigen::Vector2d> points(numPoints);
   for (int i = 0; i < numPoints; ++i) {
     double x = g2o::Sampler::uniformRand(0, 10);
     double y = a * exp(-lambda * x) + b;
@@ -122,25 +124,27 @@ int main(int argc, char** argv) {
   // setup the solver
   g2o::SparseOptimizer optimizer;
   optimizer.setVerbose(false);
-  auto* linearSolver = new MyLinearSolver();
-  auto* solver_ptr = new MyBlockSolver(linearSolver);
-  auto* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
-  optimizer.setAlgorithm(solver);
+  auto linearSolver = std::make_unique<MyLinearSolver>();
+  auto solver_ptr = std::make_unique<MyBlockSolver>(std::move(linearSolver));
+  auto solver = std::make_unique<g2o::OptimizationAlgorithmLevenberg>(
+      std::move(solver_ptr));
+  optimizer.setAlgorithm(std::move(solver));
 
   // build the optimization problem given the points
   // 1. add the parameter vertex
-  auto* params = new VertexParams();
+  auto paramsOwner = std::make_unique<VertexParams>();
+  auto* params = paramsOwner.get();
   params->setId(0);
   params->setEstimate(
       Eigen::Vector3d(1, 1, 1));  // some initial value for the params
-  optimizer.addVertex(params);
+  optimizer.addVertex(std::move(paramsOwner));
   // 2. add the points we measured to be on the curve
   for (int i = 0; i < numPoints; ++i) {
-    auto* e = new EdgePointOnCurve;
+    auto e = std::make_unique<EdgePointOnCurve>();
     e->setInformation(Eigen::Matrix<double, 1, 1>::Identity());
     e->setVertex(0, params);
     e->setMeasurement(points[i]);
-    optimizer.addEdge(e);
+    optimizer.addEdge(std::move(e));
   }
 
   // perform the optimization
@@ -160,7 +164,6 @@ int main(int argc, char** argv) {
   cout << endl;
 
   // clean up
-  delete[] points;
 
   return 0;
 }

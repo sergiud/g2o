@@ -10,6 +10,8 @@
 #include <Eigen/Core>
 #include <cstdlib>
 #include <fstream>
+#include <memory>
+#include <utility>
 
 #include "simulator3d.h"
 
@@ -58,12 +60,12 @@ int main(int argc, char** argv) {
   OptimizableGraph graph;
   World world(&graph);
   for (int i = 0; i < nlandmarks; i++) {
-    auto* landmark = new WorldObjectTrackXYZ;
+    auto landmark = std::make_unique<WorldObjectTrackXYZ>();
     double x = sampleUniform(-.5, .5, &generator) * worldSize;
     double y = sampleUniform(-.5, .5, &generator) * worldSize;
     double z = sampleUniform(-.5, .5);
     landmark->vertex()->setEstimate(Vector3d(x, y, z));
-    world.addWorldObject(landmark);
+    world.addWorldObject(std::move(landmark));
   }
   Robot3D robot(&world, "myRobot");
   world.addRobot(&robot);
@@ -74,15 +76,16 @@ int main(int argc, char** argv) {
   ss << "-steps" << simSteps;
 
   if (hasOdom) {
-    SensorOdometry3D* odometrySensor = new SensorOdometry3D("odometry");
-    robot.addSensor(odometrySensor);
+    auto odometrySensor = std::make_unique<SensorOdometry3D>("odometry");
+    robot.addSensor(std::move(odometrySensor));
     ss << "-odom";
   }
 
   if (hasPointSensor) {
-    SensorPointXYZ* pointSensor = new SensorPointXYZ("pointSensor");
+    auto pointSensorOwner = std::make_unique<SensorPointXYZ>("pointSensor");
+    SensorPointXYZ* pointSensor = pointSensorOwner.get();
     pointSensor->setFov(M_PI / 4);
-    robot.addSensor(pointSensor);
+    robot.addSensor(std::move(pointSensorOwner));
     Eigen::Isometry3d cameraPose;
     Eigen::Matrix3d R;
     R << 0, 0, 1, -1, 0, 0, 0, -1, 0;
@@ -94,12 +97,13 @@ int main(int argc, char** argv) {
   }
 
   if (hasPointDisparitySensor) {
-    SensorPointXYZDisparity* disparitySensor =
-        new SensorPointXYZDisparity("disparitySensor");
+    auto disparitySensorOwner =
+        std::make_unique<SensorPointXYZDisparity>("disparitySensor");
+    SensorPointXYZDisparity* disparitySensor = disparitySensorOwner.get();
     disparitySensor->setFov(M_PI / 4);
     disparitySensor->setMinRange(0.5);
     disparitySensor->setMaxRange(2.);
-    robot.addSensor(disparitySensor);
+    robot.addSensor(std::move(disparitySensorOwner));
     Eigen::Isometry3d cameraPose;
     Eigen::Matrix3d R;
     R << 0, 0, 1, -1, 0, 0, 0, -1, 0;
@@ -110,11 +114,13 @@ int main(int argc, char** argv) {
   }
 
   if (hasPointDepthSensor) {
-    SensorPointXYZDepth* depthSensor = new SensorPointXYZDepth("depthSensor");
+    auto depthSensorOwner =
+        std::make_unique<SensorPointXYZDepth>("depthSensor");
+    SensorPointXYZDepth* depthSensor = depthSensorOwner.get();
     depthSensor->setFov(M_PI / 4);
     depthSensor->setMinRange(0.5);
     depthSensor->setMaxRange(2.);
-    robot.addSensor(depthSensor);
+    robot.addSensor(std::move(depthSensorOwner));
     Eigen::Isometry3d cameraPose;
     Eigen::Matrix3d R;
     R << 0, 0, 1, -1, 0, 0, 0, -1, 0;
@@ -125,15 +131,18 @@ int main(int argc, char** argv) {
   }
 
   if (hasPoseSensor) {
-    SensorPose3D* poseSensor = new SensorPose3D("poseSensor");
-    robot.addSensor(poseSensor);
+    auto poseSensorOwner = std::make_unique<SensorPose3D>("poseSensor");
+    SensorPose3D* poseSensor = poseSensorOwner.get();
+    robot.addSensor(std::move(poseSensorOwner));
     poseSensor->setMaxRange(5);
     ss << "-pose";
   }
 
 #ifdef _POSE_PRIOR_SENSOR
-  SensorSE3Prior posePriorSensor("posePriorSensor");
-  robot.addSensor(&posePriorSensor);
+  auto posePriorSensorOwner =
+      std::make_unique<SensorSE3Prior>("posePriorSensor");
+  SensorSE3Prior& posePriorSensor = *posePriorSensorOwner;
+  robot.addSensor(std::move(posePriorSensorOwner));
   {
     Eigen::Isometry3d cameraPose;
     Eigen::Matrix3d R;
@@ -145,11 +154,12 @@ int main(int argc, char** argv) {
 #endif
 
 #ifdef _POSE_SENSOR_OFFSET
-  SensorPose3DOffset poseSensor("poseSensor");
+  auto poseSensorOwner = std::make_unique<SensorPose3DOffset>("poseSensor");
+  SensorPose3DOffset& poseSensor = *poseSensorOwner;
   poseSensor.setFov(M_PI / 4);
   poseSensor.setMinRange(0.5);
   poseSensor.setMaxRange(5);
-  robot.addSensor(&poseSensor);
+  robot.addSensor(std::move(poseSensorOwner));
   if (0) {
     Eigen::Isometry3d cameraPose;
     Eigen::Matrix3d R;

@@ -6,6 +6,9 @@
 #include "sensor_segment2d_pointline.h"
 
 #include <g2o/apps/g2o_simulator/simutils.h>
+
+#include <memory>
+#include <utility>
 using namespace std;
 using namespace Eigen;
 
@@ -93,15 +96,15 @@ void SensorSegment2DPointLine::sense() {
     it++;
     count++;
   }
-  for (auto it : world()->objects()) {
-    WorldObjectType* o = dynamic_cast<WorldObjectType*>(it);
+  for (const auto& it : world()->objects()) {
+    WorldObjectType* o = dynamic_cast<WorldObjectType*>(it.get());
     if ((o != nullptr) && isVisible(o)) {
-      EdgeType* e = mkEdge(o);
+      std::unique_ptr<EdgeType> e = mkEdge(o);
       if ((e != nullptr) && (graph() != nullptr)) {
         e->setPointNum(_visiblePoint);
         e->setMeasurementFromState();
-        addNoise(e);
-        graph()->addEdge(e);
+        addNoise(e.get());
+        graph()->addEdge(std::move(e));
       }
     }
   }

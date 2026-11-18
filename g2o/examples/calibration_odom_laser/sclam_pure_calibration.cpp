@@ -24,6 +24,8 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <memory>
+#include <utility>
 
 #include "edge_se2_pure_calib.h"
 #include "gm2dl_io.h"
@@ -130,8 +132,8 @@ int main(int argc, char** argv) {
     ngx::Log(ngx::Warning, "No robot laser read");
     return 0;
   } else {
-    RobotLaser* rl =
-        dynamic_cast<RobotLaser*>(robotLaserQueue.buffer().begin()->second);
+    RobotLaser* rl = dynamic_cast<RobotLaser*>(
+        robotLaserQueue.buffer().begin()->second.get());
     initialLaserPose = rl->odomPose().inverse() * rl->laserPose();
     ngx::Log("initialLaserPose.toVector().transpose() = {}",
              Streamed{initialLaserPose.toVector().transpose()});
@@ -145,8 +147,8 @@ int main(int argc, char** argv) {
     auto prevIt = it++;
     for (; it != robotLaserQueue.buffer().end(); ++it) {
       MotionInformation mi;
-      RobotLaser* prevLaser = dynamic_cast<RobotLaser*>(prevIt->second);
-      RobotLaser* curLaser = dynamic_cast<RobotLaser*>(it->second);
+      RobotLaser* prevLaser = dynamic_cast<RobotLaser*>(prevIt->second.get());
+      RobotLaser* curLaser = dynamic_cast<RobotLaser*>(it->second.get());
       mi.laserMotion = prevLaser->laserPose().inverse() * curLaser->laserPose();
       // get the motion of the robot in that time interval
       RobotLaser* prevOdom = dynamic_cast<RobotLaser*>(
@@ -161,14 +163,17 @@ int main(int argc, char** argv) {
   }
 
   if (1) {
-    auto* laserOffset = new VertexSE2;
+    auto laserOffsetOwner = std::make_unique<VertexSE2>();
+    auto* laserOffset = laserOffsetOwner.get();
     laserOffset->setId(Gm2dlIO::ID_LASERPOSE);
     laserOffset->setEstimate(initialLaserPose);
-    optimizer.addVertex(laserOffset);
-    auto* odomParamsVertex = new VertexOdomDifferentialParams;
+    optimizer.addVertex(std::move(laserOffsetOwner));
+    auto odomParamsVertexOwner =
+        std::make_unique<VertexOdomDifferentialParams>();
+    auto* odomParamsVertex = odomParamsVertexOwner.get();
     odomParamsVertex->setId(Gm2dlIO::ID_ODOMCALIB);
     odomParamsVertex->setEstimate(Eigen::Vector3d(1., 1., 1.));
-    optimizer.addVertex(odomParamsVertex);
+    optimizer.addVertex(std::move(odomParamsVertexOwner));
     for (auto& motion : motions) {
       const SE2& odomMotion = motion.odomMotion;
       const SE2& laserMotion = motion.laserMotion;
@@ -180,14 +185,14 @@ int main(int argc, char** argv) {
       OdomAndLaserMotion meas;
       meas.velocityMeasurement = OdomConvert::convertToVelocity(mm);
       meas.laserMotion = laserMotion;
-      auto* calibEdge = new EdgeSE2PureCalib;
+      auto calibEdgeOwner = std::make_unique<EdgeSE2PureCalib>();
+      auto* calibEdge = calibEdgeOwner.get();
       calibEdge->setVertex(0, laserOffset);
       calibEdge->setVertex(1, odomParamsVertex);
       calibEdge->setInformation(Eigen::Matrix3d::Identity());
       calibEdge->setMeasurement(meas);
-      if (!optimizer.addEdge(calibEdge)) {
+      if (!optimizer.addEdge(std::move(calibEdgeOwner))) {
         ngx::Log(ngx::Error, "Error adding calib edge");
-        delete calibEdge;
       }
     }
 
@@ -230,14 +235,16 @@ int main(int argc, char** argv) {
   }
 
   // constructing non-linear least squares
-  auto* laserOffset = new VertexSE2;
+  auto laserOffsetOwner = std::make_unique<VertexSE2>();
+  auto* laserOffset = laserOffsetOwner.get();
   laserOffset->setId(Gm2dlIO::ID_LASERPOSE);
   laserOffset->setEstimate(initialLaserPose);
-  optimizer.addVertex(laserOffset);
-  auto* odomParamsVertex = new VertexBaseline;
+  optimizer.addVertex(std::move(laserOffsetOwner));
+  auto odomParamsVertexOwner = std::make_unique<VertexBaseline>();
+  auto* odomParamsVertex = odomParamsVertexOwner.get();
   odomParamsVertex->setId(Gm2dlIO::ID_ODOMCALIB);
   odomParamsVertex->setEstimate(1.);
-  optimizer.addVertex(odomParamsVertex);
+  optimizer.addVertex(std::move(odomParamsVertexOwner));
   for (auto& motion : motions) {
     const SE2& odomMotion = motion.odomMotion;
     const SE2& laserMotion = motion.laserMotion;
@@ -249,14 +256,14 @@ int main(int argc, char** argv) {
     OdomAndLaserMotion meas;
     meas.velocityMeasurement = OdomConvert::convertToVelocity(mm);
     meas.laserMotion = laserMotion;
-    auto* calibEdge = new EdgeCalib;
+    auto calibEdgeOwner = std::make_unique<EdgeCalib>();
+    auto* calibEdge = calibEdgeOwner.get();
     calibEdge->setVertex(0, laserOffset);
     calibEdge->setVertex(1, odomParamsVertex);
     calibEdge->setInformation(Eigen::Matrix3d::Identity());
     calibEdge->setMeasurement(meas);
-    if (!optimizer.addEdge(calibEdge)) {
+    if (!optimizer.addEdge(std::move(calibEdgeOwner))) {
       ngx::Log(ngx::Error, "Error adding calib edge");
-      delete calibEdge;
     }
   }
 
@@ -305,11 +312,11 @@ int main(int argc, char** argv) {
       ofstream rawStream("odometry_raw.txt");
       ofstream calibratedStream("odometry_calibrated.txt");
       RobotLaser* prev = dynamic_cast<RobotLaser*>(
-          testRobotLaserQueue.buffer().begin()->second);
+          testRobotLaserQueue.buffer().begin()->second.get());
       SE2 prevCalibratedPose = prev->odomPose();
 
       for (const auto& it : testRobotLaserQueue.buffer()) {
-        RobotLaser* cur = dynamic_cast<RobotLaser*>(it.second);
+        RobotLaser* cur = dynamic_cast<RobotLaser*>(it.second.get());
         assert(cur);
 
         double dt = cur->timestamp() - prev->timestamp();

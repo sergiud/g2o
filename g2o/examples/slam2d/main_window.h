@@ -6,11 +6,11 @@
 #ifndef G2O_MAIN_WINDOW_H
 #define G2O_MAIN_WINDOW_H
 
-#include "ui_base_main_window.h"
+#include <g2o/core/optimization_algorithm.h>
 
-G2O_START_NAMESPACE
-class OptimizationAlgorithm;
-G2O_END_NAMESPACE
+#include <memory>
+
+#include "ui_base_main_window.h"
 
 class MainWindow : public QMainWindow, public Ui::BaseMainWindow {
   Q_OBJECT
@@ -18,8 +18,8 @@ class MainWindow : public QMainWindow, public Ui::BaseMainWindow {
   MainWindow(QWidget* parent = nullptr, Qt::WindowFlags flags = {});
   ~MainWindow();
 
-  g2o::OptimizationAlgorithm* solverGaussNewton{};
-  g2o::OptimizationAlgorithm* solverLevenberg{};
+  //! creates the optimization algorithm that the window selects
+  std::unique_ptr<g2o::OptimizationAlgorithm> createAlgorithm() const;
 
  public slots:
   void on_actionLoad_triggered(bool);

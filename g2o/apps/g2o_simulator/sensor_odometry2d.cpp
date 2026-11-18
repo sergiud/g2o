@@ -8,6 +8,8 @@
 #include <g2o/stuff/logger.h>
 
 #include <cassert>
+#include <memory>
+#include <utility>
 
 // Robot2D
 G2O_START_NAMESPACE
@@ -37,11 +39,11 @@ void SensorOdometry2D::sense() {
     return;
   }
   _robotPoseObject = pprev;
-  EdgeType* e = mkEdge(pcurr);
+  std::unique_ptr<EdgeType> e = mkEdge(pcurr);
   if (e != nullptr) {
     e->setMeasurementFromState();
-    addNoise(e);
-    if (graph() != nullptr) graph()->addEdge(e);
+    addNoise(e.get());
+    if (graph() != nullptr) graph()->addEdge(std::move(e));
   }
   _robotPoseObject = pcurr;
 }

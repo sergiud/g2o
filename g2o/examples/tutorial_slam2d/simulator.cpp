@@ -9,6 +9,8 @@
 
 #include <cmath>
 #include <map>
+#include <memory>
+#include <utility>
 
 #include "rand.h"
 using namespace std;
@@ -24,7 +26,9 @@ inline double round(double number) {
 }
 #endif
 
-typedef std::map<int, std::map<int, Simulator::LandmarkPtrVector> >
+//! the landmarks in each cell of the grid, which the grid owns
+typedef std::map<
+    int, std::map<int, std::vector<std::unique_ptr<Simulator::Landmark>>>>
     LandmarkGrid;
 
 Simulator::Simulator() {
@@ -128,10 +132,10 @@ void Simulator::simulate(int numNodes, const SE2& sensorOffset) {
       for (int b = -landmarksRange; b <= landmarksRange; b++) {
         int cx = ccx + a;
         int cy = ccy + b;
-        LandmarkPtrVector& landmarksForCell = grid[cx][cy];
+        auto& landmarksForCell = grid[cx][cy];
         if (landmarksForCell.empty()) {
           for (int i = 0; i < landMarksPerSquareMeter; ++i) {
-            auto* l = new Landmark();
+            auto l = std::make_unique<Landmark>();
             double offx, offy;
             do {
               offx = Rand::uniform_rand(-0.5 * stepLen, 0.5 * stepLen);
@@ -139,7 +143,7 @@ void Simulator::simulate(int numNodes, const SE2& sensorOffset) {
             } while (hypot_sqr(offx, offy) < 0.25 * 0.25);
             l->truePose[0] = cx + offx;
             l->truePose[1] = cy + offy;
-            landmarksForCell.push_back(l);
+            landmarksForCell.push_back(std::move(l));
           }
         }
       }
@@ -160,9 +164,10 @@ void Simulator::simulate(int numNodes, const SE2& sensorOffset) {
 
     for (int xx = cx - numGridCells; xx <= cx + numGridCells; ++xx)
       for (int yy = cy - numGridCells; yy <= cy + numGridCells; ++yy) {
-        LandmarkPtrVector& landmarksForCell = grid[xx][yy];
+        auto& landmarksForCell = grid[xx][yy];
         if (landmarksForCell.empty()) continue;
-        for (auto l : landmarksForCell) {
+        for (const auto& owned : landmarksForCell) {
+          Landmark* l = owned.get();
           double dSqr =
               hypot_sqr(pv.truePose.translation().x() - l->truePose.x(),
                         pv.truePose.translation().y() - l->truePose.y());
@@ -252,14 +257,6 @@ void Simulator::simulate(int numNodes, const SE2& sensorOffset) {
       }
     }
     ngx::Log("done.");
-  }
-
-  // cleaning up
-  for (auto& it : grid) {
-    for (auto itt = it.second.begin(); itt != it.second.end(); ++itt) {
-      Simulator::LandmarkPtrVector& landmarks = itt->second;
-      for (auto& landmark : landmarks) delete landmark;
-    }
   }
 }
 

@@ -8,6 +8,9 @@
 #include <g2o/core/factory.h>
 #include <g2o/stuff/logger.h>
 
+#include <memory>
+#include <utility>
+
 G2O_START_NAMESPACE
 using namespace std;
 
@@ -86,18 +89,19 @@ CacheContainer::CacheContainer(OptimizableGraph::Vertex* vertex_) {
 Cache* CacheContainer::findCache(const Cache::CacheKey& key) {
   auto it = find(key);
   if (it == end()) return nullptr;
-  return it->second;
+  return it->second.get();
 }
 
 Cache* CacheContainer::createCache(const Cache::CacheKey& key) {
   Factory* f = Factory::instance();
-  HyperGraph::HyperGraphElement* e = f->construct(key.type());
+  std::unique_ptr<HyperGraph::HyperGraphElement> e = f->construct(key.type());
   if (e == nullptr) {
     ngx::Log(ngx::Error, "fatal error in creating cache of type {}",
              key.type());
     return nullptr;
   }
-  Cache* c = dynamic_cast<Cache*>(e);
+  std::unique_ptr<Cache> cache = castElement<Cache>(e);
+  Cache* c = cache.get();
   if (c == nullptr) {
     ngx::Log(ngx::Error, "fatal error in creating cache of type {}",
              key.type());
@@ -106,7 +110,7 @@ Cache* CacheContainer::createCache(const Cache::CacheKey& key) {
   c->_container = this;
   c->_parameters = key._parameters;
   if (c->resolveDependancies()) {
-    insert(make_pair(key, c));
+    emplace(key, std::move(cache));
     c->update();
     return c;
   }
@@ -134,10 +138,6 @@ void CacheContainer::setUpdateNeeded(bool needUpdate) {
   }
 }
 
-CacheContainer::~CacheContainer() {
-  for (auto& it : *this) {
-    delete (it.second);
-  }
-}
+CacheContainer::~CacheContainer() = default;
 
 G2O_END_NAMESPACE

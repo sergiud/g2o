@@ -34,6 +34,7 @@
 #endif
 
 #include <iostream>
+#include <memory>
 using namespace std;
 
 G2O_START_NAMESPACE
@@ -76,13 +77,10 @@ G2oQGLViewer::G2oQGLViewer(QWidget* parent, Qt::WindowFlags flags)
       _drawActions(nullptr),
       _drawList(0) {
   setAxisIsDrawn(false);
-  _drawActionParameters = new DrawAction::Parameters();
+  _drawActionParameters = std::make_unique<DrawAction::Parameters>();
 }
 
-G2oQGLViewer::~G2oQGLViewer() {
-  delete _drawActionParameters;
-  glDeleteLists(_drawList, 1);
-}
+G2oQGLViewer::~G2oQGLViewer() { glDeleteLists(_drawList, 1); }
 
 void G2oQGLViewer::draw() {
   if (graph == nullptr) return;
@@ -97,7 +95,7 @@ void G2oQGLViewer::draw() {
   if (_updateDisplay) {
     _updateDisplay = false;
     glNewList(_drawList, GL_COMPILE_AND_EXECUTE);
-    applyAction(graph, _drawActions, _drawActionParameters);
+    applyAction(graph, _drawActions, _drawActionParameters.get());
     glEndList();
   } else {
     glCallList(_drawList);
@@ -141,13 +139,14 @@ void G2oQGLViewer::init() {
   // setShortcut(SAVE_SCREENSHOT, 0);
 
   // replace camera
-  qglviewer::Camera* oldcam = camera();
-  qglviewer::Camera* cam = new StandardCamera();
-  setCamera(cam);
+  // The viewer owns its camera but leaves the one it replaces to the caller.
+  std::unique_ptr<qglviewer::Camera> oldcam(camera());
+  auto ownedCamera = std::make_unique<StandardCamera>();
+  StandardCamera* cam = ownedCamera.get();
+  setCamera(ownedCamera.release());
   cam->setPosition(qglviewer::Vec(0., 0., 75.));
   cam->setUpVector(qglviewer::Vec(0., 1., 0.));
   cam->lookAt(qglviewer::Vec(0., 0., 0.));
-  delete oldcam;
 
   // getting a display list
   _drawList = glGenLists(1);

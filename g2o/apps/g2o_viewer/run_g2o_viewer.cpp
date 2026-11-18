@@ -16,6 +16,7 @@
 
 #include <QApplication>
 #include <QThread>
+#include <memory>
 
 #include "gui_hyper_graph_action.h"
 #include "main_window.h"
@@ -55,12 +56,12 @@ int RunG2OViewer::run(int argc, char** argv, CommandArgs& arg) {
   StreamRedirect redirect(std::cerr, mw.plainTextEdit);
 
   // setting up the optimizer
-  auto* optimizer = new SparseOptimizer();
+  auto optimizer = std::make_unique<SparseOptimizer>();
   // Loading the input data
   if (loadLookup.size() > 0) {
     optimizer->setRenamedTypesFromString(loadLookup);
   }
-  mw.viewer->graph = optimizer;
+  mw.viewer->graph = optimizer.get();
 
   // set up the GUI action
   GuiHyperGraphAction guiHyperGraphAction;
@@ -79,7 +80,6 @@ int RunG2OViewer::run(int argc, char** argv, CommandArgs& arg) {
     SleepThread::msleep(10);
   }
 
-  delete optimizer;
   return 0;
 }
 

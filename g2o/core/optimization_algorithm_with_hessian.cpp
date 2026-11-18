@@ -10,20 +10,20 @@
 #include <g2o/core/sparse_optimizer.h>
 
 #include <iostream>
+#include <memory>
+#include <utility>
 
 using namespace std;
 
 G2O_START_NAMESPACE
 
 OptimizationAlgorithmWithHessian::OptimizationAlgorithmWithHessian(
-    Solver* solver)
-    : OptimizationAlgorithm(), _solver(solver) {
+    std::unique_ptr<Solver> solver)
+    : OptimizationAlgorithm(), _solver(std::move(solver)) {
   _writeDebug = _properties.makeProperty<Property<bool> >("writeDebug", true);
 }
 
-OptimizationAlgorithmWithHessian::~OptimizationAlgorithmWithHessian() {
-  delete _solver;
-}
+OptimizationAlgorithmWithHessian::~OptimizationAlgorithmWithHessian() = default;
 
 bool OptimizationAlgorithmWithHessian::init(bool online) {
   assert(_optimizer && "_optimizer not set");

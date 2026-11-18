@@ -13,6 +13,8 @@
 #include <g2o/prefix.h>
 #include <g2o/solvers/cholmod/linear_solver_cholmod.h>
 
+#include <memory>
+
 G2O_START_NAMESPACE
 
 struct CholmodExt;
@@ -33,9 +35,11 @@ class G2O_INCREMENTAL_API SparseOptimizerIncremental
  protected:
   SparseBlockMatrix<Eigen::MatrixXd> _updateMat;
   cholmod_common _cholmodCommon{};
-  CholmodExt* _cholmodSparse;
-  cholmod_factor* _cholmodFactor;
-  cholmod_triplet* _permutedUpdate;
+  std::unique_ptr<CholmodExt> _cholmodSparse;
+  std::unique_ptr<cholmod_factor, CholmodFree> _cholmodFactor{
+      nullptr, CholmodFree{&_cholmodCommon}};
+  std::unique_ptr<cholmod_triplet, CholmodFree> _permutedUpdate{
+      nullptr, CholmodFree{&_cholmodCommon}};
   cholmod_factor* L_;
   LinearSolverCholmodOnlineInterface* _solverInterface;
 
@@ -44,7 +48,7 @@ class G2O_INCREMENTAL_API SparseOptimizerIncremental
   Eigen::VectorXi _cmember;
 
   Eigen::VectorXi _tripletWorkspace;
-  CholmodExt* _permutedUpdateAsSparse;
+  std::unique_ptr<CholmodExt> _permutedUpdateAsSparse;
 
   bool computeCholeskyUpdate();
   void convertTripletUpdateToSparse();

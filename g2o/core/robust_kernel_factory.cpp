@@ -8,6 +8,8 @@
 #include <g2o/stuff/logger.h>
 
 #include <cassert>
+#include <memory>
+#include <utility>
 
 using namespace std;
 
@@ -18,8 +20,8 @@ RobustKernelFactory* RobustKernelFactory::instance() {
   return &factoryInstance;
 }
 
-void RobustKernelFactory::registerRobustKernel(const std::string& tag,
-                                               AbstractRobustKernelCreator* c) {
+void RobustKernelFactory::registerRobustKernel(
+    const std::string& tag, std::unique_ptr<AbstractRobustKernelCreator> c) {
   auto foundIt = _creator.find(tag);
   if (foundIt != _creator.end()) {
     ngx::Log(ngx::Warning,
@@ -28,18 +30,18 @@ void RobustKernelFactory::registerRobustKernel(const std::string& tag,
     assert(0);
   }
 
-  _creator[tag].reset(c);
+  _creator[tag] = std::move(c);
 }
 
 void RobustKernelFactory::unregisterType(const std::string& tag) {
   auto tagPosition = _creator.find(tag);
   if (tagPosition != _creator.end()) {
-    tagPosition->second.release();
     _creator.erase(tagPosition);
   }
 }
 
-RobustKernel* RobustKernelFactory::construct(const std::string& tag) const {
+std::unique_ptr<RobustKernel> RobustKernelFactory::construct(
+    const std::string& tag) const {
   auto foundIt = _creator.find(tag);
   if (foundIt != _creator.end()) {
     return foundIt->second->construct();

@@ -9,6 +9,7 @@
 #include <g2o/core/hyper_graph.h>
 #include <g2o/prefix.h>
 
+#include <memory>
 #include <string>
 #include <typeinfo>
 
@@ -22,7 +23,7 @@ class G2O_CORE_API AbstractHyperGraphElementCreator {
   /**
    * create a hyper graph element. Has to implemented in derived class.
    */
-  virtual HyperGraph::HyperGraphElement* construct() = 0;
+  virtual std::unique_ptr<HyperGraph::HyperGraphElement> construct() = 0;
   /**
    * name of the class to be created. Has to implemented in derived class.
    */
@@ -42,8 +43,8 @@ class HyperGraphElementCreator : public AbstractHyperGraphElementCreator {
     defined(__GNUC__)  // force stack alignment on Windows with GCC
   __attribute__((force_align_arg_pointer))
 #endif
-  HyperGraph::HyperGraphElement* construct() {
-    return new T;
+  std::unique_ptr<HyperGraph::HyperGraphElement> construct() override {
+    return std::make_unique<T>();
   }
   virtual const std::string& name() const { return _name; }
 

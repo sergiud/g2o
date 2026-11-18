@@ -14,16 +14,19 @@
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 
-#define DIM_TO_SOLVER(p, l) BlockSolver<BlockSolverTraits<p, l> >
+#include <memory>
+#include <utility>
+
+#define DIM_TO_SOLVER(p, l) BlockSolver<BlockSolverTraits<p, l>>
 
 #define ALLOC_CSPARSE(s, p, l, blockorder)                                    \
   if (1) {                                                                    \
     ngx::Log("# Using CSparse poseDim {} landMarkDim {} blockordering {}", p, \
              l, blockorder);                                                  \
-    LinearSolverCSparse<DIM_TO_SOLVER(p, l)::PoseMatrixType>* linearSolver =  \
-        new LinearSolverCSparse<DIM_TO_SOLVER(p, l)::PoseMatrixType>();       \
+    auto linearSolver = std::make_unique<                                     \
+        LinearSolverCSparse<DIM_TO_SOLVER(p, l)::PoseMatrixType>>();          \
     linearSolver->setBlockOrdering(blockorder);                               \
-    s = new DIM_TO_SOLVER(p, l)(linearSolver);                                \
+    s = std::make_unique<DIM_TO_SOLVER(p, l)>(std::move(linearSolver));       \
   } else                                                                      \
     (void)0
 
@@ -32,22 +35,20 @@ G2O_START_NAMESPACE
 /**
  * helper function for allocating
  */
-static OptimizationAlgorithm* createSolver(const std::string& fullSolverName) {
+static std::unique_ptr<OptimizationAlgorithm> createSolver(
+    const std::string& fullSolverName) {
   if (fullSolverName != "2dlinear") return nullptr;
 
-  g2o::Solver* s = nullptr;
+  std::unique_ptr<BlockSolverBase> s;
   ALLOC_CSPARSE(s, 3, 2, true);
-  OptimizationAlgorithm* snl = nullptr;
-  snl = new SolverSLAM2DLinear(s);
-
-  return snl;
+  return std::make_unique<SolverSLAM2DLinear>(std::move(s));
 }
 
 class SLAM2DLinearSolverCreator : public AbstractOptimizationAlgorithmCreator {
  public:
   SLAM2DLinearSolverCreator(const OptimizationAlgorithmProperty& p)
       : AbstractOptimizationAlgorithmCreator(p) {}
-  virtual OptimizationAlgorithm* construct() {
+  std::unique_ptr<OptimizationAlgorithm> construct() override {
     return createSolver(property().name);
   }
 };
@@ -56,7 +57,7 @@ G2O_REGISTER_OPTIMIZATION_LIBRARY(slam2d_linear);
 
 G2O_REGISTER_OPTIMIZATION_ALGORITHM(
     2dlinear,
-    new SLAM2DLinearSolverCreator(OptimizationAlgorithmProperty(
+    std::make_unique<SLAM2DLinearSolverCreator>(OptimizationAlgorithmProperty(
         "2dlinear",
         "Solve Orientation + Gauss-Newton: Works only on 2D pose graphs!!",
         "CSparse", false, 3, 3)));

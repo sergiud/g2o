@@ -10,6 +10,8 @@
 #include <g2o/core/marginal_covariance_cholesky.h>
 
 #include <cassert>
+#include <memory>
+#include <vector>
 
 G2O_START_NAMESPACE
 
@@ -46,7 +48,7 @@ class LinearSolver {
    * Inverts the diagonal blocks of A
    * @returns false if not defined.
    */
-  virtual bool solveBlocks(double**& blocks,
+  virtual bool solveBlocks(std::vector<std::vector<double>>& blocks,
                            const SparseBlockMatrix<MatrixType>& A) {
     (void)blocks;
     (void)A;
@@ -59,7 +61,7 @@ class LinearSolver {
    */
   virtual bool solvePattern(
       SparseBlockMatrix<MatrixXD>& spinv,
-      const std::vector<std::pair<int, int> >& blockIndices,
+      const std::vector<std::pair<int, int>>& blockIndices,
       const SparseBlockMatrix<MatrixType>& A) {
     (void)spinv;
     (void)blockIndices;
@@ -78,16 +80,14 @@ class LinearSolver {
 template <typename MatrixType>
 class LinearSolverCCS : public LinearSolver<MatrixType> {
  public:
-  LinearSolverCCS() : LinearSolver<MatrixType>(), _ccsMatrix(nullptr) {}
-  ~LinearSolverCCS() { delete _ccsMatrix; }
+  LinearSolverCCS() : LinearSolver<MatrixType>() {}
 
  protected:
-  SparseBlockMatrixCCS<MatrixType>* _ccsMatrix;
+  std::unique_ptr<SparseBlockMatrixCCS<MatrixType>> _ccsMatrix;
 
   void initMatrixStructure(const SparseBlockMatrix<MatrixType>& A) {
-    delete _ccsMatrix;
-    _ccsMatrix = new SparseBlockMatrixCCS<MatrixType>(A.rowBlockIndices(),
-                                                      A.colBlockIndices());
+    _ccsMatrix = std::make_unique<SparseBlockMatrixCCS<MatrixType>>(
+        A.rowBlockIndices(), A.colBlockIndices());
     A.fillSparseBlockMatrixCCS(*_ccsMatrix);
   }
 };

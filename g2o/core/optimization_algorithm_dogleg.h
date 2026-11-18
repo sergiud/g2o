@@ -6,13 +6,14 @@
 #ifndef G2O_OPTIMIZATION_ALGORITHM_DOGLEG_H
 #define G2O_OPTIMIZATION_ALGORITHM_DOGLEG_H
 
+#include <g2o/core/block_solver.h>
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/optimization_algorithm_with_hessian.h>
 #include <g2o/prefix.h>
 
-G2O_START_NAMESPACE
+#include <memory>
 
-class BlockSolverBase;
+G2O_START_NAMESPACE
 
 /**
  * \brief Implementation of Powell's Dogleg Algorithm
@@ -28,7 +29,8 @@ class G2O_CORE_API OptimizationAlgorithmDogleg
    * construct the Dogleg algorithm, which will use the given Solver for solving
    * the linearized system.
    */
-  explicit OptimizationAlgorithmDogleg(BlockSolverBase* solver);
+  //! The algorithm owns the solver.
+  explicit OptimizationAlgorithmDogleg(std::unique_ptr<BlockSolverBase> solver);
   virtual ~OptimizationAlgorithmDogleg();
 
   virtual SolverResult solve(int iteration, bool online = false);

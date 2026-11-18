@@ -9,25 +9,27 @@
 #include <g2o/core/abi.h>
 #include <g2o/prefix.h>
 #include <g2o/types/data/g2o_types_data_api.h>
+#include <g2o/types/data/robot_data.h>
 
 #include <map>
+#include <memory>
 
 G2O_START_NAMESPACE
-
-class RobotData;
 
 /**
  * \brief a simple queue to store data and retrieve based on a timestamp
  */
 class G2O_TYPES_DATA_API DataQueue {
  public:
-  typedef std::map<double, RobotData*> Buffer;
+  //! the data by timestamp, which the queue owns
+  typedef std::map<double, std::unique_ptr<RobotData>> Buffer;
 
  public:
   DataQueue();
   ~DataQueue();
 
-  void add(RobotData* rd);
+  //! adds the data, which replaces and frees data with the same timestamp
+  void add(std::unique_ptr<RobotData> rd);
 
   RobotData* findClosestData(double timestamp) const;
 

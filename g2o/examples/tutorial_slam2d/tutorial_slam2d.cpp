@@ -13,6 +13,8 @@
 #include <g2o/stuff/logger.h>
 
 #include <cmath>
+#include <memory>
+#include <utility>
 
 #include "edge_se2.h"
 #include "edge_se2_pointxy.h"
@@ -42,62 +44,64 @@ int main() {
 
   // allocating the optimizer
   SparseOptimizer optimizer;
-  auto* linearSolver = new SlamLinearSolver();
+  auto linearSolver = std::make_unique<SlamLinearSolver>();
   linearSolver->setBlockOrdering(false);
-  auto* blockSolver = new SlamBlockSolver(linearSolver);
-  auto* solver = new OptimizationAlgorithmGaussNewton(blockSolver);
+  auto blockSolver = std::make_unique<SlamBlockSolver>(std::move(linearSolver));
+  auto solver = std::make_unique<OptimizationAlgorithmGaussNewton>(
+      std::move(blockSolver));
 
-  optimizer.setAlgorithm(solver);
+  optimizer.setAlgorithm(std::move(solver));
 
   // add the parameter representing the sensor offset
-  auto* sensorOffset = new ParameterSE2Offset;
+  auto sensorOffsetOwner = std::make_unique<ParameterSE2Offset>();
+  auto* sensorOffset = sensorOffsetOwner.get();
   sensorOffset->setOffset(sensorOffsetTransf);
   sensorOffset->setId(0);
-  optimizer.addParameter(sensorOffset);
+  optimizer.addParameter(std::move(sensorOffsetOwner));
 
   // adding the odometry to the optimizer
   // first adding all the vertices
   ngx::Log("Optimization: Adding robot poses");
   for (const auto& p : simulator.poses()) {
     const SE2& t = p.simulatorPose;
-    auto* robot = new VertexSE2;
+    auto robot = std::make_unique<VertexSE2>();
     robot->setId(p.id);
     robot->setEstimate(t);
-    optimizer.addVertex(robot);
+    optimizer.addVertex(std::move(robot));
   }
   ngx::Log("done.");
 
   // second add the odometry constraints
   ngx::Log("Optimization: Adding odometry measurements");
   for (const auto& simEdge : simulator.odometry()) {
-    auto* odometry = new EdgeSE2;
+    auto odometry = std::make_unique<EdgeSE2>();
     odometry->vertices()[0] = optimizer.vertex(simEdge.from);
     odometry->vertices()[1] = optimizer.vertex(simEdge.to);
     odometry->setMeasurement(simEdge.simulatorTransf);
     odometry->setInformation(simEdge.information);
-    optimizer.addEdge(odometry);
+    optimizer.addEdge(std::move(odometry));
   }
   ngx::Log("done.");
 
   // add the landmark observations
   ngx::Log("Optimization: add landmark vertices");
   for (const auto& l : simulator.landmarks()) {
-    auto* landmark = new VertexPointXY;
+    auto landmark = std::make_unique<VertexPointXY>();
     landmark->setId(l.id);
     landmark->setEstimate(l.simulatedPose);
-    optimizer.addVertex(landmark);
+    optimizer.addVertex(std::move(landmark));
   }
   ngx::Log("done.");
 
   ngx::Log("Optimization: add landmark observations");
   for (const auto& simEdge : simulator.landmarkObservations()) {
-    auto* landmarkObservation = new EdgeSE2PointXY;
+    auto landmarkObservation = std::make_unique<EdgeSE2PointXY>();
     landmarkObservation->vertices()[0] = optimizer.vertex(simEdge.from);
     landmarkObservation->vertices()[1] = optimizer.vertex(simEdge.to);
     landmarkObservation->setMeasurement(simEdge.simulatorMeas);
     landmarkObservation->setInformation(simEdge.information);
     landmarkObservation->setParameterId(0, sensorOffset->id());
-    optimizer.addEdge(landmarkObservation);
+    optimizer.addEdge(std::move(landmarkObservation));
   }
   ngx::Log("done.");
 

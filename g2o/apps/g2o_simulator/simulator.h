@@ -12,8 +12,10 @@
 #include <g2o/stuff/sampler.h>
 #include <g2o/types/slam3d/types_slam3d.h>
 
+#include <memory>
 #include <set>
 #include <string>
+#include <utility>
 
 G2O_START_NAMESPACE
 
@@ -29,15 +31,18 @@ class G2O_SIMULATOR_API World {
     _paramId = 0;
   }
   OptimizableGraph* graph() { return _graph; }
+  //! adds a robot, which the caller keeps owning
   bool addRobot(BaseRobot* robot);
-  bool addWorldObject(BaseWorldObject* worldObject);
-  bool addParameter(Parameter* p);
+  //! adds an object, which the world owns, and passes its vertex to the graph
+  bool addWorldObject(std::unique_ptr<BaseWorldObject> worldObject);
+  //! adds the parameter to the graph, which owns it
+  bool addParameter(std::unique_ptr<Parameter> p);
 
-  std::set<BaseWorldObject*>& objects() { return _objects; }
+  std::set<std::unique_ptr<BaseWorldObject>>& objects() { return _objects; }
   std::set<BaseRobot*>& robots() { return _robots; }
 
  protected:
-  std::set<BaseWorldObject*> _objects;
+  std::set<std::unique_ptr<BaseWorldObject>> _objects;
   std::set<BaseRobot*> _robots;
   OptimizableGraph* _graph;
   int _runningId;
@@ -55,11 +60,18 @@ class G2O_SIMULATOR_API BaseWorldObject {
   World* world() { return _world; }
   OptimizableGraph* graph();
   OptimizableGraph::Vertex* vertex() { return _vertex; }
+  //! uses the vertex, which the caller keeps owning
   virtual void setVertex(OptimizableGraph::Vertex* vertex_);
+  //! passes the ownership of the vertex the object created to the caller
+  std::unique_ptr<OptimizableGraph::Vertex> releaseVertex() {
+    return std::move(_ownedVertex);
+  }
 
  protected:
   OptimizableGraph* _graph{};
   OptimizableGraph::Vertex* _vertex;
+  //! the vertex the object created until it passes it on
+  std::unique_ptr<OptimizableGraph::Vertex> _ownedVertex;
   World* _world;
 };
 
@@ -70,11 +82,12 @@ class WorldObject : public BaseWorldObject, VertexType_ {
   typedef VertexType_ VertexType;
   typedef typename VertexType_::EstimateType EstimateType;
   WorldObject(World* world_ = nullptr) : BaseWorldObject(world_) {
-    _vertex = new VertexType();
+    _ownedVertex = std::make_unique<VertexType>();
+    _vertex = _ownedVertex.get();
   }
-  virtual void setVertex(OptimizableGraph::Vertex* vertex_) {
+  void setVertex(OptimizableGraph::Vertex* vertex_) override {
     if (!dynamic_cast<VertexType*>(vertex_)) return;
-    _vertex = vertex_;
+    BaseWorldObject::setVertex(vertex_);
   }
 
   VertexType* vertex() {
@@ -93,13 +106,14 @@ class G2O_SIMULATOR_API BaseRobot {
   World* world() { return _world; }
   const std::string& name() const { return _name; }
   OptimizableGraph* graph();
-  bool addSensor(BaseSensor* sensor);
-  const std::set<BaseSensor*> sensors() { return _sensors; }
+  //! adds a sensor, which the robot owns
+  bool addSensor(std::unique_ptr<BaseSensor> sensor);
+  const std::set<std::unique_ptr<BaseSensor>>& sensors() { return _sensors; }
   virtual void sense();
 
  protected:
   World* _world;
-  std::set<BaseSensor*> _sensors;
+  std::set<std::unique_ptr<BaseSensor>> _sensors;
   std::string _name;
 };
 
@@ -121,10 +135,10 @@ class Robot : public BaseRobot {
   virtual void move(const PoseType& pose_) {
     _pose = pose_;
     if (world()) {
-      auto* po = new PoseObject();
+      auto po = std::make_unique<PoseObject>();
       po->vertex()->setEstimate(_pose);
-      world()->addWorldObject(po);
-      _trajectory.push_back(po);
+      _trajectory.push_back(po.get());
+      world()->addWorldObject(std::move(po));
     }
   }
 
@@ -139,6 +153,7 @@ class Robot : public BaseRobot {
 class G2O_SIMULATOR_API BaseSensor {
  public:
   BaseSensor(const std::string& name_) { _name = name_; }
+  virtual ~BaseSensor() = default;
   inline BaseRobot* robot() { return _robot; }
   inline void setRobot(BaseRobot* robot_) { _robot = robot_; }
   World* world();
@@ -188,11 +203,11 @@ class UnarySensor : public BaseSensor {
 
     if (!world() || !graph()) return;
 
-    EdgeType* e = mkEdge();
+    std::unique_ptr<EdgeType> e = mkEdge();
     if (e) {
       e->setMeasurementFromState();
-      addNoise(e);
-      graph()->addEdge(e);
+      addNoise(e.get());
+      graph()->addEdge(std::move(e));
     }
   }
 
@@ -200,9 +215,9 @@ class UnarySensor : public BaseSensor {
   PoseObject* _robotPoseObject;
   InformationType _information;
 
-  EdgeType* mkEdge() {
+  std::unique_ptr<EdgeType> mkEdge() {
     PoseVertexType* robotVertex = (PoseVertexType*)_robotPoseObject->vertex();
-    auto* e = new EdgeType();
+    auto e = std::make_unique<EdgeType>();
     e->vertices()[0] = robotVertex;
     e->information().setIdentity();
     return e;
@@ -249,15 +264,14 @@ class BinarySensor : public BaseSensor {
     if (!world() || !graph()) return;
 
     // naive search. just for initial testing
-    for (auto it = world()->objects().begin(); it != world()->objects().end();
-         it++) {
-      WorldObjectType* wo = dynamic_cast<WorldObjectType*>(*it);
+    for (const auto& it : world()->objects()) {
+      WorldObjectType* wo = dynamic_cast<WorldObjectType*>(it.get());
       if (wo) {
-        EdgeType* e = mkEdge(wo);
+        std::unique_ptr<EdgeType> e = mkEdge(wo);
         if (e) {
           e->setMeasurementFromState();
-          addNoise(e);
-          graph()->addEdge(e);
+          addNoise(e.get());
+          graph()->addEdge(std::move(e));
         }
       }
     }
@@ -267,9 +281,9 @@ class BinarySensor : public BaseSensor {
   PoseObject* _robotPoseObject;
   InformationType _information;
 
-  EdgeType* mkEdge(WorldObjectType* object) {
+  std::unique_ptr<EdgeType> mkEdge(WorldObjectType* object) {
     PoseVertexType* robotVertex = (PoseVertexType*)_robotPoseObject->vertex();
-    auto* e = new EdgeType();
+    auto e = std::make_unique<EdgeType>();
     e->vertices()[0] = robotVertex;
     e->vertices()[1] = object->vertex();
     e->information().setIdentity();

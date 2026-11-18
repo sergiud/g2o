@@ -15,7 +15,9 @@
 #include <Eigen/StdVector>
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <unordered_set>
+#include <utility>
 // #include <g2o/math_groups/se3quat.h>
 #include <g2o/solvers/structure_only/structure_only_solver.h>
 #include <g2o/stuff/logger.h>
@@ -120,23 +122,27 @@ int main(int argc, const char* argv[]) {
 
   g2o::SparseOptimizer optimizer;
   optimizer.setVerbose(false);
-  g2o::OptimizationAlgorithmLevenberg* solver;
+  std::unique_ptr<g2o::OptimizationAlgorithmLevenberg> solver;
   if (SCHUR_TRICK) {
-    g2o::BlockSolver_6_3::LinearSolverType* linearSolver;
+    std::unique_ptr<g2o::BlockSolver_6_3::LinearSolverType> linearSolver;
 
-    linearSolver =
-        new g2o::LinearSolverCholmod<g2o::BlockSolver_6_3::PoseMatrixType>();
-    auto* solver_ptr = new g2o::BlockSolver_6_3(linearSolver);
-    solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+    linearSolver = std::make_unique<
+        g2o::LinearSolverCholmod<g2o::BlockSolver_6_3::PoseMatrixType>>();
+    auto solver_ptr =
+        std::make_unique<g2o::BlockSolver_6_3>(std::move(linearSolver));
+    solver = std::make_unique<g2o::OptimizationAlgorithmLevenberg>(
+        std::move(solver_ptr));
   } else {
-    g2o::BlockSolverX::LinearSolverType* linearSolver;
-    linearSolver =
-        new g2o::LinearSolverCholmod<g2o::BlockSolverX::PoseMatrixType>();
-    auto* solver_ptr = new g2o::BlockSolverX(linearSolver);
-    solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+    std::unique_ptr<g2o::BlockSolverX::LinearSolverType> linearSolver;
+    linearSolver = std::make_unique<
+        g2o::LinearSolverCholmod<g2o::BlockSolverX::PoseMatrixType>>();
+    auto solver_ptr =
+        std::make_unique<g2o::BlockSolverX>(std::move(linearSolver));
+    solver = std::make_unique<g2o::OptimizationAlgorithmLevenberg>(
+        std::move(solver_ptr));
   }
 
-  optimizer.setAlgorithm(solver);
+  optimizer.setAlgorithm(std::move(solver));
 
   vector<Vector3d> true_points;
   for (size_t i = 0; i < 500; ++i) {
@@ -147,13 +153,14 @@ int main(int argc, const char* argv[]) {
   double focal_length = 1000.;
   Vector2d principal_point(320., 240.);
 
-  vector<g2o::SE3Quat, aligned_allocator<g2o::SE3Quat> > true_poses;
+  vector<g2o::SE3Quat, aligned_allocator<g2o::SE3Quat>> true_poses;
 
-  auto* cam_params =
-      new g2o::CameraParameters(focal_length, principal_point, 0.);
+  auto cam_paramsOwner = std::make_unique<g2o::CameraParameters>(
+      focal_length, principal_point, 0.);
+  auto* cam_params = cam_paramsOwner.get();
   cam_params->setId(0);
 
-  if (!optimizer.addParameter(cam_params)) {
+  if (!optimizer.addParameter(std::move(cam_paramsOwner))) {
     assert(false);
   }
 
@@ -163,7 +170,7 @@ int main(int argc, const char* argv[]) {
     Eigen::Quaterniond q;
     q.setIdentity();
     g2o::SE3Quat T_me_from_world(q, trans);
-    auto* v_se3 = new g2o::VertexSE3Expmap();
+    auto v_se3 = std::make_unique<g2o::VertexSE3Expmap>();
     v_se3->setId(vertex_id);
     v_se3->setEstimate(T_me_from_world);
 
@@ -171,7 +178,7 @@ int main(int argc, const char* argv[]) {
       v_se3->setFixed(true);
     }
 
-    optimizer.addVertex(v_se3);
+    optimizer.addVertex(std::move(v_se3));
     true_poses.push_back(T_me_from_world);
     vertex_id++;
   }
@@ -184,7 +191,8 @@ int main(int argc, const char* argv[]) {
   unordered_set<int> inliers;
 
   for (size_t i = 0; i < true_points.size(); ++i) {
-    auto* v_p = new g2o::VertexSBAPointXYZ();
+    auto v_pOwner = std::make_unique<g2o::VertexSBAPointXYZ>();
+    g2o::VertexSBAPointXYZ* v_p = v_pOwner.get();
     int num_obs = 0;
     for (auto& true_pose : true_poses) {
       Vector2d z = cam_params->cam_map(true_pose.map(true_points.at(i)));
@@ -217,7 +225,7 @@ int main(int argc, const char* argv[]) {
 
             Vector3d point_anchor = T_anchor_from_world * point_w;
             v_p->setEstimate(invert_depth(point_anchor));
-            optimizer.addVertex(v_p);
+            optimizer.addVertex(std::move(v_pOwner));
           }
 
           double sam = Sample::uniform();
@@ -227,7 +235,7 @@ int main(int argc, const char* argv[]) {
           }
           z += Vector2d(Sample::gaussian(PIXEL_NOISE),
                         Sample::gaussian(PIXEL_NOISE));
-          auto* e = new g2o::EdgeProjectPSI2UV();
+          auto e = std::make_unique<g2o::EdgeProjectPSI2UV>();
 
           e->resize(3);
           e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(v_p));
@@ -241,12 +249,11 @@ int main(int argc, const char* argv[]) {
           e->information() = Matrix2d::Identity();
 
           if (ROBUST_KERNEL) {
-            auto* rk = new g2o::RobustKernelHuber;
-            e->setRobustKernel(rk);
+            e->setRobustKernel(std::make_unique<g2o::RobustKernelHuber>());
           }
 
           e->setParameterId(0, 0);
-          optimizer.addEdge(e);
+          optimizer.addEdge(std::move(e));
         }
       }
       if (inlier) {

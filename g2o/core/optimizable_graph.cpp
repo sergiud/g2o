@@ -22,6 +22,8 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <memory>
+#include <utility>
 
 G2O_START_NAMESPACE
 
@@ -30,16 +32,17 @@ using namespace std;
 OptimizableGraph::Vertex::Vertex()
     : HyperGraph::Vertex(),
       _graph(nullptr),
-      _userData(nullptr),
       _hessianIndex(-1),
       _fixed(false),
       _marginalized(false),
       _colInHessian(-1),
-      _cacheContainer(nullptr) {}
+      _cacheContainer() {}
 
 CacheContainer* OptimizableGraph::Vertex::cacheContainer() {
-  if (_cacheContainer == nullptr) _cacheContainer = new CacheContainer(this);
-  return _cacheContainer;
+  if (_cacheContainer == nullptr) {
+    _cacheContainer = std::make_unique<CacheContainer>(this);
+  }
+  return _cacheContainer.get();
 }
 
 void OptimizableGraph::Vertex::updateCache() {
@@ -49,12 +52,10 @@ void OptimizableGraph::Vertex::updateCache() {
   }
 }
 
-OptimizableGraph::Vertex::~Vertex() {
-  delete _cacheContainer;
-  delete _userData;
-}
+OptimizableGraph::Vertex::~Vertex() = default;
 
-OptimizableGraph::Vertex* OptimizableGraph::Vertex::clone() const {
+std::unique_ptr<OptimizableGraph::Vertex> OptimizableGraph::Vertex::clone()
+    const {
   return nullptr;
 }
 
@@ -135,8 +136,9 @@ bool OptimizableGraph::Edge::resolveParameters() {
   return true;
 }
 
-void OptimizableGraph::Edge::setRobustKernel(RobustKernel* ptr) {
-  _robustKernel.reset(ptr);
+void OptimizableGraph::Edge::setRobustKernel(
+    std::unique_ptr<RobustKernel> ptr) {
+  _robustKernel = std::move(ptr);
 }
 
 bool OptimizableGraph::Edge::resolveCaches() { return true; }
@@ -153,7 +155,7 @@ RobustKernel* OptimizableGraph::Edge::robustKernel() const {
   return _robustKernel.get();
 }
 
-OptimizableGraph::Edge* OptimizableGraph::Edge::clone() const {
+std::unique_ptr<OptimizableGraph::Edge> OptimizableGraph::Edge::clone() const {
   // TODO
   return nullptr;
 }
@@ -174,7 +176,11 @@ OptimizableGraph::~OptimizableGraph() {
   clearParameters();
 }
 
-bool OptimizableGraph::addVertex(OptimizableGraph::Vertex* ov, Data* userData) {
+bool OptimizableGraph::addVertex(std::unique_ptr<HyperGraph::Vertex> v,
+                                 std::unique_ptr<Data> userData) {
+  auto* ov = dynamic_cast<OptimizableGraph::Vertex*>(v.get());
+  assert(ov && "Vertex does not inherit from OptimizableGraph::Vertex");
+  if (ov == nullptr) return false;
   if (ov->id() < 0) {
     ngx::Log(ngx::Error,
              "a vertex with (negative) ID {} cannot be inserted in the graph",
@@ -183,11 +189,15 @@ bool OptimizableGraph::addVertex(OptimizableGraph::Vertex* ov, Data* userData) {
     return false;
   }
   Vertex* inserted = vertex(ov->id());
+  if (inserted == ov) {
+    // The graph already owns this vertex, so the argument must not free it.
+    static_cast<void>(v.release());
+    return false;
+  }
   if (inserted != nullptr) {
     ngx::Log(ngx::Error,
              "a vertex with ID {} has already been registered with this graph",
              ov->id());
-    assert(0 && "Vertex with this ID already contained in the graph");
     return false;
   }
   if (ov->_graph != nullptr && ov->_graph != this) {
@@ -197,36 +207,31 @@ bool OptimizableGraph::addVertex(OptimizableGraph::Vertex* ov, Data* userData) {
     assert(0 && "Vertex already registered with another graph");
     return false;
   }
-  if (userData != nullptr) ov->setUserData(userData);
+  if (userData != nullptr) ov->setUserData(std::move(userData));
   ov->_graph = this;
-  return HyperGraph::addVertex(ov);
+  return HyperGraph::addVertex(std::move(v));
 }
 
-bool OptimizableGraph::addVertex(HyperGraph::Vertex* v, Data* userData) {
-  OptimizableGraph::Vertex* ov = dynamic_cast<OptimizableGraph::Vertex*>(v);
-  assert(ov && "Vertex does not inherit from OptimizableGraph::Vertex");
-  if (!ov) return false;
-
-  return addVertex(ov, userData);
-}
-
-bool OptimizableGraph::addEdge(OptimizableGraph::Edge* e) {
-  bool eresult = HyperGraph::addEdge(e);
+bool OptimizableGraph::addEdge(std::unique_ptr<HyperGraph::Edge> edge) {
+  auto* e = dynamic_cast<OptimizableGraph::Edge*>(edge.get());
+  assert(e && "Edge does not inherit from OptimizableGraph::Edge");
+  if (e == nullptr) return false;
+  bool eresult = HyperGraph::addEdge(std::move(edge));
   if (!eresult) return false;
   //    std::cerr << "called HyperGraph::addEdge" << std::endl;
   e->_internalId = _nextEdgeId++;
   if (e->numUndefinedVertices()) return true;
   //    std::cerr << "internalId set" << std::endl;
-  // The caller keeps owning an edge the graph rejects.
+  // The graph frees an edge it rejects.
   if (!e->resolveParameters()) {
     ngx::Log(ngx::Error, "cannot resolve parameters for edge {}", e);
-    static_cast<void>(releaseEdge(e).release());
+    releaseEdge(e);
     return false;
   }
   //    std::cerr << "parameters set" << std::endl;
   if (!e->resolveCaches()) {
     ngx::Log(ngx::Error, "cannot resolve caches for edge {}", e);
-    static_cast<void>(releaseEdge(e).release());
+    releaseEdge(e);
     return false;
   }
   //    std::cerr << "updating jacobian size" << std::endl;
@@ -235,14 +240,6 @@ bool OptimizableGraph::addEdge(OptimizableGraph::Edge* e) {
   //    std::cerr << "about to return true" << std::endl;
 
   return true;
-}
-
-bool OptimizableGraph::addEdge(HyperGraph::Edge* e_) {
-  OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(e_);
-  assert(e && "Edge does not inherit from OptimizableGraph::Edge");
-  if (e == nullptr) return false;
-
-  return addEdge(e);
 }
 
 bool OptimizableGraph::setEdgeVertex(HyperGraph::Edge* e, int pos,
@@ -403,12 +400,12 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
     }
 
     // first handle the parameters
-    HyperGraph::HyperGraphElement* pelement =
+    std::unique_ptr<HyperGraph::HyperGraphElement> pelement =
         factory->construct(token, elemParamBitset);
     if (pelement) {  // not a parameter or otherwise unknown tag
       assert(pelement->elementType() == HyperGraph::HGET_PARAMETER &&
              "Should be a param");
-      Parameter* p = static_cast<Parameter*>(pelement);
+      std::unique_ptr<Parameter> p = castElement<Parameter>(pelement);
       int pid;
       currentLine >> pid;
       p->setId(pid);
@@ -416,9 +413,8 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
       if (!r) {
         ngx::Log(ngx::Error, "Error reading data {} for parameter {}", token,
                  pid);
-        delete p;
       } else {
-        if (!_parameters.addParameter(p)) {
+        if (!_parameters.addParameter(std::move(p))) {
           ngx::Log(ngx::Warning, "Parameter of type:{} id:{} already defined",
                    token, pid);
         }
@@ -426,27 +422,26 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
       continue;
     }
 
-    HyperGraph::HyperGraphElement* element =
+    std::unique_ptr<HyperGraph::HyperGraphElement> element =
         factory->construct(token, elemBitset);
-    if (dynamic_cast<Vertex*>(element) != nullptr) {  // it's a vertex type
+    if (std::unique_ptr<Vertex> ownedVertex = castElement<Vertex>(element)) {
       // cerr << "it is a vertex" << endl;
       previousData = nullptr;
-      Vertex* v = dynamic_cast<Vertex*>(element);
+      Vertex* v = ownedVertex.get();
       int id;
       currentLine >> id;
       bool r = v->read(currentLine);
       if (!r) ngx::Log(ngx::Error, "Error reading vertex {} {}", token, id);
       v->setId(id);
-      if (!addVertex(v)) {
+      if (!addVertex(std::move(ownedVertex))) {
         ngx::Log(ngx::Error, "Failure adding Vertex, {} {}", token, id);
-        delete v;
       } else {
         previousDataContainer = v;
       }
-    } else if (dynamic_cast<Edge*>(element) != nullptr) {
+    } else if (std::unique_ptr<Edge> edge = castElement<Edge>(element)) {
       // cerr << "it is an edge" << endl;
       previousData = nullptr;
-      Edge* e = dynamic_cast<Edge*>(element);
+      Edge* e = edge.get();
       int numV = e->vertices().size();
       if (_edge_has_id) {
         int id;
@@ -464,29 +459,26 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
 
         if (createEdges) {
           if ((from == nullptr) && id1 >= 0) {
-            from = e->createVertex(0);
+            std::unique_ptr<Vertex> created = e->createVertex(0);
+            from = created.get();
             from->setId(id1);
-            addVertex(from);
+            addVertex(std::move(created));
             doInit = 2;
           }
           if ((to == nullptr) && id2 >= 0) {
-            to = e->createVertex(1);
+            std::unique_ptr<Vertex> created = e->createVertex(1);
+            to = created.get();
             to->setId(id2);
-            addVertex(to);
+            addVertex(std::move(created));
             doInit = 1;
           }
           if (id1 < 0 || id2 < 0) doInit = 0;
         } else {
-          if (((from == nullptr) && id1 >= 0)) {
+          if (((from == nullptr) && id1 >= 0) ||
+              ((to == nullptr) && id2 >= 0)) {
             ngx::Log(ngx::Error, "Unable to find vertex for edge {} {} <-> {}",
                      token, id1, id2);
-            delete e;
-            e = nullptr;
-          }
-          if ((to == nullptr) && id2 >= 0) {
-            ngx::Log(ngx::Error, "Unable to find vertex for edge {} {} <-> {}",
-                     token, id1, id2);
-            delete e;
+            edge.reset();
             e = nullptr;
           }
         }
@@ -494,10 +486,10 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
           e->setVertex(0, from);
           e->setVertex(1, to);
           e->read(currentLine);
-          if (!addEdge(e)) {
+          if (!addEdge(std::move(edge))) {
             ngx::Log(ngx::Error, "Unable to add edge {} {} <-> {}", token, id1,
                      id2);
-            delete e;
+            e = nullptr;
           } else {
             switch (doInit) {
               case 1: {
@@ -560,46 +552,43 @@ bool OptimizableGraph::load(istream& is, bool createEdges) {
         if (!vertsOkay) {
           ngx::Log(ngx::Error, "Unable to find vertices for edge {}{}", token,
                    describeVertices());
-          delete e;
+          e = nullptr;
         } else {
           bool r = e->read(currentLine);
-          if (!r || !addEdge(e)) {
+          if (!r || !addEdge(std::move(edge))) {
             ngx::Log(ngx::Error, "Unable to add edge {}{}", token,
                      describeVertices());
-            delete e;
             e = nullptr;
           }
         }
       }
       previousDataContainer = e;
-    } else if (dynamic_cast<Data*>(element) !=
-               nullptr) {  // reading in the data packet for the vertex
+    } else if (std::unique_ptr<Data> d = castElement<Data>(element)) {
+      // reading in the data packet for the vertex
       // cerr << "read data packet " << token << " vertex " <<
       // previousVertex->id() << endl;
-      Data* d = dynamic_cast<Data*>(element);
+      Data* data = d.get();
       bool r = d->read(currentLine);
       if (!r) {
         ngx::Log(ngx::Error, "Error reading data {} at line {}", token,
                  lineNumber);
-        delete d;
         previousData = nullptr;
       } else if (previousData != nullptr) {
         // cerr << "chaining" << endl;
-        previousData->setNext(d);
-        d->setDataContainer(previousData->dataContainer());
-        previousData = d;
+        data->setDataContainer(previousData->dataContainer());
+        previousData->setNext(std::move(d));
+        previousData = data;
         // cerr << "done" << endl;
       } else if (previousDataContainer != nullptr) {
         // cerr << "embedding in vertex" << endl;
-        previousDataContainer->setUserData(d);
-        d->setDataContainer(previousDataContainer);
-        previousData = d;
+        data->setDataContainer(previousDataContainer);
+        previousDataContainer->setUserData(std::move(d));
+        previousData = data;
         previousDataContainer = nullptr;
         // cerr << "done" << endl;
       } else {
         ngx::Log(ngx::Warning,
                  "got data element, but no data container available");
-        delete d;
         previousData = nullptr;
       }
     }
@@ -722,14 +711,14 @@ void OptimizableGraph::addGraph(OptimizableGraph* g) {
     OptimizableGraph::Vertex* v =
         dynamic_cast<OptimizableGraph::Vertex*>(it.second.get());
     if (vertex(v->id()) != nullptr) continue;
-    OptimizableGraph::Vertex* v2 = v->clone();
+    std::unique_ptr<OptimizableGraph::Vertex> v2 = v->clone();
     v2->edges().clear();
     v2->setHessianIndex(-1);
-    addVertex(v2);
+    addVertex(std::move(v2));
   }
   for (const auto& it : g->edges()) {
     OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it.get());
-    OptimizableGraph::Edge* en = e->clone();
+    std::unique_ptr<OptimizableGraph::Edge> en = e->clone();
     en->resize(e->vertices().size());
     int cnt = 0;
     for (vector<HyperGraph::Vertex*>::const_iterator it = e->vertices().begin();
@@ -739,7 +728,7 @@ void OptimizableGraph::addGraph(OptimizableGraph* g) {
       assert(v);
       en->setVertex(cnt++, v);
     }
-    addEdge(en);
+    addEdge(std::move(en));
   }
 }
 

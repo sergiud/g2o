@@ -7,6 +7,9 @@
 
 #include <g2o/types/slam3d/isometry3d_mappings.h>
 
+#include <memory>
+#include <utility>
+
 G2O_START_NAMESPACE
 using namespace std;
 using namespace Eigen;
@@ -62,14 +65,17 @@ void SensorPose3D::sense() {
     it++;
     count++;
   }
-  for (auto it : world()->objects()) {
-    WorldObjectType* o = dynamic_cast<WorldObjectType*>(it);
+  for (const auto& it : world()->objects()) {
+    WorldObjectType* o = dynamic_cast<WorldObjectType*>(it.get());
     if ((o != nullptr) && isVisible(o)) {
-      EdgeType* e = mkEdge(o);
+      std::unique_ptr<EdgeType> e = mkEdge(o);
       if ((e != nullptr) && (graph() != nullptr)) {
-        graph()->addEdge(e);
-        e->setMeasurementFromState();
-        addNoise(e);
+        EdgeType* edge = e.get();
+        // The graph resolves the parameters that the measurement needs.
+        if (graph()->addEdge(std::move(e))) {
+          edge->setMeasurementFromState();
+          addNoise(edge);
+        }
       }
     }
   }

@@ -13,6 +13,7 @@
 
 #include <cassert>
 #include <limits>
+#include <memory>
 
 G2O_START_NAMESPACE
 
@@ -41,7 +42,7 @@ class BaseUnaryEdge : public BaseEdge<D, E> {
 
   virtual void linearizeOplus(JacobianWorkspace& jacobianWorkspace);
 
-  virtual OptimizableGraph::Vertex* createVertex(int i);
+  std::unique_ptr<OptimizableGraph::Vertex> createVertex(int i) override;
 
   /**
    * Linearizes the oplus operator in the vertex, and stores

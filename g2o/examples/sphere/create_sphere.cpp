@@ -15,6 +15,8 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <memory>
+#include <utility>
 #include <vector>
 
 using namespace std;
@@ -81,13 +83,13 @@ int main(int argc, char** argv) {
   information.block<3, 3>(0, 0) = transNoise.inverse();
   information.block<3, 3>(3, 3) = rotNoise.inverse();
 
-  vector<VertexSE3*> vertices;
+  vector<std::unique_ptr<VertexSE3>> vertices;
   vector<EdgeSE3*> odometryEdges;
-  vector<EdgeSE3*> edges;
+  vector<std::unique_ptr<EdgeSE3>> edges;
   int id = 0;
   for (int f = 0; f < numLaps; ++f) {
     for (int n = 0; n < nodesPerLevel; ++n) {
-      auto* v = new VertexSE3;
+      auto v = std::make_unique<VertexSE3>();
       v->setId(id++);
 
       Eigen::AngleAxisd rotz(-M_PI + 2 * n * M_PI / nodesPerLevel,
@@ -101,38 +103,38 @@ int main(int argc, char** argv) {
       t = rot;
       t.translation() = t.linear() * Eigen::Vector3d(radius, 0, 0);
       v->setEstimate(t);
-      vertices.push_back(v);
+      vertices.push_back(std::move(v));
     }
   }
 
   // generate odometry edges
   for (size_t i = 1; i < vertices.size(); ++i) {
-    VertexSE3* prev = vertices[i - 1];
-    VertexSE3* cur = vertices[i];
+    VertexSE3* prev = vertices[i - 1].get();
+    VertexSE3* cur = vertices[i].get();
     Eigen::Isometry3d t = prev->estimate().inverse() * cur->estimate();
-    auto* e = new EdgeSE3;
+    auto e = std::make_unique<EdgeSE3>();
     e->setVertex(0, prev);
     e->setVertex(1, cur);
     e->setMeasurement(t);
     e->setInformation(information);
-    odometryEdges.push_back(e);
-    edges.push_back(e);
+    odometryEdges.push_back(e.get());
+    edges.push_back(std::move(e));
   }
 
   // generate loop closure edges
   for (int f = 1; f < numLaps; ++f) {
     for (int nn = 0; nn < nodesPerLevel; ++nn) {
-      VertexSE3* from = vertices[(f - 1) * nodesPerLevel + nn];
+      VertexSE3* from = vertices[(f - 1) * nodesPerLevel + nn].get();
       for (int n = -1; n <= 1; ++n) {
         if (f == numLaps - 1 && n == 1) continue;
-        VertexSE3* to = vertices[f * nodesPerLevel + nn + n];
+        VertexSE3* to = vertices[f * nodesPerLevel + nn + n].get();
         Eigen::Isometry3d t = from->estimate().inverse() * to->estimate();
-        auto* e = new EdgeSE3;
+        auto e = std::make_unique<EdgeSE3>();
         e->setVertex(0, from);
         e->setVertex(1, to);
         e->setMeasurement(t);
         e->setInformation(information);
-        edges.push_back(e);
+        edges.push_back(std::move(e));
       }
     }
   }
@@ -153,7 +155,7 @@ int main(int argc, char** argv) {
   }
 
   // noise for all the edges
-  for (auto e : edges) {
+  for (const auto& e : edges) {
     Eigen::Quaterniond gtQuat = (Eigen::Quaterniond)e->measurement().linear();
     Eigen::Vector3d gtTrans = e->measurement().translation();
 
@@ -175,7 +177,7 @@ int main(int argc, char** argv) {
 
   // concatenate all the odometry constraints to compute the initial state
   for (size_t i = 0; i < odometryEdges.size(); ++i) {
-    EdgeSE3* e = edges[i];
+    EdgeSE3* e = edges[i].get();
     VertexSE3* from = dynamic_cast<VertexSE3*>(e->vertex(0));
     VertexSE3* to = dynamic_cast<VertexSE3*>(e->vertex(1));
     HyperGraph::VertexSet aux;
@@ -192,17 +194,17 @@ int main(int argc, char** argv) {
     ngx::Log("writing to stdout");
   }
 
-  string vertexTag = Factory::instance()->tag(vertices[0]);
-  string edgeTag = Factory::instance()->tag(edges[0]);
+  string vertexTag = Factory::instance()->tag(vertices[0].get());
+  string edgeTag = Factory::instance()->tag(edges[0].get());
 
   ostream& fout = outFilename != "-" ? fileOutputStream : cout;
-  for (auto v : vertices) {
+  for (const auto& v : vertices) {
     fout << vertexTag << " " << v->id() << " ";
     v->write(fout);
     fout << endl;
   }
 
-  for (auto e : edges) {
+  for (const auto& e : edges) {
     VertexSE3* from = dynamic_cast<VertexSE3*>(e->vertex(0));
     VertexSE3* to = dynamic_cast<VertexSE3*>(e->vertex(1));
     fout << edgeTag << " " << from->id() << " " << to->id() << " ";

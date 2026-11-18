@@ -12,7 +12,9 @@
 #include <g2o/prefix.h>
 
 #include <map>
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "edge_creator.h"
 #include "edge_labeler.h"
@@ -35,9 +37,11 @@ void assignHierarchicalEdges(StarSet& stars, EdgeStarMap& esmap,
 
 G2O_HIERARCHICAL_API void computeBorder(StarSet& stars, EdgeStarMap& hesmap);
 
+//! @param starStorage: receives the stars, which the caller then owns
 G2O_HIERARCHICAL_API void computeSimpleStars(
-    StarSet& stars, SparseOptimizer* optimizer, EdgeLabeler* labeler,
-    EdgeCreator* creator, OptimizableGraph::Vertex* gauge_, std::string edgeTag,
+    StarSet& stars, std::vector<std::unique_ptr<Star>>& starStorage,
+    SparseOptimizer* optimizer, EdgeLabeler* labeler, EdgeCreator* creator,
+    OptimizableGraph::Vertex* gauge_, std::string edgeTag,
     std::string vertexTag, int level, int step, int backboneIterations = 1,
     int starIterations = 30, double rejectionThreshold = 1e-5,
     bool debug = false);

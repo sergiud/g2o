@@ -10,6 +10,8 @@
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/prefix.h>
 
+#include <memory>
+
 G2O_START_NAMESPACE
 
 /**
@@ -35,10 +37,10 @@ class G2O_CORE_API MatrixStructure {
    */
   bool write(const char* filename) const;
 
-  int n;     ///< A is m-by-n.  n must be >= 0.
-  int m;     ///< A is m-by-n.  m must be >= 0.
-  int* Ap;   ///< column pointers for A, of size n+1
-  int* Aii;  ///< row indices of A, of size nz = Ap [n]
+  int n;                       ///< A is m-by-n.  n must be >= 0.
+  int m;                       ///< A is m-by-n.  m must be >= 0.
+  std::unique_ptr<int[]> Ap;   ///< column pointers for A, of size n+1
+  std::unique_ptr<int[]> Aii;  ///< row indices of A, of size nz = Ap [n]
 
   //! max number of non-zeros blocks
   int nzMax() const { return maxNz; }

@@ -58,57 +58,53 @@ typedef SlamParser::Parser::token_type token_type;
  /*** BEGIN EXAMPLE - Change the example lexer rules below ***/
 
 ("+"|"-")?[0-9]+ {
-  yylval->integerVal = atoi(yytext);
+  yylval->emplace<int>(atoi(yytext));
   return token::INTEGER;
 }
 
 (\+|-)?([0-9]+\.?[0-9]*|\.[0-9]+)([eE](\+|-)?[0-9]+)? {
-  yylval->doubleVal = atof(yytext);
+  yylval->emplace<double>(atof(yytext));
   return token::DOUBLE;
 }
 
 "ADD" {
-  /*yylval->stringVal = new std::string(yytext, yyleng);*/
   return token::ADD;
 }
 
 "VERTEX_XYT" {
-  yylval->stringVal = new std::string(yytext, yyleng);
+  yylval->emplace<std::string>(yytext, yyleng);
   return token::V_SE2;
 }
 
 "VERTEX_XYZRPY" {
-  yylval->stringVal = new std::string(yytext, yyleng);
+  yylval->emplace<std::string>(yytext, yyleng);
   return token::V_SE3;
 }
 
 "EDGE_XYT" {
-  yylval->stringVal = new std::string(yytext, yyleng);
+  yylval->emplace<std::string>(yytext, yyleng);
   return token::E_SE2;
 }
 
 "EDGE_XYZRPY" {
-  yylval->stringVal = new std::string(yytext, yyleng);
+  yylval->emplace<std::string>(yytext, yyleng);
   return token::E_SE3;
 }
 
 "FIX" {
-  /*yylval->stringVal = new std::string(yytext, yyleng);*/
   return token::FIX;
 }
 
 "SOLVE_STATE" {
-  /*yylval->stringVal = new std::string(yytext, yyleng);*/
   return token::SOLVE_STATE;
 }
 
 "QUERY_STATE" {
-  /*yylval->stringVal = new std::string(yytext, yyleng);*/
   return token::QUERY_STATE;
 }
 
 [A-Za-z][A-Za-z0-9_,.-]* {
-    yylval->stringVal = new std::string(yytext, yyleng);
+    yylval->emplace<std::string>(yytext, yyleng);
     return token::STRING;
 }
 
@@ -157,7 +153,7 @@ void Scanner::set_debug(bool b)
 
 int SlamFlexLexer::yylex()
 {
-    ngx::Log("in SlamFlexLexer::yylex() !");
+    g2o::ngx::Log("in SlamFlexLexer::yylex() !");
     return 0;
 }
 

@@ -18,6 +18,8 @@
 #include <Eigen/StdVector>
 #include <cstdint>
 #include <iostream>
+#include <memory>
+#include <utility>
 
 #include "targetTypes3D.hpp"
 
@@ -33,21 +35,23 @@ int main() {
 
   // Create the block solver - the dimensions are specified because
   // 3D observations marginalise to a 3D estimate
-  typedef BlockSolver<BlockSolverTraits<3, 3> > BlockSolver_3_3;
-  BlockSolver_3_3::LinearSolverType* linearSolver =
-      new LinearSolverCholmod<BlockSolver_3_3::PoseMatrixType>();
-  auto* blockSolver = new BlockSolver_3_3(linearSolver);
-  auto* solver = new OptimizationAlgorithmGaussNewton(blockSolver);
-  optimizer.setAlgorithm(solver);
+  typedef BlockSolver<BlockSolverTraits<3, 3>> BlockSolver_3_3;
+  auto linearSolver =
+      std::make_unique<LinearSolverCholmod<BlockSolver_3_3::PoseMatrixType>>();
+  auto blockSolver = std::make_unique<BlockSolver_3_3>(std::move(linearSolver));
+  auto solver = std::make_unique<OptimizationAlgorithmGaussNewton>(
+      std::move(blockSolver));
+  optimizer.setAlgorithm(std::move(solver));
 
   // Sample the actual location of the target
   Vector3d truePoint(sampleUniform(-500, 500), sampleUniform(-500, 500),
                      sampleUniform(-500, 500));
 
   // Construct vertex which corresponds to the actual point of the target
-  auto* position = new VertexPosition3D();
+  auto positionOwner = std::make_unique<VertexPosition3D>();
+  auto* position = positionOwner.get();
   position->setId(0);
-  optimizer.addVertex(position);
+  optimizer.addVertex(std::move(positionOwner));
 
   // Now generate some noise corrupted measurements; for simplicity
   // these are uniformly distributed about the true target. These are
@@ -62,11 +66,11 @@ int main() {
         truePoint + Vector3d(sampleUniform(-0.5, 0.5) * noiseLimit,
                              sampleUniform(-0.5, 0.5) * noiseLimit,
                              sampleUniform(-0.5, 0.5) * noiseLimit);
-    auto* goe = new GPSObservationPosition3DEdge();
+    auto goe = std::make_unique<GPSObservationPosition3DEdge>();
     goe->setVertex(0, position);
     goe->setMeasurement(measurement);
     goe->setInformation(Matrix3d::Identity() / noiseSigma);
-    optimizer.addEdge(goe);
+    optimizer.addEdge(std::move(goe));
   }
 
   // Configure and set things going

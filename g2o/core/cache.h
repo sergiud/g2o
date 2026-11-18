@@ -12,6 +12,7 @@
 #include <g2o/prefix.h>
 
 #include <map>
+#include <memory>
 #include <string>
 
 G2O_START_NAMESPACE
@@ -87,7 +88,9 @@ class G2O_CORE_API Cache : public HyperGraph::HyperGraphElement {
   CacheContainer* _container;
 };
 
-class G2O_CORE_API CacheContainer : public std::map<Cache::CacheKey, Cache*> {
+//! The caches of a vertex, which the container owns.
+class G2O_CORE_API CacheContainer
+    : public std::map<Cache::CacheKey, std::unique_ptr<Cache>> {
  public:
   CacheContainer(OptimizableGraph::Vertex* vertex_);
   virtual ~CacheContainer();

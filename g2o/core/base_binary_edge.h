@@ -12,6 +12,7 @@
 #include <g2o/stuff/logger.h>
 
 #include <limits>
+#include <memory>
 
 G2O_START_NAMESPACE
 
@@ -55,9 +56,9 @@ class BaseBinaryEdge : public BaseEdge<D, E> {
     _vertices.resize(2);
   }
 
-  virtual OptimizableGraph::Vertex* createFrom();
-  virtual OptimizableGraph::Vertex* createTo();
-  virtual OptimizableGraph::Vertex* createVertex(int i);
+  std::unique_ptr<OptimizableGraph::Vertex> createFrom() override;
+  std::unique_ptr<OptimizableGraph::Vertex> createTo() override;
+  std::unique_ptr<OptimizableGraph::Vertex> createVertex(int i) override;
 
   virtual void resize(size_t size);
 

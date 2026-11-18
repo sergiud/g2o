@@ -9,7 +9,9 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
+#include <memory>
 #include <typeinfo>
+#include <utility>
 
 using namespace std;
 
@@ -25,7 +27,7 @@ OptimizationAlgorithmFactory* OptimizationAlgorithmFactory::instance() {
 }
 
 void OptimizationAlgorithmFactory::registerSolver(
-    AbstractOptimizationAlgorithmCreator* c) {
+    std::unique_ptr<AbstractOptimizationAlgorithmCreator> c) {
   const string& name = c->property().name;
   auto foundIt = findSolver(name);
   if (foundIt != _creator.end()) {
@@ -34,7 +36,7 @@ void OptimizationAlgorithmFactory::registerSolver(
              "SOLVER FACTORY WARNING: Overwriting Solver creator {}", name);
     assert(0);
   }
-  _creator.emplace_back(c);
+  _creator.push_back(std::move(c));
 }
 
 void OptimizationAlgorithmFactory::unregisterSolver(
@@ -46,7 +48,7 @@ void OptimizationAlgorithmFactory::unregisterSolver(
   }
 }
 
-OptimizationAlgorithm* OptimizationAlgorithmFactory::construct(
+std::unique_ptr<OptimizationAlgorithm> OptimizationAlgorithmFactory::construct(
     const std::string& name,
     OptimizationAlgorithmProperty& solverProperty) const {
   auto foundIt = findSolver(name);

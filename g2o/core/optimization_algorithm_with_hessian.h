@@ -8,11 +8,12 @@
 
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/optimization_algorithm.h>
+#include <g2o/core/solver.h>
 #include <g2o/prefix.h>
 
-G2O_START_NAMESPACE
+#include <memory>
 
-class Solver;
+G2O_START_NAMESPACE
 
 /**
  * \brief Base for solvers operating on the approximated Hessian, e.g.,
@@ -21,7 +22,8 @@ class Solver;
 class G2O_CORE_API OptimizationAlgorithmWithHessian
     : public OptimizationAlgorithm {
  public:
-  explicit OptimizationAlgorithmWithHessian(Solver* solver);
+  //! The algorithm owns the solver.
+  explicit OptimizationAlgorithmWithHessian(std::unique_ptr<Solver> solver);
   virtual ~OptimizationAlgorithmWithHessian();
 
   virtual bool init(bool online = false);
@@ -38,7 +40,7 @@ class G2O_CORE_API OptimizationAlgorithmWithHessian
                                const HyperGraph::EdgeSet& edges);
 
   //! return the underlying solver used to solve the linear system
-  Solver* solver() { return _solver; }
+  Solver* solver() { return _solver.get(); }
 
   /**
    * write debug output of the Hessian if system is not positive definite
@@ -47,7 +49,7 @@ class G2O_CORE_API OptimizationAlgorithmWithHessian
   virtual bool writeDebug() const { return _writeDebug->value(); }
 
  protected:
-  Solver* _solver;
+  std::unique_ptr<Solver> _solver;
   Property<bool>* _writeDebug;
 };
 

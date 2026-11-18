@@ -11,10 +11,12 @@
 #include <g2o/solvers/csparse/linear_solver_csparse.h>
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/misc.h>
-#include <g2o/stuff/scoped_pointer.h>
 #include <g2o/types/slam2d/edge_se2.h>
 
 #include <Eigen/Core>
+#include <memory>
+#include <utility>
+#include <vector>
 
 using namespace std;
 
@@ -50,8 +52,8 @@ class ThetaTreeAction : public HyperDijkstra::TreeAction {
   double* _thetaGuess;
 };
 
-SolverSLAM2DLinear::SolverSLAM2DLinear(Solver* solver)
-    : OptimizationAlgorithmGaussNewton(solver) {}
+SolverSLAM2DLinear::SolverSLAM2DLinear(std::unique_ptr<Solver> solver)
+    : OptimizationAlgorithmGaussNewton(std::move(solver)) {}
 
 SolverSLAM2DLinear::~SolverSLAM2DLinear() = default;
 
@@ -76,11 +78,11 @@ bool SolverSLAM2DLinear::solveOrientation() {
 
   typedef Eigen::Matrix<double, 1, 1, Eigen::ColMajor> ScalarMatrix;
 
-  ScopedArray<int> blockIndeces(new int[_optimizer->indexMapping().size()]);
+  std::vector<int> blockIndeces(_optimizer->indexMapping().size());
   for (size_t i = 0; i < _optimizer->indexMapping().size(); ++i)
     blockIndeces[i] = i + 1;
 
-  SparseBlockMatrix<ScalarMatrix> H(blockIndeces.get(), blockIndeces.get(),
+  SparseBlockMatrix<ScalarMatrix> H(blockIndeces.data(), blockIndeces.data(),
                                     _optimizer->indexMapping().size(),
                                     _optimizer->indexMapping().size());
 

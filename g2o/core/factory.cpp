@@ -13,7 +13,9 @@
 
 #include <cassert>
 #include <iostream>
+#include <memory>
 #include <typeinfo>
+#include <utility>
 
 using namespace std;
 
@@ -34,8 +36,9 @@ Factory* Factory::instance() {
   return &factory;
 }
 
-void Factory::registerType(const std::string& tag,
-                           AbstractHyperGraphElementCreator* c) {
+void Factory::registerType(
+    const std::string& tag,
+    std::unique_ptr<AbstractHyperGraphElementCreator> c) {
   CreatorMap::const_iterator foundIt = _creator.find(tag);
   if (foundIt != _creator.end()) {
     ngx::Log(ngx::Warning, "FACTORY WARNING: Overwriting Vertex tag {}", tag);
@@ -49,14 +52,15 @@ void Factory::registerType(const std::string& tag,
     assert(0);
   }
 
-  std::unique_ptr<CreatorInformation> ci(new CreatorInformation);
-  ci->creator.reset(c);
+  auto ci = std::make_unique<CreatorInformation>();
+  AbstractHyperGraphElementCreator* creator = c.get();
+  ci->creator = std::move(c);
 
 #ifdef G2O_DEBUG_FACTORY
   ngx::Log("# Factory {} constructing type {}", static_cast<void*>(this), tag);
 #endif
   // construct an element once to figure out its type
-  std::unique_ptr<HyperGraph::HyperGraphElement> element(c->construct());
+  std::unique_ptr<HyperGraph::HyperGraphElement> element(creator->construct());
   ci->elementTypeBit = element->elementType();
 
 #ifdef G2O_DEBUG_FACTORY
@@ -82,11 +86,11 @@ void Factory::registerType(const std::string& tag,
       break;
   }
   ngx::Log("# Factory {} registering {} {} -> {}", static_cast<void*>(this),
-           tag, static_cast<void*>(c), elementType);
+           tag, static_cast<void*>(creator), elementType);
 #endif
 
   _creator.emplace(tag, std::move(ci));
-  _tagLookup[c->name()] = tag;
+  _tagLookup[creator->name()] = tag;
 }
 
 void Factory::unregisterType(const std::string& tag) {
@@ -105,7 +109,7 @@ void Factory::unregisterType(const std::string& tag) {
   }
 }
 
-HyperGraph::HyperGraphElement* Factory::construct(
+std::unique_ptr<HyperGraph::HyperGraphElement> Factory::construct(
     const std::string& tag) const {
   auto foundIt = _creator.find(tag);
   if (foundIt != _creator.end()) {
@@ -149,7 +153,7 @@ void Factory::printRegisteredTypes(std::ostream& os, bool comment) const {
   }
 }
 
-HyperGraph::HyperGraphElement* Factory::construct(
+std::unique_ptr<HyperGraph::HyperGraphElement> Factory::construct(
     const std::string& tag,
     const HyperGraph::GraphElemBitset& elemsToConstruct) const {
   if (elemsToConstruct.none()) {

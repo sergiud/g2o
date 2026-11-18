@@ -11,6 +11,7 @@
 
 #include <Eigen/Core>
 #include <iostream>
+#include <memory>
 
 #include "draw_helpers.h"
 using namespace std;
@@ -186,13 +187,14 @@ void Slam2DViewer::init() {
   // setShortcut(SAVE_SCREENSHOT, 0);
 
   // replace camera
-  qglviewer::Camera* oldcam = camera();
-  qglviewer::Camera* cam = new StandardCamera();
-  setCamera(cam);
+  // The viewer owns its camera but leaves the one it replaces to the caller.
+  std::unique_ptr<qglviewer::Camera> oldcam(camera());
+  auto ownedCamera = std::make_unique<StandardCamera>();
+  StandardCamera* cam = ownedCamera.get();
+  setCamera(ownedCamera.release());
   cam->setPosition(qglviewer::Vec(0., 0., 75.));
   cam->setUpVector(qglviewer::Vec(0., 1., 0.));
   cam->lookAt(qglviewer::Vec(0., 0., 0.));
-  delete oldcam;
 }
 
 G2O_END_NAMESPACE

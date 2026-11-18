@@ -12,7 +12,9 @@
 
 #include <Eigen/Core>
 #include <cassert>
+#include <memory>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 G2O_START_NAMESPACE
@@ -87,13 +89,11 @@ class SparseBlockMatrixCCS {
   //! indices of the column blocks
   const std::vector<int>& colBlockIndices() const { return _colBlockIndices; }
 
-  void rightMultiply(double*& dest, const double* src) const {
+  //! adds the product with the source to the destination, which the caller
+  //! provides
+  void rightMultiply(double* dest, const double* src) const {
+    assert(dest != nullptr && "the caller provides the destination");
     int destSize = cols();
-
-    if (dest == nullptr) {
-      dest = new double[destSize];
-      memset(dest, 0, destSize * sizeof(double));
-    }
 
     // map the memory by Eigen
     Eigen::Map<Eigen::VectorXd> destVec(dest, destSize);
@@ -209,7 +209,8 @@ class SparseBlockMatrixHashMap {
     return _rowBlockIndices.size() ? _rowBlockIndices.back() : 0;
   }
 
-  typedef std::unordered_map<int, MatrixType*> SparseColumn;
+  //! the blocks of a column by their row, which the matrix owns
+  typedef std::unordered_map<int, std::unique_ptr<MatrixType>> SparseColumn;
 
   SparseBlockMatrixHashMap(const std::vector<int>& rowIndices,
                            const std::vector<int>& colIndices)
@@ -258,12 +259,13 @@ class SparseBlockMatrixHashMap {
     if (foundIt == sparseColumn.end()) {
       int rb = rowsOfBlock(r);
       int cb = colsOfBlock(c);
-      auto* m = new MatrixType(rb, cb);
+      auto m = std::make_unique<MatrixType>(rb, cb);
       if (zeroBlock) m->setZero();
-      sparseColumn[r] = m;
-      return m;
+      MatrixType* added = m.get();
+      sparseColumn[r] = std::move(m);
+      return added;
     }
-    return foundIt->second;
+    return foundIt->second.get();
   }
 
  protected:

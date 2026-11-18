@@ -5,22 +5,22 @@
 
 #include "parser_interface.h"
 
+#include <memory>
+
 #include "slam_context_interface.h"
 #include "slam_parser/parser/driver.h"
 
 namespace SlamParser {
 
 ParserInterface::ParserInterface(AbstractSlamInterface* slamInterface) {
-  _slamContextInterface = new SlamContextInterface(slamInterface);
-  _driver = new Driver(*_slamContextInterface);
+  _slamContextInterface = std::make_unique<SlamContextInterface>(slamInterface);
+  _driver = std::make_unique<Driver>(*_slamContextInterface);
   //_driver->trace_parsing = true;
   //_driver->trace_scanning = true;
 }
 
-ParserInterface::~ParserInterface() {
-  delete _slamContextInterface;
-  delete _driver;
-}
+// The driver refers to the context, so it is destroyed first.
+ParserInterface::~ParserInterface() = default;
 
 bool ParserInterface::parseCommand(std::istream& input) {
   if (input.eof()) return false;

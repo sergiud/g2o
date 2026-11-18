@@ -3,15 +3,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <g2o/core/block_solver.h>
 #include <g2o/core/factory.h>
-#include <g2o/core/optimization_algorithm_gauss_newton.h>
-#include <g2o/core/optimization_algorithm_levenberg.h>
 #include <g2o/core/sparse_optimizer.h>
-#include <g2o/solvers/csparse/linear_solver_csparse.h>
 #include <g2o/stuff/logger.h>
 
 #include <QApplication>
+#include <memory>
 
 #include "main_window.h"
 using namespace std;
@@ -23,23 +20,14 @@ int main(int argc, char** argv) {
   g2o::initializeLogging(argv[0]);
   QApplication qapp(argc, argv);
 
+  // The graph outlives the window that shows it.
+  auto graph = std::make_unique<SparseOptimizer>();
   MainWindow mw;
   mw.show();
 
-  mw.viewer->graph = new SparseOptimizer();
+  mw.viewer->graph = graph.get();
 
-  typedef BlockSolver<BlockSolverTraits<-1, -1> > SlamBlockSolver;
-  typedef LinearSolverCSparse<SlamBlockSolver::PoseMatrixType> SlamLinearSolver;
-
-  auto* linearSolver = new SlamLinearSolver();
-  linearSolver->setBlockOrdering(false);
-  auto* blockSolver = new SlamBlockSolver(linearSolver);
-
-  auto* solverGauss = new OptimizationAlgorithmGaussNewton(blockSolver);
-  auto* solverLevenberg = new OptimizationAlgorithmLevenberg(blockSolver);
-  mw.solverGaussNewton = solverGauss;
-  mw.solverLevenberg = solverLevenberg;
-  mw.viewer->graph->setAlgorithm(solverGauss);
+  mw.viewer->graph->setAlgorithm(mw.createAlgorithm());
 
   return qapp.exec();
 }

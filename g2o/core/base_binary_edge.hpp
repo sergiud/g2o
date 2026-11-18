@@ -5,25 +5,25 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
 template <int D, typename E, typename VertexXiType, typename VertexXjType>
-OptimizableGraph::Vertex*
+std::unique_ptr<OptimizableGraph::Vertex>
 BaseBinaryEdge<D, E, VertexXiType, VertexXjType>::createFrom() {
   return createVertex(0);
 }
 
 template <int D, typename E, typename VertexXiType, typename VertexXjType>
-OptimizableGraph::Vertex*
+std::unique_ptr<OptimizableGraph::Vertex>
 BaseBinaryEdge<D, E, VertexXiType, VertexXjType>::createTo() {
   return createVertex(1);
 }
 
 template <int D, typename E, typename VertexXiType, typename VertexXjType>
-OptimizableGraph::Vertex*
+std::unique_ptr<OptimizableGraph::Vertex>
 BaseBinaryEdge<D, E, VertexXiType, VertexXjType>::createVertex(int i) {
   switch (i) {
     case 0:
-      return new VertexXiType();
+      return std::make_unique<VertexXiType>();
     case 1:
-      return new VertexXjType();
+      return std::make_unique<VertexXjType>();
     default:
       return nullptr;
   }

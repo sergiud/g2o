@@ -16,7 +16,9 @@
 #include <Eigen/StdVector>
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <unordered_set>
+#include <utility>
 
 #if defined G2O_HAVE_CHOLMOD
 #include <g2o/solvers/cholmod/linear_solver_cholmod.h>
@@ -113,30 +115,32 @@ int main(int argc, const char* argv[]) {
 
   g2o::SparseOptimizer optimizer;
   optimizer.setVerbose(false);
-  g2o::BlockSolver_6_3::LinearSolverType* linearSolver;
+  std::unique_ptr<g2o::BlockSolver_6_3::LinearSolverType> linearSolver;
   if (DENSE) {
-    linearSolver =
-        new g2o::LinearSolverDense<g2o::BlockSolver_6_3::PoseMatrixType>();
+    linearSolver = std::make_unique<
+        g2o::LinearSolverDense<g2o::BlockSolver_6_3::PoseMatrixType>>();
     g2o::ngx::Log("Using DENSE");
   } else {
 #ifdef G2O_HAVE_CHOLMOD
     g2o::ngx::Log("Using CHOLMOD");
-    linearSolver =
-        new g2o::LinearSolverCholmod<g2o::BlockSolver_6_3::PoseMatrixType>();
+    linearSolver = std::make_unique<
+        g2o::LinearSolverCholmod<g2o::BlockSolver_6_3::PoseMatrixType>>();
 #elif defined G2O_HAVE_CSPARSE
-    linearSolver =
-        new g2o::LinearSolverCSparse<g2o::BlockSolver_6_3::PoseMatrixType>();
+    linearSolver = std::make_unique<
+        g2o::LinearSolverCSparse<g2o::BlockSolver_6_3::PoseMatrixType>>();
     g2o::ngx::Log("Using CSPARSE");
 #else
 #error neither CSparse nor Cholmod are available
 #endif
   }
 
-  auto* solver_ptr = new g2o::BlockSolver_6_3(linearSolver);
+  auto solver_ptr =
+      std::make_unique<g2o::BlockSolver_6_3>(std::move(linearSolver));
 
-  auto* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+  auto solver = std::make_unique<g2o::OptimizationAlgorithmLevenberg>(
+      std::move(solver_ptr));
 
-  optimizer.setAlgorithm(solver);
+  optimizer.setAlgorithm(std::move(solver));
 
   // set up 500 points
   vector<Vector3d> true_points;
@@ -149,7 +153,7 @@ int main(int argc, const char* argv[]) {
   Vector2d principal_point(320, 240);  // 640x480 image
   double baseline = 0.075;             // 7.5 cm baseline
 
-  vector<Eigen::Isometry3d, aligned_allocator<Eigen::Isometry3d> > true_poses;
+  vector<Eigen::Isometry3d, aligned_allocator<Eigen::Isometry3d>> true_poses;
 
   // set up camera params
   g2o::VertexSCam::setKcam(focal_length[0], focal_length[1], principal_point[0],
@@ -166,7 +170,7 @@ int main(int argc, const char* argv[]) {
     pose = q;
     pose.translation() = trans;
 
-    auto* v_se3 = new g2o::VertexSCam();
+    auto v_se3 = std::make_unique<g2o::VertexSCam>();
 
     v_se3->setId(vertex_id);
     v_se3->setEstimate(pose);
@@ -174,7 +178,7 @@ int main(int argc, const char* argv[]) {
 
     if (i < 2) v_se3->setFixed(true);
 
-    optimizer.addVertex(v_se3);
+    optimizer.addVertex(std::move(v_se3));
     true_poses.push_back(pose);
     vertex_id++;
   }
@@ -188,7 +192,8 @@ int main(int argc, const char* argv[]) {
 
   // add point projections to this vertex
   for (size_t i = 0; i < true_points.size(); ++i) {
-    auto* v_p = new g2o::VertexSBAPointXYZ();
+    auto v_pOwner = std::make_unique<g2o::VertexSBAPointXYZ>();
+    auto* v_p = v_pOwner.get();
 
     v_p->setId(point_id);
     v_p->setMarginalized(true);
@@ -209,7 +214,7 @@ int main(int argc, const char* argv[]) {
     }
 
     if (num_obs >= 2) {
-      optimizer.addVertex(v_p);
+      optimizer.addVertex(std::move(v_pOwner));
 
       bool inlier = true;
       for (size_t j = 0; j < true_poses.size(); ++j) {
@@ -232,7 +237,7 @@ int main(int argc, const char* argv[]) {
                         Sample::gaussian(PIXEL_NOISE),
                         Sample::gaussian(PIXEL_NOISE / 16.0));
 
-          auto* e = new g2o::Edge_XYZ_VSC();
+          auto e = std::make_unique<g2o::Edge_XYZ_VSC>();
 
           e->vertices()[0] = dynamic_cast<g2o::OptimizableGraph::Vertex*>(v_p);
 
@@ -244,11 +249,10 @@ int main(int argc, const char* argv[]) {
           e->information() = Matrix3d::Identity();
 
           if (ROBUST_KERNEL) {
-            auto* rk = new g2o::RobustKernelHuber;
-            e->setRobustKernel(rk);
+            e->setRobustKernel(std::make_unique<g2o::RobustKernelHuber>());
           }
 
-          optimizer.addEdge(e);
+          optimizer.addEdge(std::move(e));
         }
       }
 

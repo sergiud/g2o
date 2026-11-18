@@ -11,15 +11,17 @@
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/timeutil.h>
 
+#include <memory>
 #include <ostream>
+#include <utility>
 
 using namespace std;
 
 G2O_START_NAMESPACE
 
 OptimizationAlgorithmGaussNewton::OptimizationAlgorithmGaussNewton(
-    Solver* solver)
-    : OptimizationAlgorithmWithHessian(solver) {}
+    std::unique_ptr<Solver> solver)
+    : OptimizationAlgorithmWithHessian(std::move(solver)) {}
 
 OptimizationAlgorithmGaussNewton::~OptimizationAlgorithmGaussNewton() = default;
 

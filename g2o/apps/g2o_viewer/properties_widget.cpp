@@ -47,8 +47,8 @@ void PropertiesWidget::updateDisplayedProperties() {
     tableWidget->setItem(r, 0, textItem);
     _propNames.push_back(it->first);
 
-    if (dynamic_cast<Property<bool>*>(it->second) != nullptr) {
-      Property<bool>* prop = dynamic_cast<Property<bool>*>(it->second);
+    if (dynamic_cast<Property<bool>*>(it->second.get()) != nullptr) {
+      Property<bool>* prop = dynamic_cast<Property<bool>*>(it->second.get());
       auto* checkItem = new QTableWidgetItem;
       checkItem->setText("enabled");
       checkItem->setFlags(checkItem->flags() | Qt::ItemIsUserCheckable);
@@ -60,11 +60,11 @@ void PropertiesWidget::updateDisplayedProperties() {
     } else {
       auto* editor = new QLineEdit(tableWidget);
       editor->setText(QString::fromStdString(it->second->toString()));
-      if (dynamic_cast<Property<int>*>(it->second) != nullptr) {
+      if (dynamic_cast<Property<int>*>(it->second.get()) != nullptr) {
         editor->setValidator(new QIntValidator(editor));
-      } else if (dynamic_cast<Property<float>*>(it->second) != nullptr) {
+      } else if (dynamic_cast<Property<float>*>(it->second.get()) != nullptr) {
         editor->setValidator(new QDoubleValidator(editor));
-      } else if (dynamic_cast<Property<double>*>(it->second) != nullptr) {
+      } else if (dynamic_cast<Property<double>*>(it->second.get()) != nullptr) {
         editor->setValidator(new QDoubleValidator(editor));
       }
       tableWidget->setCellWidget(r, 1, editor);

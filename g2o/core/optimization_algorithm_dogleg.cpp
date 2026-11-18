@@ -11,14 +11,16 @@
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/timeutil.h>
 
+#include <memory>
 #include <ostream>
+#include <utility>
 using namespace std;
 
 G2O_START_NAMESPACE
 
 OptimizationAlgorithmDogleg::OptimizationAlgorithmDogleg(
-    BlockSolverBase* solver)
-    : OptimizationAlgorithmWithHessian(solver) {
+    std::unique_ptr<BlockSolverBase> solver)
+    : OptimizationAlgorithmWithHessian(std::move(solver)) {
   _userDeltaInit =
       _properties.makeProperty<Property<double> >("initialDelta", 1e4);
   _maxTrialsAfterFailure =
@@ -39,10 +41,10 @@ OptimizationAlgorithm::SolverResult OptimizationAlgorithmDogleg::solve(
   assert(_optimizer && "_optimizer not set");
   assert(_solver->optimizer() == _optimizer &&
          "underlying linear solver operates on different graph");
-  assert(dynamic_cast<BlockSolverBase*>(_solver) &&
+  assert(dynamic_cast<BlockSolverBase*>(_solver.get()) &&
          "underlying linear solver is not a block solver");
 
-  BlockSolverBase* blockSolver = dynamic_cast<BlockSolverBase*>(_solver);
+  BlockSolverBase* blockSolver = dynamic_cast<BlockSolverBase*>(_solver.get());
 
   if (iteration == 0 &&
       !online) {  // built up the CCS structure, here due to easy time measure

@@ -14,6 +14,9 @@
 #include <g2o/core/sparse_block_matrix.h>
 #include <g2o/core/sparse_block_matrix_diagonal.h>
 
+#include <g2o/core/dynamic_aligned_buffer.hpp>
+#include <memory>
+
 G2O_START_NAMESPACE
 
 /**
@@ -93,11 +96,10 @@ class BlockSolver : public BlockSolverBase {
 
  public:
   /**
-   * allocate a block solver ontop of the underlying linear solver.
-   * NOTE: The BlockSolver assumes exclusive access to the linear solver and
-   * will therefore free the pointer in its destructor.
+   * allocate a block solver ontop of the underlying linear solver, which the
+   * block solver owns.
    */
-  BlockSolver(LinearSolverType* linearSolver);
+  explicit BlockSolver(std::unique_ptr<LinearSolverType> linearSolver);
   ~BlockSolver();
 
   virtual bool init(SparseOptimizer* optmizer, bool online = false);
@@ -108,14 +110,16 @@ class BlockSolver : public BlockSolverBase {
   virtual bool solve();
   virtual bool computeMarginals(
       SparseBlockMatrix<MatrixXD>& spinv,
-      const std::vector<std::pair<int, int> >& blockIndices);
+      const std::vector<std::pair<int, int>>& blockIndices);
   virtual bool setLambda(double lambda, bool backup = false);
   virtual void restoreDiagonal();
   virtual bool supportsSchur() { return true; }
   virtual bool schur() { return _doSchur; }
   virtual void setSchur(bool s) { _doSchur = s; }
 
-  LinearSolver<PoseMatrixType>* linearSolver() const { return _linearSolver; }
+  LinearSolver<PoseMatrixType>* linearSolver() const {
+    return _linearSolver.get();
+  }
 
   virtual void setWriteDebug(bool writeDebug);
   virtual bool writeDebug() const { return _linearSolver->writeDebug(); }
@@ -132,21 +136,21 @@ class BlockSolver : public BlockSolverBase {
 
   void deallocate();
 
-  SparseBlockMatrix<PoseMatrixType>* _Hpp;
-  SparseBlockMatrix<LandmarkMatrixType>* _Hll;
-  SparseBlockMatrix<PoseLandmarkMatrixType>* _Hpl;
+  std::unique_ptr<SparseBlockMatrix<PoseMatrixType>> _Hpp;
+  std::unique_ptr<SparseBlockMatrix<LandmarkMatrixType>> _Hll;
+  std::unique_ptr<SparseBlockMatrix<PoseLandmarkMatrixType>> _Hpl;
 
-  SparseBlockMatrix<PoseMatrixType>* _Hschur;
-  SparseBlockMatrixDiagonal<LandmarkMatrixType>* _DInvSchur;
+  std::unique_ptr<SparseBlockMatrix<PoseMatrixType>> _Hschur;
+  std::unique_ptr<SparseBlockMatrixDiagonal<LandmarkMatrixType>> _DInvSchur;
 
-  SparseBlockMatrixCCS<PoseLandmarkMatrixType>* _HplCCS;
-  SparseBlockMatrixCCS<PoseMatrixType>* _HschurTransposedCCS;
+  std::unique_ptr<SparseBlockMatrixCCS<PoseLandmarkMatrixType>> _HplCCS;
+  std::unique_ptr<SparseBlockMatrixCCS<PoseMatrixType>> _HschurTransposedCCS;
 
-  LinearSolver<PoseMatrixType>* _linearSolver;
+  std::unique_ptr<LinearSolver<PoseMatrixType>> _linearSolver;
 
-  std::vector<PoseVectorType, Eigen::aligned_allocator<PoseVectorType> >
+  std::vector<PoseVectorType, Eigen::aligned_allocator<PoseVectorType>>
       _diagonalBackupPose;
-  std::vector<LandmarkVectorType, Eigen::aligned_allocator<LandmarkVectorType> >
+  std::vector<LandmarkVectorType, Eigen::aligned_allocator<LandmarkVectorType>>
       _diagonalBackupLandmark;
 
 #ifdef G2O_OPENMP
@@ -155,22 +159,27 @@ class BlockSolver : public BlockSolverBase {
 
   bool _doSchur;
 
-  double* _coefficients;
-  double* _bschur;
+  //! frees a buffer that allocate_aligned allocated
+  struct AlignedFree {
+    void operator()(double* buffer) const { free_aligned(buffer); }
+  };
+
+  std::unique_ptr<double, AlignedFree> _coefficients;
+  std::unique_ptr<double, AlignedFree> _bschur;
 
   int _numPoses, _numLandmarks;
   int _sizePoses, _sizeLandmarks;
 };
 
 // variable size solver
-typedef BlockSolver<BlockSolverTraits<Eigen::Dynamic, Eigen::Dynamic> >
+typedef BlockSolver<BlockSolverTraits<Eigen::Dynamic, Eigen::Dynamic>>
     BlockSolverX;
 // solver for BA/3D SLAM
-typedef BlockSolver<BlockSolverTraits<6, 3> > BlockSolver_6_3;
+typedef BlockSolver<BlockSolverTraits<6, 3>> BlockSolver_6_3;
 // solver fo BA with scale
-typedef BlockSolver<BlockSolverTraits<7, 3> > BlockSolver_7_3;
+typedef BlockSolver<BlockSolverTraits<7, 3>> BlockSolver_7_3;
 // 2Dof landmarks 3Dof poses
-typedef BlockSolver<BlockSolverTraits<3, 2> > BlockSolver_3_2;
+typedef BlockSolver<BlockSolverTraits<3, 2>> BlockSolver_3_2;
 
 G2O_END_NAMESPACE
 

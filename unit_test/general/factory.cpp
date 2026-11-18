@@ -4,8 +4,10 @@
 
 #include "g2o/core/factory.h"
 
+#include <memory>
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include "g2o/core/sparse_optimizer.h"
 #include "g2o/types/sba/types_six_dof_expmap.h"
@@ -60,14 +62,14 @@ TEST(General, FactoryTagsContainNoWhitespace) {
 TEST(General, GraphOfSE3PosesSurvivesSaveAndLoad) {
   g2o::SparseOptimizer graph;
   for (int id = 0; id < 2; ++id) {
-    auto* vertex = new g2o::VertexSE3;
+    auto vertex = std::make_unique<g2o::VertexSE3>();
     vertex->setId(id);
-    ASSERT_TRUE(graph.addVertex(vertex));
+    ASSERT_TRUE(graph.addVertex(std::move(vertex)));
   }
-  auto* edge = new g2o::EdgeSE3;
+  auto edge = std::make_unique<g2o::EdgeSE3>();
   edge->setVertex(0, graph.vertex(0));
   edge->setVertex(1, graph.vertex(1));
-  ASSERT_TRUE(graph.addEdge(edge));
+  ASSERT_TRUE(graph.addEdge(std::move(edge)));
   std::stringstream file;
   ASSERT_TRUE(graph.save(file));
 

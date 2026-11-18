@@ -268,18 +268,12 @@ bool MainWindow::allocateSolver(bool& allocatedNewSolver) {
   allocatedNewSolver = true;
   QString strSolver = coOptimizer->currentText();
 
-  // delete the old optimization algorithm
-  OptimizationAlgorithm* algorithmPointer =
-      const_cast<OptimizationAlgorithm*>(viewer->graph->algorithm());
-  viewer->graph->setAlgorithm(nullptr);
-  delete algorithmPointer;
-
-  // create the new algorithm
+  // create the new algorithm, which replaces and frees the old one
   OptimizationAlgorithmFactory* solverFactory =
       OptimizationAlgorithmFactory::instance();
-  _currentSolver = solverFactory->construct(
-      strSolver.toStdString(), _currentOptimizationAlgorithmProperty);
-  viewer->graph->setAlgorithm(_currentSolver);
+  viewer->graph->setAlgorithm(solverFactory->construct(
+      strSolver.toStdString(), _currentOptimizationAlgorithmProperty));
+  _currentSolver = viewer->graph->solver();
 
   _lastSolver = currentIndex;
   return true;

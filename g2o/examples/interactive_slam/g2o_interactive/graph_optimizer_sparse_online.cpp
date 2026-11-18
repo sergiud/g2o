@@ -15,22 +15,24 @@
 
 #include <fstream>
 #include <iomanip>
+#include <memory>
+#include <utility>
 
 #include "types_slam2d_online.h"
 #include "types_slam3d_online.h"
 using namespace std;
 using namespace Eigen;
 
-#define DIM_TO_SOLVER(p, l) BlockSolver<BlockSolverTraits<p, l> >
+#define DIM_TO_SOLVER(p, l) BlockSolver<BlockSolverTraits<p, l>>
 
 #define ALLOC_PCG(s, p, l)                                                   \
   if (1) {                                                                   \
     ngx::Log("# Using PCG online poseDim {} landMarkDim {} blockordering 1", \
              p, l);                                                          \
-    LinearSolverPCG<DIM_TO_SOLVER(p, l)::PoseMatrixType>* linearSolver =     \
-        new LinearSolverPCG<DIM_TO_SOLVER(p, l)::PoseMatrixType>();          \
+    auto linearSolver = std::make_unique<                                    \
+        LinearSolverPCG<DIM_TO_SOLVER(p, l)::PoseMatrixType>>();             \
     linearSolver->setMaxIterations(6);                                       \
-    s = new DIM_TO_SOLVER(p, l)(linearSolver);                               \
+    s = std::make_unique<DIM_TO_SOLVER(p, l)>(std::move(linearSolver));      \
   } else                                                                     \
     (void)0
 
@@ -63,7 +65,7 @@ int SparseOptimizerOnline::optimize(int iterations, bool online) {
   // return SparseOptimizer::optimize(iterations, online);
 
   (void)iterations;  // we only do one iteration anyhow
-  OptimizationAlgorithm* solver = _algorithm;
+  OptimizationAlgorithm* solver = _algorithm.get();
 
   int cjIterations = 0;
   bool ok = true;
@@ -163,8 +165,8 @@ bool SparseOptimizerOnline::updateInitialization(HyperGraph::VertexSet& vset,
   return result;
 }
 
-static Solver* createSolver(const std::string& solverName) {
-  g2o::Solver* s = nullptr;
+static std::unique_ptr<Solver> createSolver(const std::string& solverName) {
+  std::unique_ptr<Solver> s;
   if (solverName == "pcg3_2") {
     ALLOC_PCG(s, 3, 2);
   } else if (solverName == "pcg6_3") {
@@ -179,14 +181,14 @@ bool SparseOptimizerOnline::initSolver(int dimension, int /*batchEveryN*/) {
       OptimizationAlgorithmFactory::instance();
   OptimizationAlgorithmProperty solverProperty;
   if (_usePcg) {
-    Solver* s = nullptr;
+    std::unique_ptr<Solver> s;
     if (dimension == 3) {
       s = createSolver("pcg3_2");
     } else {
       s = createSolver("pcg6_3");
     }
-    auto* gaussNewton = new OptimizationAlgorithmGaussNewton(s);
-    setAlgorithm(gaussNewton);
+    setAlgorithm(
+        std::make_unique<OptimizationAlgorithmGaussNewton>(std::move(s)));
   } else {
     if (dimension == 3) {
       setAlgorithm(

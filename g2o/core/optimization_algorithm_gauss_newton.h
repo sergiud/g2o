@@ -10,6 +10,8 @@
 #include <g2o/core/optimization_algorithm_with_hessian.h>
 #include <g2o/prefix.h>
 
+#include <memory>
+
 G2O_START_NAMESPACE
 
 /**
@@ -22,7 +24,8 @@ class G2O_CORE_API OptimizationAlgorithmGaussNewton
    * construct the Gauss Newton algorithm, which use the given Solver for
    * solving the linearized system.
    */
-  explicit OptimizationAlgorithmGaussNewton(Solver* solver);
+  //! The algorithm owns the solver.
+  explicit OptimizationAlgorithmGaussNewton(std::unique_ptr<Solver> solver);
   virtual ~OptimizationAlgorithmGaussNewton();
 
   virtual SolverResult solve(int iteration, bool online = false);

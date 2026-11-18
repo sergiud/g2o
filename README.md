@@ -20,21 +20,41 @@ that keeps the interface of version 2017.7.30. The g2o releases since then
 changed that interface, while projects such as
 [this fork of ORB-SLAM](https://github.com/sergiud/ORB_SLAM) still use it.
 
-The interface differs in one place: a graph owns the vertices and edges it
-accepts and holds them in `std::unique_ptr`, so that removing, clearing or
-destroying a graph frees them. `vertices()` maps ids to `std::unique_ptr`
-and `edges()` is a set of `std::unique_ptr`, so code that iterates over them
-takes the raw pointer with `get()`:
+The interface differs wherever ownership passes from one object to another,
+which happens through `std::unique_ptr` instead of raw pointers. An object
+frees what it owns when it replaces or removes it and when it is destroyed,
+and it frees what it rejects, such as a vertex whose id the graph already has.
+Raw pointers only refer to objects that another one owns.
+
+A block solver owns its linear solver, an optimization algorithm its solver
+and an optimizer its algorithm, so setting up an optimizer moves each of them
+into the next:
 
 ```cpp
-for (const auto& [id, vertex] : optimizer.vertices()) {
-  auto* pose = dynamic_cast<g2o::VertexSE3*>(vertex.get());
-}
+auto linearSolver =
+    std::make_unique<g2o::LinearSolverEigen<g2o::BlockSolverX::PoseMatrixType>>();
+auto blockSolver = std::make_unique<g2o::BlockSolverX>(std::move(linearSolver));
+optimizer.setAlgorithm(std::make_unique<g2o::OptimizationAlgorithmLevenberg>(
+    std::move(blockSolver)));
 ```
 
-`edgePointers()` returns the edges as a set of raw pointers, which the graph
-keeps owning. Adding an element passes its ownership to the graph on success,
-and the caller keeps an element the graph rejects.
+A graph owns its vertices, edges, parameters and the user data of its
+vertices, and an edge owns its robust kernel. Code that configures an element
+after adding it keeps a raw pointer to it:
+
+```cpp
+auto pose = std::make_unique<g2o::VertexSE3>();
+g2o::VertexSE3* posePointer = pose.get();
+pose->setId(0);
+optimizer.addVertex(std::move(pose));
+posePointer->setFixed(true);
+```
+
+`vertices()` maps ids to `std::unique_ptr` and `edges()` is a set of
+`std::unique_ptr`, so code that iterates over them takes the raw pointer with
+`get()`, while `edgePointers()` returns the edges as raw pointers. The
+factories of types, algorithms and robust kernels return `std::unique_ptr`,
+and the sparse block matrix owns its blocks.
 
 The fork builds as a single CMake 3.28 project that installs a CMake package
 and a software bill of materials, with Eigen up to version 5, Qt 6 and

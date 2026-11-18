@@ -8,6 +8,7 @@
 #include <g2o/core/factory.h>
 
 #include <limits>
+#include <memory>
 
 #include "edge_types_cost_function.h"
 G2O_START_NAMESPACE
@@ -41,7 +42,8 @@ double BackBoneTreeAction::perform(HyperGraph::Vertex* v,
   if (_factory->tag(v) != _vertexTag) return 0;
   Star* parentStar = getStar(vParent);
   if (parentStar == nullptr) {
-    parentStar = new Star(_level + 1, _optimizer);
+    _stars.push_back(std::make_unique<Star>(_level + 1, _optimizer));
+    parentStar = _stars.back().get();
     addToMap(parentStar, vParent);
     parentStar->_gauge.insert(vParent);
   }
@@ -50,7 +52,8 @@ double BackBoneTreeAction::perform(HyperGraph::Vertex* v,
 
   // every _step levels you go down in the tree, create a new star
   if ((depth != 0) && ((depth % _step) == 0)) {
-    auto* star = new Star(_level + 1, _optimizer);
+    _stars.push_back(std::make_unique<Star>(_level + 1, _optimizer));
+    Star* star = _stars.back().get();
     addToMap(star, v);
     star->_gauge.insert(v);
   }

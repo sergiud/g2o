@@ -10,6 +10,8 @@
 #include <g2o/core/optimization_algorithm_with_hessian.h>
 #include <g2o/prefix.h>
 
+#include <memory>
+
 G2O_START_NAMESPACE
 
 /**
@@ -22,7 +24,8 @@ class G2O_CORE_API OptimizationAlgorithmLevenberg
    * construct the Levenberg algorithm, which will use the given Solver for
    * solving the linearized system.
    */
-  explicit OptimizationAlgorithmLevenberg(Solver* solver);
+  //! The algorithm owns the solver.
+  explicit OptimizationAlgorithmLevenberg(std::unique_ptr<Solver> solver);
   virtual ~OptimizationAlgorithmLevenberg();
 
   virtual SolverResult solve(int iteration, bool online = false);

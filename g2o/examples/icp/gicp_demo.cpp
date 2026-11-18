@@ -14,7 +14,9 @@
 #include <Eigen/StdVector>
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <random>
+#include <utility>
 
 using namespace Eigen;
 using namespace std;
@@ -67,12 +69,13 @@ int main() {
   optimizer.setVerbose(false);
 
   // variable-size block solver
-  BlockSolverX::LinearSolverType* linearSolver =
-      new LinearSolverDense<g2o::BlockSolverX::PoseMatrixType>();
-  auto* solver_ptr = new BlockSolverX(linearSolver);
-  auto* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+  auto linearSolver =
+      std::make_unique<LinearSolverDense<g2o::BlockSolverX::PoseMatrixType>>();
+  auto solver_ptr = std::make_unique<BlockSolverX>(std::move(linearSolver));
+  auto solver = std::make_unique<g2o::OptimizationAlgorithmLevenberg>(
+      std::move(solver_ptr));
 
-  optimizer.setAlgorithm(solver);
+  optimizer.setAlgorithm(std::move(solver));
 
   vector<Vector3d> true_points;
   for (size_t i = 0; i < 1000; ++i) {
@@ -93,7 +96,7 @@ int main() {
     cam.translation() = t;
 
     // set up node
-    auto* vc = new VertexSE3();
+    auto vc = std::make_unique<VertexSE3>();
     vc->setEstimate(cam);
 
     vc->setId(vertex_id);  // vertex id
@@ -104,7 +107,7 @@ int main() {
     if (i == 0) vc->setFixed(true);
 
     // add to optimizer
-    optimizer.addVertex(vc);
+    optimizer.addVertex(std::move(vc));
 
     vertex_id++;
   }
@@ -136,8 +139,8 @@ int main() {
     nm0.normalize();
     nm1.normalize();
 
-    auto* e  // new edge with correct cohort for caching
-        = new Edge_V_V_GICP();
+    // new edge with correct cohort for caching
+    auto e = std::make_unique<Edge_V_V_GICP>();
 
     e->setVertex(0, vp0);  // first viewpoint
 
@@ -162,7 +165,7 @@ int main() {
     //    e->setRobustKernel(true);
     // e->setHuberWidth(0.01);
 
-    optimizer.addEdge(e);
+    optimizer.addEdge(std::move(e));
   }
 
   // move second cam off of its true position

@@ -16,7 +16,7 @@ OptimizationAlgorithm::~OptimizationAlgorithm() = default;
 void OptimizationAlgorithm::printProperties(std::ostream& os) const {
   os << "------------- Algorithm Properties -------------" << endl;
   for (const auto& _propertie : _properties) {
-    BaseProperty* p = _propertie.second;
+    BaseProperty* p = _propertie.second.get();
     os << _propertie.first << "\t" << p->toString() << endl;
   }
   os << "------------------------------------------------" << endl;

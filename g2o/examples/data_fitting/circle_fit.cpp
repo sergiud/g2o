@@ -19,6 +19,8 @@
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
 #include <iostream>
+#include <memory>
+#include <utility>
 
 using namespace std;
 
@@ -110,7 +112,7 @@ int main(int argc, char** argv) {
   // generate random data
   Eigen::Vector2d center(4.0, 2.0);
   double radius = 2.0;
-  auto* points = new Eigen::Vector2d[numPoints];
+  std::vector<Eigen::Vector2d> points(numPoints);
 
   g2o::Sampler::seedRand();
   for (int i = 0; i < numPoints; ++i) {
@@ -130,27 +132,29 @@ int main(int argc, char** argv) {
   // setup the solver
   g2o::SparseOptimizer optimizer;
   optimizer.setVerbose(false);
-  auto* linearSolver = new MyLinearSolver();
-  auto* solver_ptr = new MyBlockSolver(linearSolver);
-  auto* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+  auto linearSolver = std::make_unique<MyLinearSolver>();
+  auto solver_ptr = std::make_unique<MyBlockSolver>(std::move(linearSolver));
+  auto solver = std::make_unique<g2o::OptimizationAlgorithmLevenberg>(
+      std::move(solver_ptr));
   // g2o::OptimizationAlgorithmGaussNewton* solver = new
   // g2o::OptimizationAlgorithmGaussNewton(solver_ptr);
-  optimizer.setAlgorithm(solver);
+  optimizer.setAlgorithm(std::move(solver));
 
   // build the optimization problem given the points
   // 1. add the circle vertex
-  auto* circle = new VertexCircle();
+  auto circleOwner = std::make_unique<VertexCircle>();
+  auto* circle = circleOwner.get();
   circle->setId(0);
   circle->setEstimate(
       Eigen::Vector3d(3.0, 3.0, 3.0));  // some initial value for the circle
-  optimizer.addVertex(circle);
+  optimizer.addVertex(std::move(circleOwner));
   // 2. add the points we measured
   for (int i = 0; i < numPoints; ++i) {
-    auto* e = new EdgePointOnCircle;
+    auto e = std::make_unique<EdgePointOnCircle>();
     e->setInformation(Eigen::Matrix<double, 1, 1>::Identity());
     e->setVertex(0, circle);
     e->setMeasurement(points[i]);
-    optimizer.addEdge(e);
+    optimizer.addEdge(std::move(e));
   }
 
   // perform the optimization
@@ -165,8 +169,8 @@ int main(int argc, char** argv) {
   cout << "center of the circle " << circle->estimate().head<2>().transpose()
        << endl;
   cout << "radius of the cirlce " << circle->estimate()(2) << endl;
-  cout << "error " << errorOfSolution(numPoints, points, circle->estimate())
-       << endl;
+  cout << "error "
+       << errorOfSolution(numPoints, points.data(), circle->estimate()) << endl;
   cout << endl;
 
   // solve by linear least squares
@@ -194,10 +198,10 @@ int main(int argc, char** argv) {
   cout << "Linear least squares solution" << endl;
   cout << "center of the circle " << solution.head<2>().transpose() << endl;
   cout << "radius of the cirlce " << solution(2) << endl;
-  cout << "error " << errorOfSolution(numPoints, points, solution) << endl;
+  cout << "error " << errorOfSolution(numPoints, points.data(), solution)
+       << endl;
 
   // clean up
-  delete[] points;
 
   return 0;
 }

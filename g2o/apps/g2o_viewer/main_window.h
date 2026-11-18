@@ -81,6 +81,7 @@ class G2O_VIEWER_API MainWindow : public QMainWindow,
   int _lastSolver;
   bool _forceStopFlag{};
   g2o::OptimizationAlgorithmProperty _currentOptimizationAlgorithmProperty;
+  //! the algorithm of the graph, which the graph owns
   g2o::OptimizationAlgorithm* _currentSolver;
 
   ViewerPropertiesWidget* _viewerPropertiesWidget;

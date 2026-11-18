@@ -8,6 +8,9 @@
 #include <g2o/apps/g2o_simulator/simutils.h>
 #include <g2o/stuff/logger.h>
 
+#include <memory>
+#include <utility>
+
 G2O_START_NAMESPACE
 using namespace std;
 using namespace Eigen;
@@ -91,14 +94,14 @@ void SensorSegment2D::sense() {
     it++;
     count++;
   }
-  for (auto it : world()->objects()) {
-    WorldObjectType* o = dynamic_cast<WorldObjectType*>(it);
+  for (const auto& it : world()->objects()) {
+    WorldObjectType* o = dynamic_cast<WorldObjectType*>(it.get());
     if ((o != nullptr) && isVisible(o)) {
-      EdgeType* e = mkEdge(o);
+      std::unique_ptr<EdgeType> e = mkEdge(o);
       if ((e != nullptr) && (graph() != nullptr)) {
         e->setMeasurementFromState();
-        addNoise(e);
-        graph()->addEdge(e);
+        addNoise(e.get());
+        graph()->addEdge(std::move(e));
       }
     }
   }

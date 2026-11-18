@@ -18,6 +18,8 @@
 #include <g2o/stuff/timeutil.h>
 
 #include <iostream>
+#include <memory>
+#include <vector>
 
 G2O_START_NAMESPACE
 
@@ -27,15 +29,37 @@ G2O_START_NAMESPACE
 struct G2O_SOLVER_CSPARSE_API CSparseExt : public cs {
   CSparseExt() : cs{} {}
 
-  ~CSparseExt() {
-    delete[] p;
-    delete[] i;
-    delete[] x;
+  //! allocates the column pointers for the number of columns
+  void allocateColumns(int columns) {
+    _columnPointers = std::make_unique<int[]>(columns + 1);
+    p = _columnPointers.get();
   }
+
+  //! allocates the row indices and values for the number of entries
+  void allocateEntries(int entries) {
+    _rowIndices = std::make_unique<int[]>(entries);
+    _values = std::make_unique<double[]>(entries);
+    i = _rowIndices.get();
+    x = _values.get();
+  }
+
   int columnsAllocated{};
 
   CSparseExt(const CSparseExt&) = delete;
   CSparseExt& operator=(const CSparseExt&) = delete;
+
+ private:
+  std::unique_ptr<int[]> _columnPointers;
+  std::unique_ptr<int[]> _rowIndices;
+  std::unique_ptr<double[]> _values;
+};
+
+//! Frees the objects that CSparse allocates.
+struct CSparseFree {
+  void operator()(css* symbolic) const { cs_sfree(symbolic); }
+  void operator()(csn* numeric) const { cs_nfree(numeric); }
+  void operator()(cs* matrix) const { cs_spfree(matrix); }
+  void operator()(int* array) const { cs_free(array); }
 };
 
 /**
@@ -45,32 +69,16 @@ template <typename MatrixType>
 class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
  public:
   LinearSolverCSparse() : LinearSolverCCS<MatrixType>() {
-    _symbolicDecomposition = nullptr;
     _csWorkspaceSize = -1;
-    _csWorkspace = nullptr;
-    _csIntWorkspace = nullptr;
-    _ccsA = new CSparseExt;
+    _ccsA = std::make_unique<CSparseExt>();
     _blockOrdering = true;
     _writeDebug = true;
   }
 
-  virtual ~LinearSolverCSparse() {
-    if (_symbolicDecomposition) {
-      cs_sfree(_symbolicDecomposition);
-      _symbolicDecomposition = nullptr;
-    }
-    delete[] _csWorkspace;
-    _csWorkspace = nullptr;
-    delete[] _csIntWorkspace;
-    _csIntWorkspace = nullptr;
-    delete _ccsA;
-  }
+  virtual ~LinearSolverCSparse() = default;
 
   virtual bool init() {
-    if (_symbolicDecomposition) {
-      cs_sfree(_symbolicDecomposition);
-      _symbolicDecomposition = nullptr;
-    }
+    _symbolicDecomposition.reset();
     return true;
   }
 
@@ -83,23 +91,22 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
     // re-allocate the temporary workspace for cholesky
     if (_csWorkspaceSize < _ccsA->n) {
       _csWorkspaceSize = 2 * _ccsA->n;
-      delete[] _csWorkspace;
-      _csWorkspace = new double[_csWorkspaceSize];
-      delete[] _csIntWorkspace;
-      _csIntWorkspace = new int[2 * _csWorkspaceSize];
+      _csWorkspace = std::make_unique<double[]>(_csWorkspaceSize);
+      _csIntWorkspace = std::make_unique<int[]>(2 * _csWorkspaceSize);
     }
 
     double t = get_monotonic_time();
     // _x = _b for calling csparse
     if (x != b) memcpy(x, b, _ccsA->n * sizeof(double));
-    int ok = csparse_extension::cs_cholsolsymb(_ccsA, x, _symbolicDecomposition,
-                                               _csWorkspace, _csIntWorkspace);
+    int ok = csparse_extension::cs_cholsolsymb(
+        _ccsA.get(), x, _symbolicDecomposition.get(), _csWorkspace.get(),
+        _csIntWorkspace.get());
     if (ok == 0) {
       if (_writeDebug) {
         ngx::Log(
             ngx::Error,
             "Cholesky failure, writing debug.txt (Hessian loadable by Octave)");
-        csparse_extension::writeCs2Octave("debug.txt", _ccsA, true);
+        csparse_extension::writeCs2Octave("debug.txt", _ccsA.get(), true);
       }
       return false;
     }
@@ -114,7 +121,8 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
     return ok != 0;
   }
 
-  bool solveBlocks(double**& blocks, const SparseBlockMatrix<MatrixType>& A) {
+  bool solveBlocks(std::vector<std::vector<double>>& blocks,
+                   const SparseBlockMatrix<MatrixType>& A) {
     fillCSparse(A, _symbolicDecomposition != nullptr);
     // perform symbolic cholesky once
     if (_symbolicDecomposition == nullptr) {
@@ -124,32 +132,33 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
     // re-allocate the temporary workspace for cholesky
     if (_csWorkspaceSize < _ccsA->n) {
       _csWorkspaceSize = 2 * _ccsA->n;
-      delete[] _csWorkspace;
-      _csWorkspace = new double[_csWorkspaceSize];
-      delete[] _csIntWorkspace;
-      _csIntWorkspace = new int[2 * _csWorkspaceSize];
+      _csWorkspace = std::make_unique<double[]>(_csWorkspaceSize);
+      _csIntWorkspace = std::make_unique<int[]>(2 * _csWorkspaceSize);
     }
 
-    if (blocks == nullptr) {
-      blocks = new double*[A.rows()];
-      double** block = blocks;
+    if (blocks.empty()) {
+      blocks.resize(A.rowBlockIndices().size());
       for (size_t i = 0; i < A.rowBlockIndices().size(); ++i) {
-        int dim = A.rowsOfBlock(i) * A.colsOfBlock(i);
-        *block = new double[dim];
-        block++;
+        blocks[i].resize(A.rowsOfBlock(i) * A.colsOfBlock(i));
       }
+    }
+    std::vector<double*> blockData;
+    blockData.reserve(blocks.size());
+    for (auto& block : blocks) {
+      blockData.push_back(block.data());
     }
 
     int ok = 1;
-    csn* numericCholesky = csparse_extension::cs_chol_workspace(
-        _ccsA, _symbolicDecomposition, _csIntWorkspace, _csWorkspace);
+    std::unique_ptr<csn, CSparseFree> numericCholesky(
+        csparse_extension::cs_chol_workspace(
+            _ccsA.get(), _symbolicDecomposition.get(), _csIntWorkspace.get(),
+            _csWorkspace.get()));
     if (numericCholesky != nullptr) {
       MarginalCovarianceCholesky mcc;
       mcc.setCholeskyFactor(_ccsA->n, numericCholesky->L->p,
                             numericCholesky->L->i, numericCholesky->L->x,
                             _symbolicDecomposition->pinv);
-      mcc.computeCovariance(blocks, A.rowBlockIndices());
-      cs_nfree(numericCholesky);
+      mcc.computeCovariance(blockData.data(), A.rowBlockIndices());
     } else {
       ok = 0;
       ngx::Log(ngx::Error, "inverse fail (numeric decomposition)");
@@ -166,7 +175,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
 
   virtual bool solvePattern(
       SparseBlockMatrix<MatrixXD>& spinv,
-      const std::vector<std::pair<int, int> >& blockIndices,
+      const std::vector<std::pair<int, int>>& blockIndices,
       const SparseBlockMatrix<MatrixType>& A) {
     fillCSparse(A, _symbolicDecomposition != nullptr);
     // perform symbolic cholesky once
@@ -177,22 +186,21 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
     // re-allocate the temporary workspace for cholesky
     if (_csWorkspaceSize < _ccsA->n) {
       _csWorkspaceSize = 2 * _ccsA->n;
-      delete[] _csWorkspace;
-      _csWorkspace = new double[_csWorkspaceSize];
-      delete[] _csIntWorkspace;
-      _csIntWorkspace = new int[2 * _csWorkspaceSize];
+      _csWorkspace = std::make_unique<double[]>(_csWorkspaceSize);
+      _csIntWorkspace = std::make_unique<int[]>(2 * _csWorkspaceSize);
     }
 
     int ok = 1;
-    csn* numericCholesky = csparse_extension::cs_chol_workspace(
-        _ccsA, _symbolicDecomposition, _csIntWorkspace, _csWorkspace);
+    std::unique_ptr<csn, CSparseFree> numericCholesky(
+        csparse_extension::cs_chol_workspace(
+            _ccsA.get(), _symbolicDecomposition.get(), _csIntWorkspace.get(),
+            _csWorkspace.get()));
     if (numericCholesky != nullptr) {
       MarginalCovarianceCholesky mcc;
       mcc.setCholeskyFactor(_ccsA->n, numericCholesky->L->p,
                             numericCholesky->L->i, numericCholesky->L->x,
                             _symbolicDecomposition->pinv);
       mcc.computeCovariance(spinv, A.rowBlockIndices(), blockIndices);
-      cs_nfree(numericCholesky);
     } else {
       ok = 0;
       ngx::Log(ngx::Error, "inverse fail (numeric decomposition)");
@@ -216,11 +224,11 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
   virtual void setWriteDebug(bool b) { _writeDebug = b; }
 
  protected:
-  css* _symbolicDecomposition;
+  std::unique_ptr<css, CSparseFree> _symbolicDecomposition;
   int _csWorkspaceSize;
-  double* _csWorkspace;
-  int* _csIntWorkspace;
-  CSparseExt* _ccsA;
+  std::unique_ptr<double[]> _csWorkspace;
+  std::unique_ptr<int[]> _csIntWorkspace;
+  std::unique_ptr<CSparseExt> _ccsA;
   bool _blockOrdering;
   MatrixStructure _matrixStructure;
   VectorXI _scalarPermutation;
@@ -229,7 +237,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
   void computeSymbolicDecomposition(const SparseBlockMatrix<MatrixType>& A) {
     double t = get_monotonic_time();
     if (!_blockOrdering) {
-      _symbolicDecomposition = cs_schol(1, _ccsA);
+      _symbolicDecomposition.reset(cs_schol(1, _ccsA.get()));
     } else {
       A.fillBlockStructure(_matrixStructure);
 
@@ -237,46 +245,44 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
       cs auxBlock{};
       auxBlock.nzmax = _matrixStructure.nzMax();
       auxBlock.m = auxBlock.n = _matrixStructure.n;
-      auxBlock.p = _matrixStructure.Ap;
-      auxBlock.i = _matrixStructure.Aii;
+      auxBlock.p = _matrixStructure.Ap.get();
+      auxBlock.i = _matrixStructure.Aii.get();
       auxBlock.x = nullptr;  // no values
       auxBlock.nz = -1;      // CCS format
 
       // AMD ordering on the block structure
       const int& n = _ccsA->n;
-      int* P = cs_amd(1, &auxBlock);
+      std::unique_ptr<int, CSparseFree> P(cs_amd(1, &auxBlock));
 
       // blow up the permutation to the scalar matrix
       if (_scalarPermutation.size() == 0) _scalarPermutation.resize(n);
       if (_scalarPermutation.size() < n) _scalarPermutation.resize(2 * n);
       size_t scalarIdx = 0;
       for (int i = 0; i < _matrixStructure.n; ++i) {
-        const int& p = P[i];
+        const int& p = P.get()[i];
         int base = A.colBaseOfBlock(p);
         int nCols = A.colsOfBlock(p);
         for (int j = 0; j < nCols; ++j)
           _scalarPermutation(scalarIdx++) = base++;
       }
       assert((int)scalarIdx == n);
-      cs_free(P);
 
       // apply the scalar permutation to finish symbolic decomposition
-      _symbolicDecomposition =
-          (css*)cs_calloc(1, sizeof(css)); /* allocate result S */
+      _symbolicDecomposition.reset(
+          (css*)cs_calloc(1, sizeof(css))); /* allocate result S */
       _symbolicDecomposition->pinv = cs_pinv(_scalarPermutation.data(), n);
-      cs* C = cs_symperm(_ccsA, _symbolicDecomposition->pinv, 0);
-      _symbolicDecomposition->parent = cs_etree(C, 0);
-      int* post = cs_post(_symbolicDecomposition->parent, n);
-      int* c = cs_counts(C, _symbolicDecomposition->parent, post, 0);
-      cs_free(post);
-      cs_spfree(C);
+      std::unique_ptr<cs, CSparseFree> C(
+          cs_symperm(_ccsA.get(), _symbolicDecomposition->pinv, 0));
+      _symbolicDecomposition->parent = cs_etree(C.get(), 0);
+      std::unique_ptr<int, CSparseFree> post(
+          cs_post(_symbolicDecomposition->parent, n));
+      std::unique_ptr<int, CSparseFree> c(
+          cs_counts(C.get(), _symbolicDecomposition->parent, post.get(), 0));
       _symbolicDecomposition->cp = (int*)cs_malloc(n + 1, sizeof(int));
       _symbolicDecomposition->unz = _symbolicDecomposition->lnz =
-          cs_cumsum(_symbolicDecomposition->cp, c, n);
-      cs_free(c);
+          cs_cumsum(_symbolicDecomposition->cp, c.get(), n);
       if (_symbolicDecomposition->lnz < 0) {
-        cs_sfree(_symbolicDecomposition);
-        _symbolicDecomposition = nullptr;
+        _symbolicDecomposition.reset();
       }
     }
     G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
@@ -301,8 +307,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
           _ccsA->columnsAllocated == 0
               ? n
               : 2 * n;  // pre-allocate more space if re-allocating
-      delete[] _ccsA->p;
-      _ccsA->p = new int[_ccsA->columnsAllocated + 1];
+      _ccsA->allocateColumns(_ccsA->columnsAllocated);
     }
 
     if (!onlyValues) {
@@ -312,10 +317,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
             _ccsA->nzmax == 0
                 ? nzmax
                 : 2 * nzmax;  // pre-allocate more space if re-allocating
-        delete[] _ccsA->x;
-        delete[] _ccsA->i;
-        _ccsA->i = new int[_ccsA->nzmax];
-        _ccsA->x = new double[_ccsA->nzmax];
+        _ccsA->allocateEntries(_ccsA->nzmax);
       }
     }
     _ccsA->m = m;

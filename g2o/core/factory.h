@@ -37,8 +37,9 @@ class G2O_CORE_API Factory {
   /**
    * register a tag for a specific creator
    */
+  //! registers a creator for the tag, which the factory owns
   void registerType(const std::string& tag,
-                    AbstractHyperGraphElementCreator* c);
+                    std::unique_ptr<AbstractHyperGraphElementCreator> c);
 
   /**
    * unregister a tag for a specific creator
@@ -48,14 +49,15 @@ class G2O_CORE_API Factory {
   /**
    * construct a graph element based on its tag
    */
-  HyperGraph::HyperGraphElement* construct(const std::string& tag) const;
+  std::unique_ptr<HyperGraph::HyperGraphElement> construct(
+      const std::string& tag) const;
 
   /**
    * construct a graph element based on its tag, but only if it's type (a
    * bitmask) matches. A bitmask without any bit set will construct any item.
    * Otherwise a bit has to be set to allow construction of a graph element.
    */
-  HyperGraph::HyperGraphElement* construct(
+  std::unique_ptr<HyperGraph::HyperGraphElement> construct(
       const std::string& tag,
       const HyperGraph::GraphElemBitset& elemsToConstruct) const;
 
@@ -90,8 +92,7 @@ class G2O_CORE_API Factory {
     }
   };
 
-  typedef std::map<std::string, std::unique_ptr<CreatorInformation> >
-      CreatorMap;
+  typedef std::map<std::string, std::unique_ptr<CreatorInformation>> CreatorMap;
   typedef std::map<std::string, std::string> TagLookup;
   Factory() = default;
   ~Factory();
@@ -104,6 +105,19 @@ class G2O_CORE_API Factory {
   Factory& operator=(const Factory&) = delete;
 };
 
+/**
+ * Passes the ownership of an element to a pointer of the given type if the
+ * element has that type, and leaves the element unchanged otherwise.
+ */
+template <typename T>
+std::unique_ptr<T> castElement(
+    std::unique_ptr<HyperGraph::HyperGraphElement>& element) {
+  auto* typed = dynamic_cast<T*>(element.get());
+  if (typed == nullptr) return nullptr;
+  static_cast<void>(element.release());
+  return std::unique_ptr<T>(typed);
+}
+
 template <typename T>
 class RegisterTypeProxy {
  public:
@@ -111,7 +125,8 @@ class RegisterTypeProxy {
 #ifdef G2O_DEBUG_FACTORY
     ngx::Log("Registering {} of type {}", _name, typeid(T).name());
 #endif
-    Factory::instance()->registerType(_name, new HyperGraphElementCreator<T>);
+    Factory::instance()->registerType(
+        _name, std::make_unique<HyperGraphElementCreator<T>>());
   }
 
   ~RegisterTypeProxy() {

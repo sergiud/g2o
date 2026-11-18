@@ -6,16 +6,15 @@
 #include <g2o/core/hyper_graph.h>
 
 #include <cassert>
+#include <memory>
 #include <queue>
+#include <utility>
 
 G2O_START_NAMESPACE
 
-HyperGraph::Data::Data() {
-  _next = nullptr;
-  _dataContainer = nullptr;
-}
+HyperGraph::Data::Data() { _dataContainer = nullptr; }
 
-HyperGraph::Data::~Data() { delete _next; }
+HyperGraph::Data::~Data() = default;
 
 HyperGraph::Vertex::Vertex(int id) : _id(id) {}
 
@@ -49,10 +48,16 @@ const HyperGraph::Vertex* HyperGraph::vertex(int id) const {
   return it->second.get();
 }
 
-bool HyperGraph::addVertex(Vertex* v) {
+bool HyperGraph::addVertex(std::unique_ptr<Vertex> v) {
   Vertex* vn = vertex(v->id());
+  if (vn == v.get()) {
+    // The graph already owns this vertex, so the argument must not free it.
+    static_cast<void>(v.release());
+    return false;
+  }
   if (vn != nullptr) return false;
-  _vertices.emplace(v->id(), std::unique_ptr<Vertex>(v));
+  const int id = v->id();
+  _vertices.emplace(id, std::move(v));
   return true;
 }
 
@@ -72,13 +77,17 @@ bool HyperGraph::changeId(Vertex* v, int newId) {
   return true;
 }
 
-bool HyperGraph::addEdge(Edge* e) {
+bool HyperGraph::addEdge(std::unique_ptr<Edge> owner) {
+  Edge* e = owner.get();
+  if (_edges.find(e) != _edges.end()) {
+    // The graph already owns this edge, so the argument must not free it.
+    static_cast<void>(owner.release());
+    return false;
+  }
   for (auto& it : e->vertices()) {
     if (it == nullptr) return false;
   }
-  // An edge the graph already owns must not get a second owner.
-  if (_edges.find(e) != _edges.end()) return false;
-  _edges.emplace(e);
+  _edges.emplace(std::move(owner));
   for (auto it = e->vertices().begin(); it != e->vertices().end(); ++it) {
     Vertex* v = *it;
     v->edges().insert(e);

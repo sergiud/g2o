@@ -14,7 +14,9 @@
 #include <Eigen/StdVector>
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <random>
+#include <utility>
 
 using namespace Eigen;
 using namespace std;
@@ -73,14 +75,15 @@ int main(int argc, char** argv) {
   optimizer.setVerbose(false);
 
   // variable-size block solver
-  BlockSolverX::LinearSolverType* linearSolver =
-      new LinearSolverCSparse<g2o::BlockSolverX::PoseMatrixType>();
+  auto linearSolver = std::make_unique<
+      LinearSolverCSparse<g2o::BlockSolverX::PoseMatrixType>>();
 
-  auto* solver_ptr = new BlockSolverX(linearSolver);
+  auto solver_ptr = std::make_unique<BlockSolverX>(std::move(linearSolver));
 
-  auto* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+  auto solver = std::make_unique<g2o::OptimizationAlgorithmLevenberg>(
+      std::move(solver_ptr));
 
-  optimizer.setAlgorithm(solver);
+  optimizer.setAlgorithm(std::move(solver));
 
   vector<Vector3d> true_points;
   for (size_t i = 0; i < 1000; ++i) {
@@ -110,7 +113,7 @@ int main(int argc, char** argv) {
     cam.translation() = t;
 
     // set up node
-    auto* vc = new VertexSCam();
+    auto vc = std::make_unique<VertexSCam>();
     vc->setEstimate(cam);
     vc->setId(vertex_id);  // vertex id
 
@@ -123,7 +126,7 @@ int main(int argc, char** argv) {
     vc->setAll();
 
     // add to optimizer
-    optimizer.addVertex(vc);
+    optimizer.addVertex(std::move(vc));
 
     vertex_id++;
   }
@@ -155,8 +158,8 @@ int main(int argc, char** argv) {
     nm0.normalize();
     nm1.normalize();
 
-    auto* e  // new edge with correct cohort for caching
-        = new Edge_V_V_GICP();
+    // new edge with correct cohort for caching
+    auto e = std::make_unique<Edge_V_V_GICP>();
 
     e->vertices()[0]  // first viewpoint
         = dynamic_cast<OptimizableGraph::Vertex*>(vp0);
@@ -183,7 +186,7 @@ int main(int argc, char** argv) {
     //    e->setRobustKernel(true);
     // e->setHuberWidth(0.01);
 
-    optimizer.addEdge(e);
+    optimizer.addEdge(std::move(e));
   }
 
   // set up SBA projections with some number of points
@@ -196,7 +199,8 @@ int main(int argc, char** argv) {
 
   // add point projections to this vertex
   for (auto& true_point : true_points) {
-    auto* v_p = new g2o::VertexSBAPointXYZ();
+    auto v_pOwner = std::make_unique<g2o::VertexSBAPointXYZ>();
+    auto* v_p = v_pOwner.get();
 
     v_p->setId(vertex_id++);
     v_p->setMarginalized(true);
@@ -204,7 +208,7 @@ int main(int argc, char** argv) {
                                            Sample::gaussian(1),
                                            Sample::gaussian(1)));
 
-    optimizer.addVertex(v_p);
+    optimizer.addVertex(std::move(v_pOwner));
 
     for (size_t j = 0; j < 2; ++j) {
       Vector3d z;
@@ -215,7 +219,7 @@ int main(int argc, char** argv) {
         z += Vector3d(Sample::gaussian(pix_noise), Sample::gaussian(pix_noise),
                       Sample::gaussian(pix_noise / 16.0));
 
-        auto* e = new g2o::Edge_XYZ_VSC();
+        auto e = std::make_unique<g2o::Edge_XYZ_VSC>();
 
         e->vertices()[0] = dynamic_cast<g2o::OptimizableGraph::Vertex*>(v_p);
 
@@ -229,7 +233,7 @@ int main(int argc, char** argv) {
         // e->setRobustKernel(false);
         // e->setHuberWidth(1);
 
-        optimizer.addEdge(e);
+        optimizer.addEdge(std::move(e));
       }
     }
   }  // done with adding projection points

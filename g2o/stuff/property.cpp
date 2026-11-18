@@ -9,6 +9,8 @@
 #include <g2o/stuff/string_tools.h>
 
 #include <iostream>
+#include <memory>
+#include <utility>
 #include <vector>
 using namespace std;
 
@@ -18,26 +20,21 @@ BaseProperty::BaseProperty(const std::string name_) : _name(name_) {}
 
 BaseProperty::~BaseProperty() = default;
 
-bool PropertyMap::addProperty(BaseProperty* p) {
-  std::pair<PropertyMapIterator, bool> result = insert(make_pair(p->name(), p));
-  return result.second;
+bool PropertyMap::addProperty(std::unique_ptr<BaseProperty> p) {
+  const std::string name = p->name();
+  return emplace(name, std::move(p)).second;
 }
 
 bool PropertyMap::eraseProperty(const std::string& name) {
   auto it = find(name);
   if (it == end()) return false;
-  delete it->second;
   erase(it);
   return true;
 }
 
 PropertyMap::PropertyMap() = default;
 
-PropertyMap::~PropertyMap() {
-  for (auto& it : *this) {
-    if (it.second != nullptr) delete it.second;
-  }
-}
+PropertyMap::~PropertyMap() = default;
 
 bool PropertyMap::updatePropertyFromString(const std::string& name,
                                            const std::string& value) {
@@ -49,12 +46,12 @@ bool PropertyMap::updatePropertyFromString(const std::string& name,
 
 void PropertyMap::writeToCSV(std::ostream& os) const {
   for (const auto& it : *this) {
-    BaseProperty* p = it.second;
+    BaseProperty* p = it.second.get();
     os << p->name() << ", ";
   }
   os << std::endl;
   for (const auto& it : *this) {
-    BaseProperty* p = it.second;
+    BaseProperty* p = it.second.get();
     os << p->toString() << ", ";
   }
   os << std::endl;

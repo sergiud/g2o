@@ -19,21 +19,19 @@
 #include <cassert>
 #include <iomanip>
 #include <iterator>
+#include <memory>
 #include <sstream>
+#include <utility>
 
 G2O_START_NAMESPACE
 using namespace std;
 
 SparseOptimizer::SparseOptimizer()
-    : _forceStopFlag(nullptr),
-      _verbose(false),
-      _algorithm(nullptr),
-      _computeBatchStatistics(false) {
+    : _forceStopFlag(nullptr), _verbose(false), _computeBatchStatistics(false) {
   _graphActions.resize(AT_NUM_ELEMENTS);
 }
 
 SparseOptimizer::~SparseOptimizer() {
-  delete _algorithm;
   G2OBatchStatistics::setGlobalStats(nullptr);
 }
 
@@ -526,11 +524,12 @@ void SparseOptimizer::discardTop(SparseOptimizer::VertexContainer& vlist) {
 
 void SparseOptimizer::setVerbose(bool verbose) { _verbose = verbose; }
 
-void SparseOptimizer::setAlgorithm(OptimizationAlgorithm* algorithm) {
+void SparseOptimizer::setAlgorithm(
+    std::unique_ptr<OptimizationAlgorithm> algorithm) {
   if (_algorithm !=
       nullptr)  // reset the optimizer for the formerly used solver
     _algorithm->setOptimizer(nullptr);
-  _algorithm = algorithm;
+  _algorithm = std::move(algorithm);
   if (_algorithm != nullptr) _algorithm->setOptimizer(this);
 }
 

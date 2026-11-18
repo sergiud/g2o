@@ -131,7 +131,7 @@ void MarginalCovarianceCholesky::computeCovariance(
   // allocate the sparse
   spinv = SparseBlockMatrix<MatrixXD>(&rowBlockIndices[0], &rowBlockIndices[0],
                                       rowBlockIndices.size(),
-                                      rowBlockIndices.size(), true);
+                                      rowBlockIndices.size());
   _map.clear();
   vector<MatrixElem> elemsToCompute;
   for (const auto& blockIndice : blockIndices) {

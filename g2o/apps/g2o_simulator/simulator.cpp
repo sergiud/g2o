@@ -6,6 +6,8 @@
 #include "simulator.h"
 
 #include <iostream>
+#include <memory>
+#include <utility>
 
 G2O_START_NAMESPACE
 using namespace std;
@@ -18,6 +20,7 @@ OptimizableGraph* BaseWorldObject::graph() {
 }
 
 void BaseWorldObject::setVertex(OptimizableGraph::Vertex* vertex_) {
+  if (_ownedVertex.get() != vertex_) _ownedVertex.reset();
   _vertex = vertex_;
 }
 
@@ -27,19 +30,17 @@ OptimizableGraph* BaseRobot::graph() {
   return nullptr;
 }
 
-bool BaseRobot::addSensor(BaseSensor* sensor) {
+bool BaseRobot::addSensor(std::unique_ptr<BaseSensor> sensor) {
   assert(graph());
-  std::pair<std::set<BaseSensor*>::iterator, bool> result =
-      _sensors.insert(sensor);
-  if (result.second) {
-    sensor->setRobot(this);
-    sensor->addParameters();
-  }
-  return result.second;
+  BaseSensor* added = sensor.get();
+  if (!_sensors.insert(std::move(sensor)).second) return false;
+  added->setRobot(this);
+  added->addParameters();
+  return true;
 }
 
 void BaseRobot::sense() {
-  for (auto s : _sensors) {
+  for (const auto& s : _sensors) {
     s->sense();
   }
 }
@@ -65,23 +66,25 @@ bool World::addRobot(BaseRobot* robot) {
   return result.second;
 }
 
-bool World::addWorldObject(BaseWorldObject* object) {
-  std::pair<std::set<BaseWorldObject*>::iterator, bool> result =
-      _objects.insert(object);
-  if (result.second) {
-    object->setWorld(this);
+bool World::addWorldObject(std::unique_ptr<BaseWorldObject> object) {
+  BaseWorldObject* added = object.get();
+  if (!_objects.insert(std::move(object)).second) return false;
+  added->setWorld(this);
+  if (graph() == nullptr) return true;
+  // The graph receives only a vertex the object created, since the caller
+  // keeps owning a vertex it set.
+  std::unique_ptr<OptimizableGraph::Vertex> vertex = added->releaseVertex();
+  if (vertex != nullptr) {
+    vertex->setId(_runningId++);
+    graph()->addVertex(std::move(vertex));
   }
-  if ((graph() != nullptr) && (object->vertex() != nullptr)) {
-    object->vertex()->setId(_runningId++);
-    graph()->addVertex(object->vertex());
-  }
-  return result.second;
+  return true;
 }
 
-bool World::addParameter(Parameter* param) {
+bool World::addParameter(std::unique_ptr<Parameter> param) {
   if (graph() == nullptr) return false;
   param->setId(_paramId);
-  graph()->addParameter(param);
+  graph()->addParameter(std::move(param));
   _paramId++;
   return true;
 }

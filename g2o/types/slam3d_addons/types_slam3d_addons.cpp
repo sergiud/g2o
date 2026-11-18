@@ -8,7 +8,9 @@
 #include <g2o/types/slam3d_addons/types_slam3d_addons.h>
 
 #include <iostream>
+#include <memory>
 #include <typeinfo>
+#include <utility>
 
 G2O_START_NAMESPACE
 
@@ -39,13 +41,13 @@ G2O_ATTRIBUTE_CONSTRUCTOR(init_slam3d_addons_types) {
 
 #ifdef G2O_HAVE_OPENGL
   HyperGraphActionLibrary* actionLib = HyperGraphActionLibrary::instance();
-  HyperGraphElementAction* vertexse3eulerdraw = new g2o::VertexSE3DrawAction;
+  auto vertexse3eulerdraw = std::make_unique<g2o::VertexSE3DrawAction>();
   vertexse3eulerdraw->setTypeName(typeid(VertexSE3Euler).name());
-  actionLib->registerAction(vertexse3eulerdraw);
+  actionLib->registerAction(std::move(vertexse3eulerdraw));
 
-  HyperGraphElementAction* edgese3eulerdraw = new g2o::EdgeSE3DrawAction;
+  auto edgese3eulerdraw = std::make_unique<g2o::EdgeSE3DrawAction>();
   edgese3eulerdraw->setTypeName(typeid(EdgeSE3Euler).name());
-  actionLib->registerAction(edgese3eulerdraw);
+  actionLib->registerAction(std::move(edgese3eulerdraw));
 #endif
 }
 

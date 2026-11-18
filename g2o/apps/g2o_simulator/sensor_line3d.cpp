@@ -5,6 +5,9 @@
 
 #include "sensor_line3d.h"
 
+#include <memory>
+#include <utility>
+
 G2O_START_NAMESPACE
 using namespace std;
 
@@ -36,9 +39,12 @@ bool SensorLine3D::isVisible(SensorLine3D::WorldObjectType* to) {
 }
 
 void SensorLine3D::addParameters() {
-  if (!_offsetParam) _offsetParam = new ParameterSE3Offset();
-  assert(world());
-  world()->addParameter(_offsetParam);
+  if (_offsetParam == nullptr) {
+    auto offsetParam = std::make_unique<ParameterSE3Offset>();
+    _offsetParam = offsetParam.get();
+    assert(world());
+    world()->addParameter(std::move(offsetParam));
+  }
 }
 
 void SensorLine3D::addNoise(EdgeType* e) {
@@ -62,16 +68,18 @@ void SensorLine3D::sense() {
   }
   if (!_robotPoseObject) return;
   _sensorPose = _robotPoseObject->vertex()->estimate() * _offsetParam->offset();
-  for (std::set<BaseWorldObject*>::iterator it = world()->objects().begin();
-       it != world()->objects().end(); it++) {
-    WorldObjectType* o = dynamic_cast<WorldObjectType*>(*it);
+  for (const auto& it : world()->objects()) {
+    WorldObjectType* o = dynamic_cast<WorldObjectType*>(it.get());
     if (o && isVisible(o)) {
-      EdgeType* e = mkEdge(o);
+      std::unique_ptr<EdgeType> e = mkEdge(o);
       e->setParameterId(0, _offsetParam->id());
       if (e && graph()) {
-        graph()->addEdge(e);
-        e->setMeasurementFromState();
-        addNoise(e);
+        EdgeType* edge = e.get();
+        // The graph resolves the parameters that the measurement needs.
+        if (graph()->addEdge(std::move(e))) {
+          edge->setMeasurementFromState();
+          addNoise(edge);
+        }
       }
     }
   }

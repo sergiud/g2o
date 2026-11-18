@@ -16,6 +16,8 @@
 
 #include <fstream>
 #include <iostream>
+#include <memory>
+#include <utility>
 
 using namespace g2o;
 using namespace std;
@@ -83,7 +85,8 @@ struct WorldItem : public SimulatorItem {
   OptimizableGraph::Vertex* _vertex;
 };
 
-typedef std::set<WorldItem*> WorldItemSet;
+//! the items of the world, which the simulator owns
+typedef std::set<std::unique_ptr<WorldItem>> WorldItemSet;
 
 struct Robot;
 
@@ -99,7 +102,8 @@ struct Sensor {
   Robot* _robot;
 };
 
-typedef std::vector<Sensor*> SensorVector;
+//! the sensors of a robot, which the robot owns
+typedef std::vector<std::unique_ptr<Sensor>> SensorVector;
 
 struct Robot : public WorldItem {
   Robot(OptimizableGraph* graph_) : WorldItem(graph_) {
@@ -110,25 +114,27 @@ struct Robot : public WorldItem {
   void move(const Isometry3d& newPosition, int& id) {
     Isometry3d delta = _position.inverse() * newPosition;
     _position = newPosition;
-    auto* v = new VertexSE3();
+    auto vOwner = std::make_unique<VertexSE3>();
+    auto* v = vOwner.get();
     v->setId(id);
     id++;
-    graph()->addVertex(v);
+    graph()->addVertex(std::move(vOwner));
     if (_planarMotion) {
       // add a singleton constraint that locks the position of the robot on the
       // plane
-      auto* planeConstraint = new EdgeSE3Prior();
+      auto planeConstraint = std::make_unique<EdgeSE3Prior>();
       Matrix6d pinfo = Matrix6d::Zero();
       pinfo(2, 2) = 1e9;
       planeConstraint->setInformation(pinfo);
       planeConstraint->setMeasurement(Isometry3d::Identity());
       planeConstraint->vertices()[0] = v;
       planeConstraint->setParameterId(0, 0);
-      graph()->addEdge(planeConstraint);
+      graph()->addEdge(std::move(planeConstraint));
     }
     if (vertex() != nullptr) {
       VertexSE3* oldV = dynamic_cast<VertexSE3*>(vertex());
-      auto* e = new EdgeSE3();
+      auto eOwner = std::make_unique<EdgeSE3>();
+      auto* e = eOwner.get();
       Isometry3d noise = sample_noise_from_se3(_nmovecov);
       e->setMeasurement(delta * noise);
       Matrix6d m = Matrix6d::Identity();
@@ -138,7 +144,7 @@ struct Robot : public WorldItem {
       e->setInformation(m);
       e->vertices()[0] = vertex();
       e->vertices()[1] = v;
-      graph()->addEdge(e);
+      graph()->addEdge(std::move(eOwner));
       v->setEstimate(oldV->estimate() * e->measurement());
     } else {
       v->setEstimate(_position);
@@ -152,7 +158,7 @@ struct Robot : public WorldItem {
   }
 
   void sense(WorldItem* wi = nullptr) {
-    for (auto s : _sensors) {
+    for (const auto& s : _sensors) {
       s->sense(wi, _position);
     }
   }
@@ -163,25 +169,26 @@ struct Robot : public WorldItem {
   bool _planarMotion;
 };
 
-typedef std::vector<Robot*> RobotVector;
+//! the robots of the simulator, which the simulator owns
+typedef std::vector<std::unique_ptr<Robot>> RobotVector;
 
 struct Simulator : public SimulatorItem {
   Simulator(OptimizableGraph* graph_)
       : SimulatorItem(graph_), _lastVertexId(0) {}
   void sense(int robotIndex) {
-    Robot* r = _robots[robotIndex];
-    for (auto item : _world) {
-      r->sense(item);
+    Robot* r = _robots[robotIndex].get();
+    for (const auto& item : _world) {
+      r->sense(item.get());
     }
   }
 
   void move(int robotIndex, const Isometry3d& newRobotPose) {
-    Robot* r = _robots[robotIndex];
+    Robot* r = _robots[robotIndex].get();
     r->move(newRobotPose, _lastVertexId);
   }
 
   void relativeMove(int robotIndex, const Isometry3d& delta) {
-    Robot* r = _robots[robotIndex];
+    Robot* r = _robots[robotIndex].get();
     r->relativeMove(delta, _lastVertexId);
   }
 
@@ -192,19 +199,21 @@ struct Simulator : public SimulatorItem {
 
 struct PlaneItem : public WorldItem {
   PlaneItem(OptimizableGraph* graph_, int id) : WorldItem(graph_) {
-    auto* p = new VertexPlane();
+    auto pOwner = std::make_unique<VertexPlane>();
+    auto* p = pOwner.get();
     p->setId(id);
-    graph()->addVertex(p);
+    graph()->addVertex(std::move(pOwner));
     setVertex(p);
   }
 };
 
 struct PlaneSensor : public Sensor {
   PlaneSensor(Robot* r, int offsetId, const Isometry3d& offset_) : Sensor(r) {
-    _offsetVertex = new VertexSE3();
+    auto offsetVertex = std::make_unique<VertexSE3>();
+    _offsetVertex = offsetVertex.get();
     _offsetVertex->setId(offsetId);
     _offsetVertex->setEstimate(offset_);
-    robot()->graph()->addVertex(_offsetVertex);
+    robot()->graph()->addVertex(std::move(offsetVertex));
   };
 
   virtual bool isVisible(const WorldItem* wi) const {
@@ -233,7 +242,7 @@ struct PlaneSensor : public Sensor {
 
     Plane3D measuredPlane = sensorPose.inverse() * worldPlane;
 
-    auto* e = new EdgeSE3PlaneSensorCalib();
+    auto e = std::make_unique<EdgeSE3PlaneSensorCalib>();
     e->vertices()[0] = robotVertex;
     e->vertices()[1] = planeVertex;
     e->vertices()[2] = _offsetVertex;
@@ -245,7 +254,7 @@ struct PlaneSensor : public Sensor {
     m(1, 1) = 1. / (_nplane(1));
     m(2, 2) = 1. / (_nplane(2));
     e->setInformation(m);
-    robot()->graph()->addEdge(e);
+    robot()->graph()->addEdge(std::move(e));
     return true;
   }
 
@@ -284,17 +293,16 @@ int main(int argc, char** argv) {
   arg.param("listSolvers", listSolvers, false, "list the solvers");
   arg.parseArgs(argc, argv);
 
-  auto* g = new SparseOptimizer();
-  auto* odomOffset = new ParameterSE3Offset();
+  auto g = std::make_unique<SparseOptimizer>();
+  auto odomOffset = std::make_unique<ParameterSE3Offset>();
   odomOffset->setId(0);
-  g->addParameter(odomOffset);
+  g->addParameter(std::move(odomOffset));
 
   OptimizationAlgorithmFactory* solverFactory =
       OptimizationAlgorithmFactory::instance();
   OptimizationAlgorithmProperty solverProperty;
-  OptimizationAlgorithm* solver =
-      solverFactory->construct(strSolver, solverProperty);
-  g->setAlgorithm(solver);
+  auto solver = solverFactory->construct(strSolver, solverProperty);
+  g->setAlgorithm(std::move(solver));
   if (listSolvers) {
     solverFactory->listSolvers(cerr);
     return 0;
@@ -310,10 +318,11 @@ int main(int argc, char** argv) {
   }
 
   ngx::Log("sim");
-  auto* sim = new Simulator(g);
+  auto sim = std::make_unique<Simulator>(g.get());
 
   ngx::Log("robot");
-  auto* r = new Robot(g);
+  auto robot = std::make_unique<Robot>(g.get());
+  Robot* r = robot.get();
 
   ngx::Log("planeSensor");
   Matrix3d R = Matrix3d::Identity();
@@ -322,31 +331,35 @@ int main(int argc, char** argv) {
   Isometry3d sensorPose = Isometry3d::Identity();
   sensorPose.matrix().block<3, 3>(0, 0) = R;
   sensorPose.translation() = Vector3d(.3, 0.5, 1.2);
-  auto* ps = new PlaneSensor(r, 0, sensorPose);
+  auto psOwner = std::make_unique<PlaneSensor>(r, 0, sensorPose);
+  PlaneSensor* ps = psOwner.get();
   ps->_nplane << 0.03, 0.03, 0.005;
-  r->_sensors.push_back(ps);
-  sim->_robots.push_back(r);
+  r->_sensors.push_back(std::move(psOwner));
+  sim->_robots.push_back(std::move(robot));
 
   ngx::Log("p1");
   Plane3D plane;
-  auto* pi = new PlaneItem(g, 1);
+  auto piOwner = std::make_unique<PlaneItem>(g.get(), 1);
+  PlaneItem* pi = piOwner.get();
   plane.fromVector(Eigen::Vector4d(0., 0., 1., 5.));
   dynamic_cast<VertexPlane*>(pi->vertex())->setEstimate(plane);
   pi->vertex()->setFixed(fixPlanes);
-  sim->_world.insert(pi);
+  sim->_world.insert(std::move(piOwner));
 
   plane.fromVector(Eigen::Vector4d(1., 0., 0., 5.));
-  pi = new PlaneItem(g, 2);
+  piOwner = std::make_unique<PlaneItem>(g.get(), 2);
+  pi = piOwner.get();
   dynamic_cast<VertexPlane*>(pi->vertex())->setEstimate(plane);
   pi->vertex()->setFixed(fixPlanes);
-  sim->_world.insert(pi);
+  sim->_world.insert(std::move(piOwner));
 
   ngx::Log("p2");
-  pi = new PlaneItem(g, 3);
+  piOwner = std::make_unique<PlaneItem>(g.get(), 3);
+  pi = piOwner.get();
   plane.fromVector(Eigen::Vector4d(0., 1., 0., 5.));
   dynamic_cast<VertexPlane*>(pi->vertex())->setEstimate(plane);
   pi->vertex()->setFixed(fixPlanes);
-  sim->_world.insert(pi);
+  sim->_world.insert(std::move(piOwner));
 
   Quaterniond q, iq;
   if (planarMotion) {
@@ -457,7 +470,7 @@ int main(int argc, char** argv) {
     std::pair<int, int> indexParams;
     indexParams.first = ps->_offsetVertex->hessianIndex();
     indexParams.second = ps->_offsetVertex->hessianIndex();
-    std::vector<std::pair<int, int> > blockIndices;
+    std::vector<std::pair<int, int>> blockIndices;
     blockIndices.push_back(indexParams);
     if (!g->computeMarginals(spinv, blockIndices)) {
       ngx::Log(ngx::Error, "error in computing the covariance");

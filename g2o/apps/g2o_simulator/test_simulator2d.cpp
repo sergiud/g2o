@@ -10,7 +10,9 @@
 #include <Eigen/Cholesky>
 #include <cstdlib>
 #include <fstream>
+#include <memory>
 #include <sstream>
+#include <utility>
 
 #include "simulator2d.h"
 
@@ -68,17 +70,17 @@ int main(int argc, char** argv) {
   OptimizableGraph graph;
   World world(&graph);
   for (int i = 0; i < nlandmarks; i++) {
-    auto* landmark = new WorldObjectPointXY;
+    auto landmark = std::make_unique<WorldObjectPointXY>();
     double x = sampleUniform(-.5, .5, &generator) * (worldSize + 5);
     double y = sampleUniform(-.5, .5, &generator) * (worldSize + 5);
     landmark->vertex()->setEstimate(Vector2d(x, y));
-    world.addWorldObject(landmark);
+    world.addWorldObject(std::move(landmark));
   }
 
   ngx::Log("nSegments = {}", nSegments);
 
   for (int i = 0; i < nSegments; i++) {
-    auto* segment = new WorldObjectSegment2D;
+    auto segment = std::make_unique<WorldObjectSegment2D>();
     int ix = sampleUniform(-segmentGridSize, segmentGridSize, &generator);
     int iy = sampleUniform(-segmentGridSize, segmentGridSize, &generator);
     int ith = sampleUniform(0, 3, &generator);
@@ -96,7 +98,7 @@ int main(int argc, char** argv) {
 
     segment->vertex()->setEstimateP1(Vector2d(x1, y1));
     segment->vertex()->setEstimateP2(Vector2d(x2, y2));
-    world.addWorldObject(segment);
+    world.addWorldObject(std::move(segment));
   }
 
   Robot2D robot(&world, "myRobot");
@@ -108,8 +110,9 @@ int main(int argc, char** argv) {
   ss << "-steps" << simSteps;
 
   if (hasOdom) {
-    SensorOdometry2D* odometrySensor = new SensorOdometry2D("odometry");
-    robot.addSensor(odometrySensor);
+    auto odometrySensorOwner = std::make_unique<SensorOdometry2D>("odometry");
+    SensorOdometry2D* odometrySensor = odometrySensorOwner.get();
+    robot.addSensor(std::move(odometrySensorOwner));
     Matrix3d odomInfo = odometrySensor->information();
     odomInfo.setIdentity();
     odomInfo *= 500;
@@ -119,8 +122,9 @@ int main(int argc, char** argv) {
   }
 
   if (hasPoseSensor) {
-    SensorPose2D* poseSensor = new SensorPose2D("poseSensor");
-    robot.addSensor(poseSensor);
+    auto poseSensorOwner = std::make_unique<SensorPose2D>("poseSensor");
+    SensorPose2D* poseSensor = poseSensorOwner.get();
+    robot.addSensor(std::move(poseSensorOwner));
     Matrix3d poseInfo = poseSensor->information();
     poseInfo.setIdentity();
     poseInfo *= 500;
@@ -130,8 +134,9 @@ int main(int argc, char** argv) {
   }
 
   if (hasPointSensor) {
-    SensorPointXY* pointSensor = new SensorPointXY("pointSensor");
-    robot.addSensor(pointSensor);
+    auto pointSensorOwner = std::make_unique<SensorPointXY>("pointSensor");
+    SensorPointXY* pointSensor = pointSensorOwner.get();
+    robot.addSensor(std::move(pointSensorOwner));
     Matrix2d pointInfo = pointSensor->information();
     pointInfo.setIdentity();
     pointInfo *= 1000;
@@ -141,37 +146,44 @@ int main(int argc, char** argv) {
   }
 
   if (hasPointBearingSensor) {
-    SensorPointXYBearing* bearingSensor =
-        new SensorPointXYBearing("bearingSensor");
-    robot.addSensor(bearingSensor);
+    auto bearingSensorOwner =
+        std::make_unique<SensorPointXYBearing>("bearingSensor");
+    SensorPointXYBearing* bearingSensor = bearingSensorOwner.get();
+    robot.addSensor(std::move(bearingSensorOwner));
     bearingSensor->setInformation(bearingSensor->information() * 1000);
     ss << "-pointBearing";
   }
 
   if (hasSegmentSensor) {
     ngx::Log("creating Segment Sensor");
-    SensorSegment2D* segmentSensor = new SensorSegment2D("segmentSensor");
+    auto segmentSensorOwner =
+        std::make_unique<SensorSegment2D>("segmentSensor");
+    SensorSegment2D* segmentSensor = segmentSensorOwner.get();
     ngx::Log("segmentSensorCreated");
     segmentSensor->setMaxRange(3);
     segmentSensor->setMinRange(.1);
-    robot.addSensor(segmentSensor);
+    robot.addSensor(std::move(segmentSensorOwner));
     segmentSensor->setInformation(segmentSensor->information() * 1000);
 
-    SensorSegment2DLine* segmentSensorLine =
-        new SensorSegment2DLine("segmentSensorSensorLine");
+    auto segmentSensorLineOwner =
+        std::make_unique<SensorSegment2DLine>("segmentSensorSensorLine");
+    SensorSegment2DLine* segmentSensorLine = segmentSensorLineOwner.get();
     segmentSensorLine->setMaxRange(3);
     segmentSensorLine->setMinRange(.1);
-    robot.addSensor(segmentSensorLine);
+    robot.addSensor(std::move(segmentSensorLineOwner));
     Matrix2d m = segmentSensorLine->information();
     m = m * 1000;
     m(0, 0) *= 10;
     segmentSensorLine->setInformation(m);
 
+    auto segmentSensorPointLineOwner =
+        std::make_unique<SensorSegment2DPointLine>(
+            "segmentSensorSensorPointLine");
     SensorSegment2DPointLine* segmentSensorPointLine =
-        new SensorSegment2DPointLine("segmentSensorSensorPointLine");
+        segmentSensorPointLineOwner.get();
     segmentSensorPointLine->setMaxRange(3);
     segmentSensorPointLine->setMinRange(.1);
-    robot.addSensor(segmentSensorPointLine);
+    robot.addSensor(std::move(segmentSensorPointLineOwner));
     Matrix3d m3 = segmentSensorPointLine->information();
     m3 = m3 * 1000;
     m3(3, 3) *= 10;

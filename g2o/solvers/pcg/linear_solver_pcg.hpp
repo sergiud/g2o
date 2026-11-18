@@ -76,14 +76,14 @@ bool LinearSolverPCG<MatrixType>::solve(const SparseBlockMatrix<MatrixType>& A,
       typename SparseBlockMatrix<MatrixType>::IntBlockMap::const_iterator it;
       for (it = col.begin(); it != col.end(); ++it) {
         if (it->first == (int)i) {  // only the upper triangular block is needed
-          _diag.push_back(it->second);
+          _diag.push_back(it->second.get());
           _J.push_back(it->second->inverse());
           break;
         }
         if (indexRequired) {
           _indices.push_back(std::make_pair(
               it->first > 0 ? A.rowBlockIndices()[it->first - 1] : 0, colIdx));
-          _sparseMat.push_back(it->second);
+          _sparseMat.push_back(it->second.get());
         }
       }
     }

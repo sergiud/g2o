@@ -9,6 +9,9 @@
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 
+#include <memory>
+#include <utility>
+
 G2O_START_NAMESPACE
 using namespace std;
 
@@ -63,7 +66,7 @@ HyperGraphElementAction* HyperGraphElementActionCollection::operator()(
 }
 
 bool HyperGraphElementActionCollection::registerAction(
-    HyperGraphElementAction* action) {
+    std::unique_ptr<HyperGraphElementAction> action) {
 #ifdef G2O_DEBUG_ACTIONLIB
   ngx::Log("{} {}", action->name(), action->typeName());
 #endif
@@ -73,8 +76,6 @@ bool HyperGraphElementActionCollection::registerAction(
              "different name {} {}",
              name(), action->name());
   }
-  // The collection takes ownership only of an action it stores, since the
-  // caller keeps owning an action that is rejected.
   if (_actionMap.find(action->typeName()) != _actionMap.end()) {
     ngx::Log(
         ngx::Warning,
@@ -82,8 +83,8 @@ bool HyperGraphElementActionCollection::registerAction(
         action->typeName(), name());
     return false;
   }
-  _actionMap.emplace(action->typeName(),
-                     std::unique_ptr<HyperGraphElementAction>(action));
+  const std::string typeName = action->typeName();
+  _actionMap.emplace(typeName, std::move(action));
   return true;
 }
 
@@ -91,7 +92,6 @@ bool HyperGraphElementActionCollection::unregisterAction(
     HyperGraphElementAction* action) {
   for (auto it = _actionMap.begin(); it != _actionMap.end(); ++it) {
     if (it->second.get() == action) {
-      it->second.release();
       _actionMap.erase(it);
       return true;
     }
@@ -113,7 +113,8 @@ HyperGraphElementAction* HyperGraphActionLibrary::actionByName(
   return nullptr;
 }
 
-bool HyperGraphActionLibrary::registerAction(HyperGraphElementAction* action) {
+bool HyperGraphActionLibrary::registerAction(
+    std::unique_ptr<HyperGraphElementAction> action) {
   HyperGraphElementAction* oldAction = actionByName(action->name());
   HyperGraphElementActionCollection* collection = nullptr;
   if (oldAction != nullptr) {
@@ -129,12 +130,12 @@ bool HyperGraphActionLibrary::registerAction(HyperGraphElementAction* action) {
 #ifdef G2O_DEBUG_ACTIONLIB
     ngx::Log("creating collection for \"{}\"", action->name());
 #endif
-    std::unique_ptr<HyperGraphElementActionCollection> col(
-        new HyperGraphElementActionCollection(action->name()));
+    auto col =
+        std::make_unique<HyperGraphElementActionCollection>(action->name());
     collection = col.get();
     _actionMap.emplace(action->name(), std::move(col));
   }
-  return collection->registerAction(action);
+  return collection->registerAction(std::move(action));
 }
 
 bool HyperGraphActionLibrary::unregisterAction(
@@ -207,7 +208,7 @@ void DrawAction::drawCache(CacheContainer* caches,
                            HyperGraphElementAction::Parameters* params_) {
   if (caches != nullptr) {
     for (auto& cache : *caches) {
-      Cache* c = cache.second;
+      Cache* c = cache.second.get();
       (*_cacheDrawActions)(c, params_);
     }
   }

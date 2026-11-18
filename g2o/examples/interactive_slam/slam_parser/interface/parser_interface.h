@@ -9,6 +9,7 @@
 #include <g2o/slam_parser/interface/g2o_slam_parser_interface_api.h>
 
 #include <iosfwd>
+#include <memory>
 #include <sstream>
 
 #include "abstract_slam_interface.h"
@@ -36,8 +37,8 @@ class G2O_SLAM_PARSER_INTERFACE_API ParserInterface {
   bool parseCommand(std::istream& input);
 
  protected:
-  SlamContextInterface* _slamContextInterface;
-  Driver* _driver;
+  std::unique_ptr<SlamContextInterface> _slamContextInterface;
+  std::unique_ptr<Driver> _driver;
   std::stringstream _buffer;
 };
 

@@ -56,12 +56,11 @@ class SparseBlockMatrixDiagonal {
   //! indices of the row blocks
   const std::vector<int>& blockIndices() const { return _blockIndices; }
 
-  void multiply(double*& dest, const double* src) const {
+  //! adds the product with the source to the destination, which the caller
+  //! provides
+  void multiply(double* dest, const double* src) const {
+    assert(dest != nullptr && "the caller provides the destination");
     int destSize = cols();
-    if (dest == nullptr) {
-      dest = new double[destSize];
-      memset(dest, 0, destSize * sizeof(double));
-    }
 
     // map the memory by Eigen
     Eigen::Map<Eigen::VectorXd> destVec(dest, destSize);

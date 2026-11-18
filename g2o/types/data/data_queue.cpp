@@ -6,6 +6,9 @@
 #include <g2o/types/data/data_queue.h>
 #include <g2o/types/data/robot_data.h>
 
+#include <memory>
+#include <utility>
+
 G2O_START_NAMESPACE
 
 DataQueue::DataQueue() {}
@@ -13,32 +16,36 @@ DataQueue::DataQueue() {}
 DataQueue::~DataQueue() = default;
 
 RobotData* DataQueue::findClosestData(double timestamp) const {
-  if (_buffer.rbegin()->first < timestamp) return _buffer.rbegin()->second;
-  if (_buffer.begin()->first > timestamp) return _buffer.begin()->second;
+  if (_buffer.rbegin()->first < timestamp)
+    return _buffer.rbegin()->second.get();
+  if (_buffer.begin()->first > timestamp) return _buffer.begin()->second.get();
 
   auto ub = _buffer.upper_bound(timestamp);
   auto lb = ub;
   --lb;
   if (fabs(lb->first - timestamp) < fabs(ub->first - timestamp))
-    return lb->second;
+    return lb->second.get();
   else
-    return ub->second;
+    return ub->second.get();
 }
 
 RobotData* DataQueue::before(double timestamp) const {
   if (_buffer.empty() || _buffer.begin()->first > timestamp) return nullptr;
   auto lb = _buffer.upper_bound(timestamp);
   --lb;  // now it's the lower bound
-  return lb->second;
+  return lb->second.get();
 }
 
 RobotData* DataQueue::after(double timestamp) const {
   if (_buffer.empty() || _buffer.rbegin()->first < timestamp) return nullptr;
   auto ub = _buffer.upper_bound(timestamp);
   if (ub == _buffer.end()) return nullptr;
-  return ub->second;
+  return ub->second.get();
 }
 
-void DataQueue::add(RobotData* rd) { _buffer[rd->timestamp()] = rd; }
+void DataQueue::add(std::unique_ptr<RobotData> rd) {
+  const double timestamp = rd->timestamp();
+  _buffer[timestamp] = std::move(rd);
+}
 
 G2O_END_NAMESPACE

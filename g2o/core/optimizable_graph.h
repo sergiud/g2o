@@ -22,6 +22,7 @@
 #include <memory>
 #include <set>
 #include <typeinfo>
+#include <utility>
 
 G2O_START_NAMESPACE
 
@@ -115,7 +116,7 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
     Vertex();
 
     //! returns a deep copy of the current vertex
-    virtual Vertex* clone() const;
+    virtual std::unique_ptr<Vertex> clone() const;
 
     virtual ~Vertex();
 
@@ -320,7 +321,6 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
 
    protected:
     OptimizableGraph* _graph;
-    Data* _userData;
     int _hessianIndex;
     bool _fixed;
     bool _marginalized;
@@ -328,7 +328,7 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
     int _colInHessian;
     OpenMPMutex _quadraticFormMutex{};
 
-    CacheContainer* _cacheContainer;
+    std::unique_ptr<CacheContainer> _cacheContainer;
 
     /**
      * update the position of the node from the parameters in v.
@@ -359,7 +359,7 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
 
    public:
     Edge();
-    virtual Edge* clone() const;
+    virtual std::unique_ptr<Edge> clone() const;
     ~Edge() override;
 
     // indicates if all vertices are fixed
@@ -391,7 +391,8 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
     /**
      * specify the robust kernel to be used in this edge
      */
-    void setRobustKernel(RobustKernel* ptr);
+    //! sets the robust kernel, which the edge owns
+    void setRobustKernel(std::unique_ptr<RobustKernel> ptr);
 
     //! returns the error vector cached after calling the computeError;
     virtual const double* errorData() const = 0;
@@ -457,9 +458,14 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
     //! returns the dimensions of the error function
     int dimension() const { return _dimension; }
 
-    G2O_CORE_DEPRECATED virtual Vertex* createFrom() { return nullptr; }
-    G2O_CORE_DEPRECATED virtual Vertex* createTo() { return nullptr; }
-    virtual Vertex* createVertex(int) { return nullptr; }
+    G2O_CORE_DEPRECATED virtual std::unique_ptr<Vertex> createFrom() {
+      return nullptr;
+    }
+    G2O_CORE_DEPRECATED virtual std::unique_ptr<Vertex> createTo() {
+      return nullptr;
+    }
+    //! creates a vertex of the type the edge connects at the position
+    virtual std::unique_ptr<Vertex> createVertex(int) { return nullptr; }
 
     //! read the vertex from a stream, i.e., the internal state of the vertex
     virtual bool read(std::istream& is) = 0;
@@ -530,27 +536,26 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
   void addGraph(OptimizableGraph* g);
 
   /**
-   * adds a new vertex, which the graph then owns.
+   * adds a new vertex, which the graph then owns, together with its user
+   * data.
    * @return false if a vertex with the same id as v is already in the graph,
-   * true otherwise. The caller keeps owning a vertex the graph rejects.
+   * true otherwise. The graph frees a vertex it rejects.
    */
-  virtual bool addVertex(HyperGraph::Vertex* v, Data* userData);
-  virtual bool addVertex(HyperGraph::Vertex* v) {
-    return addVertex(v, nullptr);
+  virtual bool addVertex(std::unique_ptr<HyperGraph::Vertex> v,
+                         std::unique_ptr<Data> userData);
+  bool addVertex(std::unique_ptr<HyperGraph::Vertex> v) override {
+    return addVertex(std::move(v), nullptr);
   }
-  bool addVertex(OptimizableGraph::Vertex* v, Data* userData);
-  bool addVertex(OptimizableGraph::Vertex* v) { return addVertex(v, 0); }
 
   /**
    * adds a new edge.
    * The edge should point to the vertices that it is connecting
    * (setFrom/setTo).
    * @return false if the insertion does not work (incompatible types of the
-   * vertices/missing vertex). true otherwise. On success, the graph owns the
-   * edge, and the caller keeps owning it otherwise.
+   * vertices/missing vertex). true otherwise. The graph owns the edge and
+   * frees it if it rejects it.
    */
-  virtual bool addEdge(HyperGraph::Edge* e);
-  bool addEdge(OptimizableGraph::Edge* e);
+  bool addEdge(std::unique_ptr<HyperGraph::Edge> e) override;
 
   /**
    * overridden from HyperGraph, to mantain the bookkeeping of the
@@ -652,7 +657,11 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
    */
   virtual void clearParameters();
 
-  bool addParameter(Parameter* p) { return _parameters.addParameter(p); }
+  //! adds the parameter, which the graph owns, and frees a parameter whose id
+  //! the graph already has
+  bool addParameter(std::unique_ptr<Parameter> p) {
+    return _parameters.addParameter(std::move(p));
+  }
 
   Parameter* parameter(int id) { return _parameters.getParameter(id); }
 

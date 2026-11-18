@@ -8,6 +8,8 @@
 #include <g2o_interactive/g2o_slam_interface.h>
 
 #include <iostream>
+#include <memory>
+#include <utility>
 
 #include "fast_output.h"
 #include "graph_optimizer_sparse_online.h"
@@ -155,12 +157,13 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension,
       }
     }
 
-    auto* e = new OnlineEdgeSE2;
+    auto eOwner = std::make_unique<OnlineEdgeSE2>();
+    auto* e = eOwner.get();
     e->vertices()[0] = v1;
     e->vertices()[1] = v2;
     e->setMeasurement(transf);
     e->setInformation(infMat);
-    _optimizer->addEdge(e);
+    _optimizer->addEdge(std::move(eOwner));
     _edgesAdded.insert(e);
 
     if (doInit != 0) {
@@ -257,12 +260,13 @@ bool G2oSlamInterface::addEdge(const std::string& tag, int id, int dimension,
       }
     }
 
-    auto* e = new OnlineEdgeSE3;
+    auto eOwner = std::make_unique<OnlineEdgeSE3>();
+    auto* e = eOwner.get();
     e->vertices()[0] = v1;
     e->vertices()[1] = v2;
     e->setMeasurement(transf);
     e->setInformation(infMat);
-    _optimizer->addEdge(e);
+    _optimizer->addEdge(std::move(eOwner));
     _edgesAdded.insert(e);
 
     if (doInit != 0) {
@@ -344,14 +348,16 @@ bool G2oSlamInterface::solveState() {
 
 OptimizableGraph::Vertex* G2oSlamInterface::addVertex(int dimension, int id) {
   if (dimension == 3) {
-    auto* v = new OnlineVertexSE2;
+    auto vOwner = std::make_unique<OnlineVertexSE2>();
+    auto* v = vOwner.get();
     v->setId(id);  // estimate will be set later when the edge is added
-    _optimizer->addVertex(v);
+    _optimizer->addVertex(std::move(vOwner));
     return v;
   } else if (dimension == 6) {
-    auto* v = new OnlineVertexSE3;
+    auto vOwner = std::make_unique<OnlineVertexSE3>();
+    auto* v = vOwner.get();
     v->setId(id);  // estimate will be set later when the edge is added
-    _optimizer->addVertex(v);
+    _optimizer->addVertex(std::move(vOwner));
     return v;
   } else {
     return nullptr;

@@ -21,6 +21,8 @@
 #include <Eigen/StdVector>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
+#include <utility>
 
 #include "EXTERNAL/ceres/autodiff.h"
 
@@ -274,7 +276,7 @@ int main(int argc, char** argv) {
 
   arg.parseArgs(argc, argv);
 
-  typedef g2o::BlockSolver<g2o::BlockSolverTraits<9, 3> > BalBlockSolver;
+  typedef g2o::BlockSolver<g2o::BlockSolverTraits<9, 3>> BalBlockSolver;
 #ifdef G2O_HAVE_CHOLMOD
   string choleskySolverName = "CHOLMOD";
   typedef g2o::LinearSolverCholmod<BalBlockSolver::PoseMatrixType>
@@ -290,20 +292,22 @@ int main(int argc, char** argv) {
       BalLinearSolverPCG;
 
   g2o::SparseOptimizer optimizer;
-  g2o::LinearSolver<BalBlockSolver::PoseMatrixType>* linearSolver = nullptr;
+  std::unique_ptr<g2o::LinearSolver<BalBlockSolver::PoseMatrixType>>
+      linearSolver;
   if (usePCG) {
     ngx::Log("Using PCG");
-    linearSolver = new BalLinearSolverPCG();
+    linearSolver = std::make_unique<BalLinearSolverPCG>();
   } else {
     ngx::Log("Using Cholesky: {}", choleskySolverName);
-    auto* cholesky = new BalLinearSolver();
+    auto cholesky = std::make_unique<BalLinearSolver>();
     cholesky->setBlockOrdering(true);
-    linearSolver = cholesky;
+    linearSolver = std::move(cholesky);
   }
-  auto* solver_ptr = new BalBlockSolver(linearSolver);
-  auto* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+  auto solver_ptr = std::make_unique<BalBlockSolver>(std::move(linearSolver));
+  auto solver = std::make_unique<g2o::OptimizationAlgorithmLevenberg>(
+      std::move(solver_ptr));
   // solver->setUserLambdaInit(1);
-  optimizer.setAlgorithm(solver);
+  optimizer.setAlgorithm(std::move(solver));
   if (!statsFilename.empty()) {
     optimizer.setComputeBatchStatistics(true);
   }
@@ -329,18 +333,20 @@ int main(int argc, char** argv) {
     int id = 0;
     cameras.reserve(numCameras);
     for (int i = 0; i < numCameras; ++i, ++id) {
-      auto* cam = new VertexCameraBAL;
+      auto camOwner = std::make_unique<VertexCameraBAL>();
+      auto* cam = camOwner.get();
       cam->setId(id);
-      optimizer.addVertex(cam);
+      optimizer.addVertex(std::move(camOwner));
       cameras.push_back(cam);
     }
 
     points.reserve(numPoints);
     for (int i = 0; i < numPoints; ++i, ++id) {
-      auto* p = new VertexPointBAL;
+      auto pOwner = std::make_unique<VertexPointBAL>();
+      auto* p = pOwner.get();
       p->setId(id);
       p->setMarginalized(true);
-      bool addedVertex = optimizer.addVertex(p);
+      bool addedVertex = optimizer.addVertex(std::move(pOwner));
       if (!addedVertex) {
         ngx::Log(ngx::Error, "failing adding vertex");
       }
@@ -360,12 +366,12 @@ int main(int argc, char** argv) {
              "Index out of bounds");
       VertexPointBAL* point = points[pointIndex];
 
-      auto* e = new EdgeObservationBAL;
+      auto e = std::make_unique<EdgeObservationBAL>();
       e->setVertex(0, cam);
       e->setVertex(1, point);
       e->setInformation(Eigen::Matrix2d::Identity());
       e->setMeasurement(Eigen::Vector2d(obsX, obsY));
-      bool addedEdge = optimizer.addEdge(e);
+      bool addedEdge = optimizer.addEdge(std::move(e));
       if (!addedEdge) {
         ngx::Log(ngx::Error, "error adding edge");
       }

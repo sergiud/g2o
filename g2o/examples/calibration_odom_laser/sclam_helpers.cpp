@@ -17,6 +17,9 @@
 #include <g2o/types/sclam2d/odometry_measurement.h>
 #include <g2o/types/sclam2d/vertex_odom_differential_params.h>
 
+#include <memory>
+#include <utility>
+
 #include "gm2dl_io.h"
 using namespace std;
 using namespace Eigen;
@@ -27,13 +30,14 @@ static const double INFORMATION_SCALING_ODOMETRY = 100;
 
 void addOdometryCalibLinksDifferential(SparseOptimizer& optimizer,
                                        const DataQueue& odomData) {
-  SparseOptimizer::Vertex* odomParamsVertex = nullptr;
-  odomParamsVertex = new VertexOdomDifferentialParams;
+  auto odomParams = std::make_unique<VertexOdomDifferentialParams>();
+  VertexOdomDifferentialParams* odomParamsVertex = odomParams.get();
   odomParamsVertex->setToOrigin();
   odomParamsVertex->setId(Gm2dlIO::ID_ODOMCALIB);
-  optimizer.addVertex(odomParamsVertex);
+  optimizer.addVertex(std::move(odomParams));
 
-  SparseOptimizer::EdgeSet odomCalibEdges;
+  // The new edges join the graph after the loop over its edges.
+  std::vector<std::unique_ptr<EdgeSE2OdomDifferentialCalib>> odomCalibEdges;
   for (const auto& it : optimizer.edges()) {
     EdgeSE2SensorCalib* scanmatchEdge =
         dynamic_cast<EdgeSE2SensorCalib*>(it.get());
@@ -67,7 +71,7 @@ void addOdometryCalibLinksDifferential(SparseOptimizer& optimizer,
     // cerr << PVAR(scanmatchEdge->measurement().toVector().transpose()) <<
     // endl;
 
-    auto* e = new EdgeSE2OdomDifferentialCalib;
+    auto e = std::make_unique<EdgeSE2OdomDifferentialCalib>();
     e->vertices()[0] = r1;
     e->vertices()[1] = r2;
     e->vertices()[2] = odomParamsVertex;
@@ -79,28 +83,32 @@ void addOdometryCalibLinksDifferential(SparseOptimizer& optimizer,
     // cerr << PVAR(e->measurement()) << endl;
 
     e->information() = Matrix3d::Identity() * INFORMATION_SCALING_ODOMETRY;
-    odomCalibEdges.insert(e);
+    odomCalibEdges.push_back(std::move(e));
   }
 
-  for (auto odomCalibEdge : odomCalibEdges)
-    optimizer.addEdge(dynamic_cast<OptimizableGraph::Edge*>(odomCalibEdge));
+  for (auto& odomCalibEdge : odomCalibEdges) {
+    optimizer.addEdge(std::move(odomCalibEdge));
+  }
 }
 
 void allocateSolverForSclam(SparseOptimizer& optimizer, bool levenberg) {
-  typedef BlockSolver<BlockSolverTraits<-1, -1> > SclamBlockSolver;
+  typedef BlockSolver<BlockSolverTraits<-1, -1>> SclamBlockSolver;
   typedef LinearSolverCSparse<SclamBlockSolver::PoseMatrixType>
       SclamLinearSolver;
 
-  auto* linearSolver = new SclamLinearSolver();
+  auto linearSolver = std::make_unique<SclamLinearSolver>();
   linearSolver->setBlockOrdering(false);
-  auto* blockSolver = new SclamBlockSolver(linearSolver);
-  OptimizationAlgorithm* solver = nullptr;
+  auto blockSolver =
+      std::make_unique<SclamBlockSolver>(std::move(linearSolver));
+  std::unique_ptr<OptimizationAlgorithm> solver;
   if (levenberg) {
-    solver = new OptimizationAlgorithmLevenberg(blockSolver);
+    solver = std::make_unique<OptimizationAlgorithmLevenberg>(
+        std::move(blockSolver));
   } else {
-    solver = new OptimizationAlgorithmGaussNewton(blockSolver);
+    solver = std::make_unique<OptimizationAlgorithmGaussNewton>(
+        std::move(blockSolver));
   }
-  optimizer.setAlgorithm(solver);
+  optimizer.setAlgorithm(std::move(solver));
 }
 
 G2O_END_NAMESPACE

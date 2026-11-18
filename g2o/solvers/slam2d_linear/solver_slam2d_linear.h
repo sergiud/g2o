@@ -10,6 +10,8 @@
 #include <g2o/prefix.h>
 #include <g2o/solvers/slam2d_linear/g2o_slam2d_linear_api.h>
 
+#include <memory>
+
 G2O_START_NAMESPACE
 
 class SparseOptimizer;
@@ -37,7 +39,8 @@ class G2O_SLAM2D_LINEAR_API SolverSLAM2DLinear
    * the rotations are solved and afterwards standard non-linear Gauss Newton
    * is carried out.
    */
-  explicit SolverSLAM2DLinear(Solver* solver);
+  //! The algorithm owns the solver.
+  explicit SolverSLAM2DLinear(std::unique_ptr<Solver> solver);
   virtual ~SolverSLAM2DLinear();
 
   virtual OptimizationAlgorithm::SolverResult solve(int iteration,

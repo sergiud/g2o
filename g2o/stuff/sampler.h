@@ -14,6 +14,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <memory>
 #include <random>
 
 G2O_START_NAMESPACE
@@ -25,12 +26,11 @@ double G2O_STUFF_API sampleGaussian(std::mt19937* generator = nullptr);
 template <class SampleType, class CovarianceType>
 class GaussianSampler {
  public:
-  GaussianSampler(bool hasGenerator = true) : _generator(nullptr) {
+  GaussianSampler(bool hasGenerator = true) {
     if (hasGenerator) {
-      _generator = new std::mt19937;
+      _generator = std::make_unique<std::mt19937>();
     }
   }
-  ~GaussianSampler() { delete _generator; }
   void setDistribution(const CovarianceType& cov) {
     Eigen::LLT<CovarianceType> cholDecomp;
     cholDecomp.compute(cov);
@@ -40,7 +40,7 @@ class GaussianSampler {
   SampleType generateSample() {
     SampleType s;
     for (int i = 0; i < s.size(); i++) {
-      s(i) = (_generator) ? sampleGaussian(_generator) : sampleGaussian();
+      s(i) = (_generator) ? sampleGaussian(_generator.get()) : sampleGaussian();
     }
     return _cholesky * s;
   }
@@ -52,7 +52,7 @@ class GaussianSampler {
 
  protected:
   CovarianceType _cholesky;
-  std::mt19937* _generator;
+  std::unique_ptr<std::mt19937> _generator;
 };
 
 class G2O_STUFF_API Sampler {

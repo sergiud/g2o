@@ -6,12 +6,18 @@
 #include "main_window.h"
 // #include "moc_main_window.cpp"
 
+#include <g2o/core/block_solver.h>
 #include <g2o/core/estimate_propagator.h>
+#include <g2o/core/optimization_algorithm_gauss_newton.h>
+#include <g2o/core/optimization_algorithm_levenberg.h>
 #include <g2o/core/sparse_optimizer.h>
+#include <g2o/solvers/csparse/linear_solver_csparse.h>
 #include <g2o/stuff/logger.h>
 
 #include <QFileDialog>
 #include <fstream>
+#include <memory>
+#include <utility>
 using namespace std;
 
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags)
@@ -20,6 +26,23 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags)
 }
 
 MainWindow::~MainWindow() = default;
+
+std::unique_ptr<g2o::OptimizationAlgorithm> MainWindow::createAlgorithm()
+    const {
+  using SlamBlockSolver = g2o::BlockSolver<g2o::BlockSolverTraits<-1, -1>>;
+  using SlamLinearSolver =
+      g2o::LinearSolverCSparse<SlamBlockSolver::PoseMatrixType>;
+
+  auto linearSolver = std::make_unique<SlamLinearSolver>();
+  linearSolver->setBlockOrdering(false);
+  auto blockSolver = std::make_unique<SlamBlockSolver>(std::move(linearSolver));
+  if (rbLevenberg->isChecked()) {
+    return std::make_unique<g2o::OptimizationAlgorithmLevenberg>(
+        std::move(blockSolver));
+  }
+  return std::make_unique<g2o::OptimizationAlgorithmGaussNewton>(
+      std::move(blockSolver));
+}
 
 void MainWindow::on_actionLoad_triggered(bool) {
   viewer->graph->clear();
@@ -59,12 +82,7 @@ void MainWindow::on_btnOptimize_clicked() {
 
   viewer->graph->initializeOptimization();
 
-  if (rbGauss->isChecked())
-    viewer->graph->setAlgorithm(solverGaussNewton);
-  else if (rbLevenberg->isChecked())
-    viewer->graph->setAlgorithm(solverLevenberg);
-  else
-    viewer->graph->setAlgorithm(solverGaussNewton);
+  viewer->graph->setAlgorithm(createAlgorithm());
 
   int maxIterations = spIterations->value();
   int iter = viewer->graph->optimize(maxIterations);

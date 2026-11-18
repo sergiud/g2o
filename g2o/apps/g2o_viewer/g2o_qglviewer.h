@@ -11,6 +11,8 @@
 #include <g2o/prefix.h>
 #include <g2o/viewer/g2o_viewer_api.h>
 
+#include <memory>
+
 #include "qglviewer.h"
 
 G2O_START_NAMESPACE
@@ -34,7 +36,7 @@ class G2O_VIEWER_API G2oQGLViewer : public QGLViewer {
   bool updateDisplay() const { return _updateDisplay; }
   void setUpdateDisplay(bool updateDisplay);
 
-  DrawAction::Parameters* parameters() { return _drawActionParameters; }
+  DrawAction::Parameters* parameters() { return _drawActionParameters.get(); }
 
  public:
   SparseOptimizer* graph;
@@ -43,7 +45,7 @@ class G2O_VIEWER_API G2oQGLViewer : public QGLViewer {
   HyperGraphElementAction* _drawActions;
   GLuint _drawList;
   bool _updateDisplay{};
-  DrawAction::Parameters* _drawActionParameters;
+  std::unique_ptr<DrawAction::Parameters> _drawActionParameters;
 };
 
 G2O_END_NAMESPACE

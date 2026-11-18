@@ -15,6 +15,8 @@
 
 #include <fstream>
 #include <iostream>
+#include <memory>
+#include <utility>
 
 using namespace std;
 
@@ -30,10 +32,11 @@ bool Gm2dlIO::readGm2dl(const std::string& filename, SparseOptimizer& optimizer,
   if (!is.good()) return false;
 
   bool laserOffsetInitDone = false;
-  auto* laserOffset = new VertexSE2;
+  auto laserOffsetOwner = std::make_unique<VertexSE2>();
+  auto* laserOffset = laserOffsetOwner.get();
   // laserOffset->fixed() = true;
   laserOffset->setId(ID_LASERPOSE);
-  if (!optimizer.addVertex(laserOffset)) {
+  if (!optimizer.addVertex(std::move(laserOffsetOwner))) {
     ngx::Log(ngx::Error, "Unable to add laser offset");
     return false;
   }
@@ -51,12 +54,12 @@ bool Gm2dlIO::readGm2dl(const std::string& filename, SparseOptimizer& optimizer,
       Eigen::Vector3d p;
       currentLine >> id >> p.x() >> p.y() >> p.z();
       // adding the robot pose
-      auto* v = new VertexSE2;
+      auto vOwner = std::make_unique<VertexSE2>();
+      auto* v = vOwner.get();
       v->setId(id);
       // cerr << "Read vertex id " << id << endl;
-      if (!optimizer.addVertex(v)) {
+      if (!optimizer.addVertex(std::move(vOwner))) {
         ngx::Log("vertex {} is already in the graph, reassigning ", id);
-        delete v;
         v = dynamic_cast<VertexSE2*>(optimizer.vertex(id));
         assert(v);
       }
@@ -69,7 +72,8 @@ bool Gm2dlIO::readGm2dl(const std::string& filename, SparseOptimizer& optimizer,
         return false;
       }
       int id1, id2;
-      auto* e = new EdgeSE2SensorCalib;
+      auto eOwner = std::make_unique<EdgeSE2SensorCalib>();
+      auto* e = eOwner.get();
       Eigen::Vector3d p;
       Eigen::Matrix3d& m = e->information();
       currentLine >> id1 >> id2 >> p.x() >> p.y() >> p.z();
@@ -93,14 +97,12 @@ bool Gm2dlIO::readGm2dl(const std::string& filename, SparseOptimizer& optimizer,
         ngx::Log(ngx::Error,
                  "vertex {} is not existing, cannot add edge ({},{})", id1, id1,
                  id2);
-        delete e;
         continue;
       }
       if (v2 == nullptr) {
         ngx::Log(ngx::Error,
                  "vertex {} is not existing, cannot add edge ({},{})", id2, id1,
                  id2);
-        delete e;
         continue;
       }
 
@@ -119,16 +121,15 @@ bool Gm2dlIO::readGm2dl(const std::string& filename, SparseOptimizer& optimizer,
       e->setVertex(0, v1);
       e->setVertex(1, v2);
       e->setVertex(2, laserOffset);
-      if (!optimizer.addEdge(e)) {
+      if (!optimizer.addEdge(std::move(eOwner))) {
         ngx::Log(ngx::Error, "error in adding edge {},{}", id1, id2);
-        delete e;
       }
       // cerr << PVAR(e->inverseMeasurement().toVector().transpose()) << endl;
       // cerr << PVAR(e->information()) << endl;
 
     } else if (tag == "ROBOTLASER1") {
       if (previousVertex != nullptr) {
-        auto* rl2 = new RobotLaser;
+        auto rl2 = std::make_unique<RobotLaser>();
         rl2->read(currentLine);
         if (!laserOffsetInitDone) {
           laserOffsetInitDone = true;
@@ -136,7 +137,7 @@ bool Gm2dlIO::readGm2dl(const std::string& filename, SparseOptimizer& optimizer,
           // rl2->laserParams().laserPose.toVector().transpose() << endl;
           laserOffset->setEstimate(rl2->laserParams().laserPose);
         }
-        previousVertex->setUserData(rl2);
+        previousVertex->setUserData(std::move(rl2));
         previousVertex = nullptr;
       }
     }
@@ -241,9 +242,9 @@ int Gm2dlIO::readRobotLaser(const std::string& filename, DataQueue& queue) {
     string tag;
     currentLine >> tag;
     if (tag == "ROBOTLASER1") {
-      auto* rl2 = new RobotLaser;
+      auto rl2 = std::make_unique<RobotLaser>();
       rl2->read(currentLine);
-      queue.add(rl2);
+      queue.add(std::move(rl2));
       cnt++;
     }
   }

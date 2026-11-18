@@ -7,6 +7,7 @@
 #define G2O_OPTMIZATION_ALGORITHM_PROPERTY_H
 
 #include <g2o/config.h>
+#include <g2o/core/optimization_algorithm.h>
 #include <g2o/core/optimization_algorithm_property.h>
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/misc.h>
@@ -15,6 +16,7 @@
 #include <memory>
 #include <ostream>
 #include <typeinfo>
+#include <utility>
 
 // define to get some verbose output
 // #define G2O_DEBUG_OPTIMIZATION_ALGORITHM_FACTORY
@@ -24,7 +26,6 @@
 G2O_START_NAMESPACE
 
 // forward decl
-class OptimizationAlgorithm;
 class SparseOptimizer;
 
 /**
@@ -39,7 +40,7 @@ class G2O_CORE_API AbstractOptimizationAlgorithmCreator {
       const OptimizationAlgorithmProperty& p);
   virtual ~AbstractOptimizationAlgorithmCreator() = default;
   //! allocate a solver operating on optimizer, re-implement for your creator
-  virtual OptimizationAlgorithm* construct() = 0;
+  virtual std::unique_ptr<OptimizationAlgorithm> construct() = 0;
   //! return the properties of the solver
   const OptimizationAlgorithmProperty& property() const { return _property; }
 
@@ -68,7 +69,8 @@ class G2O_CORE_API OptimizationAlgorithmFactory {
   /**
    * register a specific creator for allocating a solver
    */
-  void registerSolver(AbstractOptimizationAlgorithmCreator* c);
+  //! registers a creator, which the factory owns
+  void registerSolver(std::unique_ptr<AbstractOptimizationAlgorithmCreator> c);
 
   /**
    * unregister a specific creator for allocating a solver
@@ -78,7 +80,7 @@ class G2O_CORE_API OptimizationAlgorithmFactory {
   /**
    * construct a solver based on its name, e.g., var, fix3_2_cholmod
    */
-  OptimizationAlgorithm* construct(
+  std::unique_ptr<OptimizationAlgorithm> construct(
       const std::string& tag,
       OptimizationAlgorithmProperty& solverProperty) const;
 
@@ -105,13 +107,14 @@ class G2O_CORE_API OptimizationAlgorithmFactory {
 
 class RegisterOptimizationAlgorithmProxy {
  public:
-  RegisterOptimizationAlgorithmProxy(AbstractOptimizationAlgorithmCreator* c) {
-    _creator = c;
+  explicit RegisterOptimizationAlgorithmProxy(
+      std::unique_ptr<AbstractOptimizationAlgorithmCreator> c) {
+    _creator = c.get();
 #ifdef G2O_DEBUG_OPTIMIZATION_ALGORITHM_FACTORY
     ngx::Log("Registering {} of type {}", _creator->property().name,
              typeid(*_creator).name());
 #endif
-    OptimizationAlgorithmFactory::instance()->registerSolver(c);
+    OptimizationAlgorithmFactory::instance()->registerSolver(std::move(c));
   }
 
   ~RegisterOptimizationAlgorithmProxy() {
@@ -122,6 +125,7 @@ class RegisterOptimizationAlgorithmProxy {
   }
 
  private:
+  //! the registered creator, which the factory owns
   AbstractOptimizationAlgorithmCreator* _creator;
 };
 

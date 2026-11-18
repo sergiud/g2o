@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <memory>
+#include <utility>
+
 #include "g2o/core/block_solver.h"
 #include "g2o/core/optimization_algorithm_gauss_newton.h"
 #include "g2o/core/sparse_optimizer_terminate_action.h"
@@ -14,63 +17,65 @@ typedef g2o::LinearSolverEigen<SlamBlockSolver::PoseMatrixType>
     SlamLinearSolver;
 
 TEST(General, ClearAndRedo) {
+  // The optimizer uses the terminate action, which outlives it.
+  g2o::SparseOptimizerTerminateAction terminateAction;
   // Initialize the SparseOptimizer
   g2o::SparseOptimizer mOptimizer;
-  SlamLinearSolver* linearSolver = new SlamLinearSolver();
+  auto linearSolver = std::make_unique<SlamLinearSolver>();
   linearSolver->setBlockOrdering(false);
-  SlamBlockSolver* blockSolver = new SlamBlockSolver(linearSolver);
+  auto blockSolver = std::make_unique<SlamBlockSolver>(std::move(linearSolver));
   mOptimizer.setAlgorithm(
-      new g2o::OptimizationAlgorithmGaussNewton(blockSolver));
+      std::make_unique<g2o::OptimizationAlgorithmGaussNewton>(
+          std::move(blockSolver)));
 
   // Set the default terminate action
-  g2o::SparseOptimizerTerminateAction* terminateAction =
-      new g2o::SparseOptimizerTerminateAction;
-  mOptimizer.addPostIterationAction(terminateAction);
+  mOptimizer.addPostIterationAction(&terminateAction);
 
   for (int i = 0; i < 2; i++) {
     // Add vertices
-    g2o::VertexSE3* v0 = new g2o::VertexSE3;
+    auto v0Owner = std::make_unique<g2o::VertexSE3>();
+    g2o::VertexSE3* v0 = v0Owner.get();
     v0->setEstimate(
         Eigen::Transform<double, 3, 1>(Eigen::Translation<double, 3>(0, 0, 0)));
     v0->setId(0);
-    mOptimizer.addVertex(v0);
+    mOptimizer.addVertex(std::move(v0Owner));
 
-    g2o::VertexSE3* v1 = new g2o::VertexSE3;
+    auto v1 = std::make_unique<g2o::VertexSE3>();
     v1->setEstimate(
         Eigen::Transform<double, 3, 1>(Eigen::Translation<double, 3>(0, 0, 0)));
     v1->setId(1);
-    mOptimizer.addVertex(v1);
+    mOptimizer.addVertex(std::move(v1));
 
-    g2o::VertexSE3* v2 = new g2o::VertexSE3;
+    auto v2 = std::make_unique<g2o::VertexSE3>();
     v2->setEstimate(
         Eigen::Transform<double, 3, 1>(Eigen::Translation<double, 3>(0, 0, 0)));
     v2->setId(2);
-    mOptimizer.addVertex(v2);
+    mOptimizer.addVertex(std::move(v2));
 
     // Add edges
-    g2o::EdgeSE3* e1 = new g2o::EdgeSE3();
+    auto e1 = std::make_unique<g2o::EdgeSE3>();
     e1->vertices()[0] = mOptimizer.vertex(0);
     e1->vertices()[1] = mOptimizer.vertex(1);
     e1->setMeasurement(
         Eigen::Isometry3d(Eigen::Translation<double, 3>(1, 0, 0)));
     e1->setInformation(Eigen::Matrix<double, 6, 6>::Identity());
-    mOptimizer.addEdge(e1);
+    mOptimizer.addEdge(std::move(e1));
 
-    g2o::EdgeSE3* e2 = new g2o::EdgeSE3();
+    auto e2 = std::make_unique<g2o::EdgeSE3>();
     e2->vertices()[0] = mOptimizer.vertex(1);
     e2->vertices()[1] = mOptimizer.vertex(2);
     e2->setMeasurement(
         Eigen::Isometry3d(Eigen::Translation<double, 3>(0, 1, 0)));
     e2->setInformation(Eigen::Matrix<double, 6, 6>::Identity());
-    mOptimizer.addEdge(e2);
+    mOptimizer.addEdge(std::move(e2));
 
-    g2o::EdgeSE3* e3 = new g2o::EdgeSE3();
+    auto e3 = std::make_unique<g2o::EdgeSE3>();
     e3->vertices()[0] = mOptimizer.vertex(2);
     e3->vertices()[1] = mOptimizer.vertex(0);
     e3->setMeasurement(
         Eigen::Isometry3d(Eigen::Translation<double, 3>(-0.8, -0.7, 0.1)));
     e3->setInformation(Eigen::Matrix<double, 6, 6>::Identity());
-    mOptimizer.addEdge(e3);
+    mOptimizer.addEdge(std::move(e3));
 
     v0->setFixed(true);
 

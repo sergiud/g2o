@@ -11,6 +11,9 @@
 #include <Eigen/Cholesky>
 #include <Eigen/Eigenvalues>
 #include <Eigen/LU>
+#include <algorithm>
+#include <memory>
+#include <utility>
 
 #include "backbone_tree_action.h"
 #include "edge_types_cost_function.h"
@@ -103,12 +106,15 @@ void assignHierarchicalEdges(StarSet& stars, EdgeStarMap& esmap,
       if (Factory::instance()->tag(v) ==
               Factory::instance()->tag(vertices[0]) ||
           numEdges > minNumEdges) {
-        OptimizableGraph::Edge* e = creator->createEdge(vertices);
+        std::unique_ptr<OptimizableGraph::Edge> edge =
+            creator->createEdge(vertices);
+        OptimizableGraph::Edge* e = edge.get();
         // cerr << "creating edge" << e << endl;
         if (e != nullptr) {
           e->setLevel(1);
-          optimizer->addEdge(e);
-          s->_starEdges.insert(e);
+          if (optimizer->addEdge(std::move(edge))) {
+            s->_starEdges.insert(e);
+          }
         } else {
           ngx::Log("THERE");
           ngx::Log(ngx::Error, "cannot create edge");
@@ -166,11 +172,12 @@ void computeBorder(StarSet& stars, EdgeStarMap& hesmap) {
   }
 }
 
-void computeSimpleStars(StarSet& stars, SparseOptimizer* optimizer,
-                        EdgeLabeler* labeler, EdgeCreator* creator,
-                        OptimizableGraph::Vertex* gauge_, std::string edgeTag,
-                        std::string vertexTag, int level, int step,
-                        int backboneIterations, int starIterations,
+void computeSimpleStars(StarSet& stars,
+                        std::vector<std::unique_ptr<Star>>& starStorage,
+                        SparseOptimizer* optimizer, EdgeLabeler* labeler,
+                        EdgeCreator* creator, OptimizableGraph::Vertex* gauge_,
+                        std::string edgeTag, std::string vertexTag, int level,
+                        int step, int backboneIterations, int starIterations,
                         double rejectionThreshold, bool debug) {
   ngx::Log("preforming the tree actions");
   HyperDijkstra d(optimizer);
@@ -192,6 +199,7 @@ void computeSimpleStars(StarSet& stars, SparseOptimizer* optimizer,
   // backbone
   d.visitAdjacencyMap(d.adjacencyMap(), &bact, true);
   stars.clear();
+  starStorage = bact.releaseStars();
 
   for (auto& it : bact.vertexStarMultiMap()) {
     stars.insert(it.second);
@@ -401,13 +409,16 @@ void computeSimpleStars(StarSet& stars, SparseOptimizer* optimizer,
             dynamic_cast<OptimizableGraph::Vertex*>(*vit);
         vertices[1] = v;
         if (v == vertices[0]) continue;
-        OptimizableGraph::Edge* e = creator->createEdge(vertices);
+        std::unique_ptr<OptimizableGraph::Edge> edge =
+            creator->createEdge(vertices);
+        OptimizableGraph::Edge* e = edge.get();
         // rr << "creating edge" << e <<  Factory::instance()->tag(vertices[0])
         // << "->" <<  Factory::instance()->tag(v) <endl;
         if (e != nullptr) {
           e->setLevel(level + 1);
-          optimizer->addEdge(e);
-          s->_starEdges.insert(e);
+          if (optimizer->addEdge(std::move(edge))) {
+            s->_starEdges.insert(e);
+          }
         } else {
           ngx::Log("HERE");
           ngx::Log(ngx::Error, "cannot create edge");
@@ -451,12 +462,14 @@ void computeSimpleStars(StarSet& stars, SparseOptimizer* optimizer,
   StarSet stars2;
   // now erase the stars that have 0 edges. They r useless
   for (auto s : stars) {
-    if (s->lowLevelEdges().empty()) {
-      delete s;
-    } else
-      stars2.insert(s);
+    if (!s->lowLevelEdges().empty()) stars2.insert(s);
   }
   stars = stars2;
+  starStorage.erase(std::remove_if(starStorage.begin(), starStorage.end(),
+                                   [&stars](const std::unique_ptr<Star>& star) {
+                                     return stars.count(star.get()) == 0;
+                                   }),
+                    starStorage.end());
 }
 
 G2O_END_NAMESPACE

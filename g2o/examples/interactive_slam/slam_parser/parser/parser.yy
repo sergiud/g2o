@@ -1,17 +1,17 @@
-%{ /*** C/C++ Declarations ***/
+%code requires { /*** C/C++ Declarations ***/
 
-#include <stdio.h>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "commands.h"
 
-%}
+}
 
 /*** yacc/bison Declarations ***/
 
-/* Require bison 2.3 or later */
-%require "2.3"
+/* Require bison 3.2 or later, which stores the semantic values as variants */
+%require "3.2"
 
 /* add debug output code to generated parser. disable this for release
  * versions. */
@@ -23,14 +23,18 @@
 /* write out a header file containing the token defines */
 %defines
 
-/* use newer C++ skeleton file */
-%skeleton "lalr1.cc"
+/* use the C++ skeleton file */
+%language "c++"
 
 /* namespace to enclose parser in */
-%name-prefix="SlamParser"
+%define api.namespace {SlamParser}
 
 /* set the parser's class identifier */
-%define "parser_class_name" "Parser"
+%define api.parser.class {Parser}
+
+/* the semantic values own what they hold, so that the parser frees the values
+ * it discards on errors */
+%define api.value.type variant
 
 /* keep track of the current position within the input */
 %locations
@@ -46,39 +50,27 @@
 %parse-param { class Driver& driver }
 
 /* verbose error messages */
-%error-verbose
+%define parse.error verbose
 
  /*** BEGIN TOKEN - Change the example grammar's tokens below ***/
 
-%union {
-    int  			integerVal;
-    double 			doubleVal;
-    std::string*		stringVal;
-    class CommandNode*		commandNode;
-    std::vector<int>*           intList;
-}
-
 %token			END	     0	"end of file"
 %token			EOL		"end of line"
-%token <integerVal> 	INTEGER		"integer"
-%token <doubleVal> 	DOUBLE		"double"
-%token <stringVal> 	STRING		"string"
-%token <stringVal> 	ADD		"ADD"
-%token <stringVal> 	V_SE2		"Vertex SE2"
-%token <stringVal> 	V_SE3		"Vertex SE3"
-%token <stringVal> 	E_SE2		"Edge SE2"
-%token <stringVal> 	E_SE3		"Edge SE3"
-%token <stringVal> 	FIX		"Fix"
-%token <stringVal> 	SOLVE_STATE	"Solve State"
-%token <stringVal> 	QUERY_STATE	"Query State"
+%token <int>		INTEGER		"integer"
+%token <double>		DOUBLE		"double"
+%token <std::string>	STRING		"string"
+%token			ADD		"ADD"
+%token <std::string>	V_SE2		"Vertex SE2"
+%token <std::string>	V_SE3		"Vertex SE3"
+%token <std::string>	E_SE2		"Edge SE2"
+%token <std::string>	E_SE3		"Edge SE3"
+%token			FIX		"Fix"
+%token			SOLVE_STATE	"Solve State"
+%token			QUERY_STATE	"Query State"
 
-%type <doubleVal>	NUMBER
-%type <commandNode>	query_state solve_state fix_node add_se2 add_se3 command
-%type <intList>	        int_list
-
-%destructor { delete $$; } STRING
-%destructor { delete $$; } solve_state query_state fix_node add_se2 add_se3 command
-/* %destructor { delete $$; } int_list */
+%type <double>	NUMBER
+%type <std::unique_ptr<CommandNode>>	query_state solve_state fix_node add_se2 add_se3 command
+%type <std::vector<int>>	int_list
 
  /*** END TOKEN - Change the example grammar's tokens above ***/
 
@@ -102,13 +94,12 @@
 
 int_list : INTEGER
            {
-              $$ = new std::vector<int>;
-              $$->push_back($1);
+              $$.push_back($1);
            }
          | int_list INTEGER
            {
-             $1->push_back($2);
-             $$ = $1; 
+             $1.push_back($2);
+             $$ = std::move($1);
            }
 
 NUMBER : INTEGER
@@ -122,8 +113,7 @@ NUMBER : INTEGER
 
 add_se2 : ADD V_SE2 INTEGER
            {
-	       $$ = new AddNode(*$2, $3, 3);
-               delete $2;
+	       $$ = std::make_unique<AddNode>($2, $3, 3);
 	   }
          | ADD V_SE2 INTEGER NUMBER NUMBER NUMBER
            {
@@ -131,8 +121,7 @@ add_se2 : ADD V_SE2 INTEGER
               values.push_back($4);
               values.push_back($5);
               values.push_back($6);
-	      $$ = new AddNode(*$2, $3, 3, values);
-              delete $2;
+	      $$ = std::make_unique<AddNode>($2, $3, 3, values);
 	   }
          | ADD E_SE2 INTEGER INTEGER INTEGER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER   
            {
@@ -147,19 +136,16 @@ add_se2 : ADD V_SE2 INTEGER
               information.push_back($12);
               information.push_back($13);
               information.push_back($14);
-              $$ = new AddEdge(*$2, $3, values.size(), $4, $5, values, information);
-              delete $2;
+              $$ = std::make_unique<AddEdge>($2, $3, values.size(), $4, $5, values, information);
 	   }
 
 add_se3 : ADD V_SE3 INTEGER
            {
-               $$ = new AddNode(*$2, $3, 6);
-               delete $2;
+               $$ = std::make_unique<AddNode>($2, $3, 6);
 	   }
          | ADD V_SE3 INTEGER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
            {
-	       $$ = new AddNode(*$2, $3, 6);
-               delete $2;
+	       $$ = std::make_unique<AddNode>($2, $3, 6);
 	   }
          | ADD E_SE3 INTEGER INTEGER INTEGER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
            {
@@ -192,59 +178,56 @@ add_se3 : ADD V_SE3 INTEGER
               information.push_back($30);
               information.push_back($31);
               information.push_back($32);
-              $$ = new AddEdge(*$2, $3, values.size(), $4, $5, values, information);
-              delete $2;
+              $$ = std::make_unique<AddEdge>($2, $3, values.size(), $4, $5, values, information);
 	   }
 
 fix_node : FIX INTEGER
            {
               std::vector<int> values;
               values.push_back($2);
-              $$ = new FixNode("FIX", values);
+              $$ = std::make_unique<FixNode>("FIX", values);
            }
 
 solve_state : SOLVE_STATE
             {
-              $$ = new SolveSate("SOLVE_STATE");
+              $$ = std::make_unique<SolveSate>("SOLVE_STATE");
             }
 
 query_state : QUERY_STATE 
             {
-              $$ = new QueryState("QUERY_STATE");
+              $$ = std::make_unique<QueryState>("QUERY_STATE");
             }
             | QUERY_STATE int_list
             {
-              $$ = new QueryState("QUERY_STATE", *$2);
-              delete $2;
+              $$ = std::make_unique<QueryState>("QUERY_STATE", $2);
             }
 
 command : add_se2
         {
-          $$ = $1;
+          $$ = std::move($1);
         }
         | add_se3
         {
-          $$ = $1;
+          $$ = std::move($1);
         }
         | fix_node
         {
-          $$ = $1;
+          $$ = std::move($1);
         }
         | solve_state
         {
-          $$ = $1;
+          $$ = std::move($1);
         }
         | query_state
         {
-          $$ = $1;
+          $$ = std::move($1);
         }
 
 start	: /* empty */
         | start EOL
         | start command ';'
           {
-            driver.slamContext.process($2);
-            delete $2;
+            driver.slamContext.process($2.get());
 	  }
 
  /*** END GRAMMAR ***/
