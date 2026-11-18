@@ -8,15 +8,29 @@
 #include <gtest/gtest.h>
 
 #include <Eigen/Core>
+#include <algorithm>
 
 #include "g2o/core/base_binary_edge.h"
 #include "g2o/core/base_unary_edge.h"
 
 namespace g2o {
 
+/**
+ * The value the analytic Jacobian finds in its workspace, so that an entry it
+ * leaves unwritten differs from the numeric Jacobian.
+ */
+inline constexpr double UnwrittenJacobianEntry = 12345.;
+
+//! The largest difference between the analytic and the numeric Jacobian.
+inline constexpr double JacobianTolerance = 1e-6;
+
 template <typename EdgeType>
 void evaluateJacobianUnary(EdgeType& e, JacobianWorkspace& jacobianWorkspace,
                            JacobianWorkspace& numericJacobianWorkspace) {
+  int numElems = EdgeType::Dimension;
+  numElems *= EdgeType::VertexXiType::Dimension;
+  std::fill_n(numericJacobianWorkspace.workspaceForVertex(0), numElems,
+              UnwrittenJacobianEntry);
   // calling the analytic Jacobian but writing to the numeric workspace
   e.BaseUnaryEdge<EdgeType::Dimension, typename EdgeType::Measurement,
                   typename EdgeType::VertexXiType>::
@@ -32,16 +46,23 @@ void evaluateJacobianUnary(EdgeType& e, JacobianWorkspace& jacobianWorkspace,
   // compare the Jacobians
   double* n = numericJacobianWorkspace.workspaceForVertex(0);
   double* a = jacobianWorkspace.workspaceForVertex(0);
-  int numElems = EdgeType::Dimension;
-  numElems *= EdgeType::VertexXiType::Dimension;
   for (int j = 0; j < numElems; ++j) {
-    EXPECT_NEAR(n[j], a[j], 1e-6);
+    EXPECT_NEAR(n[j], a[j], JacobianTolerance);
   }
 }
 
 template <typename EdgeType>
 void evaluateJacobian(EdgeType& e, JacobianWorkspace& jacobianWorkspace,
-                      JacobianWorkspace& numericJacobianWorkspace) {
+                      JacobianWorkspace& numericJacobianWorkspace,
+                      double tolerance = JacobianTolerance) {
+  const int numElemsXi =
+      EdgeType::Dimension * EdgeType::VertexXiType::Dimension;
+  const int numElemsXj =
+      EdgeType::Dimension * EdgeType::VertexXjType::Dimension;
+  std::fill_n(numericJacobianWorkspace.workspaceForVertex(0), numElemsXi,
+              UnwrittenJacobianEntry);
+  std::fill_n(numericJacobianWorkspace.workspaceForVertex(1), numElemsXj,
+              UnwrittenJacobianEntry);
   // calling the analytic Jacobian but writing to the numeric workspace
   e.BaseBinaryEdge<EdgeType::Dimension, typename EdgeType::Measurement,
                    typename EdgeType::VertexXiType,
@@ -60,13 +81,9 @@ void evaluateJacobian(EdgeType& e, JacobianWorkspace& jacobianWorkspace,
   for (int i = 0; i < 2; ++i) {
     double* n = numericJacobianWorkspace.workspaceForVertex(i);
     double* a = jacobianWorkspace.workspaceForVertex(i);
-    int numElems = EdgeType::Dimension;
-    if (i == 0)
-      numElems *= EdgeType::VertexXiType::Dimension;
-    else
-      numElems *= EdgeType::VertexXjType::Dimension;
+    const int numElems = i == 0 ? numElemsXi : numElemsXj;
     for (int j = 0; j < numElems; ++j) {
-      EXPECT_NEAR(n[j], a[j], 1e-6);
+      EXPECT_NEAR(n[j], a[j], tolerance);
     }
   }
 }

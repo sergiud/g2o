@@ -30,6 +30,27 @@ void EdgeSE2PointXYBearing::initialEstimate(
   l2->setEstimate(t * vr);
 }
 
+#ifndef NUMERIC_JACOBIAN_TWO_D_TYPES
+void EdgeSE2PointXYBearing::linearizeOplus() {
+  const VertexSE2* vi = static_cast<const VertexSE2*>(_vertices[0]);
+  const VertexPointXY* vj = static_cast<const VertexPointXY*>(_vertices[1]);
+  const double x1 = vi->estimate().translation()[0];
+  const double y1 = vi->estimate().translation()[1];
+  const double x2 = vj->estimate()[0];
+  const double y2 = vj->estimate()[1];
+
+  // squared distance between the pose and the point
+  const double squaredDistance = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
+
+  _jacobianOplusXi(0, 0) = (y1 - y2) / squaredDistance;
+  _jacobianOplusXi(0, 1) = (x2 - x1) / squaredDistance;
+  _jacobianOplusXi(0, 2) = 1;
+
+  _jacobianOplusXj(0, 0) = (y2 - y1) / squaredDistance;
+  _jacobianOplusXj(0, 1) = (x1 - x2) / squaredDistance;
+}
+#endif
+
 bool EdgeSE2PointXYBearing::read(std::istream& is) {
   is >> _measurement >> information()(0, 0);
   return true;

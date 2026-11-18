@@ -138,11 +138,17 @@ TEST(Slam2D, EdgeSE2PointXYBearing) {
   std::default_random_engine eng;
   std::uniform_real_distribution<> dist;
 
+  // Points closer to the pose make the bearing singular.
+  constexpr double minDistance = 1e-6;
+  // The numeric Jacobian of the bearing is less accurate than the others.
+  constexpr double tolerance = 1e-5;
   for (int k = 0; k < 10000; ++k) {
-    v1.setEstimate(randomSE2());
-    v2.setEstimate(Eigen::Vector2d::Random());
-    e.setMeasurement(dist(eng) * M_PI);
+    do {
+      v1.setEstimate(randomSE2());
+      v2.setEstimate(Eigen::Vector2d::Random());
+      e.setMeasurement((2 * dist(eng) - 1) * M_PI);
+    } while ((v1.estimate().inverse() * v2.estimate()).norm() < minDistance);
 
-    evaluateJacobian(e, jacobianWorkspace, numericJacobianWorkspace);
+    evaluateJacobian(e, jacobianWorkspace, numericJacobianWorkspace, tolerance);
   }
 }
