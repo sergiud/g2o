@@ -330,7 +330,7 @@ int main(int argc, char** argv) {
       ngx::Log("# Preparing Marginalization of the Landmarks");
       for (auto& it : optimizer.vertices()) {
         OptimizableGraph::Vertex* v =
-            dynamic_cast<OptimizableGraph::Vertex*>(it.second);
+            dynamic_cast<OptimizableGraph::Vertex*>(it.second.get());
         if (v->dimension() != maxDim) {
           v->setMarginalized(true);
         }
@@ -345,8 +345,9 @@ int main(int argc, char** argv) {
     ngx::Log("# Preparing robust error function");
     if (creator != nullptr) {
       if (nonSequential) {
-        for (auto it : optimizer.edges()) {
-          SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(it);
+        for (const auto& it : optimizer.edges()) {
+          SparseOptimizer::Edge* e =
+              dynamic_cast<SparseOptimizer::Edge*>(it.get());
           if (e->vertices().size() >= 2 &&
               std::abs(e->vertex(0)->id() - e->vertex(1)->id()) != 1) {
             e->setRobustKernel(creator->construct());
@@ -354,8 +355,9 @@ int main(int argc, char** argv) {
           }
         }
       } else {
-        for (auto it : optimizer.edges()) {
-          SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(it);
+        for (const auto& it : optimizer.edges()) {
+          SparseOptimizer::Edge* e =
+              dynamic_cast<SparseOptimizer::Edge*>(it.get());
           e->setRobustKernel(creator->construct());
           if (huberWidth > 0) e->robustKernel()->setDelta(huberWidth);
         }
@@ -395,20 +397,23 @@ int main(int argc, char** argv) {
     ngx::Log("#\t solve every {}", updateGraphEachN);
     ngx::Log("#\t iterations  {}", incIterations);
 
-    SparseOptimizer::VertexIDMap vertices = optimizer.vertices();
-    for (SparseOptimizer::VertexIDMap::const_iterator it = vertices.begin();
-         it != vertices.end(); ++it) {
+    for (const auto& it : optimizer.vertices()) {
       const SparseOptimizer::Vertex* v =
-          dynamic_cast<const SparseOptimizer::Vertex*>(it->second);
+          dynamic_cast<const SparseOptimizer::Vertex*>(it.second.get());
       maxDim = max(maxDim, v->dimension());
     }
 
+    // The incremental mode adds the vertices and edges back one by one, so
+    // the graph gives up its ownership of them first.
     vector<SparseOptimizer::Edge*> edges;
-    for (auto it : optimizer.edges()) {
-      SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(it);
-      edges.push_back(e);
+    while (!optimizer.edges().empty()) {
+      auto node = optimizer.edges().extract(optimizer.edges().begin());
+      edges.push_back(
+          dynamic_cast<SparseOptimizer::Edge*>(node.value().release()));
     }
-    optimizer.edges().clear();
+    for (auto& it : optimizer.vertices()) {
+      static_cast<void>(it.second.release());
+    }
     optimizer.vertices().clear();
     optimizer.setVerbose(false);
 
@@ -637,15 +642,15 @@ int main(int argc, char** argv) {
       int maxDim = *vertexDimensions.rbegin();
       for (auto& it : optimizer.vertices()) {
         OptimizableGraph::Vertex* v =
-            dynamic_cast<OptimizableGraph::Vertex*>(it.second);
+            dynamic_cast<OptimizableGraph::Vertex*>(it.second.get());
         if (v->dimension() != maxDim) {
           nLandmarks++;
         } else
           nPoses++;
       }
       set<string> edgeTypes;
-      for (auto it : optimizer.edges()) {
-        edgeTypes.insert(Factory::instance()->tag(it));
+      for (const auto& it : optimizer.edges()) {
+        edgeTypes.insert(Factory::instance()->tag(it.get()));
       }
       stringstream edgeTypesString;
       for (const auto& edgeType : edgeTypes) {

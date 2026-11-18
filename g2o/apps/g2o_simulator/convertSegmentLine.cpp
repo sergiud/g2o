@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
   for (auto& it : inGraph.vertices()) {
     currentId = currentId > it.first ? currentId : it.first;
 
-    VertexSE2* pose = dynamic_cast<VertexSE2*>(it.second);
+    VertexSE2* pose = dynamic_cast<VertexSE2*>(it.second.get());
     if (pose != nullptr) {
       auto* npose = new VertexSE2();
       npose->setEstimate(pose->estimate());
@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
       }
     }
 
-    VertexSegment2D* s = dynamic_cast<VertexSegment2D*>(it.second);
+    VertexSegment2D* s = dynamic_cast<VertexSegment2D*>(it.second.get());
     if (s != nullptr) {
       LineInfo linfo(s);
       outGraph.addVertex(linfo.line);
@@ -119,8 +119,8 @@ int main(int argc, char** argv) {
   currentId++;
 
   ngx::Log("filling in edges and odoms");
-  for (auto it : inGraph.edges()) {
-    EdgeSE2* ods = dynamic_cast<EdgeSE2*>(it);
+  for (const auto& it : inGraph.edges()) {
+    EdgeSE2* ods = dynamic_cast<EdgeSE2*>(it.get());
     if (ods != nullptr) {
       auto* ods2 = new EdgeSE2();
       ods2->setMeasurement(ods->measurement());
@@ -130,10 +130,10 @@ int main(int argc, char** argv) {
       outGraph.addEdge(ods2);
     }
 
-    EdgeSE2Segment2D* es = dynamic_cast<EdgeSE2Segment2D*>(it);
-    EdgeSE2Segment2DLine* el = dynamic_cast<EdgeSE2Segment2DLine*>(it);
+    EdgeSE2Segment2D* es = dynamic_cast<EdgeSE2Segment2D*>(it.get());
+    EdgeSE2Segment2DLine* el = dynamic_cast<EdgeSE2Segment2DLine*>(it.get());
     EdgeSE2Segment2DPointLine* espl =
-        dynamic_cast<EdgeSE2Segment2DPointLine*>(it);
+        dynamic_cast<EdgeSE2Segment2DPointLine*>(it.get());
 
     if ((es != nullptr) || (el != nullptr) || (espl != nullptr)) {
       VertexSE2* pose = dynamic_cast<VertexSE2*>(it->vertices()[0]);

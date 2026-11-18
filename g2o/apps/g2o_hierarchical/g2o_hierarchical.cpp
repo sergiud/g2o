@@ -222,7 +222,7 @@ int main(int argc, char** argv) {
   ngx::Log("Loaded {} vertices", optimizer.vertices().size());
   ngx::Log("Loaded {} edges", optimizer.edges().size());
 
-  OptimizableGraph::EdgeSet originalEdges = optimizer.edges();
+  OptimizableGraph::EdgeSet originalEdges = optimizer.edgePointers();
 
   if (0 && !outputfilename.empty()) {
     ngx::Log("saving {}", outputfilename);
@@ -373,8 +373,8 @@ int main(int argc, char** argv) {
 
   //  if (robustKernel) {
   // cerr << "# Preparing robust error function ... ";
-  for (auto it : optimizer.edges()) {
-    SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(it);
+  for (const auto& it : optimizer.edges()) {
+    SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(it.get());
     if (kernelCreator != nullptr) {
       e->setRobustKernel(kernelCreator->construct());
       if (huberWidth > 0) e->robustKernel()->setDelta(huberWidth);
@@ -458,8 +458,8 @@ int main(int argc, char** argv) {
 
   if (kernelCreator == nullptr) {
     ngx::Log("# Robust error function disabled");
-    for (auto it : optimizer.edges()) {
-      SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(it);
+    for (const auto& it : optimizer.edges()) {
+      SparseOptimizer::Edge* e = dynamic_cast<SparseOptimizer::Edge*>(it.get());
       e->setRobustKernel(nullptr);
     }
     ngx::Log("done.");
@@ -525,7 +525,7 @@ int main(int argc, char** argv) {
     int maxDim = *vertexDimensions.rbegin();
     for (auto& it : optimizer.vertices()) {
       OptimizableGraph::Vertex* v =
-          dynamic_cast<OptimizableGraph::Vertex*>(it.second);
+          dynamic_cast<OptimizableGraph::Vertex*>(it.second.get());
       if (v->dimension() != maxDim) {
         nLandmarks++;
       } else
@@ -534,8 +534,9 @@ int main(int argc, char** argv) {
 
     int nEdges = 0;
     set<string> edgeTypes;
-    for (auto it : optimizer.edges()) {
-      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
+    for (const auto& it : optimizer.edges()) {
+      OptimizableGraph::Edge* e =
+          dynamic_cast<OptimizableGraph::Edge*>(it.get());
       if (e->level() == 0) {
         edgeTypes.insert(Factory::instance()->tag(e));
         nEdges++;

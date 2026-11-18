@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
                optimizer.vertices().begin();
            it != optimizer.vertices().end(); ++it) {
         OptimizableGraph::Vertex* v =
-            dynamic_cast<OptimizableGraph::Vertex*>(it->second);
+            dynamic_cast<OptimizableGraph::Vertex*>(it->second.get());
         if (d.visited().count(v) == 0) {
           ngx::Log("\t unvisited vertex {} {}", it->first, (void*)v);
           v->setFixed(true);
@@ -164,7 +164,7 @@ int main(int argc, char** argv) {
     for (SparseOptimizer::VertexIDMap::const_iterator it =
              optimizer.vertices().begin();
          it != optimizer.vertices().end(); ++it) {
-      VertexSE2* v = dynamic_cast<VertexSE2*>(it->second);
+      VertexSE2* v = dynamic_cast<VertexSE2*>(it->second.get());
       fout << v->estimate().toVector().transpose() << endl;
     }
   }

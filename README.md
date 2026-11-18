@@ -20,6 +20,22 @@ that keeps the interface of version 2017.7.30. The g2o releases since then
 changed that interface, while projects such as
 [this fork of ORB-SLAM](https://github.com/sergiud/ORB_SLAM) still use it.
 
+The interface differs in one place: a graph owns the vertices and edges it
+accepts and holds them in `std::unique_ptr`, so that removing, clearing or
+destroying a graph frees them. `vertices()` maps ids to `std::unique_ptr`
+and `edges()` is a set of `std::unique_ptr`, so code that iterates over them
+takes the raw pointer with `get()`:
+
+```cpp
+for (const auto& [id, vertex] : optimizer.vertices()) {
+  auto* pose = dynamic_cast<g2o::VertexSE3*>(vertex.get());
+}
+```
+
+`edgePointers()` returns the edges as a set of raw pointers, which the graph
+keeps owning. Adding an element passes its ownership to the graph on success,
+and the caller keeps an element the graph rejects.
+
 The fork builds as a single CMake 3.28 project that installs a CMake package
 and a software bill of materials, with Eigen up to version 5, Qt 6 and
 SuiteSparse 7, and logs through ng-log. It fixes defects of the original, such

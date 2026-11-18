@@ -45,8 +45,8 @@ int main(int argc, char** argv) {
   for (OptimizableGraph::VertexIDMap::const_iterator it =
            inputGraph.vertices().begin();
        it != inputGraph.vertices().end(); ++it) {
-    if (dynamic_cast<VertexCam*>(it->second) != nullptr) {
-      VertexCam* v = dynamic_cast<VertexCam*>(it->second);
+    if (dynamic_cast<VertexCam*>(it->second.get()) != nullptr) {
+      VertexCam* v = dynamic_cast<VertexCam*>(it->second.get());
       if (firstCam) {
         firstCam = false;
         auto* camParams = new g2o::ParameterCamera;
@@ -68,8 +68,8 @@ int main(int argc, char** argv) {
       if (!outputGraph.addVertex(ov)) {
         assert(0 && "Failure adding camera vertex");
       }
-    } else if (dynamic_cast<VertexSBAPointXYZ*>(it->second) != nullptr) {
-      VertexSBAPointXYZ* v = dynamic_cast<VertexSBAPointXYZ*>(it->second);
+    } else if (dynamic_cast<VertexSBAPointXYZ*>(it->second.get()) != nullptr) {
+      VertexSBAPointXYZ* v = dynamic_cast<VertexSBAPointXYZ*>(it->second.get());
 
       auto* ov = new VertexPointXYZ;
       ov->setId(v->id());
@@ -80,9 +80,9 @@ int main(int argc, char** argv) {
     }
   }
 
-  for (auto it : inputGraph.edges()) {
-    if (dynamic_cast<EdgeProjectP2SC*>(it) != nullptr) {
-      EdgeProjectP2SC* e = dynamic_cast<EdgeProjectP2SC*>(it);
+  for (const auto& it : inputGraph.edges()) {
+    if (dynamic_cast<EdgeProjectP2SC*>(it.get()) != nullptr) {
+      EdgeProjectP2SC* e = dynamic_cast<EdgeProjectP2SC*>(it.get());
 
       auto* oe = new EdgeSE3PointXYZDisparity;
       oe->vertices()[0] = outputGraph.vertex(e->vertices()[1]->id());

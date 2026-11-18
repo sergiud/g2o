@@ -222,8 +222,8 @@ void SparseOptimizerOnline::gnuplotVisualization() {
       fprintf(_gnuplot, "set size ratio -1\n");
     }
     fprintf(_gnuplot, "plot \"-\" w l\n");
-    for (auto it : edges()) {
-      OnlineEdgeSE2* e = dynamic_cast<OnlineEdgeSE2*>(it);
+    for (const auto& it : edges()) {
+      OnlineEdgeSE2* e = dynamic_cast<OnlineEdgeSE2*>(it.get());
       OnlineVertexSE2* v1 = dynamic_cast<OnlineVertexSE2*>(e->vertices()[0]);
       OnlineVertexSE2* v2 = dynamic_cast<OnlineVertexSE2*>(e->vertices()[1]);
       fprintf(_gnuplot, "%f %f\n", v1->updatedEstimate.translation().x(),
@@ -244,8 +244,8 @@ void SparseOptimizerOnline::gnuplotVisualization() {
       fprintf(_gnuplot, "set terminal X11 noraise\n");
     }
     fprintf(_gnuplot, "splot \"-\" w l\n");
-    for (auto it : edges()) {
-      OnlineEdgeSE3* e = dynamic_cast<OnlineEdgeSE3*>(it);
+    for (const auto& it : edges()) {
+      OnlineEdgeSE3* e = dynamic_cast<OnlineEdgeSE3*>(it.get());
       OnlineVertexSE3* v1 = dynamic_cast<OnlineVertexSE3*>(e->vertices()[0]);
       OnlineVertexSE3* v2 = dynamic_cast<OnlineVertexSE3*>(e->vertices()[1]);
       fprintf(_gnuplot, "%f %f %f\n", v1->updatedEstimate.translation().x(),

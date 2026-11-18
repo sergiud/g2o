@@ -30,9 +30,9 @@ bool saveGnuplot(const std::string& gnudump,
                  const OptimizableGraph& optimizer) {
   HyperGraph::VertexSet vset;
   for (const auto& it : optimizer.vertices()) {
-    vset.insert(it.second);
+    vset.insert(it.second.get());
   }
-  return saveGnuplot(gnudump, vset, optimizer.edges());
+  return saveGnuplot(gnudump, vset, optimizer.edgePointers());
 }
 
 bool saveGnuplot(const std::string& gnudump,
@@ -169,8 +169,8 @@ bool dumpEdges(std::ostream& os, const OptimizableGraph& optimizer) {
   os << "set terminal x11 noraise" << endl;
   os << "set size ratio -1" << endl;
   os << "plot \"-\" w l" << endl;
-  for (auto it : optimizer.edges()) {
-    OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
+  for (const auto& it : optimizer.edges()) {
+    OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it.get());
     (*saveGnuplot)(e, &params);
   }
   os << "e" << endl;

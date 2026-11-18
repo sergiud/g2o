@@ -232,10 +232,10 @@ int main(int argc, const char* argv[]) {
           e->resize(3);
           e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(v_p));
           e->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>(
-                              optimizer.vertices().find(j)->second));
-          e->setVertex(2,
-                       dynamic_cast<g2o::OptimizableGraph::Vertex*>(
-                           optimizer.vertices().find(anchor_frame_id)->second));
+                              optimizer.vertices().find(j)->second.get()));
+          e->setVertex(
+              2, dynamic_cast<g2o::OptimizableGraph::Vertex*>(
+                     optimizer.vertices().find(anchor_frame_id)->second.get()));
 
           e->setMeasurement(z);
           e->information() = Matrix2d::Identity();
@@ -279,7 +279,7 @@ int main(int argc, const char* argv[]) {
       exit(-1);
     }
     g2o::VertexSBAPointXYZ* v_p =
-        dynamic_cast<g2o::VertexSBAPointXYZ*>(v_it->second);
+        dynamic_cast<g2o::VertexSBAPointXYZ*>(v_it->second.get());
     if (v_p == nullptr) {
       g2o::ngx::Log(g2o::ngx::Error, "Vertex {} is not a PointXYZ!", it.first);
       exit(-1);
@@ -291,7 +291,7 @@ int main(int argc, const char* argv[]) {
       exit(-1);
     }
     g2o::VertexSE3Expmap* v_anchor =
-        dynamic_cast<g2o::VertexSE3Expmap*>(v_it->second);
+        dynamic_cast<g2o::VertexSE3Expmap*>(v_it->second.get());
     if (v_p == nullptr) {
       g2o::ngx::Log(g2o::ngx::Error, "Vertex {} is not a SE3Expmap!", it.first);
       exit(-1);

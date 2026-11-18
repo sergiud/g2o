@@ -44,7 +44,7 @@ EstimatePropagator::EstimatePropagator(OptimizableGraph* g) : _graph(g) {
            _graph->vertices().begin();
        it != _graph->vertices().end(); ++it) {
     AdjacencyMapEntry entry;
-    entry._child = dynamic_cast<OptimizableGraph::Vertex*>(it->second);
+    entry._child = dynamic_cast<OptimizableGraph::Vertex*>(it->second.get());
     _adjacencyMap.insert(make_pair(entry.child(), entry));
   }
 }

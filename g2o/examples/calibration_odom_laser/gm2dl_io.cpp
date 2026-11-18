@@ -155,7 +155,7 @@ bool Gm2dlIO::writeGm2dl(const std::string& filename,
 
   for (const auto& it : optimizer.vertices()) {
     OptimizableGraph::Vertex* v =
-        dynamic_cast<OptimizableGraph::Vertex*>(it.second);
+        dynamic_cast<OptimizableGraph::Vertex*>(it.second.get());
     fout << "VERTEX2 " << v->id() << " ";
     v->write(fout);
     fout << endl;
@@ -172,9 +172,9 @@ bool Gm2dlIO::writeGm2dl(const std::string& filename,
 
   OptimizableGraph::EdgeContainer edgesToSave;  // sorting edges to have them in
                                                 // the order of insertion again
-  for (auto it : optimizer.edges()) {
+  for (const auto& it : optimizer.edges()) {
     const OptimizableGraph::Edge* e =
-        dynamic_cast<const OptimizableGraph::Edge*>(it);
+        dynamic_cast<const OptimizableGraph::Edge*>(it.get());
     edgesToSave.push_back(const_cast<OptimizableGraph::Edge*>(e));
   }
   sort(edgesToSave.begin(), edgesToSave.end(),
@@ -213,7 +213,7 @@ bool Gm2dlIO::updateLaserData(SparseOptimizer& optimizer) {
   for (SparseOptimizer::VertexIDMap::const_iterator it =
            optimizer.vertices().begin();
        it != optimizer.vertices().end(); ++it) {
-    VertexSE2* v = dynamic_cast<VertexSE2*>(it->second);
+    VertexSE2* v = dynamic_cast<VertexSE2*>(it->second.get());
     if (v == nullptr) continue;
     if (v->id() == ID_LASERPOSE) continue;
     RobotLaser* robotLaser = dynamic_cast<RobotLaser*>(v->userData());

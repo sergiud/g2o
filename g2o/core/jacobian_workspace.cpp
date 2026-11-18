@@ -49,9 +49,9 @@ void JacobianWorkspace::updateSize(const HyperGraph::Edge* e_) {
 }
 
 void JacobianWorkspace::updateSize(const OptimizableGraph& graph) {
-  for (auto it : graph.edges()) {
+  for (const auto& it : graph.edges()) {
     const OptimizableGraph::Edge* e =
-        dynamic_cast<const OptimizableGraph::Edge*>(it);
+        dynamic_cast<const OptimizableGraph::Edge*>(it.get());
     updateSize(e);
   }
 }

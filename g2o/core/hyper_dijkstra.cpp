@@ -46,7 +46,7 @@ HyperDijkstra::AdjacencyMapEntry::AdjacencyMapEntry(HyperGraph::Vertex* child_,
 HyperDijkstra::HyperDijkstra(HyperGraph* g) : _graph(g) {
   for (HyperGraph::VertexIDMap::const_iterator it = _graph->vertices().begin();
        it != _graph->vertices().end(); it++) {
-    AdjacencyMapEntry entry(it->second, nullptr, nullptr,
+    AdjacencyMapEntry entry(it->second.get(), nullptr, nullptr,
                             std::numeric_limits<double>::max());
     _adjacencyMap.insert(make_pair(entry.child(), entry));
   }

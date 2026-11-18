@@ -530,9 +530,9 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
   void addGraph(OptimizableGraph* g);
 
   /**
-   * adds a new vertex. The new vertex is then "taken".
+   * adds a new vertex, which the graph then owns.
    * @return false if a vertex with the same id as v is already in the graph,
-   * true otherwise.
+   * true otherwise. The caller keeps owning a vertex the graph rejects.
    */
   virtual bool addVertex(HyperGraph::Vertex* v, Data* userData);
   virtual bool addVertex(HyperGraph::Vertex* v) {
@@ -546,7 +546,8 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
    * The edge should point to the vertices that it is connecting
    * (setFrom/setTo).
    * @return false if the insertion does not work (incompatible types of the
-   * vertices/missing vertex). true otherwise.
+   * vertices/missing vertex). true otherwise. On success, the graph owns the
+   * edge, and the caller keeps owning it otherwise.
    */
   virtual bool addEdge(HyperGraph::Edge* e);
   bool addEdge(OptimizableGraph::Edge* e);

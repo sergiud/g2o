@@ -77,7 +77,8 @@ int main() {
   cout << "truePoint=\n" << truePoint << endl;
 
   ngx::Log("computed estimate=\n{}",
-           dynamic_cast<VertexPosition3D*>(optimizer.vertices().find(0)->second)
+           dynamic_cast<VertexPosition3D*>(
+               optimizer.vertices().find(0)->second.get())
                ->estimate());
 
   // position->setMarginalized(true);

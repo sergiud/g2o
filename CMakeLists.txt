@@ -603,7 +603,8 @@ g2o_add_library (core
     g2o/core/sparse_optimizer_terminate_action.h
 )
 
-target_compile_features (core PUBLIC cxx_std_11)
+# The sources look up owned edges by their address and extract them.
+target_compile_features (core PUBLIC cxx_std_11 PRIVATE cxx_std_17)
 target_link_libraries (core PUBLIC Eigen3::Eigen stuff)
 
 if (G2O_OPENMP)
@@ -1735,6 +1736,26 @@ if (BUILD_TESTING)
       PASS_REGULAR_EXPRESSION "VERTEX_TAG"
     )
   endif (BUILD_APPS AND UNIX AND NOT APPLE)
+
+  # In incremental mode, the command line tool takes the vertices and edges out
+  # of the graph it loaded and adds them back one by one. The tool exits
+  # successfully even when it cannot allocate the solver or add an element, so
+  # these messages fail the test.
+  if (BUILD_APPS AND BUILD_EXAMPLES)
+    add_test (NAME g2o_sphere
+      COMMAND create_sphere -laps 5 -nodesPerLevel 20
+        -o ${g2o_BINARY_DIR}/sphere.g2o
+    )
+    add_test (NAME g2o_incremental
+      COMMAND g2o_cli_application -inc -update 10 ${g2o_BINARY_DIR}/sphere.g2o
+    )
+    set_tests_properties (g2o_sphere PROPERTIES FIXTURES_SETUP g2o_sphere)
+    set_tests_properties (g2o_incremental PROPERTIES
+      FAIL_REGULAR_EXPRESSION
+        "Error allocating;Error adding vertex;Unable to add edge;initialization failed"
+      FIXTURES_REQUIRED g2o_sphere
+    )
+  endif (BUILD_APPS AND BUILD_EXAMPLES)
 endif (BUILD_TESTING)
 
 # A directory that is not part of the repository may hold experiments.

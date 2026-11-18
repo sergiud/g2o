@@ -146,12 +146,12 @@ int main() {
   Vector6d v1 = dynamic_cast<VertexPositionVelocity3D*>(
                     optimizer.vertices()
                         .find((std::max)(numberOfTimeSteps - 2, 0))
-                        ->second)
+                        ->second.get())
                     ->estimate();
   Vector6d v2 = dynamic_cast<VertexPositionVelocity3D*>(
                     optimizer.vertices()
                         .find((std::max)(numberOfTimeSteps - 1, 0))
-                        ->second)
+                        ->second.get())
                     ->estimate();
   cout << "v1=\n" << v1 << endl;
   cout << "v2=\n" << v2 << endl;

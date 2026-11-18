@@ -90,14 +90,14 @@ OptimizableGraph::Vertex* SparseOptimizer::findGauge() {
   int maxDim = 0;
   for (auto& it : vertices()) {
     OptimizableGraph::Vertex* v =
-        dynamic_cast<OptimizableGraph::Vertex*>(it.second);
+        dynamic_cast<OptimizableGraph::Vertex*>(it.second.get());
     maxDim = std::max(maxDim, v->dimension());
   }
 
   OptimizableGraph::Vertex* rut = nullptr;
   for (auto& it : vertices()) {
     OptimizableGraph::Vertex* v =
-        dynamic_cast<OptimizableGraph::Vertex*>(it.second);
+        dynamic_cast<OptimizableGraph::Vertex*>(it.second.get());
     if (v->dimension() == maxDim) {
       rut = v;
       break;
@@ -112,13 +112,13 @@ bool SparseOptimizer::gaugeFreedom() {
   int maxDim = 0;
   for (auto& it : vertices()) {
     OptimizableGraph::Vertex* v =
-        dynamic_cast<OptimizableGraph::Vertex*>(it.second);
+        dynamic_cast<OptimizableGraph::Vertex*>(it.second.get());
     maxDim = std::max(maxDim, v->dimension());
   }
 
   for (auto& it : vertices()) {
     OptimizableGraph::Vertex* v =
-        dynamic_cast<OptimizableGraph::Vertex*>(it.second);
+        dynamic_cast<OptimizableGraph::Vertex*>(it.second.get());
     if (v->dimension() == maxDim) {
       // test for fixed vertex
       if (v->fixed()) {
@@ -168,7 +168,7 @@ void SparseOptimizer::clearIndexMapping() {
 
 bool SparseOptimizer::initializeOptimization(int level) {
   HyperGraph::VertexSet vset;
-  for (auto& it : vertices()) vset.insert(it.second);
+  for (auto& it : vertices()) vset.insert(it.second.get());
   return initializeOptimization(vset, level);
 }
 
@@ -275,7 +275,7 @@ bool SparseOptimizer::initializeOptimization(HyperGraph::EdgeSet& eset) {
 void SparseOptimizer::setToOrigin() {
   for (auto& it : vertices()) {
     OptimizableGraph::Vertex* v =
-        dynamic_cast<OptimizableGraph::Vertex*>(it.second);
+        dynamic_cast<OptimizableGraph::Vertex*>(it.second.get());
     v->setToOrigin();
   }
 }

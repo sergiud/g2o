@@ -113,9 +113,9 @@ int main() {
   for (size_t i = 0; i < true_points.size(); ++i) {
     // get two poses
     VertexSE3* vp0 =
-        dynamic_cast<VertexSE3*>(optimizer.vertices().find(0)->second);
+        dynamic_cast<VertexSE3*>(optimizer.vertices().find(0)->second.get());
     VertexSE3* vp1 =
-        dynamic_cast<VertexSE3*>(optimizer.vertices().find(1)->second);
+        dynamic_cast<VertexSE3*>(optimizer.vertices().find(1)->second.get());
 
     // calculate the relative 3D position of the point
     Vector3d pt0, pt1;
@@ -167,7 +167,7 @@ int main() {
 
   // move second cam off of its true position
   VertexSE3* vc =
-      dynamic_cast<VertexSE3*>(optimizer.vertices().find(1)->second);
+      dynamic_cast<VertexSE3*>(optimizer.vertices().find(1)->second.get());
   Eigen::Isometry3d cam = vc->estimate();
   cam.translation() = Vector3d(0, 0, 0.2);
   vc->setEstimate(cam);
@@ -181,12 +181,12 @@ int main() {
   optimizer.optimize(5);
 
   cout << endl << "Second vertex should be near 0,0,1" << endl;
-  cout << dynamic_cast<VertexSE3*>(optimizer.vertices().find(0)->second)
+  cout << dynamic_cast<VertexSE3*>(optimizer.vertices().find(0)->second.get())
               ->estimate()
               .translation()
               .transpose()
        << endl;
-  cout << dynamic_cast<VertexSE3*>(optimizer.vertices().find(1)->second)
+  cout << dynamic_cast<VertexSE3*>(optimizer.vertices().find(1)->second.get())
               ->estimate()
               .translation()
               .transpose()

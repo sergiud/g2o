@@ -13,8 +13,10 @@
 #include <bitset>
 #include <cassert>
 #include <cstddef>
+#include <functional>
 #include <limits>
 #include <map>
+#include <memory>
 #include <set>
 #include <unordered_map>
 #include <vector>
@@ -127,8 +129,30 @@ class G2O_CORE_API HyperGraph {
   typedef std::set<Edge*> EdgeSet;
   typedef std::set<Vertex*> VertexSet;
 
-  typedef std::unordered_map<int, Vertex*> VertexIDMap;
+  //! The vertices of a graph by their id, which the graph owns.
+  typedef std::unordered_map<int, std::unique_ptr<Vertex>> VertexIDMap;
   typedef std::vector<Vertex*> VertexContainer;
+
+  /**
+   * Orders the edges of a graph by their address, like an EdgeSet, and finds
+   * an edge by a raw pointer as well.
+   */
+  struct EdgeAddressLess {
+    using is_transparent = void;
+
+    static const Edge* address(const Edge* edge) { return edge; }
+    static const Edge* address(const std::unique_ptr<Edge>& edge) {
+      return edge.get();
+    }
+
+    template <typename Left, typename Right>
+    bool operator()(const Left& left, const Right& right) const {
+      return std::less<const Edge*>{}(address(left), address(right));
+    }
+  };
+
+  //! The edges of a graph, which the graph owns.
+  typedef std::set<std::unique_ptr<Edge>, EdgeAddressLess> OwnedEdgeSet;
 
   //! abstract Vertex, your types must derive from that one
   class G2O_CORE_API Vertex : public HyperGraphElement {
@@ -220,13 +244,13 @@ class G2O_CORE_API HyperGraph {
   //! not present
   const Vertex* vertex(int id) const;
 
-  //! removes a vertex from the graph. Returns true on success (vertex was
-  //! present)
+  //! removes a vertex and its edges from the graph and deletes them. Returns
+  //! true on success (vertex was present)
   virtual bool removeVertex(Vertex* v, bool detach = false);
-  //! removes a vertex from the graph. Returns true on success (edge was
-  //! present)
+  //! removes an edge from the graph and deletes it. Returns true on success
+  //! (edge was present)
   virtual bool removeEdge(Edge* e);
-  //! clears the graph and empties all structures.
+  //! clears the graph, deleting all its vertices and edges.
   virtual void clear();
 
   //! @returns the map <i>id -> vertex</i> where the vertices are stored
@@ -235,21 +259,26 @@ class G2O_CORE_API HyperGraph {
   VertexIDMap& vertices() { return _vertices; }
 
   //! @returns the set of edges of the hyper graph
-  const EdgeSet& edges() const { return _edges; }
+  const OwnedEdgeSet& edges() const { return _edges; }
   //! @returns the set of edges of the hyper graph
-  EdgeSet& edges() { return _edges; }
+  OwnedEdgeSet& edges() { return _edges; }
+  //! @returns the edges of the hyper graph as a set of raw pointers, which the
+  //! graph keeps owning
+  EdgeSet edgePointers() const;
 
   /**
    * adds a vertex to the graph. The id of the vertex should be set before
    * invoking this function. the function fails if another vertex
    * with the same id is already in the graph.
-   * returns true, on success, or false on failure.
+   * returns true, on success, or false on failure. On success, the graph owns
+   * the vertex, and the caller keeps owning it otherwise.
    */
   virtual bool addVertex(Vertex* v);
 
   /**
    * Adds an edge  to the graph. If the edge is already in the graph, it
-   * does nothing and returns false. Otherwise it returns true.
+   * does nothing and returns false. Otherwise it returns true. On success, the
+   * graph owns the edge, and the caller keeps owning it otherwise.
    */
   virtual bool addEdge(Edge* e);
 
@@ -279,8 +308,12 @@ class G2O_CORE_API HyperGraph {
   virtual bool changeId(Vertex* v, int newId);
 
  protected:
+  //! removes an edge from the graph and returns it to the caller, or nullptr
+  //! if the graph does not contain the edge
+  std::unique_ptr<Edge> releaseEdge(Edge* e);
+
   VertexIDMap _vertices;
-  EdgeSet _edges;
+  OwnedEdgeSet _edges;
 
  private:
   // Disable the copy constructor and assignment operator

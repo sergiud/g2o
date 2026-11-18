@@ -226,12 +226,12 @@ void applyAction(HyperGraph* graph, HyperGraphElementAction* action,
                  const std::string& typeName) {
   for (auto& it : graph->vertices()) {
     if (typeName.empty() || typeid(*it.second).name() == typeName) {
-      (*action)(it.second, params);
+      (*action)(it.second.get(), params);
     }
   }
-  for (auto it : graph->edges()) {
+  for (const auto& it : graph->edges()) {
     if (typeName.empty() || typeid(*it).name() == typeName)
-      (*action)(it, params);
+      (*action)(it.get(), params);
   }
 }
 

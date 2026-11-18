@@ -40,19 +40,19 @@ void HyperGraph::Edge::setId(int id) { _id = id; }
 HyperGraph::Vertex* HyperGraph::vertex(int id) {
   auto it = _vertices.find(id);
   if (it == _vertices.end()) return nullptr;
-  return it->second;
+  return it->second.get();
 }
 
 const HyperGraph::Vertex* HyperGraph::vertex(int id) const {
   auto it = _vertices.find(id);
   if (it == _vertices.end()) return nullptr;
-  return it->second;
+  return it->second.get();
 }
 
 bool HyperGraph::addVertex(Vertex* v) {
   Vertex* vn = vertex(v->id());
   if (vn != nullptr) return false;
-  _vertices.insert(std::make_pair(v->id(), v));
+  _vertices.emplace(v->id(), std::unique_ptr<Vertex>(v));
   return true;
 }
 
@@ -63,9 +63,12 @@ bool HyperGraph::addVertex(Vertex* v) {
 bool HyperGraph::changeId(Vertex* v, int newId) {
   Vertex* v2 = vertex(v->id());
   if (v != v2) return false;
-  _vertices.erase(v->id());
+  if (newId != v->id() && vertex(newId) != nullptr) return false;
+  auto it = _vertices.find(v->id());
+  std::unique_ptr<Vertex> owner = std::move(it->second);
+  _vertices.erase(it);
   v->setId(newId);
-  _vertices.insert(std::make_pair(v->id(), v));
+  _vertices.emplace(newId, std::move(owner));
   return true;
 }
 
@@ -73,8 +76,9 @@ bool HyperGraph::addEdge(Edge* e) {
   for (auto& it : e->vertices()) {
     if (it == nullptr) return false;
   }
-  std::pair<EdgeSet::iterator, bool> result = _edges.insert(e);
-  if (!result.second) return false;
+  // An edge the graph already owns must not get a second owner.
+  if (_edges.find(e) != _edges.end()) return false;
+  _edges.emplace(e);
   for (auto it = e->vertices().begin(); it != e->vertices().end(); ++it) {
     Vertex* v = *it;
     v->edges().insert(e);
@@ -113,7 +117,7 @@ bool HyperGraph::mergeVertices(Vertex* vBig, Vertex* vSmall, bool erase) {
 bool HyperGraph::detachVertex(Vertex* v) {
   auto it = _vertices.find(v->id());
   if (it == _vertices.end()) return false;
-  assert(it->second == v);
+  assert(it->second.get() == v);
   EdgeSet tmp(v->edges());
   for (auto e : tmp) {
     for (size_t i = 0; i < e->vertices().size(); i++) {
@@ -132,39 +136,46 @@ bool HyperGraph::removeVertex(Vertex* v, bool detach) {
   }
   auto it = _vertices.find(v->id());
   if (it == _vertices.end()) return false;
-  assert(it->second == v);
+  assert(it->second.get() == v);
   // remove all edges which are entering or leaving v;
   EdgeSet tmp(v->edges());
-  for (auto it : tmp) {
-    if (!removeEdge(it)) {
+  for (auto e : tmp) {
+    if (!removeEdge(e)) {
       assert(0 && "error in erasing vertex");
     }
   }
   _vertices.erase(it);
-  delete v;
   return true;
 }
 
-bool HyperGraph::removeEdge(Edge* e) {
-  auto it = _edges.find(e);
-  if (it == _edges.end()) return false;
-  _edges.erase(it);
+bool HyperGraph::removeEdge(Edge* e) { return releaseEdge(e) != nullptr; }
+
+std::unique_ptr<HyperGraph::Edge> HyperGraph::releaseEdge(Edge* e) {
+  auto owner = _edges.find(e);
+  if (owner == _edges.end()) return nullptr;
   for (auto vit = e->vertices().begin(); vit != e->vertices().end(); ++vit) {
     Vertex* v = *vit;
     if (v == nullptr) continue;
-    it = v->edges().find(e);
+    auto it = v->edges().find(e);
     assert(it != v->edges().end());
     v->edges().erase(it);
   }
-
-  return true;
+  return std::move(_edges.extract(owner).value());
 }
 
 HyperGraph::HyperGraph() {}
 
 void HyperGraph::clear() {
-  _vertices.clear();
   _edges.clear();
+  _vertices.clear();
+}
+
+HyperGraph::EdgeSet HyperGraph::edgePointers() const {
+  EdgeSet edges;
+  for (const auto& edge : _edges) {
+    edges.insert(edge.get());
+  }
+  return edges;
 }
 
 HyperGraph::~HyperGraph() { clear(); }

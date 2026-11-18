@@ -293,7 +293,7 @@ bool MainWindow::prepare() {
              optimizer->vertices().begin();
          it != optimizer->vertices().end(); ++it) {
       OptimizableGraph::Vertex* v =
-          dynamic_cast<OptimizableGraph::Vertex*>(it->second);
+          dynamic_cast<OptimizableGraph::Vertex*>(it->second.get());
       int vdim = v->dimension();
       v->setMarginalized(
           (vdim == _currentOptimizationAlgorithmProperty.landmarkDim));
@@ -304,7 +304,7 @@ bool MainWindow::prepare() {
              optimizer->vertices().begin();
          it != optimizer->vertices().end(); ++it) {
       OptimizableGraph::Vertex* v =
-          dynamic_cast<OptimizableGraph::Vertex*>(it->second);
+          dynamic_cast<OptimizableGraph::Vertex*>(it->second.get());
       v->setMarginalized(false);
     }
   }
@@ -329,8 +329,9 @@ void MainWindow::setRobustKernel() {
                strRobustKernel.toStdString());
       return;
     }
-    for (auto it : optimizer->edges()) {
-      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
+    for (const auto& it : optimizer->edges()) {
+      OptimizableGraph::Edge* e =
+          dynamic_cast<OptimizableGraph::Edge*>(it.get());
       if (onlyLoop) {
         if (e->vertices().size() >= 2 &&
             std::abs(e->vertex(0)->id() - e->vertex(1)->id()) != 1) {
@@ -343,8 +344,9 @@ void MainWindow::setRobustKernel() {
       }
     }
   } else {
-    for (auto it : optimizer->edges()) {
-      OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
+    for (const auto& it : optimizer->edges()) {
+      OptimizableGraph::Edge* e =
+          dynamic_cast<OptimizableGraph::Edge*>(it.get());
       e->setRobustKernel(nullptr);
     }
   }

@@ -195,7 +195,7 @@ int main(int argc, const char* argv[]) {
           auto* e = new g2o::EdgeProjectXYZ2UV();
           e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(v_p));
           e->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>(
-                              optimizer.vertices().find(j)->second));
+                              optimizer.vertices().find(j)->second.get()));
           e->setMeasurement(z);
           e->information() = Matrix2d::Identity();
           if (ROBUST_KERNEL) {
@@ -228,7 +228,7 @@ int main(int argc, const char* argv[]) {
              optimizer.vertices().begin();
          it != optimizer.vertices().end(); ++it) {
       g2o::OptimizableGraph::Vertex* v =
-          dynamic_cast<g2o::OptimizableGraph::Vertex*>(it->second);
+          dynamic_cast<g2o::OptimizableGraph::Vertex*>(it->second.get());
       if (v->dimension() == 3) points.push_back(v);
     }
     structure_only_ba.calc(points, 10);
@@ -247,7 +247,7 @@ int main(int argc, const char* argv[]) {
       exit(-1);
     }
     g2o::VertexSBAPointXYZ* v_p =
-        dynamic_cast<g2o::VertexSBAPointXYZ*>(v_it->second);
+        dynamic_cast<g2o::VertexSBAPointXYZ*>(v_it->second.get());
     if (v_p == nullptr) {
       g2o::ngx::Log(g2o::ngx::Error, "Vertex {} is not a PointXYZ!", it.first);
       exit(-1);

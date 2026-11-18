@@ -26,8 +26,8 @@ void BackBoneTreeAction::init() {
   _vsMap.clear();
   _vsMmap.clear();
   _freeEdges.clear();
-  for (auto it : _optimizer->edges()) {
-    OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it);
+  for (const auto& it : _optimizer->edges()) {
+    OptimizableGraph::Edge* e = dynamic_cast<OptimizableGraph::Edge*>(it.get());
     if (e->level() == _level) {
       _freeEdges.insert(e);
     }

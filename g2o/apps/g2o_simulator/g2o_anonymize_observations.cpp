@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
   }
 
   for (auto it = graph.edges().begin(); it != graph.edges().end(); it++) {
-    HyperGraph::Edge* e = *it;
+    HyperGraph::Edge* e = it->get();
     if (anonymizeLandmarkEdge<EdgeSE2PointXY>(e, graph)) continue;
     if (anonymizeLandmarkEdge<EdgeSE2PointXYOffset>(e, graph)) continue;
     if (anonymizeLandmarkEdge<EdgeSE2PointXYBearing>(e, graph)) continue;

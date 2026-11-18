@@ -124,7 +124,7 @@ int main(int argc, char** argv) {
                optimizer.vertices().begin();
            it != optimizer.vertices().end(); ++it) {
         OptimizableGraph::Vertex* v =
-            dynamic_cast<OptimizableGraph::Vertex*>(it->second);
+            dynamic_cast<OptimizableGraph::Vertex*>(it->second.get());
         if (d.visited().count(v) == 0) {
           ngx::Log("\t unvisited vertex {} {}", it->first, (void*)v);
           v->setFixed(true);
@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
            optimizer.vertices().begin();
        it != optimizer.vertices().end(); ++it) {
     OptimizableGraph::Vertex* v =
-        dynamic_cast<OptimizableGraph::Vertex*>(it->second);
+        dynamic_cast<OptimizableGraph::Vertex*>(it->second.get());
     if (v->fixed()) {
       ngx::Log("\t fixed vertex {}", it->first);
     }

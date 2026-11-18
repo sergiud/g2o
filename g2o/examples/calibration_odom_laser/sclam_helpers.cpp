@@ -34,8 +34,9 @@ void addOdometryCalibLinksDifferential(SparseOptimizer& optimizer,
   optimizer.addVertex(odomParamsVertex);
 
   SparseOptimizer::EdgeSet odomCalibEdges;
-  for (auto it : optimizer.edges()) {
-    EdgeSE2SensorCalib* scanmatchEdge = dynamic_cast<EdgeSE2SensorCalib*>(it);
+  for (const auto& it : optimizer.edges()) {
+    EdgeSE2SensorCalib* scanmatchEdge =
+        dynamic_cast<EdgeSE2SensorCalib*>(it.get());
     if (scanmatchEdge == nullptr) continue;
 
     VertexSE2* r1 = dynamic_cast<VertexSE2*>(scanmatchEdge->vertices()[0]);

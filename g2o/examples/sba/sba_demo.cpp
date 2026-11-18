@@ -200,7 +200,7 @@ int main(int argc, const char* argv[]) {
 
     for (size_t j = 0; j < true_poses.size(); ++j) {
       Vector3d z;
-      dynamic_cast<g2o::VertexSCam*>(optimizer.vertices().find(j)->second)
+      dynamic_cast<g2o::VertexSCam*>(optimizer.vertices().find(j)->second.get())
           ->mapPoint(z, true_points.at(i));
 
       if (z[0] >= 0 && z[1] >= 0 && z[0] < 640 && z[1] < 480) {
@@ -214,7 +214,8 @@ int main(int argc, const char* argv[]) {
       bool inlier = true;
       for (size_t j = 0; j < true_poses.size(); ++j) {
         Vector3d z;
-        dynamic_cast<g2o::VertexSCam*>(optimizer.vertices().find(j)->second)
+        dynamic_cast<g2o::VertexSCam*>(
+            optimizer.vertices().find(j)->second.get())
             ->mapPoint(z, true_points.at(i));
 
         if (z[0] >= 0 && z[1] >= 0 && z[0] < 640 && z[1] < 480) {
@@ -236,7 +237,7 @@ int main(int argc, const char* argv[]) {
           e->vertices()[0] = dynamic_cast<g2o::OptimizableGraph::Vertex*>(v_p);
 
           e->vertices()[1] = dynamic_cast<g2o::OptimizableGraph::Vertex*>(
-              optimizer.vertices().find(j)->second);
+              optimizer.vertices().find(j)->second.get());
 
           e->setMeasurement(z);
           // e->inverseMeasurement() = -z;
@@ -280,7 +281,7 @@ int main(int argc, const char* argv[]) {
              optimizer.vertices().begin();
          it != optimizer.vertices().end(); ++it) {
       g2o::OptimizableGraph::Vertex* v =
-          dynamic_cast<g2o::OptimizableGraph::Vertex*>(it->second);
+          dynamic_cast<g2o::OptimizableGraph::Vertex*>(it->second.get());
       if (v->dimension() == 3) points.push_back(v);
     }
 
@@ -305,7 +306,7 @@ int main(int argc, const char* argv[]) {
     }
 
     g2o::VertexSBAPointXYZ* v_p =
-        dynamic_cast<g2o::VertexSBAPointXYZ*>(v_it->second);
+        dynamic_cast<g2o::VertexSBAPointXYZ*>(v_it->second.get());
 
     if (v_p == nullptr) {
       g2o::ngx::Log(g2o::ngx::Error, "Vertex {} is not a PointXYZ!", it.first);

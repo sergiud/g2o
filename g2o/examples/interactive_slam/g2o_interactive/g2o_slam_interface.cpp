@@ -322,7 +322,7 @@ bool G2oSlamInterface::queryState(const std::vector<int>& nodes) {
              _optimizer->vertices().begin();
          it != _optimizer->vertices().end(); ++it) {
       OptimizableGraph::Vertex* v =
-          dynamic_cast<OptimizableGraph::Vertex*>(it->second);
+          dynamic_cast<OptimizableGraph::Vertex*>(it->second.get());
       printVertex(v);
     }
   } else {

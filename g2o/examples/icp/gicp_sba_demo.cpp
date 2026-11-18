@@ -132,9 +132,9 @@ int main(int argc, char** argv) {
   for (size_t i = 0; i < true_points.size(); ++i) {
     // get two poses
     VertexSE3* vp0 =
-        dynamic_cast<VertexSE3*>(optimizer.vertices().find(0)->second);
+        dynamic_cast<VertexSE3*>(optimizer.vertices().find(0)->second.get());
     VertexSE3* vp1 =
-        dynamic_cast<VertexSE3*>(optimizer.vertices().find(1)->second);
+        dynamic_cast<VertexSE3*>(optimizer.vertices().find(1)->second.get());
 
     // calculate the relative 3D position of the point
     Vector3d pt0, pt1;
@@ -208,7 +208,7 @@ int main(int argc, char** argv) {
 
     for (size_t j = 0; j < 2; ++j) {
       Vector3d z;
-      dynamic_cast<g2o::VertexSCam*>(optimizer.vertices().find(j)->second)
+      dynamic_cast<g2o::VertexSCam*>(optimizer.vertices().find(j)->second.get())
           ->mapPoint(z, true_point);
 
       if (z[0] >= 0 && z[1] >= 0 && z[0] < 640 && z[1] < 480) {
@@ -220,7 +220,7 @@ int main(int argc, char** argv) {
         e->vertices()[0] = dynamic_cast<g2o::OptimizableGraph::Vertex*>(v_p);
 
         e->vertices()[1] = dynamic_cast<g2o::OptimizableGraph::Vertex*>(
-            optimizer.vertices().find(j)->second);
+            optimizer.vertices().find(j)->second.get());
 
         e->setMeasurement(z);
         // e->inverseMeasurement() = -z;
@@ -236,7 +236,7 @@ int main(int argc, char** argv) {
 
   // move second cam off of its true position
   VertexSE3* vc =
-      dynamic_cast<VertexSE3*>(optimizer.vertices().find(1)->second);
+      dynamic_cast<VertexSE3*>(optimizer.vertices().find(1)->second.get());
   Eigen::Isometry3d cam = vc->estimate();
   cam.translation() = Vector3d(-0.1, 0.1, 0.2);
   vc->setEstimate(cam);
@@ -249,12 +249,12 @@ int main(int argc, char** argv) {
   optimizer.optimize(20);
 
   cout << endl << "Second vertex should be near 0,0,1" << endl;
-  cout << dynamic_cast<VertexSE3*>(optimizer.vertices().find(0)->second)
+  cout << dynamic_cast<VertexSE3*>(optimizer.vertices().find(0)->second.get())
               ->estimate()
               .translation()
               .transpose()
        << endl;
-  cout << dynamic_cast<VertexSE3*>(optimizer.vertices().find(1)->second)
+  cout << dynamic_cast<VertexSE3*>(optimizer.vertices().find(1)->second.get())
               ->estimate()
               .translation()
               .transpose()
