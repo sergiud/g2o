@@ -107,22 +107,12 @@
 #include <g2o/stuff/opengl_primitives.h>
 #endif
 
-#include <g2o/stuff/logger.h>
-
 #include <cstdlib>
 
 int main() {
-  int unresolved = 0;
-
-  // A function whose address is null was not resolved by the dynamic linker.
-  auto check = [&unresolved](const char* name, const void* address) {
-    if (address == nullptr) {
-      g2o::ngx::Log(g2o::ngx::Error,
-                    "{} resolved to address {}, expected a non-null address",
-                    name, address);
-      ++unresolved;
-    }
-  };
+  // Storing the address of a function in a volatile object keeps the reference
+  // to it, so that the program fails to link if a library does not export it.
+  const void* volatile reference = nullptr;
 
 #ifdef G2O_CONSUMER_HAVE_STUFF
   g2o::CommandArgs arguments;
@@ -135,8 +125,8 @@ int main() {
 #endif
 
 #ifdef G2O_CONSUMER_HAVE_CSPARSE_EXTENSION
-  check("g2o::csparse_extension::writeCs2Octave",
-        reinterpret_cast<const void*>(&g2o::csparse_extension::writeCs2Octave));
+  reference =
+      reinterpret_cast<const void*>(&g2o::csparse_extension::writeCs2Octave);
 #endif
 
 #ifdef G2O_CONSUMER_HAVE_TYPES_SLAM2D
@@ -185,14 +175,13 @@ int main() {
 #endif
 
 #ifdef G2O_CONSUMER_HAVE_CLI
-  check("g2o::loadStandardTypes",
-        reinterpret_cast<const void*>(&g2o::loadStandardTypes));
+  reference = reinterpret_cast<const void*>(&g2o::loadStandardTypes);
 #endif
 
 #ifdef G2O_CONSUMER_HAVE_OPENGL_HELPER
-  check("g2o::opengl::drawBox",
-        reinterpret_cast<const void*>(&g2o::opengl::drawBox));
+  reference = reinterpret_cast<const void*>(&g2o::opengl::drawBox);
 #endif
 
-  return unresolved == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+  static_cast<void>(reference);
+  return EXIT_SUCCESS;
 }

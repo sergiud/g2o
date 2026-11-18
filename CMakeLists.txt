@@ -341,6 +341,7 @@ function (g2o_add_library name)
     )
   endif (generated_headers)
 
+  set_property (GLOBAL APPEND PROPERTY _g2o_LIBRARIES ${name})
   set_target_properties (${name} PROPERTIES
     EXPORT_NAME ${arg_EXPORT_NAME}
     OUTPUT_NAME g2o_${arg_OUTPUT_NAME}
@@ -1678,6 +1679,90 @@ if (BUILD_TESTING)
     )
   endif (CMAKE_TOOLCHAIN_FILE)
 
+  # The consumer requests every library of the package that this build creates
+  # as a component and includes each header of a component against that
+  # component alone, so that a library missing from the package or a missing
+  # usage requirement fails the test.
+  set (_g2o_PACKAGE_COMPONENTS
+    cli
+    core
+    csparse_extension
+    freeglut_minimal
+    hierarchical
+    interface
+    opengl_helper
+    parser
+    solver_cholmod
+    solver_csparse
+    solver_dense
+    solver_eigen
+    solver_pcg
+    solver_slam2d_linear
+    solver_structure_only
+    stuff
+    types_data
+    types_icp
+    types_sba
+    types_sclam2d
+    types_sim3
+    types_slam2d
+    types_slam2d_addons
+    types_slam3d
+    types_slam3d_addons
+  )
+  get_property (_g2o_LIBRARIES GLOBAL PROPERTY _g2o_LIBRARIES)
+  set (_g2o_CONSUMER_COMPONENTS)
+  set (_g2o_CONSUMER_MANIFEST)
+
+  foreach (_g2o_TARGET IN LISTS _g2o_LIBRARIES)
+    get_target_property (_g2o_COMPONENT ${_g2o_TARGET} EXPORT_NAME)
+
+    if (NOT _g2o_COMPONENT IN_LIST _g2o_PACKAGE_COMPONENTS)
+      continue ()
+    endif (NOT _g2o_COMPONENT IN_LIST _g2o_PACKAGE_COMPONENTS)
+
+    get_target_property (_g2o_HEADERS ${_g2o_TARGET} HEADER_SET)
+    set (_g2o_INCLUDES)
+
+    foreach (_g2o_HEADER IN LISTS _g2o_HEADERS)
+      # The scanner includes the header of Flex after naming its class, so the
+      # header is not meant to be included on its own.
+      if (_g2o_HEADER MATCHES "/FlexLexer\\.h$")
+        continue ()
+      endif (_g2o_HEADER MATCHES "/FlexLexer\\.h$")
+
+      # A header includes its template definitions inside its namespace.
+      string (REGEX REPLACE "\\.hpp$" ".h" _g2o_DECLARATIONS "${_g2o_HEADER}")
+
+      if (NOT _g2o_DECLARATIONS STREQUAL _g2o_HEADER
+          AND _g2o_DECLARATIONS IN_LIST _g2o_HEADERS)
+        continue ()
+      endif (NOT _g2o_DECLARATIONS STREQUAL _g2o_HEADER
+        AND _g2o_DECLARATIONS IN_LIST _g2o_HEADERS)
+
+      cmake_path (ABSOLUTE_PATH _g2o_HEADER BASE_DIRECTORY ${g2o_SOURCE_DIR})
+      cmake_path (RELATIVE_PATH _g2o_HEADER BASE_DIRECTORY ${g2o_SOURCE_DIR}
+        OUTPUT_VARIABLE _g2o_INCLUDE
+      )
+      list (APPEND _g2o_INCLUDES ${_g2o_INCLUDE})
+    endforeach (_g2o_HEADER IN LISTS _g2o_HEADERS)
+
+    list (APPEND _g2o_CONSUMER_COMPONENTS ${_g2o_COMPONENT})
+    string (APPEND _g2o_CONSUMER_MANIFEST
+      "set (_consumer_HEADERS_${_g2o_COMPONENT} \"${_g2o_INCLUDES}\")\n"
+    )
+  endforeach (_g2o_TARGET IN LISTS _g2o_LIBRARIES)
+
+  string (APPEND _g2o_CONSUMER_MANIFEST
+    "set (_consumer_COMPONENTS \"${_g2o_CONSUMER_COMPONENTS}\")\n"
+  )
+  file (CONFIGURE OUTPUT ${g2o_BINARY_DIR}/consumer-manifest.cmake
+    CONTENT "${_g2o_CONSUMER_MANIFEST}"
+  )
+  list (APPEND _g2o_CONSUMER_OPTIONS
+    -D_consumer_MANIFEST=${g2o_BINARY_DIR}/consumer-manifest.cmake
+  )
+
   add_test (NAME g2o_install_clean
     COMMAND ${CMAKE_COMMAND} -E rm -rf
       ${_g2o_CONSUMER_PREFIX}
@@ -1710,29 +1795,70 @@ if (BUILD_TESTING)
     FIXTURES_REQUIRED g2o_installed
   )
 
+  # The package rejects a component that no library provides. Only the message
+  # of the package passes, since configuring fails for other reasons as well.
+  add_test (NAME g2o_unknown_component
+    COMMAND ${CMAKE_COMMAND}
+      -S ${g2o_SOURCE_DIR}/unit_test/consumer/unknown_component
+      -B ${g2o_BINARY_DIR}/unknown-component
+      -G ${CMAKE_GENERATOR}
+      ${_g2o_CONSUMER_OPTIONS}
+  )
+  set_tests_properties (g2o_unknown_component PROPERTIES
+    FIXTURES_REQUIRED g2o_installed
+    PASS_REGULAR_EXPRESSION
+      "component[ \n]+no_such_component[ \n]+could[ \n]+not[ \n]+be[ \n]+found"
+  )
+
   # The installed programs find the libraries of g2o and load its plugins on
   # their own. Dependencies installed elsewhere, such as ng-log, are found
   # through the search path of the environment.
   # The plugin of the data types depends on the one of the 2D types, which
   # the program loads after it.
   if (BUILD_APPS AND UNIX AND NOT APPLE)
-    add_test (NAME g2o_installed_solvers
-      COMMAND ${_g2o_CONSUMER_PREFIX}/${CMAKE_INSTALL_BINDIR}/g2o -listSolvers
+    # Each plugin lists an entry that only it provides. A plugin that fails to
+    # load fails every test, and the plugins of the build tree, which
+    # G2O_TYPES_DIR and G2O_SOLVERS_DIR may name, stay out of the tests.
+    set (_g2o_INSTALLED_PLUGINS
+      solver_cholmod listSolvers "gn_var_cholmod"
+      solver_csparse listSolvers "gn_var[ \t]"
+      solver_dense listSolvers "gn_dense"
+      solver_eigen listSolvers "gn_var_eigen"
+      solver_pcg listSolvers "gn_pcg"
+      solver_slam2d_linear listSolvers "2dlinear"
+      solver_structure_only listSolvers "structure_only_2"
+      types_data listTypes "VERTEX_TAG"
+      types_icp listTypes "EDGE_V_V_GICP"
+      types_sba listTypes "VERTEX_SE3:EXPMAP"
+      types_sclam2d listTypes "VERTEX_ODOM_DIFFERENTIAL"
+      types_sim3 listTypes "VERTEX_SIM3:EXPMAP"
+      types_slam2d listTypes "VERTEX_SE2[\r\n]"
+      types_slam2d_addons listTypes "VERTEX_SEGMENT2D"
+      types_slam3d listTypes "VERTEX_SE3:QUAT"
+      types_slam3d_addons listTypes "VERTEX_PLANE"
     )
-    add_test (NAME g2o_installed_types
-      COMMAND ${_g2o_CONSUMER_PREFIX}/${CMAKE_INSTALL_BINDIR}/g2o -listTypes
-    )
-    set_tests_properties (g2o_installed_solvers g2o_installed_types PROPERTIES
-      ENVIRONMENT_MODIFICATION
-        "LD_LIBRARY_PATH=path_list_prepend:$<TARGET_FILE_DIR:ng-log::ng-log>"
-      FIXTURES_REQUIRED g2o_installed
-    )
-    set_tests_properties (g2o_installed_solvers PROPERTIES
-      PASS_REGULAR_EXPRESSION "Gauss-Newton"
-    )
-    set_tests_properties (g2o_installed_types PROPERTIES
-      PASS_REGULAR_EXPRESSION "VERTEX_TAG"
-    )
+
+    while (_g2o_INSTALLED_PLUGINS)
+      list (POP_FRONT _g2o_INSTALLED_PLUGINS _g2o_PLUGIN _g2o_OPTION
+        _g2o_MARKER
+      )
+
+      if (NOT TARGET ${_g2o_PLUGIN})
+        continue ()
+      endif (NOT TARGET ${_g2o_PLUGIN})
+
+      add_test (NAME g2o_installed_${_g2o_PLUGIN}
+        COMMAND ${_g2o_CONSUMER_PREFIX}/${CMAKE_INSTALL_BINDIR}/g2o
+          -${_g2o_OPTION}
+      )
+      set_tests_properties (g2o_installed_${_g2o_PLUGIN} PROPERTIES
+        ENVIRONMENT_MODIFICATION
+          "LD_LIBRARY_PATH=path_list_prepend:$<TARGET_FILE_DIR:ng-log::ng-log>;G2O_TYPES_DIR=unset:;G2O_SOLVERS_DIR=unset:"
+        FAIL_REGULAR_EXPRESSION "Cannot open library"
+        FIXTURES_REQUIRED g2o_installed
+        PASS_REGULAR_EXPRESSION "${_g2o_MARKER}"
+      )
+    endwhile (_g2o_INSTALLED_PLUGINS)
   endif (BUILD_APPS AND UNIX AND NOT APPLE)
 
   # In incremental mode, the command line tool takes the vertices and edges out
