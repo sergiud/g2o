@@ -7,8 +7,13 @@
 #include "g2o/types/slam3d/dquat2mat.h"
 #include "g2o/types/slam3d/edge_pointxyz.h"
 #include "g2o/types/slam3d/edge_se3.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "unit_test/test_helper/eigen_distance.h"
 #include "unit_test/test_helper/evaluate_jacobian.h"
+
+using ::testing::DistanceFrom;
+using ::testing::Le;
 
 using namespace std;
 using namespace g2o;
@@ -144,7 +149,7 @@ TEST(Slam3D, dqDRJacobian) {
     RotationMatrix2QuaternionManifold rot2quat;
     AutoDiff_Dq_DR::Differentiate(rot2quat, parameters, 3, value, jacobians);
 
-    double maxDifference = (dq_dR - dq_dR_AD).array().abs().maxCoeff();
-    EXPECT_NEAR(0., maxDifference, 1e-7);
+    EXPECT_THAT(dq_dR,
+                DistanceFrom(dq_dR_AD, g2o::test::MaxAbsDifference, Le(1e-7)));
   }
 }

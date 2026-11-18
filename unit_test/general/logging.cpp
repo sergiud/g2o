@@ -12,6 +12,11 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::HasSubstr;
+
 namespace {
 
 namespace ngx = nglog::experimental;
@@ -51,8 +56,9 @@ TEST(General, OptimizeWithoutVerticesLogsAnError) {
 
   EXPECT_EQ(optimizer.optimize(1), -1);
 
-  ASSERT_EQ(sink.messages.size(), 1U);
-  EXPECT_EQ(sink.messages.front().severity, NGLOG_ERROR);
-  EXPECT_THAT(sink.messages.front().text,
-              testing::HasSubstr("0 vertices to optimize"));
+  EXPECT_THAT(sink.messages,
+              ElementsAre(AllOf(
+                  Field("severity", &LoggedMessage::severity, NGLOG_ERROR),
+                  Field("text", &LoggedMessage::text,
+                        HasSubstr("0 vertices to optimize")))));
 }

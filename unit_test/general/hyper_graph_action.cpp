@@ -7,7 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
+
+using ::testing::SizeIs;
 
 namespace {
 
@@ -47,5 +50,5 @@ TEST(General, ActionCollectionDeletesARejectedDuplicate) {
   EXPECT_EQ(keptDestructions, 0);
   EXPECT_EQ(rejectedDestructions, 1);
   EXPECT_EQ(collection.actionMap().at("VertexSE3").get(), keptPointer);
-  EXPECT_EQ(collection.actionMap().size(), 1U);
+  EXPECT_THAT(collection.actionMap(), SizeIs(1));
 }

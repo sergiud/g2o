@@ -10,7 +10,10 @@
 #include "g2o/core/sparse_optimizer_terminate_action.h"
 #include "g2o/solvers/eigen/linear_solver_eigen.h"
 #include "g2o/types/slam3d/types_slam3d.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
+
+using ::testing::IsEmpty;
 
 typedef g2o::BlockSolver<g2o::BlockSolverTraits<-1, -1> > SlamBlockSolver;
 typedef g2o::LinearSolverEigen<SlamBlockSolver::PoseMatrixType>
@@ -87,7 +90,7 @@ TEST(General, ClearAndRedo) {
     EXPECT_GT(iter, 0);
 
     mOptimizer.clear();
-    EXPECT_TRUE(mOptimizer.vertices().empty());
-    EXPECT_TRUE(mOptimizer.edges().empty());
+    EXPECT_THAT(mOptimizer.vertices(), IsEmpty());
+    EXPECT_THAT(mOptimizer.edges(), IsEmpty());
   }
 }

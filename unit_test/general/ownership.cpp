@@ -27,7 +27,12 @@
 #include "g2o/types/slam3d/edge_se3_pointxyz.h"
 #include "g2o/types/slam3d/vertex_pointxyz.h"
 #include "g2o/types/slam3d/vertex_se3.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
+
+using ::testing::IsEmpty;
+using ::testing::NotNull;
+using ::testing::SizeIs;
 
 namespace {
 
@@ -318,7 +323,7 @@ TEST(General, OptimizerDeletesItsAlgorithm) {
     optimizer.setAlgorithm(
         std::make_unique<CountedAlgorithm>(createSolver(), destructions));
     EXPECT_EQ(destructions, 0);
-    EXPECT_NE(optimizer.algorithm(), nullptr);
+    EXPECT_THAT(optimizer.algorithm(), NotNull());
   }
 
   EXPECT_EQ(destructions, 1);
@@ -350,8 +355,8 @@ TEST(General, VertexDeletesItsUserData) {
     vertex.addUserData(std::make_unique<CountedData>(destructions));
     vertex.addUserData(std::make_unique<CountedData>(destructions));
     EXPECT_EQ(destructions, 0);
-    ASSERT_NE(vertex.userData(), nullptr);
-    EXPECT_NE(vertex.userData()->next(), nullptr);
+    ASSERT_THAT(vertex.userData(), NotNull());
+    EXPECT_THAT(vertex.userData()->next(), NotNull());
   }
 
   EXPECT_EQ(destructions, 2);
@@ -381,7 +386,7 @@ TEST(General, GraphDeletesItsParameters) {
     ASSERT_TRUE(graph.addParameter(
         std::make_unique<CountedParameter>(0, destructions)));
     EXPECT_EQ(destructions, 0);
-    EXPECT_NE(graph.parameter(0), nullptr);
+    EXPECT_THAT(graph.parameter(0), NotNull());
   }
 
   EXPECT_EQ(destructions, 1);
@@ -419,7 +424,7 @@ TEST(General, GraphDeletesARejectedVertex) {
   EXPECT_EQ(keptDestructions, 0);
   EXPECT_EQ(rejectedDestructions, 1);
   EXPECT_EQ(graph.vertex(0), keptPointer);
-  EXPECT_EQ(graph.vertices().size(), 1U);
+  EXPECT_THAT(graph.vertices(), SizeIs(1));
 }
 
 /**
@@ -446,9 +451,9 @@ TEST(General, GraphDeletesAnEdgeWithoutItsParameter) {
   EXPECT_FALSE(graph.addEdge(std::move(edge)));
 
   EXPECT_EQ(destructions, 1);
-  EXPECT_TRUE(graph.edges().empty());
-  EXPECT_TRUE(posePointer->edges().empty());
-  EXPECT_TRUE(pointPointer->edges().empty());
+  EXPECT_THAT(graph.edges(), IsEmpty());
+  EXPECT_THAT(posePointer->edges(), IsEmpty());
+  EXPECT_THAT(pointPointer->edges(), IsEmpty());
 }
 
 //! A property map frees a property whose name another property already has.
@@ -466,7 +471,7 @@ TEST(General, PropertyMapDeletesARejectedProperty) {
   EXPECT_EQ(keptDestructions, 0);
   EXPECT_EQ(rejectedDestructions, 1);
   EXPECT_EQ(properties.getProperty<CountedProperty>("name"), keptPointer);
-  EXPECT_EQ(properties.size(), 1U);
+  EXPECT_THAT(properties, SizeIs(1));
 }
 
 //! A data queue frees its data when it is destroyed.
@@ -477,7 +482,7 @@ TEST(General, DataQueueDeletesItsData) {
     queue.add(std::make_unique<CountedRobotData>(1., destructions));
     queue.add(std::make_unique<CountedRobotData>(2., destructions));
     EXPECT_EQ(destructions, 0);
-    EXPECT_EQ(queue.buffer().size(), 2U);
+    EXPECT_THAT(queue.buffer(), SizeIs(2));
   }
 
   EXPECT_EQ(destructions, 2);
@@ -498,7 +503,7 @@ TEST(General, DataQueueDeletesReplacedData) {
   EXPECT_EQ(replacedDestructions, 1);
   EXPECT_EQ(replacingDestructions, 0);
   EXPECT_EQ(queue.buffer().at(1.).get(), replacingPointer);
-  EXPECT_EQ(queue.buffer().size(), 1U);
+  EXPECT_THAT(queue.buffer(), SizeIs(1));
 }
 
 //! A hyper graph keeps a vertex it owns already when it is added again.
@@ -514,7 +519,7 @@ TEST(General, HyperGraphKeepsAVertexAddedTwice) {
 
   EXPECT_EQ(destructions, 0);
   EXPECT_EQ(graph.vertex(0), added);
-  EXPECT_EQ(graph.vertices().size(), 1U);
+  EXPECT_THAT(graph.vertices(), SizeIs(1));
 }
 
 //! A graph frees an edge whose caches do not resolve and keeps no reference.
@@ -533,7 +538,7 @@ TEST(General, GraphDeletesAnEdgeWithoutItsCaches) {
   EXPECT_FALSE(graph.addEdge(std::move(edge)));
 
   EXPECT_EQ(destructions, 1);
-  EXPECT_TRUE(graph.edges().empty());
-  EXPECT_TRUE(graph.vertex(0)->edges().empty());
-  EXPECT_TRUE(graph.vertex(1)->edges().empty());
+  EXPECT_THAT(graph.edges(), IsEmpty());
+  EXPECT_THAT(graph.vertex(0)->edges(), IsEmpty());
+  EXPECT_THAT(graph.vertex(1)->edges(), IsEmpty());
 }

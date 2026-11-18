@@ -3,8 +3,19 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <span>
+
 #include "g2o/types/slam3d/isometry3d_mappings.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "unit_test/test_helper/eigen_distance.h"
+
+using ::testing::DistanceFrom;
+using ::testing::DoubleNear;
+using ::testing::Each;
+using ::testing::Ge;
+using ::testing::Le;
+using ::testing::Lt;
 
 using namespace std;
 
@@ -17,41 +28,44 @@ TEST(Slam3D, OrthogonalMatrix) {
       rot * (Eigen::Matrix3d)Eigen::AngleAxisd(0.01, Eigen::Vector3d::UnitX());
 
   shouldBeIdentity = R * R.transpose();
-  double initialDifference =
-      (shouldBeIdentity - Eigen::Matrix3d::Identity()).array().abs().maxCoeff();
+  const double initialDifference = g2o::test::MaxAbsDifference(
+      shouldBeIdentity, Eigen::Matrix3d::Identity());
   EXPECT_DOUBLE_EQ(0., initialDifference);
 
   // introduce numerical inaccuracies
   for (int i = 0; i < 10000; ++i) R = R * rot;
   shouldBeIdentity = R * R.transpose();
-  double afterMultDifference =
-      (shouldBeIdentity - Eigen::Matrix3d::Identity()).array().abs().maxCoeff();
-  EXPECT_GE(afterMultDifference, initialDifference);
+  EXPECT_THAT(shouldBeIdentity,
+              DistanceFrom(Eigen::Matrix3d::Identity(),
+                           g2o::test::MaxAbsDifference, Ge(initialDifference)));
 
   double inaccurateDet = R.determinant();
   Eigen::Matrix3d approxSolution = R;
   g2o::internal::approximateNearestOrthogonalMatrix(approxSolution);
   g2o::internal::nearestOrthogonalMatrix(R);
 
-  EXPECT_LE(std::abs(R.determinant() - 1.), std::abs(inaccurateDet - 1.));
+  EXPECT_THAT(R.determinant(),
+              DistanceFrom(1., Le(std::abs(inaccurateDet - 1.))));
   EXPECT_NEAR(1.0, R.determinant(), 1e-7);
   shouldBeIdentity = R * R.transpose();
-  double nearestDifference =
-      (shouldBeIdentity - Eigen::Matrix3d::Identity()).array().abs().maxCoeff();
-  EXPECT_NEAR(0., nearestDifference, 1e-7);
+  EXPECT_THAT(shouldBeIdentity,
+              DistanceFrom(Eigen::Matrix3d::Identity(),
+                           g2o::test::MaxAbsDifference, Le(1e-7)));
 
-  // norm of the comluns
-  for (int i = 0; i < 3; ++i) EXPECT_NEAR(1.0, R.col(i).norm(), 1e-7);
+  // norm of the columns
+  const Eigen::RowVector3d norms = R.colwise().norm();
+  EXPECT_THAT(std::span(norms.data(), 3), Each(DoubleNear(1.0, 1e-7)));
 
   shouldBeIdentity = approxSolution * approxSolution.transpose();
-  double approxNearestDifference =
-      (shouldBeIdentity - Eigen::Matrix3d::Identity()).array().abs().maxCoeff();
-  EXPECT_NEAR(0., approxNearestDifference, 1e-6);
-  EXPECT_LE(std::abs(R.determinant() - 1.),
-            1e-15 + std::abs(approxSolution.determinant() - 1.));
+  EXPECT_THAT(shouldBeIdentity,
+              DistanceFrom(Eigen::Matrix3d::Identity(),
+                           g2o::test::MaxAbsDifference, Le(1e-6)));
+  EXPECT_THAT(R.determinant(),
+              DistanceFrom(
+                  1., Le(1e-15 + std::abs(approxSolution.determinant() - 1.))));
   EXPECT_NEAR(1.0, approxSolution.determinant(), 1e-6);
-  for (int i = 0; i < 3; ++i)
-    EXPECT_NEAR(1.0, approxSolution.col(i).norm(), 1e-6);
+  const Eigen::RowVector3d approxNorms = approxSolution.colwise().norm();
+  EXPECT_THAT(std::span(approxNorms.data(), 3), Each(DoubleNear(1.0, 1e-6)));
 }
 
 /**
@@ -69,17 +83,17 @@ TEST(Slam3D, ApproximateNearestOrthogonalMatrixReducesDeviation) {
   Eigen::Matrix3d noise;
   noise << 0.3, -0.7, 0.2, 0.9, 0.1, -0.4, -0.5, 0.6, 0.8;
   Eigen::Matrix3d R = rotation + perturbation * noise;
-  const auto deviation = [](const Eigen::Matrix3d& m) {
-    return (m * m.transpose() - Eigen::Matrix3d::Identity())
-        .array()
-        .abs()
-        .maxCoeff();
+  const auto product = [](const Eigen::Matrix3d& m) -> Eigen::Matrix3d {
+    return m * m.transpose();
   };
-  const double initialDeviation = deviation(R);
+  const double initialDeviation =
+      g2o::test::MaxAbsDifference(product(R), Eigen::Matrix3d::Identity());
   ASSERT_GT(initialDeviation, perturbation / convergenceFactor);
 
   g2o::internal::approximateNearestOrthogonalMatrix(R);
 
-  EXPECT_LT(deviation(R),
-            convergenceFactor * initialDeviation * initialDeviation);
+  EXPECT_THAT(product(R),
+              DistanceFrom(
+                  Eigen::Matrix3d::Identity(), g2o::test::MaxAbsDifference,
+                  Lt(convergenceFactor * initialDeviation * initialDeviation)));
 }

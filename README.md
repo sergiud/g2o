@@ -76,7 +76,7 @@ The following are optional:
 * OpenGL with GLU to draw graphs, turned on with `-DWITH_OPENGL=ON`
 * Qt 6 and libQGLViewer built for Qt 6, which the graph viewer `g2o_viewer`
   needs together with OpenGL
-* GoogleTest 1.16 for the unit tests
+* GoogleTest 1.17 for the unit tests
 
 The build leaves out the parts whose optional dependencies are missing.
 

@@ -83,7 +83,7 @@ if (NOT TARGET SuiteSparse::CHOLMOD)
 endif (NOT TARGET SuiteSparse::CHOLMOD)
 
 find_package (Eigen3 3.4.1...5 REQUIRED CONFIG)
-find_package (GTest 1.16 CONFIG)
+find_package (GTest 1.17 CONFIG)
 find_package (ng-log 0.9.0 REQUIRED CONFIG COMPONENTS experimental)
 find_package (OpenGL COMPONENTS OpenGL)
 find_package (OpenMP COMPONENTS CXX)
@@ -1641,7 +1641,7 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
       unit_test/slam2d/jacobians_slam2d.cpp
       unit_test/slam2d/mappings_se2.cpp
       unit_test/slam2d/odom_convert_sclam2d.cpp
-    LINK GTest::gtest_main types_sclam2d types_slam2d
+    LINK GTest::gmock GTest::gtest_main types_sclam2d types_slam2d
   )
 
   g2o_add_executable (unittest_slam3d
@@ -1649,7 +1649,7 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
       unit_test/slam3d/jacobians_slam3d.cpp
       unit_test/slam3d/mappings_slam3d.cpp
       unit_test/slam3d/orthogonal_matrix.cpp
-    LINK GTest::gtest_main types_slam3d
+    LINK GTest::gmock GTest::gtest_main types_slam3d
   )
 
   gtest_discover_tests (unittest_general)

@@ -10,7 +10,14 @@
 #include "g2o/solvers/eigen/linear_solver_eigen.h"
 #include "g2o/types/slam2d/types_slam2d.h"
 #include "g2o/types/slam3d/types_slam3d.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
+
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::IsNull;
+using ::testing::NotNull;
+using ::testing::SizeIs;
 
 typedef g2o::BlockSolver<g2o::BlockSolverTraits<-1, -1> > SlamBlockSolver;
 typedef g2o::LinearSolverEigen<SlamBlockSolver::PoseMatrixType>
@@ -78,12 +85,12 @@ CountedEdge* addTwoVerticesAndEdge(g2o::SparseOptimizer& graph,
 
 TEST(General, BinaryEdgeConstructor) {
   g2o::EdgeSE3 e1;
-  ASSERT_EQ(NULL, e1.vertices()[0]);
-  ASSERT_EQ(NULL, e1.vertices()[1]);
+  ASSERT_THAT(e1.vertices()[0], IsNull());
+  ASSERT_THAT(e1.vertices()[1], IsNull());
 
   g2o::EdgeSE2 e2;
-  ASSERT_EQ(NULL, e2.vertices()[0]);
-  ASSERT_EQ(NULL, e2.vertices()[1]);
+  ASSERT_THAT(e2.vertices()[0], IsNull());
+  ASSERT_THAT(e2.vertices()[1], IsNull());
 }
 
 TEST(General, GraphAddVertex) {
@@ -95,18 +102,18 @@ TEST(General, GraphAddVertex) {
   v1->setId(0);
   ASSERT_TRUE(optimizer->addVertex(std::move(v1Owner)));
   ASSERT_EQ(optimizer.get(), v1->graph());
-  ASSERT_EQ(size_t(1), optimizer->vertices().size());
+  ASSERT_THAT(optimizer->vertices(), SizeIs(1));
   // Adding a vertex the graph owns already fails and keeps the vertex.
   ASSERT_FALSE(optimizer->addVertex(std::unique_ptr<CountedVertex>(v1)));
   EXPECT_EQ(destructions.vertices, 0);
-  ASSERT_EQ(size_t(1), optimizer->vertices().size());
+  ASSERT_THAT(optimizer->vertices(), SizeIs(1));
   ASSERT_EQ(optimizer.get(), v1->graph());
 
   {
     auto v2 = std::make_unique<g2o::VertexSE2>();
     v2->setId(0);
     ASSERT_FALSE(optimizer->addVertex(std::move(v2)));
-    ASSERT_EQ(size_t(1), optimizer->vertices().size());
+    ASSERT_THAT(optimizer->vertices(), SizeIs(1));
   }
 }
 
@@ -133,16 +140,14 @@ TEST(General, GraphAddEdge) {
   // Adding an edge the graph owns already fails and keeps the edge.
   ASSERT_FALSE(optimizer->addEdge(std::unique_ptr<CountedEdge>(e1)));
   EXPECT_EQ(destructions.edges, 0);
-  ASSERT_EQ(size_t(1), optimizer->edges().size());
-  ASSERT_EQ(size_t(1), v1->edges().size());
-  ASSERT_EQ(size_t(1), v2->edges().size());
-  ASSERT_EQ(size_t(1), v1->edges().count(e1));
-  ASSERT_EQ(size_t(1), v2->edges().count(e1));
+  ASSERT_THAT(optimizer->edges(), SizeIs(1));
+  ASSERT_THAT(v1->edges(), ElementsAre(e1));
+  ASSERT_THAT(v2->edges(), ElementsAre(e1));
 
   auto e2 = std::make_unique<g2o::EdgeSE2>();
   ASSERT_FALSE(optimizer->addEdge(std::move(e2)))
       << "Adding edge with unset vertices was possible";
-  ASSERT_EQ(size_t(1), optimizer->edges().size());
+  ASSERT_THAT(optimizer->edges(), SizeIs(1));
 }
 
 /**
@@ -174,8 +179,8 @@ TEST(General, GraphClearDeletesItsElements) {
 
   EXPECT_EQ(destructions.vertices, 2);
   EXPECT_EQ(destructions.edges, 1);
-  EXPECT_TRUE(graph.vertices().empty());
-  EXPECT_TRUE(graph.edges().empty());
+  EXPECT_THAT(graph.vertices(), IsEmpty());
+  EXPECT_THAT(graph.edges(), IsEmpty());
 }
 
 //! Removing an edge frees it and detaches it from the vertices it keeps.
@@ -188,9 +193,9 @@ TEST(General, GraphRemoveEdgeDeletesTheEdge) {
 
   EXPECT_EQ(destructions.vertices, 0);
   EXPECT_EQ(destructions.edges, 1);
-  EXPECT_TRUE(graph.edges().empty());
-  EXPECT_TRUE(graph.vertex(0)->edges().empty());
-  EXPECT_TRUE(graph.vertex(1)->edges().empty());
+  EXPECT_THAT(graph.edges(), IsEmpty());
+  EXPECT_THAT(graph.vertex(0)->edges(), IsEmpty());
+  EXPECT_THAT(graph.vertex(1)->edges(), IsEmpty());
 }
 
 //! Removing a vertex frees it together with the edges it belongs to.
@@ -216,6 +221,6 @@ TEST(General, GraphChangeIdToATakenIdKeepsBothVertices) {
 
   EXPECT_EQ(destructions.vertices, 0);
   EXPECT_EQ(graph.vertex(0), vertex);
-  EXPECT_NE(graph.vertex(1), nullptr);
-  EXPECT_EQ(graph.vertices().size(), 2U);
+  EXPECT_THAT(graph.vertex(1), NotNull());
+  EXPECT_THAT(graph.vertices(), SizeIs(2));
 }

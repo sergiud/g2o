@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "g2o/core/sparse_optimizer.h"
 #include "g2o/types/sba/types_six_dof_expmap.h"
@@ -18,6 +19,17 @@
 #include "g2o/types/slam3d/vertex_se3.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "unit_test/test_helper/eigen_distance.h"
+
+using ::testing::AllOf;
+using ::testing::AnyOf;
+using ::testing::DistanceFrom;
+using ::testing::Each;
+using ::testing::HasSubstr;
+using ::testing::Le;
+using ::testing::Not;
+using ::testing::NotNull;
+using ::testing::SizeIs;
 
 /**
  * The listing of the registered types is output for the caller, so every
@@ -30,7 +42,7 @@ TEST(General, FactoryPrintsRegisteredTypesToTheGivenStream) {
 
   g2o::Factory::instance()->printRegisteredTypes(listing, true);
 
-  EXPECT_THAT(listing.str(), testing::HasSubstr("#\tVERTEX_SE2\n"));
+  EXPECT_THAT(listing.str(), HasSubstr("#\tVERTEX_SE2\n"));
 }
 
 /**
@@ -47,17 +59,17 @@ TEST(General, FactoryTagsContainNoWhitespace) {
   g2o::Factory::instance()->printRegisteredTypes(listing, false);
 
   // The tags with a colon are the ones that formatting can break.
-  EXPECT_THAT(listing.str(), testing::HasSubstr("\tVERTEX_SE3:QUAT\n"));
-  EXPECT_THAT(listing.str(), testing::HasSubstr("\tVERTEX_SE3:EXPMAP\n"));
-  EXPECT_THAT(listing.str(), testing::HasSubstr("\tVERTEX_SIM3:EXPMAP\n"));
+  EXPECT_THAT(listing.str(), AllOf(HasSubstr("\tVERTEX_SE3:QUAT\n"),
+                                   HasSubstr("\tVERTEX_SE3:EXPMAP\n"),
+                                   HasSubstr("\tVERTEX_SIM3:EXPMAP\n")));
   std::istringstream lines(listing.str());
   std::string line;
   std::getline(lines, line);  // The heading of the listing.
+  std::vector<std::string> tags;
   while (std::getline(lines, line)) {
-    const std::string tag = line.substr(1);
-    EXPECT_EQ(tag.find_first_of(" \t"), std::string::npos)
-        << "tag \"" << tag << "\" contains whitespace";
+    tags.push_back(line.substr(1));
   }
+  EXPECT_THAT(tags, Each(Not(AnyOf(HasSubstr(" "), HasSubstr("\t")))));
 }
 
 /**
@@ -93,17 +105,21 @@ TEST(General, GraphOfSE3PosesSurvivesSaveAndLoad) {
   g2o::SparseOptimizer loaded;
   ASSERT_TRUE(loaded.load(file));
 
-  ASSERT_EQ(loaded.vertices().size(), 2U);
-  ASSERT_EQ(loaded.edges().size(), 1U);
+  ASSERT_THAT(loaded.vertices(), SizeIs(2));
+  ASSERT_THAT(loaded.edges(), SizeIs(1));
   for (int id = 0; id < 2; ++id) {
     const auto* vertex = dynamic_cast<const g2o::VertexSE3*>(loaded.vertex(id));
-    ASSERT_NE(vertex, nullptr);
-    EXPECT_TRUE(vertex->estimate().isApprox(poses[id], precision));
+    ASSERT_THAT(vertex, NotNull());
+    EXPECT_THAT(vertex->estimate().matrix(),
+                DistanceFrom(poses[id].matrix(), g2o::test::MaxAbsDifference,
+                             Le(precision)));
   }
   const auto* loadedEdge =
       dynamic_cast<const g2o::EdgeSE3*>(loaded.edges().begin()->get());
-  ASSERT_NE(loadedEdge, nullptr);
+  ASSERT_THAT(loadedEdge, NotNull());
   EXPECT_EQ(loadedEdge->vertex(0)->id(), 0);
   EXPECT_EQ(loadedEdge->vertex(1)->id(), 1);
-  EXPECT_TRUE(loadedEdge->measurement().isApprox(measurement, precision));
+  EXPECT_THAT(loadedEdge->measurement().matrix(),
+              DistanceFrom(measurement.matrix(), g2o::test::MaxAbsDifference,
+                           Le(precision)));
 }

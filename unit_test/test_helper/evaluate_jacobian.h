@@ -5,10 +5,12 @@
 #ifndef EVALUATE_JACOBIAN_H
 #define EVALUATE_JACOBIAN_H
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <Eigen/Core>
 #include <algorithm>
+#include <span>
 
 #include "g2o/core/base_binary_edge.h"
 #include "g2o/core/base_unary_edge.h"
@@ -44,11 +46,11 @@ void evaluateJacobianUnary(EdgeType& e, JacobianWorkspace& jacobianWorkspace,
                   typename EdgeType::VertexXiType>::linearizeOplus();
 
   // compare the Jacobians
-  double* n = numericJacobianWorkspace.workspaceForVertex(0);
-  double* a = jacobianWorkspace.workspaceForVertex(0);
-  for (int j = 0; j < numElems; ++j) {
-    EXPECT_NEAR(n[j], a[j], JacobianTolerance);
-  }
+  const std::span numeric(numericJacobianWorkspace.workspaceForVertex(0),
+                          numElems);
+  const std::span analytic(jacobianWorkspace.workspaceForVertex(0), numElems);
+  EXPECT_THAT(analytic, ::testing::Pointwise(
+                            ::testing::DoubleNear(JacobianTolerance), numeric));
 }
 
 template <typename EdgeType>
@@ -79,12 +81,13 @@ void evaluateJacobian(EdgeType& e, JacobianWorkspace& jacobianWorkspace,
 
   // compare the two Jacobians
   for (int i = 0; i < 2; ++i) {
-    double* n = numericJacobianWorkspace.workspaceForVertex(i);
-    double* a = jacobianWorkspace.workspaceForVertex(i);
     const int numElems = i == 0 ? numElemsXi : numElemsXj;
-    for (int j = 0; j < numElems; ++j) {
-      EXPECT_NEAR(n[j], a[j], tolerance);
-    }
+    const std::span numeric(numericJacobianWorkspace.workspaceForVertex(i),
+                            numElems);
+    const std::span analytic(jacobianWorkspace.workspaceForVertex(i), numElems);
+    EXPECT_THAT(analytic,
+                ::testing::Pointwise(::testing::DoubleNear(tolerance), numeric))
+        << "Jacobian of vertex " << i;
   }
 }
 
