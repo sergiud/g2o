@@ -52,11 +52,11 @@ bool EdgeSE2PointXYOffset::read(std::istream& is) {
     //  we overwrite the information matrix
     information().setIdentity();
   }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE2PointXYOffset::write(std::ostream& os) const {
-  os << offsetParam->id() << " ";
+  os << _parameterIds[0] << " ";
   for (int i = 0; i < 2; i++) os << measurement()[i] << " ";
   for (int i = 0; i < information().rows(); i++)
     for (int j = i; j < information().cols(); j++) {
@@ -70,7 +70,7 @@ void EdgeSE2PointXYOffset::computeError() {
   // VertexSE2 *rob = static_cast<VertexSE2*>(_vertices[0]);
   VertexPointXY* point = dynamic_cast<VertexPointXY*>(_vertices[1]);
 
-  Vector2D perr = cache->w2lMatrix() * point->estimate();
+  Vector2D perr = cache->w2nMatrix() * point->estimate();
 
   // error, which is backwards from the normal observed - calculated
   // _measurement is the measured projection
@@ -93,7 +93,7 @@ bool EdgeSE2PointXYOffset::setMeasurementFromState() {
 
   const Vector2D& pt = point->estimate();
 
-  Vector2D perr = cache->w2lMatrix() * pt;
+  Vector2D perr = cache->w2nMatrix() * pt;
   _measurement = perr;
   return true;
 }

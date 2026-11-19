@@ -48,7 +48,7 @@ bool ParameterCamera::read(std::istream& is) {
   double fx, fy, cx, cy;
   is >> fx >> fy >> cx >> cy;
   setKcam(fx, fy, cx, cy);
-  return is.good();
+  return !is.fail();
 }
 
 bool ParameterCamera::write(std::ostream& os) const {

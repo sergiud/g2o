@@ -28,7 +28,7 @@ bool VertexSE3::read(std::istream& is) {
   Vector7d est;
   for (int i = 0; i < 7; i++) is >> est[i];
   setEstimate(internal::fromVectorQT(est));
-  return true;
+  return !is.fail();
 }
 
 bool VertexSE3::write(std::ostream& os) const {

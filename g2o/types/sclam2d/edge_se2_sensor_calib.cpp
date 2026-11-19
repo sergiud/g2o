@@ -39,7 +39,7 @@ bool EdgeSE2SensorCalib::read(std::istream& is) {
       is >> information()(i, j);
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE2SensorCalib::write(std::ostream& os) const {

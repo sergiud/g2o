@@ -51,8 +51,10 @@ VelocityMeasurement OdomConvert::convertToVelocity(const MotionMeasurement& m) {
     return VelocityMeasurement(vl, vr, m.dt());
   } else {
     double vl, vr;
+    // Without rotation, a differential drive moves along its heading, whose
+    // direction the sign of the forward motion keeps.
     if (fabs(m.dt()) > 1e-7)
-      vl = vr = hypot(m.x(), m.y()) / m.dt();
+      vl = vr = m.x() / m.dt();
     else
       vl = vr = 0.;
     return VelocityMeasurement(vl, vr, m.dt());

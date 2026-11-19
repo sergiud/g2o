@@ -11,6 +11,7 @@
 #include <g2o/types/slam2d/g2o_types_slam2d_api.h>
 #include <g2o/types/slam2d/parameter_se2_offset.h>
 #include <g2o/types/slam2d/vertex_point_xy.h>
+#include <g2o/types/slam2d/vertex_se2.h>
 
 #include <Eigen/Geometry>
 
@@ -47,7 +48,7 @@ class G2O_TYPES_SLAM2D_API EdgeSE2PointXYOffset
     return true;
   }
 
-  virtual int measurementDimension() const { return 3; }
+  virtual int measurementDimension() const { return 2; }
 
   virtual bool setMeasurementFromState();
 

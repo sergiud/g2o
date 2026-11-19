@@ -23,7 +23,7 @@ VertexPointXY::VertexPointXY() : BaseVertex<2, Vector2D>() {
 
 bool VertexPointXY::read(std::istream& is) {
   is >> _estimate[0] >> _estimate[1];
-  return true;
+  return !is.fail();
 }
 
 bool VertexPointXY::write(std::ostream& os) const {

@@ -3,7 +3,13 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <g2o/stuff/read_values.h>
 #include <g2o/types/slam3d/edge_se3_lotsofxyz.h>
+
+#include <algorithm>
+#include <cstddef>
+#include <limits>
+#include <vector>
 
 G2O_START_NAMESPACE
 
@@ -86,27 +92,26 @@ void EdgeSE3LotsOfXYZ::linearizeOplus() {
 }
 
 bool EdgeSE3LotsOfXYZ::read(std::istream& is) {
-  is >> _observedPoints;
-
-  setSize(_observedPoints + 1);
-
-  // read the measurements
-  for (unsigned int i = 0; i < _observedPoints; i++) {
-    unsigned int index = 3 * i;
-    is >> _measurement[index] >> _measurement[index + 1] >>
-        _measurement[index + 2];
+  // The dimension of the edge, 3 times the points, must fit an int.
+  std::size_t points = 0;
+  if (!readCount(is, points, std::numeric_limits<int>::max() / 3)) {
+    return false;
+  }
+  const std::size_t dimension = 3 * points;
+  std::vector<double> measurement;
+  std::vector<double> upperTriangle;
+  if (!readValues(is, dimension, measurement) ||
+      !readValues(is, dimension * (dimension + 1) / 2, upperTriangle)) {
+    return false;
   }
 
-  // read the information matrix
-  for (unsigned int i = 0; i < _observedPoints * 3; i++) {
-    // fill the "upper triangle" part of the matrix
-    for (unsigned int j = i; j < _observedPoints * 3; j++) {
-      is >> information()(i, j);
-    }
-
-    // fill the lower triangle part
-    for (unsigned int j = 0; j < i; j++) {
-      information()(i, j) = information()(j, i);
+  setSize(static_cast<int>(points) + 1);
+  std::ranges::copy(measurement, _measurement.data());
+  // The information comes as its upper triangle row by row.
+  std::size_t index = 0;
+  for (std::size_t i = 0; i < dimension; ++i) {
+    for (std::size_t j = i; j < dimension; ++j, ++index) {
+      information()(i, j) = information()(j, i) = upperTriangle[index];
     }
   }
   return true;

@@ -19,6 +19,9 @@ using namespace std;
 using namespace Eigen;
 
 EdgeSE3::EdgeSE3() : BaseBinaryEdge<6, Isometry3D, VertexSE3, VertexSE3>() {
+  // An isometry leaves its coefficients uninitialized.
+  _measurement.setIdentity();
+  _inverseMeasurement.setIdentity();
   information().setIdentity();
 }
 
@@ -42,7 +45,7 @@ bool EdgeSE3::read(std::istream& is) {
     //  we overwrite the information matrix with the Identity
     information().setIdentity();
   }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE3::write(std::ostream& os) const {

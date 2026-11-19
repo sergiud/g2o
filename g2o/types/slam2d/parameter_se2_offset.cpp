@@ -27,7 +27,7 @@ bool ParameterSE2Offset::read(std::istream& is) {
     is >> off[i];
   }
   setOffset(SE2(off));
-  return is.good() || is.eof();
+  return !is.fail();
 }
 
 bool ParameterSE2Offset::write(std::ostream& os) const {
@@ -65,7 +65,9 @@ void CacheSE2Offset::updateImpl() {
   _RpInverse_RInversePrime =
       _offsetParam->offset().rotation().toRotationMatrix().transpose() *
       RInversePrime;
-  _RpInverse_RInverse = w2l.rotation();
+  _RpInverse_RInverse =
+      _offsetParam->offset().rotation().toRotationMatrix().transpose() *
+      w2l.rotation();
 }
 
 void CacheSE2Offset::setOffsetParam(ParameterSE2Offset* offsetParam) {

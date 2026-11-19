@@ -26,7 +26,7 @@ bool EdgeSE2Line2D::read(std::istream& is) {
   is >> _measurement[0] >> _measurement[1];
   is >> information()(0, 0) >> information()(0, 1) >> information()(1, 1);
   information()(1, 0) = information()(0, 1);
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE2Line2D::write(std::ostream& os) const {

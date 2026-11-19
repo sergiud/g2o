@@ -26,7 +26,7 @@ VertexSegment2D::VertexSegment2D() : BaseVertex<4, Vector4D>() {
 
 bool VertexSegment2D::read(std::istream& is) {
   for (size_t i = 0; i < 4; i++) is >> _estimate[i];
-  return true;
+  return !is.fail();
 }
 
 bool VertexSegment2D::write(std::ostream& os) const {

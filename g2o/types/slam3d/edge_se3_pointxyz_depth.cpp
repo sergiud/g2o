@@ -54,11 +54,11 @@ bool EdgeSE3PointXYZDepth::read(std::istream& is) {
         10 /
         _measurement(2);  // scale the info by the inverse of the measured depth
   }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE3PointXYZDepth::write(std::ostream& os) const {
-  os << params->id() << " ";
+  os << _parameterIds[0] << " ";
   for (int i = 0; i < 3; i++) os << measurement()[i] << " ";
   for (int i = 0; i < information().rows(); i++)
     for (int j = i; j < information().cols(); j++) {

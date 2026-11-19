@@ -2,11 +2,16 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <memory>
+
 #include "EXTERNAL/ceres/autodiff.h"
 #include "g2o/core/jacobian_workspace.h"
+#include "g2o/core/sparse_optimizer.h"
 #include "g2o/types/slam3d/dquat2mat.h"
 #include "g2o/types/slam3d/edge_pointxyz.h"
 #include "g2o/types/slam3d/edge_se3.h"
+#include "g2o/types/slam3d/edge_se3_offset.h"
+#include "g2o/types/slam3d/parameter_se3_offset.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "unit_test/test_helper/eigen_distance.h"
@@ -151,5 +156,49 @@ TEST(Slam3D, dqDRJacobian) {
 
     EXPECT_THAT(dq_dR,
                 DistanceFrom(dq_dR_AD, g2o::test::MaxAbsDifference, Le(1e-7)));
+  }
+}
+
+/**
+ * The offsets of the sensors enter the Jacobian of the edge between them, so
+ * they must differ from the identity to check it.
+ */
+TEST(Slam3D, EdgeSE3OffsetJacobian) {
+  SparseOptimizer graph;
+  for (int id = 0; id < 2; ++id) {
+    auto offset = std::make_unique<ParameterSE3Offset>();
+    offset->setId(id);
+    offset->setOffset(randomIsometry3d());
+    ASSERT_TRUE(graph.addParameter(std::move(offset)));
+  }
+  auto from = std::make_unique<VertexSE3>();
+  from->setId(0);
+  auto to = std::make_unique<VertexSE3>();
+  to->setId(1);
+  auto* v1 = from.get();
+  auto* v2 = to.get();
+  ASSERT_TRUE(graph.addVertex(std::move(from)));
+  ASSERT_TRUE(graph.addVertex(std::move(to)));
+  auto edge = std::make_unique<EdgeSE3Offset>();
+  auto* e = edge.get();
+  e->setVertex(0, v1);
+  e->setVertex(1, v2);
+  ASSERT_TRUE(e->setParameterId(0, 0));
+  ASSERT_TRUE(e->setParameterId(1, 1));
+  e->setInformation(EdgeSE3Offset::InformationType::Identity());
+  ASSERT_TRUE(graph.addEdge(std::move(edge)));
+
+  JacobianWorkspace jacobianWorkspace;
+  JacobianWorkspace numericJacobianWorkspace;
+  numericJacobianWorkspace.updateSize(e);
+  numericJacobianWorkspace.allocate();
+
+  constexpr int Samples = 1000;
+  for (int k = 0; k < Samples; ++k) {
+    v1->setEstimate(randomIsometry3d());
+    v2->setEstimate(randomIsometry3d());
+    e->setMeasurement(randomIsometry3d());
+
+    evaluateJacobian(*e, jacobianWorkspace, numericJacobianWorkspace);
   }
 }

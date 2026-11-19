@@ -43,7 +43,7 @@ bool EdgeSE2TwoPointsXY::read(std::istream& is) {
   information()(3, 0) = information()(0, 3);
   information()(3, 1) = information()(1, 3);
   information()(3, 2) = information()(2, 3);
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE2TwoPointsXY::write(std::ostream& os) const {

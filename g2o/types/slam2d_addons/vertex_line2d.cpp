@@ -26,7 +26,7 @@ VertexLine2D::VertexLine2D() : BaseVertex<2, Line2D>() {
 
 bool VertexLine2D::read(std::istream& is) {
   is >> _estimate[0] >> _estimate[1] >> p1Id >> p2Id;
-  return true;
+  return !is.fail();
 }
 
 bool VertexLine2D::write(std::ostream& os) const {

@@ -26,7 +26,7 @@ bool EdgeSE2Segment2D::read(std::istream& is) {
       is >> _information(i, j);
       _information(j, i) = _information(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE2Segment2D::write(std::ostream& os) const {

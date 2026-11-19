@@ -9,11 +9,85 @@
 #include <g2o/types/slam3d/se3_ops.h>
 
 #include <Eigen/Geometry>
+#include <array>
 #include <cassert>
+#include <cmath>
+#include <complex>
 
 G2O_START_NAMESPACE
 typedef Eigen::Matrix<double, 7, 1> Vector7d;
 typedef Eigen::Matrix<double, 7, 7> Matrix7d;
+
+namespace internal {
+
+/**
+ * Matrix \f$W = A\Omega + B\Omega^2 + C I\f$ that maps the translational
+ * part of the tangent vector of a similarity to its translation. It is the
+ * integral \f$\int_0^1 e^{\sigma s} \exp(s\Omega)\,ds\f$ of the rotation
+ * \f$\Omega\f$ with the angle \f$\theta\f$ and the logarithm
+ * \f$\sigma\f$ of the scale, whose coefficients are
+ * \f[
+ *   A = \int_0^1 e^{\sigma s} \frac{\sin \theta s}{\theta}\,ds, \quad
+ *   B = \int_0^1 e^{\sigma s} \frac{1 - \cos \theta s}{\theta^2}\,ds,
+ *   \quad
+ *   C = \int_0^1 e^{\sigma s}\,ds.
+ * \f]
+ * Below an angle of one, the coefficients are series in \f$\theta^2\f$
+ * over the moments \f$M_n = \int_0^1 s^n e^{\sigma s}\,ds\f$, whose closed
+ * forms cancel for small angles and scales. Above it, they follow from
+ * \f$(e^z - 1)/z\f$ with \f$z = \sigma + i\theta\f$.
+ */
+inline Eigen::Matrix3d sim3W(const Eigen::Vector3d& omega, double theta,
+                             double sigma) {
+  using std::exp;
+  using std::expm1;
+  using std::fpclassify;
+
+  const double C = fpclassify(sigma) == FP_ZERO ? 1. : expm1(sigma) / sigma;
+  double A = 0.;
+  double B = 0.;
+  if (theta < 1.) {
+    // The terms decrease at least as 1/(2k)!, which falls below the precision
+    // of a double after this many.
+    constexpr int Terms = 10;
+    constexpr int Moments = 2 * Terms + 2;
+    // The backward recurrence M_{n-1} = (e^sigma - sigma M_n) / n starts
+    // from the value e^sigma / (n + 1) that the moments approach for large n.
+    // Its error reaches the coefficients only through the smallest terms.
+    const double es = exp(sigma);
+    double moment = es / (Moments + 1);
+    std::array<double, Moments + 1> moments{};
+    for (int n = Moments; n >= 0; --n) {
+      moments[n] = moment;
+      if (n > 0) {
+        moment = (es - sigma * moment) / n;
+      }
+    }
+    // The terms (-theta^2)^k M_{2k+1} / (2k+1)! of A and (-theta^2)^k
+    // M_{2k+2} / (2k+2)! of B summed from the smallest.
+    const double theta2 = theta * theta;
+    std::array<double, Terms> weights{};
+    double weight = 1.;
+    for (int k = 0; k < Terms; ++k) {
+      weights[k] = weight;
+      weight *= -theta2 / ((2 * k + 2) * (2 * k + 3));
+    }
+    for (int k = Terms - 1; k >= 0; --k) {
+      A += weights[k] * moments[2 * k + 1];
+      B += weights[k] / (2 * k + 2) * moments[2 * k + 2];
+    }
+  } else {
+    const std::complex<double> z(sigma, theta);
+    const std::complex<double> F = (exp(z) - 1.) / z;
+    A = F.imag() / theta;
+    B = (C - F.real()) / (theta * theta);
+  }
+
+  const Eigen::Matrix3d Omega = skew(omega);
+  return A * Omega + B * Omega * Omega + C * Eigen::Matrix3d::Identity();
+}
+
+}  // namespace internal
 
 struct Sim3 {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -40,128 +114,40 @@ struct Sim3 {
     normalizeRotation();
   }
 
+  /**
+   * Exponential of a tangent vector (omega, upsilon, sigma) of rotation,
+   * translation and logarithm of the scale.
+   */
   Sim3(const Vector7d& update) {
-    Eigen::Vector3d omega;
-    for (int i = 0; i < 3; i++) omega[i] = update[i];
+    const Eigen::Vector3d omega = update.head<3>();
+    const Eigen::Vector3d upsilon = update.segment<3>(3);
+    const double sigma = update[6];
+    const double theta = omega.norm();
 
-    Eigen::Vector3d upsilon;
-    for (int i = 0; i < 3; i++) upsilon[i] = update[i + 3];
-
-    double sigma = update[6];
-    double theta = omega.norm();
-    Eigen::Matrix3d Omega = skew(omega);
     s = std::exp(sigma);
-    Eigen::Matrix3d Omega2 = Omega * Omega;
-    Eigen::Matrix3d I;
-    I.setIdentity();
-    Eigen::Matrix3d R;
-
-    double eps = 0.00001;
-    double A, B, C;
-    if (fabs(sigma) < eps) {
-      C = 1;
-      if (theta < eps) {
-        A = 1. / 2.;
-        B = 1. / 6.;
-        R = (I + Omega + Omega * Omega);
-      } else {
-        double theta2 = theta * theta;
-        A = (1 - cos(theta)) / (theta2);
-        B = (theta - sin(theta)) / (theta2 * theta);
-        R = I + sin(theta) / theta * Omega +
-            (1 - cos(theta)) / (theta * theta) * Omega2;
-      }
+    if (std::fpclassify(theta) == FP_ZERO) {
+      r.setIdentity();
     } else {
-      C = (s - 1) / sigma;
-      if (theta < eps) {
-        double sigma2 = sigma * sigma;
-        A = ((sigma - 1) * s + 1) / sigma2;
-        B = ((0.5 * sigma2 - sigma + 1) * s) / (sigma2 * sigma);
-        R = (I + Omega + Omega2);
-      } else {
-        R = I + sin(theta) / theta * Omega +
-            (1 - cos(theta)) / (theta * theta) * Omega2;
-        double a = s * sin(theta);
-        double b = s * cos(theta);
-        double theta2 = theta * theta;
-        double sigma2 = sigma * sigma;
-        double c = theta2 + sigma2;
-        A = (a * sigma + (1 - b) * theta) / (theta * c);
-        B = (C - ((b - 1) * sigma + a * theta) / (c)) * 1. / (theta2);
-      }
+      r = Eigen::AngleAxisd(theta, omega / theta);
     }
-    r = Eigen::Quaterniond(R);
-
-    Eigen::Matrix3d W = A * Omega + B * Omega2 + C * I;
-    t = W * upsilon;
+    t = internal::sim3W(omega, theta, sigma) * upsilon;
   }
 
   Eigen::Vector3d map(const Eigen::Vector3d& xyz) const {
     return s * (r * xyz) + t;
   }
 
+  //! Tangent vector (omega, upsilon, sigma) whose exponential this is.
   Vector7d log() const {
+    const Eigen::AngleAxisd rotation(r);
+    const Eigen::Vector3d omega = rotation.angle() * rotation.axis();
+    const double sigma = std::log(s);
+
     Vector7d res;
-    double sigma = std::log(s);
-
-    Eigen::Vector3d omega;
-    Eigen::Vector3d upsilon;
-
-    Eigen::Matrix3d R = r.toRotationMatrix();
-    double d = 0.5 * (R(0, 0) + R(1, 1) + R(2, 2) - 1);
-
-    Eigen::Matrix3d Omega;
-
-    double eps = 0.00001;
-    Eigen::Matrix3d I = Eigen::Matrix3d::Identity();
-
-    double A, B, C;
-    if (fabs(sigma) < eps) {
-      C = 1;
-      if (d > 1 - eps) {
-        omega = 0.5 * deltaR(R);
-        Omega = skew(omega);
-        A = 1. / 2.;
-        B = 1. / 6.;
-      } else {
-        double theta = acos(d);
-        double theta2 = theta * theta;
-        omega = theta / (2 * sqrt(1 - d * d)) * deltaR(R);
-        Omega = skew(omega);
-        A = (1 - cos(theta)) / (theta2);
-        B = (theta - sin(theta)) / (theta2 * theta);
-      }
-    } else {
-      C = (s - 1) / sigma;
-      if (d > 1 - eps) {
-        double sigma2 = sigma * sigma;
-        omega = 0.5 * deltaR(R);
-        Omega = skew(omega);
-        A = ((sigma - 1) * s + 1) / (sigma2);
-        B = ((0.5 * sigma2 - sigma + 1) * s) / (sigma2 * sigma);
-      } else {
-        double theta = acos(d);
-        omega = theta / (2 * sqrt(1 - d * d)) * deltaR(R);
-        Omega = skew(omega);
-        double theta2 = theta * theta;
-        double a = s * sin(theta);
-        double b = s * cos(theta);
-        double c = theta2 + sigma * sigma;
-        A = (a * sigma + (1 - b) * theta) / (theta * c);
-        B = (C - ((b - 1) * sigma + a * theta) / (c)) * 1. / (theta2);
-      }
-    }
-
-    Eigen::Matrix3d W = A * Omega + B * Omega * Omega + C * I;
-
-    upsilon = W.lu().solve(t);
-
-    for (int i = 0; i < 3; i++) res[i] = omega[i];
-
-    for (int i = 0; i < 3; i++) res[i + 3] = upsilon[i];
-
+    res.head<3>() = omega;
+    res.segment<3>(3) =
+        internal::sim3W(omega, rotation.angle(), sigma).lu().solve(t);
     res[6] = sigma;
-
     return res;
   }
 

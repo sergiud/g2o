@@ -12,6 +12,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <string_view>
 
 G2O_START_NAMESPACE
 
@@ -36,6 +37,12 @@ class G2O_TYPES_DATA_API RobotData : public HyperGraph::Data {
   void setHostname(const std::string& hostname);
 
  protected:
+  /**
+   * Name as a single token of a line in a graph file, since a name without
+   * characters leaves no token and shifts the values that follow it.
+   */
+  static std::string_view nameToken(const std::string& name);
+
   double _timestamp;        ///< timestamp when the measurement was generated
   double _loggerTimestamp;  ///< timestamp when the measurement was recorded
   std::string

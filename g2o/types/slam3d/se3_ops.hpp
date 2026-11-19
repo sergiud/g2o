@@ -53,3 +53,15 @@ Vector4D unproject(const Vector3D& v) {
   res(3) = 1;
   return res;
 }
+
+Matrix3D frameOfNormal(const Vector3D& normal) {
+  // Any unit vector orthogonal to the normal spans the plane with the cross
+  // product of both, also for a normal along an axis.
+  const Vector3D n = normal.normalized();
+  const Vector3D inPlane = n.unitOrthogonal();
+  Matrix3D R;
+  R.row(2) = n;
+  R.row(1) = inPlane;
+  R.row(0) = n.cross(inPlane);
+  return R;
+}

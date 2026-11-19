@@ -8,6 +8,7 @@
 #include <g2o/stuff/macros.h>
 #include <g2o/types/sba/types_sba.h>
 
+#include <cmath>
 #include <istream>
 #include <ostream>
 
@@ -33,7 +34,7 @@ VertexIntrinsics::VertexIntrinsics() { _estimate << 1., 1., .5, .5, .1; }
 
 bool VertexIntrinsics::read(std::istream& is) {
   for (int i = 0; i < 5; i++) is >> _estimate[i];
-  return true;
+  return !is.fail();
 }
 
 bool VertexIntrinsics::write(std::ostream& os) const {
@@ -79,7 +80,7 @@ bool VertexCam::read(std::istream& is) {
   setEstimate(cam);
   //    std::cout << cam << std::endl;
 
-  return true;
+  return !is.fail();
 }
 
 bool VertexCam::write(std::ostream& os) const {
@@ -110,7 +111,7 @@ bool EdgeSBACam::read(std::istream& is) {
       is >> information()(i, j);
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSBACam::write(std::ostream& os) const {
@@ -137,7 +138,7 @@ VertexSBAPointXYZ::VertexSBAPointXYZ() : BaseVertex<3, Vector3D>() {}
 bool VertexSBAPointXYZ::read(std::istream& is) {
   Vector3D lv;
   for (int i = 0; i < 3; i++) is >> _estimate[i];
-  return true;
+  return !is.fail();
 }
 
 bool VertexSBAPointXYZ::write(std::ostream& os) const {
@@ -161,7 +162,7 @@ bool EdgeProjectP2MC::read(std::istream& is) {
   // information matrix is the identity for features, could be changed to allow
   // arbitrary covariances
   information().setIdentity();
-  return true;
+  return !is.fail();
 }
 
 bool EdgeProjectP2MC::write(std::ostream& os) const {
@@ -180,7 +181,7 @@ bool EdgeProjectP2SC::read(std::istream& is) {
   // information matrix is the identity for features, could be changed to allow
   // arbitrary covariances
   information().setIdentity();
-  return true;
+  return !is.fail();
 }
 
 bool EdgeProjectP2SC::write(std::ostream& os) const {
@@ -211,9 +212,13 @@ void EdgeProjectP2SC::linearizeOplus() {
   double py = pc(1);
   double pz = pc(2);
   double ipz2 = 1.0 / (pz * pz);
-  if (g2o_isnan(ipz2)) {
-    ngx::Log(ngx::Warning, "[SetJac] infinite jac");
-    abort();
+  // A point at depth zero or without a position has no finite Jacobian,
+  // which the linear solver rejects.
+  if (!std::isfinite(ipz2)) {
+    ngx::Log(ngx::Warning,
+             "the Jacobian of a point at depth {} is not finite, expected a "
+             "nonzero finite depth",
+             pz);
   }
 
   double ipz2fx = ipz2 * cam.Kcam(0, 0);  // Fx
@@ -305,9 +310,13 @@ void EdgeProjectP2MC::linearizeOplus() {
   double py = pc(1);
   double pz = pc(2);
   double ipz2 = 1.0 / (pz * pz);
-  if (g2o_isnan(ipz2)) {
-    ngx::Log(ngx::Warning, "[SetJac] infinite jac");
-    abort();
+  // A point at depth zero or without a position has no finite Jacobian,
+  // which the linear solver rejects.
+  if (!std::isfinite(ipz2)) {
+    ngx::Log(ngx::Warning,
+             "the Jacobian of a point at depth {} is not finite, expected a "
+             "nonzero finite depth",
+             pz);
   }
 
   double ipz2fx = ipz2 * cam.Kcam(0, 0);  // Fx
@@ -376,7 +385,10 @@ void EdgeProjectP2MC_Intrinsics::linearizeOplus() {
 
   VertexSBAPointXYZ* vp = dynamic_cast<VertexSBAPointXYZ*>(_vertices[0]);
 
-  // VertexIntrinsics *intr = static_cast<VertexIntrinsics *>(_vertices[2]);
+  const VertexIntrinsics* intrinsics =
+      dynamic_cast<const VertexIntrinsics*>(_vertices[2]);
+  const double fx = intrinsics->estimate()[0];
+  const double fy = intrinsics->estimate()[1];
 
   Vector4D pt, trans;
   pt.head<3>() = vp->estimate();
@@ -393,13 +405,17 @@ void EdgeProjectP2MC_Intrinsics::linearizeOplus() {
   double py = pc(1);
   double pz = pc(2);
   double ipz2 = 1.0 / (pz * pz);
-  if (g2o_isnan(ipz2)) {
-    ngx::Log(ngx::Warning, "[SetJac] infinite jac");
-    abort();
+  // A point at depth zero or without a position has no finite Jacobian,
+  // which the linear solver rejects.
+  if (!std::isfinite(ipz2)) {
+    ngx::Log(ngx::Warning,
+             "the Jacobian of a point at depth {} is not finite, expected a "
+             "nonzero finite depth",
+             pz);
   }
 
-  double ipz2fx = ipz2 * cam.Kcam(0, 0);  // Fx
-  double ipz2fy = ipz2 * cam.Kcam(1, 1);  // Fy
+  double ipz2fx = ipz2 * fx;
+  double ipz2fy = ipz2 * fy;
 
   Eigen::Matrix<double, 3, 1, Eigen::ColMajor> pwt;
 
@@ -460,7 +476,7 @@ bool EdgeProjectP2MC_Intrinsics::read(std::istream& is) {
   // information matrix is the identity for features, could be changed to allow
   // arbitrary covariances
   information().setIdentity();
-  return true;
+  return !is.fail();
 }
 
 bool EdgeProjectP2MC_Intrinsics::write(std::ostream& os) const {
@@ -478,7 +494,7 @@ bool EdgeSBAScale::read(std::istream& is) {
   setMeasurement(meas);
   information().setIdentity();
   is >> information()(0, 0);
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSBAScale::write(std::ostream& os) const {

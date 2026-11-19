@@ -11,7 +11,6 @@
 #include <g2o/core/hyper_graph_action.h>
 #include <g2o/prefix.h>
 #include <g2o/types/slam2d/g2o_types_slam2d_api.h>
-#include <g2o/types/slam2d_addons/line_2d.h>
 
 G2O_START_NAMESPACE
 

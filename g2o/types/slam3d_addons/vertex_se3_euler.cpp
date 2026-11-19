@@ -18,7 +18,7 @@ bool VertexSE3Euler::read(std::istream& is) {
   Isometry3D transf = g2o::internal::fromVectorET(est);
   setEstimate(transf);
   updateCache();
-  return true;
+  return !is.fail();
 }
 
 bool VertexSE3Euler::write(std::ostream& os) const {

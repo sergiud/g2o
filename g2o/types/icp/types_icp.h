@@ -63,29 +63,10 @@ class G2O_TYPES_ICP_API EdgeGICP {
   }
 
   // set up rotation matrix for pos0
-  void makeRot0() {
-    Vector3D y;
-    y << 0, 1, 0;
-    R0.row(2) = normal0;
-    y = y - normal0(1) * normal0;
-    y.normalize();  // need to check if y is close to 0
-    R0.row(1) = y;
-    R0.row(0) = normal0.cross(R0.row(1));
-    //      cout << normal.transpose() << endl;
-    //      cout << R0 << endl << endl;
-    //      cout << R0*R0.transpose() << endl << endl;
-  }
+  void makeRot0() { R0 = frameOfNormal(normal0); }
 
   // set up rotation matrix for pos1
-  void makeRot1() {
-    Vector3D y;
-    y << 0, 1, 0;
-    R1.row(2) = normal1;
-    y = y - normal1(1) * normal1;
-    y.normalize();  // need to check if y is close to 0
-    R1.row(1) = y;
-    R1.row(0) = normal1.cross(R1.row(1));
-  }
+  void makeRot1() { R1 = frameOfNormal(normal1); }
 
   // returns a precision matrix for point-plane
   Matrix3D prec0(double e) {
@@ -226,9 +207,12 @@ class G2O_TYPES_ICP_API VertexSCam : public VertexSE3 {
   virtual bool read(std::istream& is);
   virtual bool write(std::ostream& os) const;
 
-  // capture the update function to reset aux transforms
-  virtual void oplusImpl(const double* update) {
-    VertexSE3::oplusImpl(update);
+  /**
+   * Derives the transforms of the camera from every change of its estimate,
+   * which includes restoring the estimate of a rejected step.
+   */
+  void updateCache() override {
+    VertexSE3::updateCache();
     setAll();
   }
 

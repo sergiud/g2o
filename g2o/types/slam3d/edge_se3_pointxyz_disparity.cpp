@@ -56,11 +56,11 @@ bool EdgeSE3PointXYZDisparity::read(std::istream& is) {
     information()(2, 2) = 1000.;
   }
   //_cacheIds[0] = _paramId;
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE3PointXYZDisparity::write(std::ostream& os) const {
-  os << params->id() << " ";
+  os << _parameterIds[0] << " ";
   for (int i = 0; i < 3; i++) os << measurement()[i] << " ";
   for (int i = 0; i < information().rows(); i++)
     for (int j = i; j < information().cols(); j++) {

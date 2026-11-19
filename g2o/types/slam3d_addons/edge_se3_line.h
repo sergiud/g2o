@@ -28,6 +28,8 @@ class G2O_TYPES_SLAM3D_ADDONS_API EdgeSE3Line3D
 
   void computeError();
 
+  bool setMeasurementFromState() override;
+
   virtual void setMeasurement(const Vector6d& m) { _measurement = m; }
 
   virtual void setMeasurement(const Line3D& m) { _measurement = Line3D(m); }

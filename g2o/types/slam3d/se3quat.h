@@ -13,8 +13,42 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <cassert>
+#include <cmath>
 
 G2O_START_NAMESPACE
+
+namespace internal {
+
+/**
+ * Matrix \f$V = I + A\Omega + B\Omega^2\f$ that maps the translational part
+ * of the tangent vector of a pose to its translation, with
+ * \f$A = (1 - \cos\theta)/\theta^2 = 2\sin^2(\theta/2)/\theta^2\f$ and
+ * \f$B = (\theta - \sin\theta)/\theta^3\f$. The difference of B cancels
+ * for small angles, where its series replaces it.
+ */
+inline Matrix3D se3V(const Vector3D& omega, double theta) {
+  using std::sin;
+  // Below this angle, the series of B up to the sixth power is exact to the
+  // precision of a double.
+  constexpr double SeriesAngle = 0.1;
+  const double theta2 = theta * theta;
+  double A = 0.5;
+  double B = 1. / 6.;
+  if (std::fpclassify(theta) != FP_ZERO) {
+    const double half = sin(theta / 2.) / theta;
+    A = 2. * half * half;
+  }
+  if (theta < SeriesAngle) {
+    B = 1. / 6. - theta2 / 120. + theta2 * theta2 / 5040. -
+        theta2 * theta2 * theta2 / 362880.;
+  } else {
+    B = (theta - sin(theta)) / (theta2 * theta);
+  }
+  const Matrix3D Omega = skew(omega);
+  return Matrix3D::Identity() + A * Omega + B * Omega * Omega;
+}
+
+}  // namespace internal
 
 typedef Eigen::Matrix<double, 6, 1, Eigen::ColMajor> Vector6d;
 typedef Eigen::Matrix<double, 7, 1, Eigen::ColMajor> Vector7d;
@@ -146,68 +180,27 @@ class G2O_TYPES_SLAM3D_API SE3Quat {
     _t = Vector3D(v[0], v[1], v[2]);
   }
 
+  //! Tangent vector (omega, upsilon) whose exponential this is.
   Vector6d log() const {
+    const Eigen::AngleAxisd rotation(_r);
+    const Vector3D omega = rotation.angle() * rotation.axis();
     Vector6d res;
-    Matrix3D _R = _r.toRotationMatrix();
-    double d = 0.5 * (_R(0, 0) + _R(1, 1) + _R(2, 2) - 1);
-    Vector3D omega;
-    Vector3D upsilon;
-
-    Vector3D dR = deltaR(_R);
-    Matrix3D V_inv;
-
-    if (d > 0.99999) {
-      omega = 0.5 * dR;
-      Matrix3D Omega = skew(omega);
-      V_inv = Matrix3D::Identity() - 0.5 * Omega + (1. / 12.) * (Omega * Omega);
-    } else {
-      double theta = acos(d);
-      omega = theta / (2 * sqrt(1 - d * d)) * dR;
-      Matrix3D Omega = skew(omega);
-      V_inv = (Matrix3D::Identity() - 0.5 * Omega +
-               (1 - theta / (2 * tan(theta / 2))) / (theta * theta) *
-                   (Omega * Omega));
-    }
-
-    upsilon = V_inv * _t;
-    for (int i = 0; i < 3; i++) {
-      res[i] = omega[i];
-    }
-    for (int i = 0; i < 3; i++) {
-      res[i + 3] = upsilon[i];
-    }
-
+    res.head<3>() = omega;
+    res.tail<3>() = internal::se3V(omega, rotation.angle()).lu().solve(_t);
     return res;
   }
 
   Vector3D map(const Vector3D& xyz) const { return _r * xyz + _t; }
 
+  //! Exponential of a tangent vector (omega, upsilon).
   static SE3Quat exp(const Vector6d& update) {
-    Vector3D omega;
-    for (int i = 0; i < 3; i++) omega[i] = update[i];
-    Vector3D upsilon;
-    for (int i = 0; i < 3; i++) upsilon[i] = update[i + 3];
-
-    double theta = omega.norm();
-    Matrix3D Omega = skew(omega);
-
-    Matrix3D R;
-    Matrix3D V;
-    if (theta < 0.00001) {
-      // TODO: CHECK WHETHER THIS IS CORRECT!!!
-      R = (Matrix3D::Identity() + Omega + Omega * Omega);
-
-      V = R;
-    } else {
-      Matrix3D Omega2 = Omega * Omega;
-
-      R = (Matrix3D::Identity() + sin(theta) / theta * Omega +
-           (1 - cos(theta)) / (theta * theta) * Omega2);
-
-      V = (Matrix3D::Identity() + (1 - cos(theta)) / (theta * theta) * Omega +
-           (theta - sin(theta)) / (pow(theta, 3)) * Omega2);
+    const Vector3D omega = update.head<3>();
+    const double theta = omega.norm();
+    Eigen::Quaterniond rotation = Eigen::Quaterniond::Identity();
+    if (std::fpclassify(theta) != FP_ZERO) {
+      rotation = Eigen::AngleAxisd(theta, omega / theta);
     }
-    return SE3Quat(Eigen::Quaterniond(R), V * upsilon);
+    return SE3Quat(rotation, internal::se3V(omega, theta) * update.tail<3>());
   }
 
   Eigen::Matrix<double, 6, 6, Eigen::ColMajor> adj() const {

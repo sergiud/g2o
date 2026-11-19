@@ -1628,12 +1628,14 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
   g2o_add_executable (unittest_general
     SOURCES
       unit_test/general/clear_and_redo.cpp
+      unit_test/general/data_queue.cpp
       unit_test/general/dogleg.cpp
       unit_test/general/factory.cpp
       unit_test/general/gauss_newton.cpp
       unit_test/general/graph_operations.cpp
       unit_test/general/hyper_graph_action.cpp
       unit_test/general/levenberg.cpp
+      unit_test/general/load.cpp
       unit_test/general/logging.cpp
       unit_test/general/marginal_covariance_cholesky.cpp
       unit_test/general/matrix_structure.cpp
@@ -1649,10 +1651,14 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
 
   g2o_add_executable (unittest_slam2d
     SOURCES
+      unit_test/slam2d/edge_line2d.cpp
+      unit_test/slam2d/edge_se2_pointxy_calib.cpp
+      unit_test/slam2d/edge_se2_pointxy_offset.cpp
       unit_test/slam2d/jacobians_slam2d.cpp
       unit_test/slam2d/mappings_se2.cpp
       unit_test/slam2d/odom_convert_sclam2d.cpp
     LINK GTest::gmock GTest::gtest_main types_sclam2d types_slam2d
+      types_slam2d_addons
   )
 
   g2o_add_executable (unittest_slam3d
@@ -1660,6 +1666,7 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
       unit_test/slam3d/jacobians_slam3d.cpp
       unit_test/slam3d/mappings_slam3d.cpp
       unit_test/slam3d/orthogonal_matrix.cpp
+      unit_test/slam3d/se3quat.cpp
     LINK GTest::gmock GTest::gtest_main types_slam3d
   )
 
@@ -1675,6 +1682,28 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
     gtest_discover_tests (unittest_solver_slam2d_linear)
   endif (TARGET solver_slam2d_linear)
   gtest_discover_tests (unittest_slam3d)
+
+  g2o_add_executable (unittest_types
+    SOURCES
+      unit_test/general/read_write.cpp
+      unit_test/icp/edge_gicp.cpp
+      unit_test/icp/vertex_scam.cpp
+      unit_test/sba/edge_se3_expmap.cpp
+      unit_test/sba/intrinsics.cpp
+      unit_test/sba/projection_jacobians.cpp
+      unit_test/sba/stereo_edges.cpp
+      unit_test/sba/vertex_cam.cpp
+      unit_test/sim3/sim3.cpp
+      unit_test/slam3d_addons/edge_se3_euler.cpp
+      unit_test/slam3d_addons/edge_se3_line.cpp
+      unit_test/slam3d_addons/edge_se3_line_io.cpp
+      unit_test/slam3d_addons/line3d.cpp
+    LINK GTest::gmock GTest::gtest_main types_data types_icp types_sba types_sclam2d
+      types_sim3 types_slam2d types_slam2d_addons types_slam3d
+      types_slam3d_addons
+  )
+
+  gtest_discover_tests (unittest_types)
 
   g2o_add_executable (unittest_solvers
     SOURCES

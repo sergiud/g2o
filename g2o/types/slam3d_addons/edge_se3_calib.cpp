@@ -51,7 +51,7 @@ bool EdgeSE3Calib::read(std::istream& is) {
     //  we overwrite the information matrix with the Identity
     information().setIdentity();
   }
-  return true;
+  return !is.fail();
 }
 
 G2O_END_NAMESPACE

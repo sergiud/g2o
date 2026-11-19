@@ -92,14 +92,15 @@ class G2O_TYPES_SLAM3D_ADDONS_API Line3D : public Vector6d {
     double wn = 1.0 / mags.norm();
     ortho.W << mags.y() * wn, -mags.x() * wn, mags.x() * wn, mags.y() * wn;
 
-    double mn = 1.0 / mags.y();
-    double dn = 1.0 / mags.x();
-    Eigen::Vector3d mdcross;
-    mdcross = line.w().cross(line.d());
-    double mdcrossn = 1.0 / mdcross.norm();
-    ortho.U << line.w().x() * mn, line.d().x() * dn, mdcross.x() * mdcrossn,
-        line.w().y() * mn, line.d().y() * dn, mdcross.y() * mdcrossn,
-        line.w().z() * mn, line.d().z() * dn, mdcross.z() * mdcrossn;
+    // A line through the origin has no moment, whose direction any unit
+    // vector orthogonal to the line then takes.
+    const Eigen::Vector3d d = line.d() / mags.x();
+    const Eigen::Vector3d w = std::fpclassify(mags.y()) == FP_ZERO
+                                  ? Eigen::Vector3d(d.unitOrthogonal())
+                                  : Eigen::Vector3d(line.w() / mags.y());
+    ortho.U.col(0) = w;
+    ortho.U.col(1) = d;
+    ortho.U.col(2) = w.cross(d);
 
     return ortho;
   }

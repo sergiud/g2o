@@ -21,7 +21,7 @@ bool VertexSE2::read(std::istream& is) {
   Vector3D p;
   is >> p[0] >> p[1] >> p[2];
   setEstimate(p);
-  return true;
+  return !is.fail();
 }
 
 bool VertexSE2::write(std::ostream& os) const {

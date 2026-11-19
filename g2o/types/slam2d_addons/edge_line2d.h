@@ -9,6 +9,7 @@
 #include <g2o/config.h>
 #include <g2o/core/base_binary_edge.h>
 #include <g2o/prefix.h>
+#include <g2o/stuff/misc.h>
 #include <g2o/types/slam2d_addons/types_slam2d_addons.h>
 #include <g2o/types/slam2d_addons/vertex_line2d.h>
 
@@ -24,6 +25,7 @@ class G2O_TYPES_SLAM2D_ADDONS_API EdgeLine2D
     const VertexLine2D* v1 = dynamic_cast<const VertexLine2D*>(_vertices[0]);
     const VertexLine2D* v2 = dynamic_cast<const VertexLine2D*>(_vertices[1]);
     _error = (v2->estimate() - v1->estimate()) - _measurement;
+    _error[0] = normalize_theta(_error[0]);
   }
   virtual bool read(std::istream& is);
   virtual bool write(std::ostream& os) const;
@@ -58,7 +60,7 @@ class G2O_TYPES_SLAM2D_ADDONS_API EdgeLine2D
                                          OptimizableGraph::Vertex*) {
     return 0.;
   }
-#ifndef NUMERIC_JACOBIAN_THREE_D_TYPES
+#ifndef NUMERIC_JACOBIAN_TWO_D_TYPES
   virtual void linearizeOplus();
 #endif
 };

@@ -26,21 +26,9 @@ RobotLaser::RobotLaser()
 RobotLaser::~RobotLaser() = default;
 
 bool RobotLaser::read(std::istream& is) {
-  int type;
-  double angle, fov, res, maxrange, acc;
-  int remission_mode;
-  is >> type >> angle >> fov >> res >> maxrange >> acc >> remission_mode;
-
-  int beams;
-  is >> beams;
-  _laserParams =
-      LaserParameters(type, beams, angle, res, maxrange, acc, remission_mode);
-  _ranges.resize(beams);
-  for (int i = 0; i < beams; i++) is >> _ranges[i];
-
-  is >> beams;
-  _remissions.resize(beams);
-  for (int i = 0; i < beams; i++) is >> _remissions[i];
+  if (!readScan(is)) {
+    return false;
+  }
 
   // special robot laser stuff
   double x, y, theta;
@@ -58,7 +46,7 @@ bool RobotLaser::read(std::istream& is) {
   is >> _timestamp;
   is >> _hostname;
   is >> _loggerTimestamp;
-  return true;
+  return !is.fail();
 }
 
 bool RobotLaser::write(std::ostream& os) const {
@@ -80,7 +68,7 @@ bool RobotLaser::write(std::ostream& os) const {
   // crap values
   os << FIXED(" " << _laserTv << " " << _laserRv << " " << _forwardSafetyDist
                   << " " << _sideSaftyDist << " " << _turnAxis);
-  os << FIXED(" " << timestamp() << " " << hostname() << " "
+  os << FIXED(" " << timestamp() << " " << nameToken(hostname()) << " "
                   << loggerTimestamp());
 
   return os.good();

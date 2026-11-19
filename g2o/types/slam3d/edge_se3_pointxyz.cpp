@@ -62,11 +62,11 @@ bool EdgeSE3PointXYZ::read(std::istream& is) {
     //  we overwrite the information matrix
     information().setIdentity();
   }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE3PointXYZ::write(std::ostream& os) const {
-  os << offsetParam->id() << " ";
+  os << _parameterIds[0] << " ";
   for (int i = 0; i < 3; i++) os << measurement()[i] << " ";
   for (int i = 0; i < information().rows(); i++)
     for (int j = i; j < information().cols(); j++) {

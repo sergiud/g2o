@@ -180,18 +180,7 @@ class G2O_TYPES_SBA_API EdgeNormal {
   }
 
   // set up rotation matrix
-  void makeRot() {
-    Eigen::Vector3d y;
-    y << 0, 1, 0;
-    R.row(2) = normal;
-    y = y - normal(1) * normal;
-    y.normalize();  // need to check if y is close to 0
-    R.row(1) = y;
-    R.row(0) = normal.cross(R.row(1));
-    //      cout << normal.transpose() << endl;
-    //      cout << R << endl << endl;
-    //      cout << R*R.transpose() << endl << endl;
-  }
+  void makeRot() { R = frameOfNormal(normal); }
 };
 
 G2O_END_NAMESPACE

@@ -113,7 +113,7 @@ bool Edge_V_V_GICP::read(std::istream& is) {
   //    setRobustKernel(true);
   // setHuberWidth(0.01);      // units? m?
 
-  return true;
+  return !is.fail();
 }
 
 // Jacobian

@@ -3,11 +3,16 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
-#include <g2o/stuff/logger.h>
+#include <g2o/stuff/macros.h>
+#include <g2o/stuff/read_values.h>
 #include <g2o/types/data/raw_laser.h>
 
+#include <cstddef>
 #include <istream>
+#include <limits>
 #include <ostream>
+#include <utility>
+#include <vector>
 
 using namespace std;
 
@@ -18,34 +23,63 @@ RawLaser::RawLaser()
 
 RawLaser::~RawLaser() = default;
 
-bool RawLaser::write(std::ostream& /*os*/) const {
-  // TODO
-  ngx::Log(ngx::Error, "RawLaser::write() not implemented yet.");
-  return false;
+bool RawLaser::write(std::ostream& os) const {
+  os << _laserParams.type << " " << _laserParams.firstBeamAngle << " "
+     << _laserParams.fov << " " << _laserParams.angularStep << " "
+     << _laserParams.maxRange << " " << _laserParams.accuracy << " "
+     << _laserParams.remissionMode << " ";
+  os << _ranges.size();
+  for (double range : _ranges) {
+    os << " " << range;
+  }
+  os << " " << _remissions.size();
+  for (double remission : _remissions) {
+    os << " " << remission;
+  }
+  os << FIXED(" " << timestamp() << " " << nameToken(hostname()) << " "
+                  << loggerTimestamp());
+  return os.good();
 }
 
-bool RawLaser::read(std::istream& is) {
+bool RawLaser::readScan(std::istream& is) {
   int type;
-  double angle, fov, res, maxrange, acc;
+  double angle;
+  double fov;
+  double res;
+  double maxrange;
+  double acc;
   int remission_mode;
   is >> type >> angle >> fov >> res >> maxrange >> acc >> remission_mode;
 
-  int beams;
-  is >> beams;
-  _laserParams =
-      LaserParameters(type, beams, angle, res, maxrange, acc, remission_mode);
-  _ranges.resize(beams);
-  for (int i = 0; i < beams; i++) is >> _ranges[i];
+  std::size_t beams = 0;
+  std::vector<double> ranges;
+  if (!readCount(is, beams, std::numeric_limits<int>::max()) ||
+      !readValues(is, beams, ranges)) {
+    return false;
+  }
+  std::size_t remissionCount = 0;
+  std::vector<double> remissions;
+  if (!readCount(is, remissionCount, std::numeric_limits<int>::max()) ||
+      !readValues(is, remissionCount, remissions)) {
+    return false;
+  }
+  _laserParams = LaserParameters(type, static_cast<int>(beams), angle, res,
+                                 maxrange, acc, remission_mode);
+  _ranges = std::move(ranges);
+  _remissions = std::move(remissions);
+  return true;
+}
 
-  is >> beams;
-  _remissions.resize(beams);
-  for (int i = 0; i < beams; i++) is >> _remissions[i];
+bool RawLaser::read(std::istream& is) {
+  if (!readScan(is)) {
+    return false;
+  }
 
   // timestamp + host
   is >> _timestamp;
   is >> _hostname;
   is >> _loggerTimestamp;
-  return true;
+  return !is.fail();
 }
 
 void RawLaser::setRanges(const vector<double>& ranges) { _ranges = ranges; }

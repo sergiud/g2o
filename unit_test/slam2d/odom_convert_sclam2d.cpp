@@ -51,3 +51,20 @@ TEST(Sclam2D, OdomConvert) {
   ASSERT_DOUBLE_EQ(0.2, v2.vr());
   ASSERT_DOUBLE_EQ(0.7, v2.dt());
 }
+
+/**
+ * Driving straight backward turns both wheels backward, which keeps the
+ * sign of the motion through the conversion and back.
+ */
+TEST(Sclam2D, OdomConvertStraightBackward) {
+  const g2o::MotionMeasurement backward(-0.1, 0., 0., 0.5);
+
+  const g2o::VelocityMeasurement velocity =
+      g2o::OdomConvert::convertToVelocity(backward);
+  const g2o::MotionMeasurement motion =
+      g2o::OdomConvert::convertToMotion(velocity);
+
+  EXPECT_DOUBLE_EQ(velocity.vl(), -0.2);
+  EXPECT_DOUBLE_EQ(velocity.vr(), -0.2);
+  EXPECT_DOUBLE_EQ(motion.x(), -0.1);
+}

@@ -3,7 +3,10 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <g2o/stuff/misc.h>
 #include <g2o/types/slam3d/isometry3d_mappings.h>
+
+#include <algorithm>
 
 G2O_START_NAMESPACE
 namespace internal {
@@ -30,7 +33,8 @@ Vector3D toEuler(const Matrix3D& R) {
   const double& q2 = q.y();
   const double& q3 = q.z();
   double roll = atan2(2 * (q0 * q1 + q2 * q3), 1 - 2 * (q1 * q1 + q2 * q2));
-  double pitch = asin(2 * (q0 * q2 - q3 * q1));
+  // Rounding pushes the sine past one at a pitch of a quarter turn.
+  double pitch = asin(std::clamp(2 * (q0 * q2 - q3 * q1), -1., 1.));
   double yaw = atan2(2 * (q0 * q3 + q1 * q2), 1 - 2 * (q2 * q2 + q3 * q3));
   return Vector3D(roll, pitch, yaw);
 }
@@ -112,7 +116,10 @@ Isometry3D fromVectorET(const Vector6d& v) {
 
 Isometry3D fromVectorQT(const Vector7d& v) {
   Isometry3D t;
-  t = Eigen::Quaterniond(v[6], v[3], v[4], v[5]).toRotationMatrix();
+  // A quaternion of rounded values scales the space unless normalized.
+  t = Eigen::Quaterniond(v[6], v[3], v[4], v[5])
+          .normalized()
+          .toRotationMatrix();
   t.translation() = v.head<3>();
   return t;
 }
@@ -126,6 +133,26 @@ Isometry3D fromSE3Quat(const SE3Quat& t) {
   Isometry3D result = (Isometry3D)t.rotation();
   result.translation() = t.translation();
   return result;
+}
+
+Eigen::Matrix<double, 6, 6> jacobianVectorETByVectorMQT(const Isometry3D& t) {
+  constexpr double delta = 1e-6;
+  const Vector6d t0 = toVectorMQT(t);
+  Eigen::Matrix<double, 6, 6> J;
+  for (int i = 0; i < 6; ++i) {
+    Vector6d ta = t0;
+    Vector6d tb = t0;
+    ta[i] -= delta;
+    tb[i] += delta;
+    Vector6d difference =
+        toVectorET(fromVectorMQT(tb)) - toVectorET(fromVectorMQT(ta));
+    // The angles of the two sides may lie on either side of a half turn.
+    for (int k = 3; k < 6; ++k) {
+      difference[k] = normalize_theta(difference[k]);
+    }
+    J.col(i) = difference / (2. * delta);
+  }
+  return J;
 }
 
 }  // end namespace internal

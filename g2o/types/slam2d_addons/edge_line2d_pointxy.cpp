@@ -22,7 +22,7 @@ G2O_START_NAMESPACE
 bool EdgeLine2DPointXY::read(std::istream& is) {
   is >> _measurement;
   is >> information()(0, 0);
-  return true;
+  return !is.fail();
 }
 
 bool EdgeLine2DPointXY::write(std::ostream& os) const {

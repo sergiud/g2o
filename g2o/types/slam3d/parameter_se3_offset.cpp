@@ -30,7 +30,7 @@ bool ParameterSE3Offset::read(std::istream& is) {
   // human readable text
   Vector4D::MapType(off.data() + 3).normalize();
   setOffset(internal::fromVectorQT(off));
-  return is.good();
+  return !is.fail();
 }
 
 bool ParameterSE3Offset::write(std::ostream& os) const {

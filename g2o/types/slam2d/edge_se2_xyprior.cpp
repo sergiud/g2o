@@ -20,7 +20,7 @@ bool EdgeSE2XYPrior::read(std::istream& is) {
       if (!is) return false;
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE2XYPrior::write(std::ostream& os) const {

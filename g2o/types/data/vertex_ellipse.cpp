@@ -57,7 +57,7 @@ bool VertexEllipse::read(std::istream& is) {
     addMatchingVertex(x, y);
   }
 
-  return true;
+  return !is.fail();
 }
 
 bool VertexEllipse::write(std::ostream& os) const {

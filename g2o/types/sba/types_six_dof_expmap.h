@@ -42,7 +42,7 @@ class G2O_TYPES_SBA_API CameraParameters : public g2o::Parameter {
     is >> principle_point[0];
     is >> principle_point[1];
     is >> baseline;
-    return true;
+    return !is.fail();
   }
 
   virtual bool write(std::ostream& os) const {
@@ -279,7 +279,7 @@ class G2O_TYPES_SBA_API EdgeStereoSE3ProjectXYZ
 
   virtual void linearizeOplus();
 
-  Vector3D cam_project(const Vector3D& trans_xyz, const float& bf) const;
+  Vector3D cam_project(const Vector3D& trans_xyz, double bf) const;
 
   double fx, fy, cx, cy, bf;
 };

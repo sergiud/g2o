@@ -29,15 +29,15 @@ bool VertexTag::read(std::istream& is) {
   is >> _timestamp;
   is >> _hostname;
   is >> _loggerTimestamp;
-  return true;
+  return !is.fail();
 }
 
 bool VertexTag::write(std::ostream& os) const {
-  os << _name << " ";
+  os << nameToken(_name) << " ";
   os << FIXED(_position.x()
               << " " << _position.y() << " " << _position.z() << " ");
   os << FIXED(_odom2d.x() << " " << _odom2d.y() << " " << _odom2d.z() << " ");
-  os << FIXED(" " << timestamp() << " " << hostname() << " "
+  os << FIXED(" " << timestamp() << " " << nameToken(hostname()) << " "
                   << loggerTimestamp());
   return os.good();
 }

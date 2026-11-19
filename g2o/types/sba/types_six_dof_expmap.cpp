@@ -65,7 +65,7 @@ bool VertexSE3Expmap::read(std::istream& is) {
   SE3Quat cam2world;
   cam2world.fromVector(est);
   setEstimate(cam2world.inverse());
-  return true;
+  return !is.fail();
 }
 
 bool VertexSE3Expmap::write(std::ostream& os) const {
@@ -89,7 +89,7 @@ bool EdgeSE3Expmap::read(std::istream& is) {
       is >> information()(i, j);
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE3Expmap::write(std::ostream& os) const {
@@ -110,7 +110,7 @@ EdgeProjectXYZ2UV::EdgeProjectXYZ2UV()
 }
 
 bool EdgeProjectPSI2UV::write(std::ostream& os) const {
-  os << _cam->id() << " ";
+  os << _parameterIds[0] << " ";
   for (int i = 0; i < 2; i++) {
     os << measurement()[i] << " ";
   }
@@ -136,7 +136,7 @@ bool EdgeProjectPSI2UV::read(std::istream& is) {
       if (!is) return false;
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 void EdgeProjectPSI2UV::computeError() {
@@ -225,11 +225,11 @@ bool EdgeProjectXYZ2UV::read(std::istream& is) {
       if (!is) return false;
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeProjectXYZ2UV::write(std::ostream& os) const {
-  os << _cam->id() << " ";
+  os << _parameterIds[0] << " ";
   for (int i = 0; i < 2; i++) {
     os << measurement()[i] << " ";
   }
@@ -308,7 +308,7 @@ bool EdgeProjectXYZ2UVU::read(std::istream& is) {
       is >> information()(i, j);
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeProjectXYZ2UVU::write(std::ostream& os) const {
@@ -336,7 +336,7 @@ bool EdgeSE3ProjectXYZ::read(std::istream& is) {
       if (!is) return false;
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE3ProjectXYZ::write(std::ostream& os) const {
@@ -398,8 +398,8 @@ Vector2d EdgeSE3ProjectXYZ::cam_project(const Vector3d& trans_xyz) const {
 }
 
 Vector3d EdgeStereoSE3ProjectXYZ::cam_project(const Vector3d& trans_xyz,
-                                              const float& bf) const {
-  const float invz = 1.0f / trans_xyz[2];
+                                              double bf) const {
+  const double invz = 1. / trans_xyz[2];
   Vector3d res;
   res[0] = trans_xyz[0] * invz * fx + cx;
   res[1] = trans_xyz[1] * invz * fy + cy;
@@ -411,7 +411,7 @@ EdgeStereoSE3ProjectXYZ::EdgeStereoSE3ProjectXYZ()
     : BaseBinaryEdge<3, Vector3d, VertexSBAPointXYZ, VertexSE3Expmap>() {}
 
 bool EdgeStereoSE3ProjectXYZ::read(std::istream& is) {
-  for (int i = 0; i <= 3; i++) {
+  for (int i = 0; i < 3; ++i) {
     is >> _measurement[i];
   }
   for (int i = 0; i <= 2; i++)
@@ -419,11 +419,11 @@ bool EdgeStereoSE3ProjectXYZ::read(std::istream& is) {
       is >> information()(i, j);
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeStereoSE3ProjectXYZ::write(std::ostream& os) const {
-  for (int i = 0; i <= 3; i++) {
+  for (int i = 0; i < 3; ++i) {
     os << measurement()[i] << " ";
   }
 
@@ -492,7 +492,7 @@ bool EdgeSE3ProjectXYZOnlyPose::read(std::istream& is) {
       if (!is) return false;
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE3ProjectXYZOnlyPose::write(std::ostream& os) const {
@@ -542,7 +542,7 @@ Vector2d EdgeSE3ProjectXYZOnlyPose::cam_project(
 
 Vector3d EdgeStereoSE3ProjectXYZOnlyPose::cam_project(
     const Vector3d& trans_xyz) const {
-  const float invz = 1.0f / trans_xyz[2];
+  const double invz = 1. / trans_xyz[2];
   Vector3d res;
   res[0] = trans_xyz[0] * invz * fx + cx;
   res[1] = trans_xyz[1] * invz * fy + cy;
@@ -551,7 +551,7 @@ Vector3d EdgeStereoSE3ProjectXYZOnlyPose::cam_project(
 }
 
 bool EdgeStereoSE3ProjectXYZOnlyPose::read(std::istream& is) {
-  for (int i = 0; i <= 3; i++) {
+  for (int i = 0; i < 3; ++i) {
     is >> _measurement[i];
   }
   for (int i = 0; i <= 2; i++)
@@ -559,11 +559,11 @@ bool EdgeStereoSE3ProjectXYZOnlyPose::read(std::istream& is) {
       is >> information()(i, j);
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeStereoSE3ProjectXYZOnlyPose::write(std::ostream& os) const {
-  for (int i = 0; i <= 3; i++) {
+  for (int i = 0; i < 3; ++i) {
     os << measurement()[i] << " ";
   }
 

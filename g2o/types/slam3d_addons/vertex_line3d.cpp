@@ -16,7 +16,7 @@ bool VertexLine3D::read(std::istream& is) {
     is >> lv[i];
   }
   setEstimate(Line3D(lv));
-  return true;
+  return !is.fail();
 }
 
 bool VertexLine3D::write(std::ostream& os) const {

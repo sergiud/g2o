@@ -8,7 +8,7 @@
 G2O_START_NAMESPACE
 bool VertexOdomDifferentialParams::read(std::istream& is) {
   is >> _estimate(0) >> _estimate(1) >> _estimate(2);
-  return true;
+  return !is.fail();
 }
 
 bool VertexOdomDifferentialParams::write(std::ostream& os) const {

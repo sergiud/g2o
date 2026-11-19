@@ -15,7 +15,7 @@ bool VertexPlane::read(std::istream& is) {
   for (int i = 0; i < 4; i++) is >> lv[i];
   setEstimate(Plane3D(lv));
   is >> color(0) >> color(1) >> color(2);
-  return true;
+  return !is.fail();
 }
 
 bool VertexPlane::write(std::ostream& os) const {

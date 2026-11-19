@@ -19,14 +19,16 @@ void EdgeSE2PointXYCalib::initialEstimate(
   if (from.count(_vertices[0]) != 1) return;
   VertexSE2* vi = dynamic_cast<VertexSE2*>(_vertices[0]);
   VertexPointXY* vj = dynamic_cast<VertexPointXY*>(_vertices[1]);
-  vj->setEstimate(vi->estimate() * _measurement);
+  const VertexSE2* calib = dynamic_cast<const VertexSE2*>(_vertices[2]);
+  // The calibrated sensor measures the landmark, as in the error.
+  vj->setEstimate(vi->estimate() * calib->estimate() * _measurement);
 }
 
 bool EdgeSE2PointXYCalib::read(std::istream& is) {
   is >> _measurement[0] >> _measurement[1];
   is >> information()(0, 0) >> information()(0, 1) >> information()(1, 1);
   information()(1, 0) = information()(0, 1);
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE2PointXYCalib::write(std::ostream& os) const {

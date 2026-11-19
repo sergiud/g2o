@@ -56,7 +56,7 @@ bool VertexSim3Expmap::read(std::istream& is) {
   }
 
   setEstimate(Sim3(cam2world).inverse());
-  return true;
+  return !is.fail();
 }
 
 bool VertexSim3Expmap::write(std::ostream& os) const {
@@ -88,7 +88,7 @@ bool EdgeSim3::read(std::istream& is) {
       is >> information()(i, j);
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSim3::write(std::ostream& os) const {
@@ -120,7 +120,7 @@ bool EdgeSim3ProjectXYZ::read(std::istream& is) {
       if (!is) return false;
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSim3ProjectXYZ::write(std::ostream& os) const {
@@ -149,7 +149,7 @@ bool EdgeInverseSim3ProjectXYZ::read(std::istream& is) {
       if (!is) return false;
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeInverseSim3ProjectXYZ::write(std::ostream& os) const {

@@ -53,11 +53,11 @@ bool EdgeSE3Prior::read(std::istream& is) {
     //  we overwrite the information matrix
     information().setIdentity();
   }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE3Prior::write(std::ostream& os) const {
-  os << _offsetParam->id() << " ";
+  os << _parameterIds[0] << " ";
   Vector7d meas = internal::toVectorQT(_measurement);
   for (int i = 0; i < 7; i++) os << meas[i] << " ";
   for (int i = 0; i < information().rows(); i++)

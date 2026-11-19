@@ -55,6 +55,12 @@ class G2O_TYPES_DATA_API RawLaser : public RobotData {
   void setLaserParams(const LaserParameters& laserParams);
 
  protected:
+  /**
+   * Reads the parameters of the scan followed by its ranges and remissions,
+   * which a raw and a robot laser share.
+   */
+  bool readScan(std::istream& is);
+
   std::vector<double> _ranges;
   std::vector<double> _remissions;
   LaserParameters _laserParams;

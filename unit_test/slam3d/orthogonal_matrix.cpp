@@ -13,7 +13,7 @@
 using ::testing::DistanceFrom;
 using ::testing::DoubleNear;
 using ::testing::Each;
-using ::testing::Ge;
+using ::testing::Gt;
 using ::testing::Le;
 using ::testing::Lt;
 
@@ -32,12 +32,12 @@ TEST(Slam3D, OrthogonalMatrix) {
       shouldBeIdentity, Eigen::Matrix3d::Identity());
   EXPECT_DOUBLE_EQ(0., initialDifference);
 
-  // introduce numerical inaccuracies
+  // introduce numerical inaccuracies, which the rest of the test removes
   for (int i = 0; i < 10000; ++i) R = R * rot;
   shouldBeIdentity = R * R.transpose();
-  EXPECT_THAT(shouldBeIdentity,
+  ASSERT_THAT(shouldBeIdentity,
               DistanceFrom(Eigen::Matrix3d::Identity(),
-                           g2o::test::MaxAbsDifference, Ge(initialDifference)));
+                           g2o::test::MaxAbsDifference, Gt(0.)));
 
   double inaccurateDet = R.determinant();
   Eigen::Matrix3d approxSolution = R;

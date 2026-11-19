@@ -6,6 +6,7 @@
 #include <g2o/types/data/data_queue.h>
 #include <g2o/types/data/robot_data.h>
 
+#include <iterator>
 #include <memory>
 #include <utility>
 
@@ -16,17 +17,15 @@ DataQueue::DataQueue() {}
 DataQueue::~DataQueue() = default;
 
 RobotData* DataQueue::findClosestData(double timestamp) const {
-  if (_buffer.rbegin()->first < timestamp)
-    return _buffer.rbegin()->second.get();
-  if (_buffer.begin()->first > timestamp) return _buffer.begin()->second.get();
-
+  if (_buffer.empty()) return nullptr;
+  // The first entry after the time, which the newest entry has none of.
   auto ub = _buffer.upper_bound(timestamp);
-  auto lb = ub;
-  --lb;
+  if (ub == _buffer.end()) return std::prev(ub)->second.get();
+  if (ub == _buffer.begin()) return ub->second.get();
+  auto lb = std::prev(ub);
   if (fabs(lb->first - timestamp) < fabs(ub->first - timestamp))
     return lb->second.get();
-  else
-    return ub->second.get();
+  return ub->second.get();
 }
 
 RobotData* DataQueue::before(double timestamp) const {

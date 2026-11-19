@@ -26,7 +26,7 @@ bool EdgeSE2OdomDifferentialCalib::read(std::istream& is) {
       is >> information()(i, j);
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE2OdomDifferentialCalib::write(std::ostream& os) const {

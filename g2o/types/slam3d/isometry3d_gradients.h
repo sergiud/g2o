@@ -130,25 +130,12 @@ void computeEdgeSE3Gradient(Isometry3D& E,
     Eigen::Map<Eigen::Matrix<double, 9, 3, Eigen::ColMajor> > M(buf);
     Matrix3D Sxt, Syt, Szt;
     internal::skewT(Sxt, Syt, Szt, Rbc);
-#ifdef __clang__
-    Matrix3D temp = Rab * Sxt;
-    Eigen::Map<Matrix3D> M2(temp.data());
-    Eigen::Map<Matrix3D> Mx(buf);
-    Mx = M2;
-    temp = Ra * Syt;
-    Eigen::Map<Matrix3D> My(buf + 9);
-    My = M2;
-    temp = Ra * Szt;
-    Eigen::Map<Matrix3D> Mz(buf + 18);
-    Mz = M2;
-#else
     Eigen::Map<Matrix3D> Mx(buf);
     Mx = Ra * Sxt;
     Eigen::Map<Matrix3D> My(buf + 9);
     My = Ra * Syt;
     Eigen::Map<Matrix3D> Mz(buf + 18);
     Mz = Ra * Szt;
-#endif
     Ji.template block<3, 3>(3, 3) = dq_dR * M;
   }
 
@@ -158,25 +145,12 @@ void computeEdgeSE3Gradient(Isometry3D& E,
     Eigen::Map<Eigen::Matrix<double, 9, 3, Eigen::ColMajor> > M(buf);
     Matrix3D Sx, Sy, Sz;
     internal::skew(Sx, Sy, Sz, Rc);
-#ifdef __clang__
-    Matrix3D temp = Rab * Sx;
-    Eigen::Map<Matrix3D> M2(temp.data());
-    Eigen::Map<Matrix3D> Mx(buf);
-    Mx = M2;
-    temp = Rab * Sy;
-    Eigen::Map<Matrix3D> My(buf + 9);
-    My = M2;
-    temp = Rab * Sz;
-    Eigen::Map<Matrix3D> Mz(buf + 18);
-    Mz = M2;
-#else
     Eigen::Map<Matrix3D> Mx(buf);
     Mx = Rab * Sx;
     Eigen::Map<Matrix3D> My(buf + 9);
     My = Rab * Sy;
     Eigen::Map<Matrix3D> Mz(buf + 18);
     Mz = Rab * Sz;
-#endif
     Jj.template block<3, 3>(3, 3) = dq_dR * M;
   }
 }
@@ -299,25 +273,12 @@ void computeEdgeSE3PriorGradient(Isometry3D& E,
     Eigen::Map<Eigen::Matrix<double, 9, 3, Eigen::ColMajor> > M(buf);
     Matrix3D Sx, Sy, Sz;
     internal::skew(Sx, Sy, Sz, Rb);
-#ifdef __clang__
-    Matrix3D temp = Ra * Sx;
-    Eigen::Map<Matrix3D> M2(temp.data());
-    Eigen::Map<Matrix3D> Mx(buf);
-    Mx = M2;
-    temp = Ra * Sy;
-    Eigen::Map<Matrix3D> My(buf + 9);
-    My = M2;
-    temp = Ra * Sz;
-    Eigen::Map<Matrix3D> Mz(buf + 18);
-    Mz = M2;
-#else
     Eigen::Map<Matrix3D> Mx(buf);
     Mx = Ra * Sx;
     Eigen::Map<Matrix3D> My(buf + 9);
     My = Ra * Sy;
     Eigen::Map<Matrix3D> Mz(buf + 18);
     Mz = Ra * Sz;
-#endif
     J.template block<3, 3>(3, 3) = dq_dR * M;
   }
 }

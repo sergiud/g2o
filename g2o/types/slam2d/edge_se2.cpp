@@ -23,7 +23,7 @@ bool EdgeSE2::read(std::istream& is) {
       is >> information()(i, j);
       if (i != j) information()(j, i) = information()(i, j);
     }
-  return true;
+  return !is.fail();
 }
 
 bool EdgeSE2::write(std::ostream& os) const {

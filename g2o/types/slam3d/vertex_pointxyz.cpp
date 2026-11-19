@@ -21,7 +21,7 @@ bool VertexPointXYZ::read(std::istream& is) {
   Vector3D lv;
   for (int i = 0; i < 3; i++) is >> lv[i];
   setEstimate(lv);
-  return true;
+  return !is.fail();
 }
 
 bool VertexPointXYZ::write(std::ostream& os) const {

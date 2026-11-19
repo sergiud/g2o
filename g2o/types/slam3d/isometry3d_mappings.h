@@ -113,6 +113,15 @@ G2O_TYPES_SLAM3D_API Vector7d toVectorQT(const Isometry3D& t);
  * (x, y, z, qx, qy, qz) -> Isometry3D
  */
 G2O_TYPES_SLAM3D_API Isometry3D fromVectorMQT(const Vector6d& v);
+
+/**
+ * Derivative of the translation and the Euler angles of a pose, its
+ * toVectorET(), with respect to its minimal parameters, its toVectorMQT(), by
+ * central differences. It converts an information on Euler angles into one
+ * on the minimal parameters, which the edges between poses use.
+ */
+G2O_TYPES_SLAM3D_API Eigen::Matrix<double, 6, 6> jacobianVectorETByVectorMQT(
+    const Isometry3D& t);
 /**
  * (x, y, z, roll, pitch, yaw) -> Isometry3D
  */

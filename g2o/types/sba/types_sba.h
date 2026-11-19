@@ -57,22 +57,19 @@ class G2O_TYPES_SBA_API VertexCam : public BaseVertex<6, SBACam> {
 
   virtual void setEstimate(const SBACam& cam) {
     BaseVertex<6, SBACam>::setEstimate(cam);
-    _estimate.setTransform();
-    _estimate.setProjection();
-    _estimate.setDr();
+    deriveTransforms();
   }
 
   virtual void oplusImpl(const double* update) {
     Eigen::Map<const Vector6d> v(update);
     _estimate.update(v);
-    _estimate.setTransform();
-    _estimate.setProjection();
-    _estimate.setDr();
+    deriveTransforms();
   }
 
   virtual bool setEstimateDataImpl(const double* est) {
     Eigen::Map<const Vector7d> v(est);
     _estimate.fromVector(v);
+    deriveTransforms();
     return true;
   }
 
@@ -87,6 +84,7 @@ class G2O_TYPES_SBA_API VertexCam : public BaseVertex<6, SBACam> {
   virtual bool setMinimalEstimateDataImpl(const double* est) {
     Eigen::Map<const Vector6d> v(est);
     _estimate.fromMinimalVector(v);
+    deriveTransforms();
     return true;
   }
 
@@ -97,6 +95,14 @@ class G2O_TYPES_SBA_API VertexCam : public BaseVertex<6, SBACam> {
   }
 
   virtual int minimalEstimateDimension() const { return 6; }
+
+ private:
+  //! Derives the projection of the camera from its pose.
+  void deriveTransforms() {
+    _estimate.setTransform();
+    _estimate.setProjection();
+    _estimate.setDr();
+  }
 };
 
 /**
@@ -224,15 +230,17 @@ class G2O_TYPES_SBA_API EdgeProjectP2MC_Intrinsics
 
   // return the error estimate as a 2-vector
   void computeError() {
-    // from <Point> to <Cam>, the intrinsics in KCam should be already set!
     const VertexSBAPointXYZ* point =
         dynamic_cast<const VertexSBAPointXYZ*>(_vertices[0]);
-    VertexCam* cam = dynamic_cast<VertexCam*>(_vertices[1]);
-    // calculate the projection
-    const Vector3D& pt = point->estimate();
-    Vector4D ppt(pt(0), pt(1), pt(2), 1.0);
-    Vector3D p = cam->estimate().w2i * ppt;
-    Vector2D perr = p.head<2>() / p(2);
+    const VertexCam* cam = dynamic_cast<const VertexCam*>(_vertices[1]);
+    const VertexIntrinsics* intrinsics =
+        dynamic_cast<const VertexIntrinsics*>(_vertices[2]);
+    // The projection uses the intrinsics the edge estimates instead of the
+    // fixed ones of the camera.
+    const Vector3D p = cam->estimate().w2n * point->estimate().homogeneous();
+    const auto& k = intrinsics->estimate();
+    const Vector2D perr(k[0] * p.x() / p.z() + k[2],
+                        k[1] * p.y() / p.z() + k[3]);
     _error = perr - _measurement;
   }
 

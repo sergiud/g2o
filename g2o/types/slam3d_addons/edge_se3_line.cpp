@@ -29,14 +29,14 @@ bool EdgeSE3Line3D::read(std::istream& is) {
   for (int i = 0; i < 4; ++i) {
     for (int j = i; j < 4; ++j) {
       is >> information()(i, j);
-      information()(i, j) = information()(j, i);
+      information()(j, i) = information()(i, j);
     }
   }
-  return is.good();
+  return !is.fail();
 }
 
 bool EdgeSE3Line3D::write(std::ostream& os) const {
-  os << offsetParam->id() << " ";
+  os << _parameterIds[0] << " ";
   for (int i = 0; i < 6; ++i) {
     os << _measurement(i) << " ";
   }
@@ -49,12 +49,19 @@ bool EdgeSE3Line3D::write(std::ostream& os) const {
 }
 
 void EdgeSE3Line3D::computeError() {
-  const VertexSE3* se3Vertex = dynamic_cast<const VertexSE3*>(_vertices[0]);
   const VertexLine3D* lineVertex =
       dynamic_cast<const VertexLine3D*>(_vertices[1]);
   const Line3D& line = lineVertex->estimate();
-  Line3D localLine = se3Vertex->estimate().inverse() * line;
+  // The sensor observes the line in its own frame.
+  Line3D localLine = cache->w2n() * line;
   _error = localLine.ominus(_measurement);
+}
+
+bool EdgeSE3Line3D::setMeasurementFromState() {
+  const VertexLine3D* lineVertex =
+      dynamic_cast<const VertexLine3D*>(_vertices[1]);
+  _measurement = cache->w2n() * lineVertex->estimate();
+  return true;
 }
 
 bool EdgeSE3Line3D::resolveCaches() {

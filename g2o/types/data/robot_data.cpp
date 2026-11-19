@@ -22,4 +22,8 @@ void RobotData::setHostname(const std::string& hostname) {
   _hostname = hostname;
 }
 
+std::string_view RobotData::nameToken(const std::string& name) {
+  return name.empty() ? std::string_view{"-"} : std::string_view{name};
+}
+
 G2O_END_NAMESPACE
