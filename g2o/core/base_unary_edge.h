@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2011 R. Kuemmerle, G. Grisetti, H. Strasdat, W.
-// Burgard SPDX-FileCopyrightText: 2017 Sergiu Deitsch
+// SPDX-FileCopyrightText: 2011 R. Kuemmerle, G. Grisetti, H. Strasdat, W. Burgard
+// SPDX-FileCopyrightText: 2017 Sergiu Deitsch
 //
 // SPDX-License-Identifier: BSD-2-Clause
 

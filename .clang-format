@@ -4,6 +4,8 @@
 
 BasedOnStyle: Google
 DerivePointerAlignment: false
+# Each SPDX tag must stay on a line of its own.
+CommentPragmas: '^ SPDX-'
 
 # Starting from clang-format v19 we need to specify those
 AttributeMacros: [
