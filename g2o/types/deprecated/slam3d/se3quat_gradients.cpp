@@ -86,5 +86,5 @@ void jac_quat3_euler3(Eigen::Matrix<double, 6, 6>& J, const SE3Quat& t) {
   }
 }
 
-}  // end namespace
-}  // end namespace
+}  // namespace deprecated
+G2O_END_NAMESPACE

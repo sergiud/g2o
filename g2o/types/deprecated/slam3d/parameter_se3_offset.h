@@ -102,7 +102,7 @@ class G2O_DEPRECATED_TYPES_SLAM3D_API CacheSE3OffsetDrawAction
 };
 #endif
 
-}
-}
+}  // namespace deprecated
+G2O_END_NAMESPACE
 
 #endif

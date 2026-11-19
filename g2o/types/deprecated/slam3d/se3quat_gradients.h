@@ -210,7 +210,7 @@ void jacobian_3d_qman(
   Jj(5, 5) = _aux29 * _aux64 - 0.5 * _aux21 * _aux28 * _aux67;
 }
 
-}  // end namespace
-}  // end namespace
+}  // namespace deprecated
+G2O_END_NAMESPACE
 
 #endif

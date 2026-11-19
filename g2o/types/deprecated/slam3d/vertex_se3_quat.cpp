@@ -142,5 +142,5 @@ HyperGraphElementAction* VertexSE3DrawAction::operator()(
 }
 #endif
 
-}
-}
+}  // namespace deprecated
+G2O_END_NAMESPACE

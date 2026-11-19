@@ -72,7 +72,7 @@ class G2O_DEPRECATED_TYPES_SLAM3D_API CacheCameraDrawAction
 };
 #endif
 
-}  // end namespace
-}  // end namespace
+}  // namespace deprecated
+G2O_END_NAMESPACE
 
 #endif

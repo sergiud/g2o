@@ -149,5 +149,5 @@ HyperGraphElementAction* EdgeSE3DrawAction::operator()(
 }
 #endif
 
-}  // end namespace
-}  // end namespace
+}  // namespace deprecated
+G2O_END_NAMESPACE

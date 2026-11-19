@@ -219,5 +219,5 @@ HyperGraphElementAction* EdgeProjectDisparityDrawAction::operator()(
 }
 #endif
 
-}
-}
+}  // namespace deprecated
+G2O_END_NAMESPACE

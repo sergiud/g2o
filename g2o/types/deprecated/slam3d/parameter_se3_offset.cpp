@@ -110,5 +110,5 @@ HyperGraphElementAction* CacheSE3OffsetDrawAction::operator()(
 }
 #endif
 
-}  // end namespace
-}  // end namespace
+}  // namespace deprecated
+G2O_END_NAMESPACE

@@ -84,6 +84,6 @@ class EdgeProjectDisparityDrawAction : public DrawAction {
 };
 #endif
 
-}
-}
+}  // namespace deprecated
+G2O_END_NAMESPACE
 #endif

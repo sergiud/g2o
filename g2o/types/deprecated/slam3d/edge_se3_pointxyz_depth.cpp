@@ -152,5 +152,5 @@ void EdgeSE3PointXYZDepth::initialEstimate(
   point->setEstimate(cam->estimate() * (params->offsetMatrix() * p));
 }
 
-}
-}
+}  // namespace deprecated
+G2O_END_NAMESPACE

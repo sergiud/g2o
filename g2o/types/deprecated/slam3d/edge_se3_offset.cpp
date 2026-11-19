@@ -136,5 +136,5 @@ void EdgeSE3Offset::initialEstimate(const OptimizableGraph::VertexSet& from_,
     from->setEstimate(to->estimate() * virtualMeasurement.inverse());
 }
 
-}
-}
+}  // namespace deprecated
+G2O_END_NAMESPACE

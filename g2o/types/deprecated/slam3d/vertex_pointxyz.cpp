@@ -93,5 +93,5 @@ HyperGraphElementAction* VertexPointXYZWriteGnuplotAction::operator()(
   return this;
 }
 
-}  // end namespace
-}  // end namespace
+}  // namespace deprecated
+G2O_END_NAMESPACE

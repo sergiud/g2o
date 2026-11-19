@@ -101,7 +101,7 @@ class EdgeSE3DrawAction : public DrawAction {
 };
 #endif
 
-}  // end namespace
-}  // end namespace
+}  // namespace deprecated
+G2O_END_NAMESPACE
 
 #endif

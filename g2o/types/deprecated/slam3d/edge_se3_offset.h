@@ -74,6 +74,6 @@ class G2O_DEPRECATED_TYPES_SLAM3D_API EdgeSE3Offset
   CacheSE3Offset *_cacheFrom, *_cacheTo;
 };
 
-}  // end namespace
-}  // end namespace
+}  // namespace deprecated
+G2O_END_NAMESPACE
 #endif

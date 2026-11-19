@@ -44,5 +44,5 @@ G2O_REGISTER_TYPE_GROUP(deprecated_slam3d);
 #endif
 #endif
 
-}  // end namespace
-}  // end namespace
+}  // namespace deprecated
+G2O_END_NAMESPACE

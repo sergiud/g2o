@@ -142,5 +142,5 @@ void EdgeSE3PointXYZ::initialEstimate(const OptimizableGraph::VertexSet& from,
   point->setEstimate(cam->estimate() * (offsetParam->offsetMatrix() * p));
 }
 
-}
-}
+}  // namespace deprecated
+G2O_END_NAMESPACE

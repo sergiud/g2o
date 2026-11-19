@@ -114,5 +114,5 @@ void EdgeSE3Prior::initialEstimate(const OptimizableGraph::VertexSet& /*from_*/,
   v->setEstimate(newEstimate);
 }
 
-}
-}
+}  // namespace deprecated
+G2O_END_NAMESPACE
