@@ -1665,7 +1665,34 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
 
   gtest_discover_tests (unittest_general)
   gtest_discover_tests (unittest_slam2d)
+
+  if (TARGET solver_slam2d_linear)
+    g2o_add_executable (unittest_solver_slam2d_linear
+      SOURCES unit_test/slam2d/solver_slam2d_linear.cpp
+      LINK GTest::gmock GTest::gtest_main solver_slam2d_linear types_slam2d
+    )
+
+    gtest_discover_tests (unittest_solver_slam2d_linear)
+  endif (TARGET solver_slam2d_linear)
   gtest_discover_tests (unittest_slam3d)
+
+  g2o_add_executable (unittest_solvers
+    SOURCES
+      unit_test/solvers/linear_solvers.cpp
+      unit_test/solvers/structure_only.cpp
+    LINK GTest::gtest_main solver_dense solver_eigen solver_pcg
+      solver_structure_only types_slam3d
+      $<TARGET_NAME_IF_EXISTS:solver_cholmod>
+      $<TARGET_NAME_IF_EXISTS:solver_csparse>
+  )
+
+  if (TARGET csparse_extension)
+    target_sources (unittest_solvers PRIVATE
+      unit_test/solvers/csparse_helper.cpp
+    )
+  endif (TARGET csparse_extension)
+
+  gtest_discover_tests (unittest_solvers)
 
   g2o_add_executable (unittest_stuff
     SOURCES

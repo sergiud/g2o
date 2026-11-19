@@ -4,35 +4,15 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include <g2o/solvers/csparse/csparse_helper.h>
+#include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
+#include <g2o/stuff/sparse_helper.h>
 
-#include <algorithm>
 #include <cassert>
-#include <cstring>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <string>
-#include <vector>
-
-using namespace std;
+#include <memory>
 
 G2O_START_NAMESPACE
 namespace csparse_extension {
-
-struct SparseMatrixEntry {
-  SparseMatrixEntry(int r = -1, int c = -1, double x = 0.)
-      : _r(r), _c(c), _x(x) {}
-  int _r, _c;
-  double _x;
-};
-
-struct SparseMatrixEntryColSort {
-  bool operator()(const SparseMatrixEntry& e1,
-                  const SparseMatrixEntry& e2) const {
-    return e1._c < e2._c || (e1._c == e2._c && e1._r < e2._r);
-  }
-};
 
 /**
  * Originally from CSparse, avoid memory re-allocations by giving workspace
@@ -42,16 +22,15 @@ int cs_cholsolsymb(const cs* A, double* b, const css* S, double* x, int* work) {
   csn* N;
   int n, ok;
   if (!CS_CSC(A) || (b == nullptr) || (S == nullptr) || (x == nullptr)) {
-    fprintf(stderr, "%s: No valid input!\n", __PRETTY_FUNCTION__);
-    assert(0);  // get a backtrace in debug mode
+    ngx::Log(ngx::Error,
+             "{}: the matrix, the right-hand side, the symbolic "
+             "factorization and the solution must all be given",
+             __func__);
     return (0); /* check inputs */
   }
   n = A->n;
   N = cs_chol_workspace(A, S, work, x); /* numeric Cholesky factorization */
-  if (N == nullptr) {
-    fprintf(stderr, "%s: cholesky failed!\n", __PRETTY_FUNCTION__);
-    /*assert(0);*/
-  }
+  // The caller reports a failed factorization, which the result tells it.
   ok = static_cast<int>(N != nullptr);
   if (ok != 0) {
     cs_ipvec(S->pinv, b, x, n); /* x = P*b */
@@ -123,7 +102,8 @@ csn* cs_chol_workspace(const cs* A, const css* S, int* cin, double* xin) {
       Lx[p] = lki;
     }
     /* --- Compute L(k,k) ----------------------------------------------- */
-    if (d <= 0) return (cs_ndone(N, E, nullptr, nullptr, 0)); /* not pos def */
+    /* not pos def, which a NaN is not either */
+    if (!(d > 0)) return (cs_ndone(N, E, nullptr, nullptr, 0));
     p = c[k]++;
     Li[p] = k; /* store L(k,k) = sqrt (d) in column k */
     Lx[p] = sqrt(d);
@@ -134,55 +114,19 @@ csn* cs_chol_workspace(const cs* A, const css* S, int* cin, double* xin) {
 }
 
 bool writeCs2Octave(const char* filename, const cs* A, bool upperTriangular) {
-  int cols = A->n;
-  int rows = A->m;
-
-  string name = filename;
-  std::string::size_type lastDot = name.find_last_of('.');
-  if (lastDot != std::string::npos) name = name.substr(0, lastDot);
-
-  vector<SparseMatrixEntry> entries;
-  if (A->nz == -1) {  // CCS matrix
-    const int* Ap = A->p;
-    const int* Ai = A->i;
-    const double* Ax = A->x;
-    for (int i = 0; i < cols; i++) {
-      const int& rbeg = Ap[i];
-      const int& rend = Ap[i + 1];
-      for (int j = rbeg; j < rend; j++) {
-        entries.emplace_back(Ai[j], i, Ax[j]);
-        if (upperTriangular && Ai[j] != i)
-          entries.emplace_back(i, Ai[j], Ax[j]);
-      }
-    }
-  } else {  // Triplet matrix
-    entries.reserve(A->nz);
-    int* Aj = A->p;     // column indeces
-    int* Ai = A->i;     // row indices
-    double* Ax = A->x;  // values;
-    for (int i = 0; i < A->nz; ++i) {
-      entries.emplace_back(Ai[i], Aj[i], Ax[i]);
-      if (upperTriangular && Ai[i] != Aj[i])
-        entries.emplace_back(Aj[i], Ai[i], Ax[i]);
-    }
+  if (A->nz == -1) {
+    return writeCCSMatrix(filename, A->m, A->n, A->p, A->i, A->x,
+                          upperTriangular);
   }
-  sort(entries.begin(), entries.end(), SparseMatrixEntryColSort());
-
-  std::ofstream fout(filename);
-  fout << "# name: " << name << std::endl;
-  fout << "# type: sparse matrix" << std::endl;
-  fout << "# nnz: " << entries.size() << std::endl;
-  fout << "# rows: " << rows << std::endl;
-  fout << "# columns: " << cols << std::endl;
-  // fout << fixed;
-  fout << setprecision(9) << endl;
-
-  for (vector<SparseMatrixEntry>::const_iterator it = entries.begin();
-       it != entries.end(); ++it) {
-    const SparseMatrixEntry& entry = *it;
-    fout << entry._r + 1 << " " << entry._c + 1 << " " << entry._x << std::endl;
+  // CSparse sums the duplicates of triplets while compressing them, as
+  // Octave does when it reads the entries.
+  const std::unique_ptr<cs, decltype(&cs_spfree)> compressed(cs_compress(A),
+                                                             &cs_spfree);
+  if (compressed == nullptr) {
+    return false;
   }
-  return fout.good();
+  return writeCCSMatrix(filename, compressed->m, compressed->n, compressed->p,
+                        compressed->i, compressed->x, upperTriangular);
 }
 
 }  // namespace csparse_extension

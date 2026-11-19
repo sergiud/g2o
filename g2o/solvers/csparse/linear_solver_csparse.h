@@ -72,7 +72,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
     _csWorkspaceSize = -1;
     _ccsA = std::make_unique<CSparseExt>();
     _blockOrdering = true;
-    _writeDebug = true;
+    _writeDebug = false;
   }
 
   virtual ~LinearSolverCSparse() = default;
@@ -102,10 +102,9 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
         _ccsA.get(), x, _symbolicDecomposition.get(), _csWorkspace.get(),
         _csIntWorkspace.get());
     if (ok == 0) {
+      ngx::Log(ngx::Error, "Cholesky failure");
       if (_writeDebug) {
-        ngx::Log(
-            ngx::Error,
-            "Cholesky failure, writing debug.txt (Hessian loadable by Octave)");
+        ngx::Log("writing the Hessian to debug.txt, loadable by Octave");
         csparse_extension::writeCs2Octave("debug.txt", _ccsA.get(), true);
       }
       return false;

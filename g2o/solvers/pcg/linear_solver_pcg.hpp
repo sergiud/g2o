@@ -76,8 +76,14 @@ bool LinearSolverPCG<MatrixType>::solve(const SparseBlockMatrix<MatrixType>& A,
       typename SparseBlockMatrix<MatrixType>::IntBlockMap::const_iterator it;
       for (it = col.begin(); it != col.end(); ++it) {
         if (it->first == (int)i) {  // only the upper triangular block is needed
+          // The block Jacobi preconditioner must be positive definite.
+          const Eigen::LLT<MatrixType> llt(*it->second);
+          if (llt.info() != Eigen::Success) {
+            return false;
+          }
           _diag.push_back(it->second.get());
-          _J.push_back(it->second->inverse());
+          _J.push_back(llt.solve(
+              MatrixType::Identity(it->second->rows(), it->second->cols())));
           break;
         }
         if (indexRequired) {
@@ -117,7 +123,12 @@ bool LinearSolverPCG<MatrixType>::solve(const SparseBlockMatrix<MatrixType>& A,
     if (_verbose) ngx::Log("residual[{}]: {}", iteration, dn);
     if (dn <= d0) break;  // done
     mult(A.colBlockIndices(), d, q);
-    double a = dn / d.dot(q);
+    const double curvature = d.dot(q);
+    // A positive definite system has a positive curvature in any direction.
+    if (!(curvature > 0.)) {
+      return false;
+    }
+    double a = dn / curvature;
     xvec += a * d;
     // TODO: reset residual here every 50 iterations
     r -= a * q;

@@ -77,12 +77,13 @@ class LinearSolverEigen : public LinearSolver<MatrixType> {
 
     double t = get_monotonic_time();
     _cholesky.factorize(_sparseMatrix);
-    if (_cholesky.info() !=
-        Eigen::Success) {  // the matrix is not positive definite
+    // The LDLT factorization fails only on a zero pivot, so the pivots must
+    // be positive for the matrix to be positive definite.
+    if (_cholesky.info() != Eigen::Success ||
+        !(_cholesky.vectorD().array() > 0.).all()) {
+      ngx::Log(ngx::Error, "Cholesky failure");
       if (_writeDebug) {
-        ngx::Log(
-            ngx::Error,
-            "Cholesky failure, writing debug.txt (Hessian loadable by Octave)");
+        ngx::Log("writing the Hessian to debug.txt, loadable by Octave");
         A.writeOctave("debug.txt");
       }
       return false;

@@ -68,7 +68,7 @@ template <typename MatrixType>
 class LinearSolverCholmod : public LinearSolverCCS<MatrixType> {
  public:
   LinearSolverCholmod() : LinearSolverCCS<MatrixType>() {
-    _writeDebug = true;
+    _writeDebug = false;
     _blockOrdering = false;
     _cholmodSparse = std::make_unique<CholmodExt>();
     cholmod_start(&_cholmodCommon);
@@ -80,6 +80,9 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType> {
 
     _cholmodCommon.supernodal =
         CHOLMOD_AUTO;  // CHOLMOD_SUPERNODAL; //CHOLMOD_SIMPLICIAL;
+    // A simplicial LDL' factorization accepts negative pivots, which the
+    // conversion into LL' rejects as not positive definite.
+    _cholmodCommon.final_ll = 1;
   }
 
   virtual ~LinearSolverCholmod() {
@@ -117,10 +120,9 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType> {
     cholmod_factorize(_cholmodSparse.get(), _cholmodFactor.get(),
                       &_cholmodCommon);
     if (_cholmodCommon.status == CHOLMOD_NOT_POSDEF) {
+      ngx::Log(ngx::Error, "Cholesky failure");
       if (_writeDebug) {
-        ngx::Log(
-            ngx::Error,
-            "Cholesky failure, writing debug.txt (Hessian loadable by Octave)");
+        ngx::Log("writing the Hessian to debug.txt, loadable by Octave");
         saveMatrix("debug.txt");
       }
       return false;
@@ -132,6 +134,9 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType> {
         CholmodFree{&_cholmodCommon});
     memcpy(x, xcholmod->x,
            sizeof(double) * bcholmod.nrow);  // copy back to our array
+    if (!VectorXD::ConstMapType(x, bcholmod.nrow).allFinite()) {
+      return false;
+    }
 
     G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
     if (globalStats != nullptr) {

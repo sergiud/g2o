@@ -11,6 +11,7 @@
 #include <g2o/core/base_vertex.h>
 #include <g2o/core/optimization_algorithm.h>
 #include <g2o/core/sparse_optimizer.h>
+#include <g2o/stuff/logger.h>
 
 G2O_START_NAMESPACE
 
@@ -46,6 +47,17 @@ class StructureOnlySolver : public OptimizationAlgorithm {
   OptimizationAlgorithm::SolverResult calc(
       OptimizableGraph::VertexContainer& vertices, int num_iters,
       int num_max_trials = 10) {
+    // The Hessian of a point is a matrix of the dimension of the solver.
+    for (auto* vertex : vertices) {
+      const int dimension =
+          static_cast<const OptimizableGraph::Vertex*>(vertex)->dimension();
+      if (dimension != PointDoF) {
+        ngx::Log(ngx::Error, "point {} has dimension {}, expected {}",
+                 vertex->id(), dimension, PointDoF);
+        return Fail;
+      }
+    }
+
     JacobianWorkspace auxWorkspace;
     auxWorkspace.updateSize(2, 50);
     auxWorkspace.allocate();
@@ -54,7 +66,6 @@ class StructureOnlySolver : public OptimizationAlgorithm {
       bool stop = false;
       g2o::OptimizableGraph::Vertex* v =
           dynamic_cast<OptimizableGraph::Vertex*>(vertice);
-      assert(v->dimension() == PointDoF);
       g2o::HyperGraph::EdgeSet& track = v->edges();
       assert(track.size() >= 2);
       double chi2 = 0;

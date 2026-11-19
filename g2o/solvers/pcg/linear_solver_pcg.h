@@ -10,6 +10,7 @@
 #include <g2o/core/linear_solver.h>
 #include <g2o/stuff/logger.h>
 
+#include <Eigen/Cholesky>
 #include <Eigen/Core>
 #include <Eigen/StdVector>
 #include <utility>

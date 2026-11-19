@@ -75,17 +75,17 @@ class LinearSolverDense : public LinearSolver<MatrixType> {
     VectorXD::MapType xvec(x, m);
     VectorXD::ConstMapType bvec(b, n);
     _cholesky.compute(H);
-    if (_cholesky.isPositive()) {
-      xvec = _cholesky.solve(bvec);
-      return true;
+    if (_cholesky.info() != Eigen::Success) {
+      return false;
     }
-    return false;
+    xvec = _cholesky.solve(bvec);
+    return xvec.allFinite();
   }
 
  protected:
   bool _reset;
   MatrixXD _H;
-  Eigen::LDLT<MatrixXD> _cholesky;
+  Eigen::LLT<MatrixXD> _cholesky;
 };
 
 G2O_END_NAMESPACE

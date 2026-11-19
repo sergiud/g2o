@@ -148,10 +148,14 @@ bool SolverSLAM2DLinear::solveOrientation() {
 
     double omega = e->information()(2, 2);
 
-    double fromThetaGuess =
-        from->hessianIndex() < 0 ? 0. : thetaGuess[from->hessianIndex()];
-    double toThetaGuess =
-        to->hessianIndex() < 0 ? 0. : thetaGuess[to->hessianIndex()];
+    // A fixed vertex keeps its own orientation, which the system solves the
+    // others relative to.
+    double fromThetaGuess = from->hessianIndex() < 0
+                                ? from->estimate().rotation().angle()
+                                : thetaGuess[from->hessianIndex()];
+    double toThetaGuess = to->hessianIndex() < 0
+                              ? to->estimate().rotation().angle()
+                              : thetaGuess[to->hessianIndex()];
     double error = normalize_theta(-e->measurement().rotation().angle() +
                                    toThetaGuess - fromThetaGuess);
 
@@ -189,7 +193,6 @@ bool SolverSLAM2DLinear::solveOrientation() {
 
   // update the orientation of the 2D poses and set translation to 0, GN shall
   // solve that
-  root->setToOrigin();
   for (auto i : _optimizer->indexMapping()) {
     VertexSE2* v = dynamic_cast<VertexSE2*>(i);
     int poseIdx = v->hessianIndex();
