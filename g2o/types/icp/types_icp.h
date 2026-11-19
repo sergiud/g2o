@@ -101,12 +101,7 @@ class G2O_TYPES_ICP_API EdgeGICP {
   }
 };
 
-#ifndef types_icp_EXPORTS
-G2O_EXTERN_TEMPLATE
-#else
-template
-#endif
-class G2O_TYPES_ICP_API BaseEdge<3, EdgeGICP>;
+G2O_EXTERN_TEMPLATE class G2O_TYPES_ICP_API BaseEdge<3, EdgeGICP>;
 
 // 3D rigid constraint
 //    3 values for position wrt frame

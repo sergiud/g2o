@@ -22,12 +22,8 @@ struct G2O_CALIBRATION_ODOM_LASER_API OdomAndLaserMotion {
   SE2 laserMotion;
 };
 
-#ifndef calibration_odom_laser_library_EXPORTS
-G2O_EXTERN_TEMPLATE
-#else
-template
-#endif
-class G2O_CALIBRATION_ODOM_LASER_API BaseEdge<3, OdomAndLaserMotion>;
+G2O_EXTERN_TEMPLATE class G2O_CALIBRATION_ODOM_LASER_API
+    BaseEdge<3, OdomAndLaserMotion>;
 
 /**
  * \brief calibrate odometry and laser based on a set of measurements

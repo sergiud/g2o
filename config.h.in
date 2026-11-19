@@ -51,10 +51,8 @@
 #define G2O_FACTORY_IMPORT
 #endif
 
-#if defined(_MSC_VER)
+// Declares an explicit instantiation that one library defines, which its
+// consumers use instead of instantiating it again.
 #define G2O_EXTERN_TEMPLATE extern template
-#else
-#define G2O_EXTERN_TEMPLATE template
-#endif
 
 #endif

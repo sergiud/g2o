@@ -7,6 +7,10 @@
 
 G2O_START_NAMESPACE
 
+// The one definition of the instantiation the header declares, which takes
+// its visibility from that declaration.
+template class BaseEdge<3, OdomAndLaserMotion>;
+
 EdgeSE2PureCalib::EdgeSE2PureCalib() {}
 
 bool EdgeSE2PureCalib::read(std::istream& is) {

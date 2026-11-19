@@ -15,6 +15,10 @@ using namespace Eigen;
 
 G2O_START_NAMESPACE
 
+// The one definition of the instantiation the header declares, which takes
+// its visibility from that declaration.
+template class BaseEdge<3, EdgeGICP>;
+
 G2O_REGISTER_TYPE_GROUP(icp);
 G2O_REGISTER_TYPE(EDGE_V_V_GICP, Edge_V_V_GICP);
 

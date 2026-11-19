@@ -333,12 +333,8 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType> {
   }
 };
 
-#ifndef solver_csparse_EXPORTS
-G2O_EXTERN_TEMPLATE
-#else
-template
-#endif
-class G2O_SOLVER_CSPARSE_API LinearSolverCSparse<Eigen::MatrixXd>;
+G2O_EXTERN_TEMPLATE class G2O_SOLVER_CSPARSE_API
+LinearSolverCSparse<Eigen::MatrixXd>;
 
 G2O_END_NAMESPACE
 

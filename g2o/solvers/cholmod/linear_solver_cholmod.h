@@ -395,12 +395,8 @@ class LinearSolverCholmod : public LinearSolverCCS<MatrixType> {
   }
 };
 
-#ifndef solver_cholmod_EXPORTS
-G2O_EXTERN_TEMPLATE
-#else
-template
-#endif
-class G2O_SOLVER_CHOLMOD_API LinearSolverCholmod<Eigen::MatrixXd>;
+G2O_EXTERN_TEMPLATE class G2O_SOLVER_CHOLMOD_API
+    LinearSolverCholmod<Eigen::MatrixXd>;
 
 G2O_END_NAMESPACE
 
