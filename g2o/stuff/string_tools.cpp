@@ -23,10 +23,6 @@
 #include <iterator>
 #include <string>
 
-#if defined(G2O_HAVE_WORDEXP_H) && !defined(__ANDROID__)
-#include <wordexp.h>
-#endif
-
 G2O_START_NAMESPACE
 
 using namespace std;
@@ -94,24 +90,6 @@ int strPrintf(std::string& str, const char* fmt, ...) {
   str = auxPtr;
   free(auxPtr);
   return numChars;
-}
-
-std::string strExpandFilename(const std::string& filename) {
-#if defined(G2O_HAVE_WORDEXP_H) && !defined(__ANDROID__)
-  string result = filename;
-  wordexp_t p{};
-
-  wordexp(filename.c_str(), &p, 0);
-  if (p.we_wordc > 0) {
-    result = p.we_wordv[0];
-  }
-  wordfree(&p);
-  return result;
-#else
-  (void)filename;
-  ngx::Log(ngx::Warning, "{} not implemented", __PRETTY_FUNCTION__);
-  return std::string();
-#endif
 }
 
 std::vector<std::string> strSplit(const std::string& str,

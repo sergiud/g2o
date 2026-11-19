@@ -7,6 +7,7 @@
 #define G2O_MACROS_H
 
 #include <cmath>
+#include <iomanip>
 
 #ifndef DEG2RAD
 #define DEG2RAD(x) ((x) * 0.01745329251994329575)

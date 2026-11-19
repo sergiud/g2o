@@ -97,26 +97,15 @@ G2O_STUFF_API int strPrintf(std::string& str, const char* fmt,
                             ...) G2O_ATTRIBUTE_FORMAT23;
 
 /**
- * convert a string into an other type.
+ * Converts a string into another type. Whitespace may surround the value,
+ * while any other characters after it make the string no value of the type.
  */
 template <typename T>
-bool convertString(const std::string& s, T& x,
-                   bool failIfLeftoverChars = true) {
+bool convertString(const std::string& s, T& x) {
   std::istringstream i(s);
-  char c;
-  if (!(i >> x) || (failIfLeftoverChars && i.get(c))) return false;
-  return true;
-}
-
-/**
- * convert a string into an other type.
- * Return the converted value. Throw error if parsing is wrong.
- */
-template <typename T>
-T stringToType(const std::string& s, bool failIfLeftoverChars = true) {
-  T x;
-  convertString(s, x, failIfLeftoverChars);
-  return x;
+  if (!(i >> x)) return false;
+  i >> std::ws;
+  return i.eof();
 }
 
 /**
@@ -130,13 +119,6 @@ G2O_STUFF_API bool strStartsWith(const std::string& str,
  */
 G2O_STUFF_API bool strEndsWith(const std::string& str,
                                const std::string& substr);
-
-/**
- * expand the given filename like a posix shell, e.g., ~ $CARMEN_HOME and other
- * will get expanded. Also command substitution, e.g. `pwd` will give the
- * current directory.
- */
-G2O_STUFF_API std::string strExpandFilename(const std::string& filename);
 
 /**
  * split a string into token based on the characters given in delim

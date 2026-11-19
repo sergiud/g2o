@@ -67,7 +67,11 @@ G2O_STUFF_API std::string getDirname(const std::string& filename);
 G2O_STUFF_API bool fileExists(const char* filename);
 
 /**
- * return all files that match a given pattern, e.g., ~/blaa*.txt, /tmp/a*
+ * Returns the files of a directory whose names match a pattern, such as
+ * /tmp/a*.txt, in lexicographic order. The name may contain the wildcards '*'
+ * for any sequence of characters and '?' for any single character. The
+ * directory is taken literally, without expanding wildcards, variables or
+ * commands.
  */
 G2O_STUFF_API std::vector<std::string> getFilesByPattern(const char* pattern);
 

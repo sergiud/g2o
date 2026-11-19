@@ -10,10 +10,13 @@
 #include <g2o/prefix.h>
 #include <g2o/stuff/g2o_stuff_api.h>
 
+#include <Eigen/Core>
+#include <Eigen/Eigenvalues>
 #include <Eigen/StdVector>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <limits>
 #include <memory>
 #include <random>
 
@@ -31,18 +34,35 @@ class GaussianSampler {
       _generator = std::make_unique<std::mt19937>();
     }
   }
-  void setDistribution(const CovarianceType& cov) {
-    Eigen::LLT<CovarianceType> cholDecomp;
-    cholDecomp.compute(cov);
-    if (cholDecomp.info() == Eigen::NumericalIssue) return;
-    _cholesky = cholDecomp.matrixL();
+  /**
+   * Sets the covariance of the samples, which must be positive semidefinite,
+   * and returns whether it is.
+   */
+  bool setDistribution(const CovarianceType& cov) {
+    using std::abs;
+    // The eigendecomposition factors a covariance without variance in some
+    // direction, on which a Cholesky factorization fails.
+    const Eigen::SelfAdjointEigenSolver<CovarianceType> eigen(cov);
+    if (eigen.info() != Eigen::Success) {
+      return false;
+    }
+    const auto& variances = eigen.eigenvalues();
+    // Rounding may leave a zero variance slightly negative.
+    const double tolerance = std::numeric_limits<double>::epsilon() *
+                             variances.size() * variances.cwiseAbs().maxCoeff();
+    if ((variances.array() < -tolerance).any()) {
+      return false;
+    }
+    _factor =
+        eigen.eigenvectors() * variances.cwiseMax(0.).cwiseSqrt().asDiagonal();
+    return true;
   }
   SampleType generateSample() {
     SampleType s;
     for (int i = 0; i < s.size(); i++) {
       s(i) = (_generator) ? sampleGaussian(_generator.get()) : sampleGaussian();
     }
-    return _cholesky * s;
+    return _factor * s;
   }
   bool seed(int s) {
     if (_generator == nullptr) return false;
@@ -51,7 +71,8 @@ class GaussianSampler {
   }
 
  protected:
-  CovarianceType _cholesky;
+  //! Factor of the covariance, which it equals times its transpose.
+  CovarianceType _factor;
   std::unique_ptr<std::mt19937> _generator;
 };
 

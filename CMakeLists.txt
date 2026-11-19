@@ -112,7 +112,6 @@ check_cxx_symbol_exists (vasprintf cstdio G2O_HAVE_VASPRINTF)
 check_include_file (dlfcn.h G2O_HAVE_DLFCN_H)
 check_include_file (sys/time.h G2O_HAVE_SYS_TIME_H)
 check_include_file (unistd.h G2O_HAVE_UNISTD_H)
-check_include_file (wordexp.h G2O_HAVE_WORDEXP_H)
 check_library_exists (m pow "" G2O_HAVE_M)
 check_library_exists (rt clock_gettime "" G2O_HAVE_RT)
 
@@ -461,6 +460,7 @@ g2o_add_library (stuff
     g2o/stuff/opengl_wrapper.h
     g2o/stuff/os_specific.h
     g2o/stuff/property.h
+    g2o/stuff/read_values.h
     g2o/stuff/sampler.h
     g2o/stuff/sparse_helper.h
     g2o/stuff/streamed.h
@@ -1655,6 +1655,18 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
   gtest_discover_tests (unittest_general)
   gtest_discover_tests (unittest_slam2d)
   gtest_discover_tests (unittest_slam3d)
+
+  g2o_add_executable (unittest_stuff
+    SOURCES
+      unit_test/stuff/command_args.cpp
+      unit_test/stuff/filesys_tools.cpp
+      unit_test/stuff/property.cpp
+      unit_test/stuff/read_values.cpp
+      unit_test/stuff/sampler.cpp
+    LINK GTest::gmock GTest::gtest_main stuff
+  )
+
+  gtest_discover_tests (unittest_stuff)
 endif (BUILD_TESTING AND TARGET GTest::gtest_main)
 
 # The installed package is tested the way consumers use it: a prefix inside

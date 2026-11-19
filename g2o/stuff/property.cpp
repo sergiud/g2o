@@ -40,8 +40,7 @@ bool PropertyMap::updatePropertyFromString(const std::string& name,
                                            const std::string& value) {
   auto it = find(name);
   if (it == end()) return false;
-  it->second->fromString(value);
-  return true;
+  return it->second->fromString(value);
 }
 
 void PropertyMap::writeToCSV(std::ostream& os) const {
@@ -64,11 +63,16 @@ bool PropertyMap::updateMapFromString(const std::string& values) {
     vector<string> m = strSplit(i, "=");
     if (m.size() != 2) {
       ngx::Log(ngx::Error, "unable to extract name=value pair from {}", i);
+      status = false;
       continue;
     }
     string name = trim(m[0]);
     string value = trim(m[1]);
-    status = status && updatePropertyFromString(name, value);
+    // Every pair is applied, whether or not those before it failed.
+    if (!updatePropertyFromString(name, value)) {
+      ngx::Log(ngx::Error, "unable to set the property {} to {}", name, value);
+      status = false;
+    }
   }
   return status;
 }

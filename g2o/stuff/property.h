@@ -44,9 +44,14 @@ class Property : public BaseProperty {
     sstr << _value;
     return sstr.str();
   }
+  //! Parses the value, which stays as it is if the string holds none.
   virtual bool fromString(const std::string& s) {
-    bool status = convertString(s, _value);
-    return status;
+    T value;
+    if (!convertString(s, value)) {
+      return false;
+    }
+    _value = value;
+    return true;
   }
 
  protected:
