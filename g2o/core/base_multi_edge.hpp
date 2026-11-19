@@ -47,8 +47,7 @@ void BaseMultiEdge<D, E>::linearizeOplus() {
   }
 #endif
 
-  const double delta = 1e-9;
-  const double scalar = 1.0 / (2 * delta);
+  constexpr double delta = internal::NumericJacobianStep;
   ErrorVector errorBak;
   ErrorVector errorBeforeNumeric = _error;
 
@@ -84,7 +83,7 @@ void BaseMultiEdge<D, E>::linearizeOplus() {
       vi->pop();
       add_vi[d] = 0.0;
 
-      _jacobianOplus[i].col(d) = scalar * errorBak;
+      _jacobianOplus[i].col(d) = errorBak / (2. * delta);
     }  // end dimension
   }
   _error = errorBeforeNumeric;
@@ -236,8 +235,7 @@ void BaseMultiEdge<-1, E>::linearizeOplus() {
   }
 #endif
 
-  const double delta = 1e-9;
-  const double scalar = 1.0 / (2 * delta);
+  constexpr double delta = internal::NumericJacobianStep;
   ErrorVector errorBak;
   ErrorVector errorBeforeNumeric = _error;
 
@@ -273,7 +271,7 @@ void BaseMultiEdge<-1, E>::linearizeOplus() {
       vi->pop();
       add_vi[d] = 0.0;
 
-      _jacobianOplus[i].col(d) = scalar * errorBak;
+      _jacobianOplus[i].col(d) = errorBak / (2. * delta);
     }  // end dimension
   }
   _error = errorBeforeNumeric;

@@ -12,8 +12,11 @@
 #include <vector>
 
 #include "g2o/core/sparse_optimizer.h"
+#include "g2o/types/data/vertex_tag.h"
 #include "g2o/types/sba/types_six_dof_expmap.h"
 #include "g2o/types/sim3/types_seven_dof_expmap.h"
+#include "g2o/types/slam2d/edge_se2.h"
+#include "g2o/types/slam2d/parameter_se2_offset.h"
 #include "g2o/types/slam2d/vertex_se2.h"
 #include "g2o/types/slam3d/edge_se3.h"
 #include "g2o/types/slam3d/vertex_se3.h"
@@ -122,4 +125,87 @@ TEST(General, GraphOfSE3PosesSurvivesSaveAndLoad) {
   EXPECT_THAT(loadedEdge->measurement().matrix(),
               DistanceFrom(measurement.matrix(), g2o::test::MaxAbsDifference,
                            Le(precision)));
+}
+
+/**
+ * A saved graph is read back with the values it held, since a map in
+ * projected coordinates of several kilometers needs more than the six
+ * significant digits a stream writes by default.
+ */
+TEST(General, GraphOfSE2PosesSurvivesSaveAndLoadExactly) {
+  const g2o::SE2 pose(12345.678901234567, -9876.5432109876543,
+                      0.12345678901234567);
+  const g2o::SE2 measurement(1.0000012345678901, -0.98765432109876543,
+                             0.0012345678901234567);
+  const g2o::SE2 offset(0.12345678901234567, 0.98765432109876543,
+                        0.31415926535897931);
+  g2o::SparseOptimizer graph;
+  auto parameter = std::make_unique<g2o::ParameterSE2Offset>();
+  parameter->setId(0);
+  parameter->setOffset(offset);
+  ASSERT_TRUE(graph.addParameter(std::move(parameter)));
+  for (int id = 0; id < 2; ++id) {
+    auto vertex = std::make_unique<g2o::VertexSE2>();
+    vertex->setId(id);
+    vertex->setEstimate(id == 0 ? pose : pose * measurement);
+    ASSERT_TRUE(graph.addVertex(std::move(vertex)));
+  }
+  auto edge = std::make_unique<g2o::EdgeSE2>();
+  edge->setVertex(0, graph.vertex(0));
+  edge->setVertex(1, graph.vertex(1));
+  edge->setMeasurement(measurement);
+  ASSERT_TRUE(graph.addEdge(std::move(edge)));
+  std::stringstream file;
+  ASSERT_TRUE(graph.save(file));
+
+  g2o::SparseOptimizer loaded;
+  ASSERT_TRUE(loaded.load(file));
+
+  const auto* vertex = dynamic_cast<const g2o::VertexSE2*>(loaded.vertex(0));
+  ASSERT_THAT(vertex, NotNull());
+  EXPECT_EQ(vertex->estimate().toVector(), pose.toVector());
+  ASSERT_THAT(loaded.edges(), SizeIs(1));
+  const auto* loadedEdge =
+      dynamic_cast<const g2o::EdgeSE2*>(loaded.edges().begin()->get());
+  ASSERT_THAT(loadedEdge, NotNull());
+  EXPECT_EQ(loadedEdge->measurement().toVector(), measurement.toVector());
+  const auto* loadedParameter =
+      dynamic_cast<const g2o::ParameterSE2Offset*>(loaded.parameter(0));
+  ASSERT_THAT(loadedParameter, NotNull());
+  EXPECT_EQ(loadedParameter->offset().toVector(), offset.toVector());
+}
+
+//! A parameter saved on its own keeps its values as well.
+TEST(General, SavedParameterKeepsItsValues) {
+  const g2o::SE2 offset(0.12345678901234567, 0.98765432109876543,
+                        0.31415926535897931);
+  g2o::ParameterSE2Offset parameter;
+  parameter.setId(0);
+  parameter.setOffset(offset);
+  const g2o::SparseOptimizer graph;
+  std::stringstream file;
+  ASSERT_TRUE(graph.saveParameter(file, &parameter));
+
+  std::string tag;
+  int id = -1;
+  Eigen::Vector3d values;
+  file >> tag >> id >> values.x() >> values.y() >> values.z();
+  EXPECT_EQ(values, offset.toVector());
+}
+
+//! The data attached to a vertex keeps its values when saved on its own.
+TEST(General, SavedUserDataKeepsItsValues) {
+  const g2o::Vector3F position(0.12345678f, 98765.4321f, -0.31415926f);
+  g2o::VertexTag tag;
+  tag.setName("landmark");
+  tag.setPosition(position);
+  const g2o::SparseOptimizer graph;
+  std::stringstream file;
+  ASSERT_TRUE(graph.saveUserData(file, &tag));
+
+  std::string type;
+  std::string name;
+  g2o::Vector3F values;
+  file >> type >> name >> values.x() >> values.y() >> values.z();
+  EXPECT_EQ(values, position);
 }

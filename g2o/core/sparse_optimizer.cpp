@@ -55,7 +55,8 @@ void SparseOptimizer::computeActiveErrors() {
     bool hasNan = arrayHasNaN(e->errorData(), e->dimension());
     if (hasNan) {
       ngx::Log(ngx::Error,
-               "computeActiveErrors(): found NaN in error for edge {}", e);
+               "computeActiveErrors(): found NaN in error for edge {}",
+               static_cast<const void*>(e));
     }
   }
 #endif
@@ -192,8 +193,7 @@ bool SparseOptimizer::initializeOptimization(HyperGraph::VertexSet& vset,
     // count if there are edges in that level. If not remove from the pool
     int levelEdges = 0;
     for (auto vEdge : vEdges) {
-      OptimizableGraph::Edge* e =
-          reinterpret_cast<OptimizableGraph::Edge*>(vEdge);
+      OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(vEdge);
       if (level < 0 || e->level() == level) {
         bool allVerticesOK = true;
         for (vector<HyperGraph::Vertex*>::const_iterator vit =
@@ -258,7 +258,7 @@ bool SparseOptimizer::initializeOptimization(HyperGraph::EdgeSet& eset) {
          vit != e->vertices().end(); ++vit) {
       auxVertexSet.insert(dynamic_cast<OptimizableGraph::Vertex*>(*vit));
     }
-    _activeEdges.push_back(reinterpret_cast<OptimizableGraph::Edge*>(it));
+    _activeEdges.push_back(static_cast<OptimizableGraph::Edge*>(it));
   }
 
   _activeVertices.reserve(auxVertexSet.size());
@@ -348,21 +348,26 @@ int SparseOptimizer::optimize(int iterations, bool online) {
   double cumTime = 0;
   bool ok = true;
 
+  if (_algorithm == nullptr) {
+    ngx::Log(ngx::Error, "no algorithm to optimize with");
+    return -1;
+  }
   ok = _algorithm->init(online);
   if (!ok) {
     ngx::Log(ngx::Error, "Error while initializing");
     return -1;
   }
 
+  // The statistics grow with the iterations that run, whose number a
+  // termination criterion may keep far below the given one.
   _batchStatistics.clear();
-  if (_computeBatchStatistics) _batchStatistics.resize(iterations);
 
   OptimizationAlgorithm::SolverResult result = OptimizationAlgorithm::OK;
   for (int i = 0; i < iterations && !terminate() && ok; i++) {
     preIteration(i);
 
     if (_computeBatchStatistics) {
-      G2OBatchStatistics& cstat = _batchStatistics[i];
+      G2OBatchStatistics& cstat = _batchStatistics.emplace_back();
       G2OBatchStatistics::setGlobalStats(&cstat);
       cstat.iteration = i;
       cstat.numEdges = _activeEdges.size();
@@ -542,12 +547,28 @@ bool SparseOptimizer::computeMarginals(
 void SparseOptimizer::setForceStopFlag(bool* flag) { _forceStopFlag = flag; }
 
 bool SparseOptimizer::removeVertex(HyperGraph::Vertex* v, bool detach) {
+  // A fixed vertex is active without a block in the Hessian.
   OptimizableGraph::Vertex* vv = dynamic_cast<OptimizableGraph::Vertex*>(v);
-  if (vv->hessianIndex() >= 0) {
-    clearIndexMapping();
-    _ivMap.clear();
+  if (vv->hessianIndex() >= 0 ||
+      findActiveVertex(vv) != _activeVertices.end()) {
+    clearActiveSet();
   }
   return HyperGraph::removeVertex(v, detach);
+}
+
+bool SparseOptimizer::removeEdge(HyperGraph::Edge* e) {
+  if (findActiveEdge(dynamic_cast<OptimizableGraph::Edge*>(e)) !=
+      _activeEdges.end()) {
+    clearActiveSet();
+  }
+  return HyperGraph::removeEdge(e);
+}
+
+void SparseOptimizer::clearActiveSet() {
+  clearIndexMapping();
+  _ivMap.clear();
+  _activeVertices.clear();
+  _activeEdges.clear();
 }
 
 bool SparseOptimizer::addComputeErrorAction(HyperGraphAction* action) {

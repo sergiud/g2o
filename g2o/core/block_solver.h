@@ -126,8 +126,17 @@ class BlockSolver : public BlockSolverBase {
 
   virtual bool saveHessian(const std::string& fileName) const;
 
+  /**
+   * Multiplies the complete Hessian, which with the Schur complement consists
+   * of the blocks of the poses, the landmarks and the pose-landmark pairs.
+   */
   virtual void multiplyHessian(double* dest, const double* src) const {
     _Hpp->multiplySymmetricUpperTriangle(dest, src);
+    if (_doSchur && _Hll && _Hpl) {
+      _Hpl->multiply(dest, src + _sizePoses);
+      _Hpl->rightMultiply(dest + _sizePoses, src);
+      _Hll->multiplySymmetricUpperTriangle(dest + _sizePoses, src + _sizePoses);
+    }
   }
 
  protected:

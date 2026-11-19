@@ -7,6 +7,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
+#include <utility>
+#include <vector>
 using namespace std;
 
 G2O_START_NAMESPACE
@@ -44,33 +47,48 @@ void MarginalCovarianceCholesky::setCholeskyFactor(int n, int* Lp, int* Li,
 
 double MarginalCovarianceCholesky::computeEntry(int r, int c) {
   assert(r <= c);
-  int idx = computeIndex(r, c);
+  // Each entry (r, c) depends on the entries of the rows below r in column r
+  // of the factor, so the dependencies end at the last row.
+  std::vector<std::pair<int, int>> pending{{r, c}};
+  while (!pending.empty()) {
+    const auto [row, col] = pending.back();
+    if (_map.contains(computeIndex(row, col))) {
+      pending.pop_back();
+      continue;
+    }
 
-  LookupMap::const_iterator foundIt = _map.find(idx);
-  if (foundIt != _map.end()) {
-    return foundIt->second;
-  }
+    // sum over column row while skipping the element on the diagonal
+    const int sc = _Ap[row];
+    const int ec = _Ap[row + 1];
+    bool ready = true;
+    double s = 0.;
+    for (int j = sc + 1; j < ec; ++j) {
+      const int rr = _Ai[j];
+      const int depRow = rr < col ? rr : col;
+      const int depCol = rr < col ? col : rr;
+      const auto found = _map.find(computeIndex(depRow, depCol));
+      if (found == _map.end()) {
+        pending.emplace_back(depRow, depCol);
+        ready = false;
+      } else if (ready) {
+        s += found->second * _Ax[j];
+      }
+    }
+    if (!ready) {
+      continue;
+    }
 
-  // compute the summation over column r
-  double s = 0.;
-  const int& sc = _Ap[r];
-  const int& ec = _Ap[r + 1];
-  for (int j = sc + 1; j < ec;
-       ++j) {  // sum over row r while skipping the element on the diagonal
-    const int& rr = _Ai[j];
-    double val = rr < c ? computeEntry(rr, c) : computeEntry(c, rr);
-    s += val * _Ax[j];
+    double result;
+    if (row == col) {
+      const double& diagElem = _diag[row];
+      result = diagElem * (diagElem - s);
+    } else {
+      result = -s * _diag[row];
+    }
+    _map[computeIndex(row, col)] = result;
+    pending.pop_back();
   }
-
-  double result;
-  if (r == c) {
-    const double& diagElem = _diag[r];
-    result = diagElem * (diagElem - s);
-  } else {
-    result = -s * _diag[r];
-  }
-  _map[idx] = result;
-  return result;
+  return _map[computeIndex(r, c)];
 }
 
 void MarginalCovarianceCholesky::computeCovariance(
@@ -115,7 +133,7 @@ void MarginalCovarianceCholesky::computeCovariance(
         int c = _perm != nullptr ? _perm[cc + base] : cc + base;
         if (r > c)  // upper triangle
           swap(r, c);
-        int idx = computeIndex(r, c);
+        const std::int64_t idx = computeIndex(r, c);
         LookupMap::const_iterator foundIt = _map.find(idx);
         assert(foundIt != _map.end());
         cov[rr * vdim + cc] = foundIt->second;
@@ -127,7 +145,7 @@ void MarginalCovarianceCholesky::computeCovariance(
 
 void MarginalCovarianceCholesky::computeCovariance(
     SparseBlockMatrix<MatrixXD>& spinv, const std::vector<int>& rowBlockIndices,
-    const std::vector<std::pair<int, int> >& blockIndices) {
+    const std::vector<std::pair<int, int>>& blockIndices) {
   // allocate the sparse
   spinv = SparseBlockMatrix<MatrixXD>(&rowBlockIndices[0], &rowBlockIndices[0],
                                       rowBlockIndices.size(),
@@ -182,7 +200,7 @@ void MarginalCovarianceCholesky::computeCovariance(
         int r = _perm != nullptr ? _perm[rr] : rr;  // apply permutation
         int c = _perm != nullptr ? _perm[cc] : cc;
         if (r > c) swap(r, c);
-        int idx = computeIndex(r, c);
+        const std::int64_t idx = computeIndex(r, c);
         LookupMap::const_iterator foundIt = _map.find(idx);
         assert(foundIt != _map.end());
         (*block)(iRow, iCol) = foundIt->second;

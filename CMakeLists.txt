@@ -592,6 +592,7 @@ g2o_add_library (core
     g2o/core/parameter.h
     g2o/core/parameter_container.h
     g2o/core/robust_kernel.h
+    g2o/core/round_trip_precision.h
     g2o/core/robust_kernel_factory.h
     g2o/core/robust_kernel_impl.h
     g2o/core/solver.h
@@ -1627,10 +1628,20 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
   g2o_add_executable (unittest_general
     SOURCES
       unit_test/general/clear_and_redo.cpp
+      unit_test/general/dogleg.cpp
       unit_test/general/factory.cpp
+      unit_test/general/gauss_newton.cpp
       unit_test/general/graph_operations.cpp
       unit_test/general/hyper_graph_action.cpp
+      unit_test/general/levenberg.cpp
       unit_test/general/logging.cpp
+      unit_test/general/marginal_covariance_cholesky.cpp
+      unit_test/general/matrix_structure.cpp
+      unit_test/general/numeric_jacobian.cpp
+      unit_test/general/parameter_types.cpp
+      unit_test/general/robust_kernels.cpp
+      unit_test/general/sparse_block_matrix.cpp
+      unit_test/general/terminate_action.cpp
       unit_test/general/ownership.cpp
     LINK GTest::gmock GTest::gtest_main types_data types_sba types_sim3
       types_slam2d types_slam3d

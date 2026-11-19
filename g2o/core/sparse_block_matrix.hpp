@@ -204,7 +204,7 @@ bool SparseBlockMatrix<MatrixType>::multiply(
       }
     }
   }
-  return false;
+  return true;
 }
 
 template <class MatrixType>
@@ -393,13 +393,15 @@ bool SparseBlockMatrix<MatrixType>::symmPermutation(
   // compute the permuted version of the new row/column layout
   size_t n = _rowBlockIndices.size();
   // computed the block sizes
-  int blockSizes[_rowBlockIndices.size()];
-  blockSizes[0] = _rowBlockIndices[0];
+  std::vector<int> blockSizes(n);
+  if (n > 0) {
+    blockSizes[0] = _rowBlockIndices[0];
+  }
   for (size_t i = 1; i < n; ++i) {
     blockSizes[i] = _rowBlockIndices[i] - _rowBlockIndices[i - 1];
   }
   // permute them
-  int pBlockIndices[_rowBlockIndices.size()];
+  std::vector<int> pBlockIndices(n);
   for (size_t i = 0; i < n; ++i) {
     pBlockIndices[pinv[i]] = blockSizes[i];
   }
@@ -408,8 +410,8 @@ bool SparseBlockMatrix<MatrixType>::symmPermutation(
   }
   // allocate C, or check the structure;
   if (!dest) {
-    dest =
-        std::make_unique<SparseBlockMatrix>(pBlockIndices, pBlockIndices, n, n);
+    dest = std::make_unique<SparseBlockMatrix>(pBlockIndices.data(),
+                                               pBlockIndices.data(), n, n);
   } else {
     if (dest->_rowBlockIndices.size() != n) return false;
     if (dest->_colBlockIndices.size() != n) return false;

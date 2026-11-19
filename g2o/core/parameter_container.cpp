@@ -6,6 +6,7 @@
 #include <g2o/core/factory.h>
 #include <g2o/core/parameter.h>
 #include <g2o/core/parameter_container.h>
+#include <g2o/core/round_trip_precision.h>
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
@@ -55,6 +56,7 @@ std::unique_ptr<Parameter> ParameterContainer::detachParameter(int id) {
 }
 
 bool ParameterContainer::write(std::ostream& os) const {
+  const RoundTripPrecision precision(os);
   Factory* factory = Factory::instance();
   for (const auto& it : *this) {
     os << factory->tag(it.second.get()) << " ";

@@ -9,7 +9,6 @@
 #include <g2o/core/batch_stats.h>
 #include <g2o/core/g2o_core_api.h>
 #include <g2o/core/hyper_graph.h>
-#include <g2o/core/solver.h>
 #include <g2o/prefix.h>
 
 #include <cstddef>
@@ -127,10 +126,9 @@ class G2O_CORE_API Solver {
 
   void resizeVector(size_t sx);
 
- private:
-  // Disable the copy constructor and assignment operator
-  Solver(const Solver&) {}
-  Solver& operator=(const Solver&) { return *this; }
+ public:
+  Solver(const Solver&) = delete;
+  Solver& operator=(const Solver&) = delete;
 };
 G2O_END_NAMESPACE
 

@@ -16,6 +16,7 @@
 #include <g2o/prefix.h>
 #include <g2o/stuff/macros.h>
 
+#include <functional>
 #include <iostream>
 #include <limits>
 #include <list>
@@ -58,6 +59,7 @@ struct ConditionallyAligned {
 
 /**
    @addtogroup g2o
+   @{
  */
 /**
    This is an abstract class that represents one optimization
@@ -115,9 +117,6 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
    public:
     Vertex();
 
-    //! returns a deep copy of the current vertex
-    virtual std::unique_ptr<Vertex> clone() const;
-
     virtual ~Vertex();
 
     //! sets the node to the origin (used in the multilevel stuff)
@@ -153,7 +152,8 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
     virtual void clearQuadraticForm() = 0;
 
     /**
-     * updates the current vertex with the direct solution x += H_ii\b_ii
+     * updates the current vertex with the direct solution
+     * @f$x \mathrel{+}= H_{ii}^{-1} b_{ii}@f$
      * @return the determinant of the inverted hessian
      */
     virtual double solveDirect(double lambda = 0) = 0;
@@ -359,7 +359,6 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
 
    public:
     Edge();
-    virtual std::unique_ptr<Edge> clone() const;
     ~Edge() override;
 
     // indicates if all vertices are fixed
@@ -480,11 +479,12 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
 
     bool setParameterId(int argNum, int paramId);
     inline const Parameter* parameter(int argNo) const {
-      return *_parameters.at(argNo);
+      return _parameters.at(argNo);
     }
     inline size_t numParameters() const { return _parameters.size(); }
     inline void resizeParameters(size_t newSize) {
       _parameters.resize(newSize, nullptr);
+      _parameterSetters.resize(newSize);
       _parameterIds.resize(newSize, -1);
       _parameterTypes.resize(newSize, typeid(void*).name());
     }
@@ -500,8 +500,14 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
     bool installParameter(ParameterType*& p, size_t argNo, int paramId = -1) {
       if (argNo >= _parameters.size()) return false;
       _parameterIds[argNo] = paramId;
-      _parameters[argNo] = (Parameter**)&p;
+      _parameters[argNo] = p;
       _parameterTypes[argNo] = typeid(ParameterType).name();
+      // The member receives a parameter only of its own type, which a
+      // parameter of another type leaves without.
+      _parameterSetters[argNo] = [&p](Parameter* parameter) {
+        p = dynamic_cast<ParameterType*>(parameter);
+        return p != nullptr || parameter == nullptr;
+      };
       return true;
     }
 
@@ -514,26 +520,26 @@ struct G2O_CORE_API OptimizableGraph : public HyperGraph {
     virtual bool resolveCaches();
 
     std::vector<std::string> _parameterTypes;
-    std::vector<Parameter**> _parameters;
+    //! The parameters the edge resolved, one for each of its members.
+    std::vector<Parameter*> _parameters;
+    //! Assigns a parameter to its member, which fails for another type.
+    std::vector<std::function<bool(Parameter*)>> _parameterSetters;
     std::vector<int> _parameterIds;
   };
 
   //! returns the vertex number <i>id</i> appropriately casted
   inline Vertex* vertex(int id) {
-    return reinterpret_cast<Vertex*>(HyperGraph::vertex(id));
+    return static_cast<Vertex*>(HyperGraph::vertex(id));
   }
 
   //! returns the vertex number <i>id</i> appropriately casted
   inline const Vertex* vertex(int id) const {
-    return reinterpret_cast<const Vertex*>(HyperGraph::vertex(id));
+    return static_cast<const Vertex*>(HyperGraph::vertex(id));
   }
 
   //! empty constructor
   OptimizableGraph();
   virtual ~OptimizableGraph();
-
-  //! adds all edges and vertices of the graph <i>g</i> to this graph.
-  void addGraph(OptimizableGraph* g);
 
   /**
    * adds a new vertex, which the graph then owns, together with its user

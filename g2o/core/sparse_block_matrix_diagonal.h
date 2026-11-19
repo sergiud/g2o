@@ -11,6 +11,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/StdVector>
+#include <cassert>
 #include <vector>
 
 G2O_START_NAMESPACE

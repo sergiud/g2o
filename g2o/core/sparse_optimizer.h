@@ -189,10 +189,17 @@ class G2O_CORE_API SparseOptimizer : public OptimizableGraph {
   /**
    * Remove a vertex. If the vertex is contained in the currently active set
    * of vertices, then the internal temporary structures are cleaned, e.g., the
-   * index mapping is erased. In case you need the index mapping for
-   * manipulating the graph, you have to store it in your own copy.
+   * index mapping and the active vertices and edges are erased, so the
+   * optimization needs to be initialized again. In case you need the index
+   * mapping for manipulating the graph, you have to store it in your own copy.
    */
   virtual bool removeVertex(HyperGraph::Vertex* v, bool detach = false);
+
+  /**
+   * Remove an edge. If the edge is contained in the currently active set of
+   * edges, the internal temporary structures are cleaned as for a vertex.
+   */
+  bool removeEdge(HyperGraph::Edge* e) override;
 
   /**
    * search for an edge in _activeVertices and return the iterator pointing to
@@ -300,6 +307,9 @@ class G2O_CORE_API SparseOptimizer : public OptimizableGraph {
    */
   bool buildIndexMapping(SparseOptimizer::VertexContainer& vlist);
   void clearIndexMapping();
+
+  //! Erases the index mapping and the active vertices and edges.
+  void clearActiveSet();
 
   BatchStatisticsContainer
       _batchStatistics;  ///< global statistics of the optimizer, e.g., timing,

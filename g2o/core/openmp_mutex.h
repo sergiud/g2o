@@ -7,6 +7,7 @@
 #define G2O_OPENMP_MUTEX
 
 #include <g2o/config.h>
+#include <g2o/core/abi.h>
 
 #ifdef G2O_OPENMP
 #include <omp.h>

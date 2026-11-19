@@ -503,8 +503,8 @@ bool BlockSolver<Traits>::buildSystem() {
         if (hasANan) {
           ngx::Log(
               ngx::Error,
-              "buildSystem(): NaN within Jacobian for edge {} for vertex {}", e,
-              i);
+              "buildSystem(): NaN within Jacobian for edge {} for vertex {}",
+              static_cast<const void*>(e), i);
           break;
         }
       }
@@ -523,7 +523,7 @@ bool BlockSolver<Traits>::buildSystem() {
     v->copyB(_b + iBase);
   }
 
-  return 0;
+  return true;
 }
 
 template <typename Traits>

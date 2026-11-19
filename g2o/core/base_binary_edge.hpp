@@ -138,8 +138,7 @@ void BaseBinaryEdge<D, E, VertexXiType, VertexXjType>::linearizeOplus() {
   vj->lockQuadraticForm();
 #endif
 
-  const double delta = 1e-9;
-  const double scalar = 1.0 / (2 * delta);
+  constexpr double delta = internal::NumericJacobianStep;
   ErrorVector errorBak;
   ErrorVector errorBeforeNumeric = _error;
 
@@ -163,7 +162,7 @@ void BaseBinaryEdge<D, E, VertexXiType, VertexXjType>::linearizeOplus() {
       vi->pop();
       add_vi[d] = 0.0;
 
-      _jacobianOplusXi.col(d) = scalar * errorBak;
+      _jacobianOplusXi.col(d) = errorBak / (2. * delta);
     }  // end dimension
   }
 
@@ -187,7 +186,7 @@ void BaseBinaryEdge<D, E, VertexXiType, VertexXjType>::linearizeOplus() {
       vj->pop();
       add_vj[d] = 0.0;
 
-      _jacobianOplusXj.col(d) = scalar * errorBak;
+      _jacobianOplusXj.col(d) = errorBak / (2. * delta);
     }
   }  // end dimension
 

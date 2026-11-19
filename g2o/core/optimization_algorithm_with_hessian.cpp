@@ -20,7 +20,7 @@ G2O_START_NAMESPACE
 OptimizationAlgorithmWithHessian::OptimizationAlgorithmWithHessian(
     std::unique_ptr<Solver> solver)
     : OptimizationAlgorithm(), _solver(std::move(solver)) {
-  _writeDebug = _properties.makeProperty<Property<bool> >("writeDebug", true);
+  _writeDebug = _properties.makeProperty<Property<bool> >("writeDebug", false);
 }
 
 OptimizationAlgorithmWithHessian::~OptimizationAlgorithmWithHessian() = default;

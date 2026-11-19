@@ -13,8 +13,20 @@
 
 #include <Eigen/Core>
 #include <limits>
+#include <type_traits>
 
 G2O_START_NAMESPACE
+
+namespace internal {
+
+/**
+ * Step of the central differences of the numeric Jacobians, the cube root of
+ * the machine epsilon, which balances the truncation error of the difference
+ * against the rounding error of the errors it subtracts.
+ */
+inline constexpr double NumericJacobianStep = 6.0554544523933395e-06;
+
+}  // namespace internal
 
 template <int D, typename E>
 class BaseEdge : public OptimizableGraph::Edge {
@@ -24,7 +36,14 @@ class BaseEdge : public OptimizableGraph::Edge {
   typedef Eigen::Matrix<double, D, 1, Eigen::ColMajor> ErrorVector;
   typedef Eigen::Matrix<double, D, D, Eigen::ColMajor> InformationType;
 
-  BaseEdge() { _dimension = D; }
+  BaseEdge() {
+    _dimension = D;
+    // An Eigen measurement leaves its coefficients uninitialized.
+    if constexpr (std::is_base_of_v<Eigen::DenseBase<Measurement>,
+                                    Measurement>) {
+      _measurement.setZero();
+    }
+  }
 
   virtual double chi2() const { return _error.dot(information() * _error); }
 
@@ -90,7 +109,13 @@ class BaseEdge<-1, E> : public OptimizableGraph::Edge {
   typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
       InformationType;
 
-  BaseEdge() = default;
+  BaseEdge() {
+    // An Eigen measurement leaves its coefficients uninitialized.
+    if constexpr (std::is_base_of_v<Eigen::DenseBase<Measurement>,
+                                    Measurement>) {
+      _measurement.setZero();
+    }
+  }
 
   virtual double chi2() const { return _error.dot(information() * _error); }
 

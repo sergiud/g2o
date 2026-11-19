@@ -9,6 +9,7 @@
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/timeutil.h>
 
+#include <cmath>
 #include <memory>
 #include <ostream>
 #include <utility>
@@ -99,9 +100,12 @@ OptimizationAlgorithm::SolverResult OptimizationAlgorithmLevenberg::solve(
     if (!ok2) tempChi = std::numeric_limits<double>::max();
 
     rho = (currentChi - tempChi);
-    double scale = computeScale();
-    scale += 1e-3;  // make sure it's non-zero :)
-    rho /= scale;
+    // The gain ratio compares the actual with the predicted gain, which an
+    // offset would make depend on the scale of the cost.
+    const double scale = computeScale();
+    if (std::fpclassify(scale) != FP_ZERO) {
+      rho /= scale;
+    }
 
     if (rho > 0 && g2o_isfinite(tempChi)) {  // last step was good
       double alpha = 1. - pow((2 * rho - 1), 3);

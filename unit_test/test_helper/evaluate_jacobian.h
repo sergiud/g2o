@@ -10,9 +10,12 @@
 
 #include <Eigen/Core>
 #include <algorithm>
+#include <cstddef>
 #include <span>
+#include <vector>
 
 #include "g2o/core/base_binary_edge.h"
+#include "g2o/core/base_multi_edge.h"
 #include "g2o/core/base_unary_edge.h"
 
 namespace g2o {
@@ -85,6 +88,43 @@ void evaluateJacobian(EdgeType& e, JacobianWorkspace& jacobianWorkspace,
     const std::span numeric(numericJacobianWorkspace.workspaceForVertex(i),
                             numElems);
     const std::span analytic(jacobianWorkspace.workspaceForVertex(i), numElems);
+    EXPECT_THAT(analytic,
+                ::testing::Pointwise(::testing::DoubleNear(tolerance), numeric))
+        << "Jacobian of vertex " << i;
+  }
+}
+
+/**
+ * Compares the analytic Jacobian of an edge with any number of vertices
+ * against the numeric one of its base, vertex by vertex.
+ */
+template <typename EdgeType>
+void evaluateJacobianMulti(EdgeType& e, JacobianWorkspace& jacobianWorkspace,
+                           JacobianWorkspace& numericJacobianWorkspace,
+                           double tolerance = JacobianTolerance) {
+  using Base =
+      BaseMultiEdge<EdgeType::Dimension, typename EdgeType::Measurement>;
+  std::vector<int> numElems;
+  for (std::size_t i = 0; i < e.vertices().size(); ++i) {
+    const auto* v = static_cast<const OptimizableGraph::Vertex*>(e.vertex(i));
+    numElems.push_back(EdgeType::Dimension * v->dimension());
+    std::fill_n(numericJacobianWorkspace.workspaceForVertex(i), numElems.back(),
+                UnwrittenJacobianEntry);
+  }
+  // calling the analytic Jacobian but writing to the numeric workspace
+  e.Base::linearizeOplus(numericJacobianWorkspace);
+  // copy result into analytic workspace
+  jacobianWorkspace = numericJacobianWorkspace;
+
+  // compute the numeric Jacobian into the numericJacobianWorkspace workspace as
+  // setup by the previous call
+  e.Base::linearizeOplus();
+
+  for (std::size_t i = 0; i < numElems.size(); ++i) {
+    const std::span numeric(numericJacobianWorkspace.workspaceForVertex(i),
+                            numElems[i]);
+    const std::span analytic(jacobianWorkspace.workspaceForVertex(i),
+                             numElems[i]);
     EXPECT_THAT(analytic,
                 ::testing::Pointwise(::testing::DoubleNear(tolerance), numeric))
         << "Jacobian of vertex " << i;

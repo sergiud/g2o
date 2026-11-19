@@ -66,9 +66,6 @@ class SparseBlockMatrix {
    * the block i+1.
    * @param rb: number of row blocks
    * @param cb: number of col blocks
-   * @param hasStorage: set it to true if the matrix "owns" the blocks, thus it
-   * deletes it on destruction. if false the matrix is only a "view" over an
-   * existing structure.
    */
   SparseBlockMatrix(const int* rbi, const int* cbi, int rb, int cb);
 
@@ -120,12 +117,11 @@ class SparseBlockMatrix {
   std::unique_ptr<SparseBlockMatrix> clone() const;
 
   /**
-   * returns a view or a copy of the block matrix
+   * returns a copy of a range of blocks of the matrix
    * @param rmin: starting block row
    * @param rmax: ending  block row
    * @param cmin: starting block col
    * @param cmax: ending  block col
-   * @param alloc: if true it makes a deep copy, if false it creates a view.
    */
   std::unique_ptr<SparseBlockMatrix> slice(int rmin, int rmax, int cmin,
                                            int cmax) const;

@@ -76,8 +76,7 @@ void BaseUnaryEdge<D, E, VertexXiType>::linearizeOplus() {
   vi->lockQuadraticForm();
 #endif
 
-  const double delta = 1e-9;
-  const double scalar = 1.0 / (2 * delta);
+  constexpr double delta = internal::NumericJacobianStep;
   ErrorVector error1;
   ErrorVector errorBeforeNumeric = _error;
 
@@ -98,7 +97,7 @@ void BaseUnaryEdge<D, E, VertexXiType>::linearizeOplus() {
     vi->pop();
     add_vi[d] = 0.0;
 
-    _jacobianOplusXi.col(d) = scalar * (error1 - _error);
+    _jacobianOplusXi.col(d) = (error1 - _error) / (2. * delta);
   }  // end dimension
 
   _error = errorBeforeNumeric;

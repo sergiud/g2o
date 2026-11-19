@@ -6,6 +6,7 @@
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/core/sparse_optimizer_terminate_action.h>
 
+#include <cmath>
 #include <limits>
 
 G2O_START_NAMESPACE
@@ -48,9 +49,15 @@ HyperGraphAction* SparseOptimizerTerminateAction::operator()(
     bool stopOptimizer = false;
     if (params->iteration < _maxIterations) {
       double currentChi = optimizer->activeRobustChi2();
-      double gain = (_lastChi - currentChi) / currentChi;
+      if (std::fpclassify(currentChi) == FP_ZERO) {
+        // An exact fit leaves nothing to gain, whose relative gain is
+        // undefined.
+        stopOptimizer = true;
+      } else {
+        double gain = (_lastChi - currentChi) / currentChi;
+        if (gain >= 0 && gain < _gainThreshold) stopOptimizer = true;
+      }
       _lastChi = currentChi;
-      if (gain >= 0 && gain < _gainThreshold) stopOptimizer = true;
     } else {
       stopOptimizer = true;
     }

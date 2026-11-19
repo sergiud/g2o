@@ -76,7 +76,8 @@ class BaseVertex : public OptimizableGraph::Vertex {
 
   virtual void clearQuadraticForm();
 
-  //! updates the current vertex with the direct solution x += H_ii\b_ii
+  //! updates the current vertex with the direct solution @f$x \mathrel{+}=
+  //! H_{ii}^{-1} b_{ii}@f$
   //! @returns the determinant of the inverted hessian
   virtual double solveDirect(double lambda = 0);
 

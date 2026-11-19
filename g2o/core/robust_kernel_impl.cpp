@@ -56,7 +56,8 @@ void RobustKernelPseudoHuber::robustify(double e2, Vector3D& rho) const {
   double dsqrReci = 1. / dsqr;
   double aux1 = dsqrReci * e2 + 1.0;
   double aux2 = sqrt(aux1);
-  rho[0] = 2 * dsqr * (aux2 - 1);
+  // sqrt(1 + x) - 1 = x / (sqrt(1 + x) + 1) without the cancellation.
+  rho[0] = 2 * e2 / (aux2 + 1);
   rho[1] = 1. / aux2;
   rho[2] = -0.5 * dsqrReci * rho[1] / aux1;
 }
@@ -65,7 +66,7 @@ void RobustKernelCauchy::robustify(double e2, Vector3D& rho) const {
   double dsqr = _delta * _delta;
   double dsqrReci = 1. / dsqr;
   double aux = dsqrReci * e2 + 1.0;
-  rho[0] = dsqr * log(aux);
+  rho[0] = dsqr * std::log1p(e2 / dsqr);
   rho[1] = 1. / aux;
   rho[2] = -dsqrReci * std::pow(rho[1], 2);
 }
@@ -74,14 +75,14 @@ void RobustKernelGemanMcClure::robustify(double e2, Vector3D& rho) const {
   const double aux = _delta / (_delta + e2);
   rho[0] = e2 * aux;
   rho[1] = aux * aux;
-  rho[2] = -2. * rho[1] * aux;
+  rho[2] = -2. * rho[1] * aux / _delta;
 }
 
 void RobustKernelWelsch::robustify(double e2, Vector3D& rho) const {
   const double dsqr = _delta * _delta;
   const double aux = e2 / dsqr;
   const double aux2 = exp(-aux);
-  rho[0] = dsqr * (1. - aux2);
+  rho[0] = -dsqr * std::expm1(-aux);
   rho[1] = aux2;
   rho[2] = -aux2 / dsqr;
 }
@@ -89,9 +90,15 @@ void RobustKernelWelsch::robustify(double e2, Vector3D& rho) const {
 void RobustKernelFair::robustify(double e2, Vector3D& rho) const {
   const double sqrte = sqrt(e2);
   const double aux = sqrte / _delta;
-  rho[0] = 2. * _delta * _delta * (aux - log(1. + aux));
+  // a - log(1 + a) cancels for small a, where its series replaces it.
+  constexpr double SeriesBound = 1e-3;
+  const double difference =
+      aux < SeriesBound
+          ? aux * aux * (0.5 - aux * (1. / 3. - aux * (0.25 - aux / 5.)))
+          : aux - std::log1p(aux);
+  rho[0] = 2. * _delta * _delta * difference;
   rho[1] = 1. / (1. + aux);
-  rho[2] = -0.5 / (sqrte * (1. + aux));
+  rho[2] = -0.5 / (_delta * sqrte * (1. + aux) * (1. + aux));
 }
 
 void RobustKernelTukey::robustify(double e2, Vector3D& rho) const {
@@ -99,7 +106,8 @@ void RobustKernelTukey::robustify(double e2, Vector3D& rho) const {
   const double delta2 = _delta * _delta;
   if (e <= _delta) {
     const double aux = e2 / delta2;
-    rho[0] = delta2 * (1. - std::pow((1. - aux), 3)) / 3.;
+    // 1 - (1 - x)^3 = x (3 - 3x + x^2) without the cancellation.
+    rho[0] = delta2 * aux * (3. - aux * (3. - aux)) / 3.;
     rho[1] = std::pow((1. - aux), 2);
     rho[2] = -2. * (1. - aux) / delta2;
   } else {

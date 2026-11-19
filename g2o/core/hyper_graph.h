@@ -71,7 +71,6 @@ class G2O_CORE_API HyperGraph {
      * returns the type of the graph element, see HyperGraphElementType
      */
     virtual HyperGraphElementType elementType() const = 0;
-    std::unique_ptr<HyperGraphElement> clone() const { return nullptr; }
   };
 
   /**
@@ -251,8 +250,13 @@ class G2O_CORE_API HyperGraph {
   //! not present
   const Vertex* vertex(int id) const;
 
-  //! removes a vertex and its edges from the graph and deletes them. Returns
-  //! true on success (vertex was present)
+  /**
+   * Removes a vertex from the graph and deletes it. Without @p detach, the
+   * edges of the vertex go with it. With @p detach, the edges stay in the
+   * graph and refer to no vertex in its place.
+   *
+   * @return whether the graph contained the vertex
+   */
   virtual bool removeVertex(Vertex* v, bool detach = false);
   //! removes an edge from the graph and deletes it. Returns true on success
   //! (edge was present)

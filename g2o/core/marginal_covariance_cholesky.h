@@ -12,6 +12,7 @@
 #include <g2o/prefix.h>
 
 #include <cassert>
+#include <cstdint>
 #include <unordered_map>
 #include <vector>
 
@@ -27,7 +28,7 @@ class G2O_CORE_API MarginalCovarianceCholesky {
    * hash struct for storing the matrix elements needed to compute the
    * covariance
    */
-  typedef std::unordered_map<int, double> LookupMap;
+  typedef std::unordered_map<std::int64_t, double> LookupMap;
 
  public:
   MarginalCovarianceCholesky();
@@ -71,14 +72,18 @@ class G2O_CORE_API MarginalCovarianceCholesky {
   LookupMap _map;  ///< hash look up table for the already computed entries
   std::vector<double> _diag;  ///< cache 1 / H_ii to avoid recalculations
 
-  //! compute the index used for hashing
-  int computeIndex(int r, int c) const { /*assert(r <= c);*/
-    return r * _n + c;
+  /**
+   * Index of an entry for hashing, which needs the square of the dimension of
+   * the factor and exceeds an int for large ones.
+   */
+  std::int64_t computeIndex(int r, int c) const {
+    return static_cast<std::int64_t>(r) * _n + c;
   }
   /**
-   * compute one entry in the covariance, r and c are values after applying the
-   * permutation, and upper triangular. May issue recursive calls to itself to
-   * compute the missing values.
+   * Computes one entry of the covariance, whose row and column are permuted
+   * and upper triangular, together with the entries below it that it depends
+   * on. A stack of pending entries replaces the recursion, whose depth would
+   * grow with the dimension of the factor.
    */
   double computeEntry(int r, int c);
 };

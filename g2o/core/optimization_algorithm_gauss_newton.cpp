@@ -63,14 +63,16 @@ OptimizationAlgorithm::SolverResult OptimizationAlgorithmGaussNewton::solve(
     t = get_monotonic_time();
   }
 
+  // A failed solve leaves no solution to apply.
+  if (!ok) {
+    return Fail;
+  }
+
   _optimizer->update(_solver->x());
   if (globalStats != nullptr) {
     globalStats->timeUpdate = get_monotonic_time() - t;
   }
-  if (ok)
-    return OK;
-  else
-    return Fail;
+  return OK;
 }
 
 void OptimizationAlgorithmGaussNewton::printVerbose(std::ostream& os) const {

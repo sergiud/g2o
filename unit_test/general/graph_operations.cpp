@@ -224,3 +224,72 @@ TEST(General, GraphChangeIdToATakenIdKeepsBothVertices) {
   EXPECT_THAT(graph.vertex(1), NotNull());
   EXPECT_THAT(graph.vertices(), SizeIs(2));
 }
+
+namespace {
+
+//! Chain of planar poses whose first one is fixed, ready to optimize.
+std::unique_ptr<g2o::SparseOptimizer> initializedChain() {
+  constexpr int Poses = 3;
+  std::unique_ptr<g2o::SparseOptimizer> optimizer = createOptimizer();
+  for (int i = 0; i < Poses; ++i) {
+    auto pose = std::make_unique<g2o::VertexSE2>();
+    pose->setId(i);
+    pose->setEstimate(g2o::SE2(i, 0., 0.));
+    pose->setFixed(i == 0);
+    optimizer->addVertex(std::move(pose));
+  }
+  for (int i = 0; i + 1 < Poses; ++i) {
+    auto edge = std::make_unique<g2o::EdgeSE2>();
+    edge->setVertex(0, optimizer->vertex(i));
+    edge->setVertex(1, optimizer->vertex(i + 1));
+    edge->setMeasurement(g2o::SE2(1., 0., 0.));
+    edge->setInformation(Eigen::Matrix3d::Identity());
+    optimizer->addEdge(std::move(edge));
+  }
+  optimizer->initializeOptimization();
+  return optimizer;
+}
+
+}  // namespace
+
+/**
+ * Removing an edge of the optimization frees it, so the optimization needs
+ * to be initialized again before it runs.
+ */
+TEST(General, RemovingAnActiveEdgeEndsTheOptimization) {
+  std::unique_ptr<g2o::SparseOptimizer> optimizer = initializedChain();
+  ASSERT_TRUE(optimizer->removeEdge(optimizer->edges().begin()->get()));
+
+  EXPECT_THAT(optimizer->activeEdges(), IsEmpty());
+  EXPECT_EQ(optimizer->optimize(1), -1);
+}
+
+//! A fixed vertex takes part in the optimization without a Hessian block.
+TEST(General, RemovingAFixedVertexEndsTheOptimization) {
+  std::unique_ptr<g2o::SparseOptimizer> optimizer = initializedChain();
+  ASSERT_TRUE(optimizer->removeVertex(optimizer->vertex(0)));
+
+  EXPECT_THAT(optimizer->activeVertices(), IsEmpty());
+  EXPECT_THAT(optimizer->activeEdges(), IsEmpty());
+  EXPECT_EQ(optimizer->optimize(1), -1);
+}
+
+//! An optimizer without an algorithm cannot optimize.
+TEST(General, OptimizingWithoutAnAlgorithmFails) {
+  std::unique_ptr<g2o::SparseOptimizer> optimizer = initializedChain();
+  optimizer->setAlgorithm(nullptr);
+
+  EXPECT_EQ(optimizer->optimize(1), -1);
+}
+
+/**
+ * Detaching keeps the edges of the vertex in the graph, which then refer to
+ * no vertex and cannot take part in the optimization either.
+ */
+TEST(General, DetachingAFixedVertexEndsTheOptimization) {
+  std::unique_ptr<g2o::SparseOptimizer> optimizer = initializedChain();
+  ASSERT_TRUE(optimizer->removeVertex(optimizer->vertex(0), /*detach=*/true));
+
+  EXPECT_THAT(optimizer->activeVertices(), IsEmpty());
+  EXPECT_THAT(optimizer->activeEdges(), IsEmpty());
+}
