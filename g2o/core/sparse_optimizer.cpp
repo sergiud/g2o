@@ -544,7 +544,9 @@ bool SparseOptimizer::computeMarginals(
   return _algorithm->computeMarginals(spinv, blockIndices);
 }
 
-void SparseOptimizer::setForceStopFlag(bool* flag) { _forceStopFlag = flag; }
+void SparseOptimizer::setForceStopFlag(std::atomic<bool>* flag) {
+  _forceStopFlag = flag;
+}
 
 bool SparseOptimizer::removeVertex(HyperGraph::Vertex* v, bool detach) {
   // A fixed vertex is active without a block in the Hessian.

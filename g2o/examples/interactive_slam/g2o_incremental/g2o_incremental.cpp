@@ -8,18 +8,14 @@
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/tictoc.h>
-#include <ng-log/experimental/signal_safe_log.h>
 
 #include <cassert>
-#include <csignal>
 #include <cstdlib>
 #include <iostream>
 
 #include "g2o/examples/interactive_slam/g2o_interactive/g2o_slam_interface.h"
 #include "graph_optimizer_sparse_incremental.h"
 #include "slam_parser/interface/parser_interface.h"
-
-static bool hasToStop = false;
 
 using namespace std;
 using namespace g2o;
@@ -64,17 +60,6 @@ inline void solveAndPrint(G2oSlamInterface& slamInterface, bool verbose) {
   }
 }
 
-void sigquit_handler(int sig) {
-  if (sig == SIGINT) {
-    hasToStop = 1;
-    static int cnt = 0;
-    if (cnt++ == 2) {
-      ngx::Log(ngx::SignalSafe | ngx::Warning, "forcing exit");
-      exit(1);
-    }
-  }
-}
-
 int main(int argc, char** argv) {
   g2o::initializeLogging(argv[0]);
   string inputFilename;
@@ -99,7 +84,6 @@ int main(int argc, char** argv) {
 
   SparseOptimizerIncremental optimizer;
   optimizer.setVerbose(verbose);
-  optimizer.setForceStopFlag(&hasToStop);
   optimizer.vizWithGnuplot = vis;
 
   G2oSlamInterface slamInterface(&optimizer);

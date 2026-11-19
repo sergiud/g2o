@@ -10,6 +10,7 @@
 #include <g2o/core/optimization_algorithm_property.h>
 #include <g2o/viewer/g2o_viewer_api.h>
 
+#include <atomic>
 #include <vector>
 
 #include "ui_base_main_window.h"
@@ -79,7 +80,7 @@ class G2O_VIEWER_API MainWindow : public QMainWindow,
 
   std::vector<g2o::OptimizationAlgorithmProperty> _knownSolvers;
   int _lastSolver;
-  bool _forceStopFlag{};
+  std::atomic<bool> _forceStopFlag{false};
   g2o::OptimizationAlgorithmProperty _currentOptimizationAlgorithmProperty;
   //! the algorithm of the graph, which the graph owns
   g2o::OptimizationAlgorithm* _currentSolver;

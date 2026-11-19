@@ -8,9 +8,7 @@
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/timeutil.h>
 #include <g2o_interactive/g2o_slam_interface.h>
-#include <ng-log/experimental/signal_safe_log.h>
 
-#include <csignal>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
@@ -18,21 +16,8 @@
 #include "graph_optimizer_sparse_online.h"
 #include "slam_parser/interface/parser_interface.h"
 
-static bool hasToStop = false;
-
 using namespace std;
 using namespace g2o;
-
-void sigquit_handler(int sig) {
-  if (sig == SIGINT) {
-    hasToStop = 1;
-    static int cnt = 0;
-    if (cnt++ == 2) {
-      ngx::Log(ngx::SignalSafe | ngx::Warning, "forcing exit");
-      exit(1);
-    }
-  }
-}
 
 int main(int argc, char** argv) {
   g2o::initializeLogging(argv[0]);
@@ -53,7 +38,6 @@ int main(int argc, char** argv) {
   SparseOptimizerOnline optimizer(pcg);
   // SparseOptimizer optimizer;
   optimizer.setVerbose(verbose);
-  optimizer.setForceStopFlag(&hasToStop);
   optimizer.vizWithGnuplot = vis;
 
   G2oSlamInterface slamInterface(&optimizer);

@@ -10,6 +10,7 @@
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/command_args.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/interrupt.h>
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/streamed.h>
@@ -18,9 +19,7 @@
 #include <g2o/types/data/types_data.h>
 #include <g2o/types/sclam2d/types_sclam2d.h>
 #include <g2o/types/slam2d/types_slam2d.h>
-#include <ng-log/experimental/signal_safe_log.h>
 
-#include <csignal>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -31,21 +30,8 @@
 using namespace std;
 using namespace g2o;
 
-static bool hasToStop = false;
-
 G2O_USE_OPTIMIZATION_LIBRARY(csparse);
 G2O_USE_TYPE_GROUP(slam2d);
-
-void sigquit_handler(int sig) {
-  if (sig == SIGINT) {
-    hasToStop = 1;
-    static int cnt = 0;
-    if (cnt++ == 2) {
-      ngx::Log(ngx::SignalSafe | ngx::Warning, "forcing exit");
-      exit(1);
-    }
-  }
-}
 
 int main(int argc, char** argv) {
   g2o::initializeLogging(argv[0]);
@@ -76,7 +62,6 @@ int main(int argc, char** argv) {
 
   SparseOptimizer optimizer;
   optimizer.setVerbose(verbose);
-  optimizer.setForceStopFlag(&hasToStop);
 
   OptimizationAlgorithmProperty solverProperty;
   optimizer.setAlgorithm(solverFactory->construct("lm_var", solverProperty));
@@ -139,8 +124,8 @@ int main(int argc, char** argv) {
   // if (guessCostFunction)
   // optimizer.computeInitialGuess(guessCostFunction);
 
-  signal(SIGINT, sigquit_handler);
-
+  // Interrupts stop the optimization from here on.
+  optimizer.setForceStopFlag(&stopOnInterrupt());
   int i = optimizer.optimize(maxIterations);
   if (maxIterations > 0 && (i == 0)) {
     ngx::Log(ngx::Error, "optimize failed, result might be invalid");

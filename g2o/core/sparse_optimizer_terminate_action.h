@@ -10,6 +10,8 @@
 #include <g2o/core/hyper_graph_action.h>
 #include <g2o/prefix.h>
 
+#include <atomic>
+
 G2O_START_NAMESPACE
 
 class SparseOptimizer;
@@ -39,7 +41,7 @@ class G2O_CORE_API SparseOptimizerTerminateAction : public HyperGraphAction {
  protected:
   double _gainThreshold;
   double _lastChi;
-  bool _auxTerminateFlag;
+  std::atomic<bool> _auxTerminateFlag{false};
   int _maxIterations;
 
   void setOptimizerStopFlag(const SparseOptimizer* optimizer, bool stop);

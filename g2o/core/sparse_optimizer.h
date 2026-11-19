@@ -11,6 +11,7 @@
 #include <g2o/core/optimizable_graph.h>
 #include <g2o/prefix.h>
 
+#include <atomic>
 #include <map>
 #include <memory>
 
@@ -171,12 +172,12 @@ class G2O_CORE_API SparseOptimizer : public OptimizableGraph {
    * sets a variable checked at every iteration to force a user stop. The
    * iteration exits when the variable is true;
    */
-  void setForceStopFlag(bool* flag);
-  bool* forceStopFlag() const { return _forceStopFlag; };
+  void setForceStopFlag(std::atomic<bool>* flag);
+  std::atomic<bool>* forceStopFlag() const { return _forceStopFlag; };
 
   //! if external stop flag is given, return its state. False otherwise
   bool terminate() {
-    return _forceStopFlag != nullptr ? (*_forceStopFlag) : false;
+    return _forceStopFlag != nullptr && _forceStopFlag->load();
   }
 
   //! the index mapping of the vertices
@@ -290,7 +291,7 @@ class G2O_CORE_API SparseOptimizer : public OptimizableGraph {
   bool removeComputeErrorAction(HyperGraphAction* action);
 
  protected:
-  bool* _forceStopFlag;
+  std::atomic<bool>* _forceStopFlag;
   bool _verbose;
 
   VertexContainer _ivMap;

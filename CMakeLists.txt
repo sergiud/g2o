@@ -446,6 +446,7 @@ g2o_add_library (stuff
     g2o/stuff/command_args.cpp
     g2o/stuff/filesys_tools.cpp
     g2o/stuff/logger.cpp
+    g2o/stuff/interrupt.cpp
     g2o/stuff/os_specific.cpp
     g2o/stuff/property.cpp
     g2o/stuff/sampler.cpp
@@ -463,6 +464,7 @@ g2o_add_library (stuff
     g2o/stuff/macros.h
     g2o/stuff/misc.h
     g2o/stuff/opengl_wrapper.h
+    g2o/stuff/interrupt.h
     g2o/stuff/os_specific.h
     g2o/stuff/property.h
     g2o/stuff/read_values.h
@@ -1797,6 +1799,7 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
     SOURCES
       unit_test/stuff/command_args.cpp
       unit_test/stuff/filesys_tools.cpp
+      unit_test/stuff/interrupt.cpp
       unit_test/stuff/property.cpp
       unit_test/stuff/read_values.cpp
       unit_test/stuff/sample_noise.cpp

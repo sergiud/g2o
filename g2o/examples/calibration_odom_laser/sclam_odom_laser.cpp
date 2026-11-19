@@ -8,6 +8,7 @@
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/command_args.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/interrupt.h>
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/streamed.h>
@@ -18,9 +19,7 @@
 #include <g2o/types/sclam2d/odometry_measurement.h>
 #include <g2o/types/sclam2d/vertex_odom_differential_params.h>
 #include <g2o/types/slam2d/vertex_se2.h>
-#include <ng-log/experimental/signal_safe_log.h>
 
-#include <csignal>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -32,19 +31,6 @@
 using namespace std;
 using namespace g2o;
 using namespace Eigen;
-
-static bool hasToStop = false;
-
-void sigquit_handler(int sig) {
-  if (sig == SIGINT) {
-    hasToStop = true;
-    static int cnt = 0;
-    if (cnt++ == 2) {
-      ngx::Log(ngx::SignalSafe | ngx::Warning, "forcing exit");
-      exit(1);
-    }
-  }
-}
 
 int main(int argc, char** argv) {
   g2o::initializeLogging(argv[0]);
@@ -78,7 +64,6 @@ int main(int argc, char** argv) {
 
   SparseOptimizer optimizer;
   optimizer.setVerbose(verbose);
-  optimizer.setForceStopFlag(&hasToStop);
 
   allocateSolverForSclam(optimizer);
 
@@ -156,7 +141,8 @@ int main(int argc, char** argv) {
     laserOffset->setFixed(true);
   }
 
-  signal(SIGINT, sigquit_handler);
+  // Interrupts stop the optimization from here on.
+  optimizer.setForceStopFlag(&stopOnInterrupt());
   ngx::Log("Doing full estimation");
   optimizer.initializeOptimization();
   optimizer.computeActiveErrors();

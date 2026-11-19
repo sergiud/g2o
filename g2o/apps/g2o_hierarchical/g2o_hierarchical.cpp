@@ -16,13 +16,13 @@
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/command_args.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/interrupt.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>
 
 #include <algorithm>
 #include <cassert>
-#include <csignal>
 #include <cstdlib>
 #include <fstream>
 #include <iomanip>
@@ -41,28 +41,14 @@
 #include <g2o/stuff/logger.h>
 #include <g2o/types/slam3d/parameter_camera.h>
 #include <g2o/types/slam3d/parameter_se3_offset.h>
-#include <ng-log/experimental/signal_safe_log.h>
 
 #include "simple_star_ops.h"
 
 // #include <g2o/types/slam3d_new/parameter_camera.h>
 // #include <g2o/types/slam3d_new/parameter_se3_offset.h>
 
-static bool hasToStop = false;
-
 using namespace std;
 using namespace g2o;
-
-void sigquit_handler(int sig) {
-  if (sig == SIGINT) {
-    hasToStop = 1;
-    static int cnt = 0;
-    if (cnt++ == 2) {
-      ngx::Log(ngx::SignalSafe | ngx::Warning, "forcing exit");
-      exit(1);
-    }
-  }
-}
 
 /*
 // string newTypesMapping=
@@ -200,7 +186,6 @@ int main(int argc, char** argv) {
 
   SparseOptimizer optimizer;
   optimizer.setVerbose(verbose);
-  optimizer.setForceStopFlag(&hasToStop);
 
   // Loading the input data
   if (!loadLookup.empty()) {
@@ -375,8 +360,9 @@ int main(int argc, char** argv) {
   ngx::Log("Initial chi2 = {:f}", loadChi);
 
   if (initialGuess) optimizer.computeInitialGuess();
-  signal(SIGINT, sigquit_handler);
 
+  // Interrupts stop the optimization from here on.
+  optimizer.setForceStopFlag(&stopOnInterrupt());
   optimizer.computeActiveErrors();
   double initChi = optimizer.activeChi2();
 

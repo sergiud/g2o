@@ -17,15 +17,14 @@
 #include <g2o/stuff/color_macros.h>
 #include <g2o/stuff/command_args.h>
 #include <g2o/stuff/filesys_tools.h>
+#include <g2o/stuff/interrupt.h>
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>
-#include <ng-log/experimental/signal_safe_log.h>
 
 #include <algorithm>
 #include <cassert>
-#include <csignal>
 #include <cstdlib>
 #include <fstream>
 #include <iomanip>
@@ -38,8 +37,6 @@
 #include "dl_wrapper.h"
 #include "g2o_common.h"
 #include "output_helper.h"
-
-static bool hasToStop = false;
 
 using namespace std;
 using namespace g2o;
@@ -74,17 +71,6 @@ bool incrementalEdgesCompare(const SparseOptimizer::Edge& e1,
 }
 
 }  // namespace
-
-void sigquit_handler(int sig) {
-  if (sig == SIGINT) {
-    hasToStop = 1;
-    static int cnt = 0;
-    if (cnt++ == 2) {
-      ngx::Log(ngx::SignalSafe | ngx::Warning, "forcing exit");
-      exit(1);
-    }
-  }
-}
 
 int main(int argc, char** argv) {
   g2o::initializeLogging(argv[0]);
@@ -222,7 +208,6 @@ int main(int argc, char** argv) {
 
   SparseOptimizer optimizer;
   optimizer.setVerbose(verbose);
-  optimizer.setForceStopFlag(&hasToStop);
 
   // The optimizer uses the action, which the program owns.
   std::unique_ptr<SparseOptimizerTerminateAction> terminateAction;
@@ -599,7 +584,8 @@ int main(int argc, char** argv) {
     }
     double initChi = optimizer.chi2();
 
-    signal(SIGINT, sigquit_handler);
+    // Interrupts stop the optimization from here on.
+    optimizer.setForceStopFlag(&stopOnInterrupt());
     // The optimizer returns the iterations it ran, none after a failure.
     int result = optimizer.optimize(maxIterations);
     if (maxIterations > 0 && result <= 0) {
