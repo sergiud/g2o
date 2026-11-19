@@ -48,6 +48,10 @@ list (PREPEND CMAKE_MODULE_PATH ${g2o_SOURCE_DIR}/cmake_modules)
 
 include (CMakeDependentOption)
 
+# The libraries of the debug configuration carry this postfix, by which the
+# search for plugins tells them apart.
+set (_g2o_DEBUG_POSTFIX _d)
+
 # CTest defines BUILD_TESTING, which only the top-level project offers.
 if (PROJECT_IS_TOP_LEVEL)
   include (CTest)
@@ -351,7 +355,8 @@ function (g2o_add_library name)
   )
 
   if (arg_INSTALL STREQUAL "EXPORT")
-    set_target_properties (${name} PROPERTIES DEBUG_POSTFIX _d)
+    set_target_properties (${name} PROPERTIES
+      DEBUG_POSTFIX ${_g2o_DEBUG_POSTFIX})
     set (export g2o-targets)
   else (arg_INSTALL STREQUAL "EXPORT")
     set (export g2o-programs)
@@ -1041,7 +1046,9 @@ if (BUILD_APPS)
   target_compile_definitions (g2o_cli_library PRIVATE
     G2O_DEFAULT_SOLVERS_DIR_="${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
     G2O_DEFAULT_TYPES_DIR_="${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
-    G2O_LIBRARY_POSTFIX=$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>$<$<CONFIG:MinSizeRel>:${CMAKE_MINSIZEREL_POSTFIX}>$<$<CONFIG:RelWithDebInfo>:${CMAKE_RELWITHDEBINFO_POSTFIX}>
+    G2O_LIBRARY_PREFIX="${CMAKE_SHARED_LIBRARY_PREFIX}"
+    G2O_LIBRARY_POSTFIX="$<$<CONFIG:Debug>:${_g2o_DEBUG_POSTFIX}>"
+    G2O_DEBUG_LIBRARY_POSTFIX="${_g2o_DEBUG_POSTFIX}"
   )
   target_link_libraries (g2o_cli_library
     PUBLIC core
@@ -1119,8 +1126,6 @@ if (BUILD_APPS)
       HEADERS
         g2o/apps/g2o_simulator/g2o_simulator_api.h
         g2o/apps/g2o_simulator/pointsensorparameters.h
-        g2o/apps/g2o_simulator/sensor_line3d.h
-        g2o/apps/g2o_simulator/sensor_odometry.h
         g2o/apps/g2o_simulator/sensor_odometry2d.h
         g2o/apps/g2o_simulator/sensor_odometry3d.h
         g2o/apps/g2o_simulator/sensor_pointxy.h
@@ -1215,8 +1220,19 @@ if (BUILD_APPS)
       AUTOMOC ON
       AUTOUIC ON
     )
+    # The headers of the window include the headers generated from its forms,
+    # which a multi-config generator places per configuration.
+    get_property (_g2o_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+    if (_g2o_MULTI_CONFIG)
+      set (_g2o_VIEWER_UI_DIR
+        ${CMAKE_CURRENT_BINARY_DIR}/viewer_library_autogen/include_$<CONFIG>)
+    else (_g2o_MULTI_CONFIG)
+      set (_g2o_VIEWER_UI_DIR
+        ${CMAKE_CURRENT_BINARY_DIR}/viewer_library_autogen/include)
+    endif (_g2o_MULTI_CONFIG)
     target_include_directories (viewer_library PUBLIC
       $<BUILD_INTERFACE:${g2o_SOURCE_DIR}/g2o/apps/g2o_viewer>
+      $<BUILD_INTERFACE:${_g2o_VIEWER_UI_DIR}>
     )
     target_link_libraries (viewer_library PUBLIC
       core
@@ -1723,6 +1739,33 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
 
   gtest_discover_tests (unittest_solvers)
 
+  if (TARGET viewer_library)
+    g2o_add_executable (unittest_viewer
+      LICENSE GPL-3.0-or-later
+      SOURCES
+        unit_test/viewer/main_window.cpp
+      LINK GTest::gmock GTest::gtest_main solver_eigen types_slam2d
+        viewer_library
+    )
+    target_compile_definitions (unittest_viewer PRIVATE
+      G2O_TEST_GRAPH="${g2o_SOURCE_DIR}/unit_test/cli/loop.g2o"
+    )
+
+    # The window needs no display on the offscreen platform.
+    gtest_discover_tests (unittest_viewer
+      PROPERTIES ENVIRONMENT QT_QPA_PLATFORM=offscreen
+    )
+  endif (TARGET viewer_library)
+
+  if (TARGET g2o_simulator_library)
+    g2o_add_executable (unittest_simulator
+      SOURCES unit_test/simulator/simutils.cpp
+      LINK GTest::gmock GTest::gtest_main g2o_simulator_library
+    )
+
+    gtest_discover_tests (unittest_simulator)
+  endif (TARGET g2o_simulator_library)
+
   g2o_add_executable (unittest_stuff
     SOURCES
       unit_test/stuff/command_args.cpp
@@ -1975,6 +2018,139 @@ if (BUILD_TESTING)
         "nodes= 100\t edges= 319\t chi2= [0-9][0-9]?[0-9]?[0-9]?\\."
     )
   endif (BUILD_APPS AND BUILD_EXAMPLES)
+
+  # Graphs for the incremental mode of the command line tool, which adds the
+  # edges back in the order of the largest id of their vertices.
+  if (BUILD_APPS)
+    add_test (NAME g2o_incremental_unary_edge
+      COMMAND g2o_cli_application -inc -update 1
+        ${g2o_SOURCE_DIR}/unit_test/cli/chain_with_prior.g2o
+    )
+
+    # The last edge of a loop of three poses contradicts the odometry, and
+    # the batch optimum leaves a chi2 of 0.12. The incremental run must reach
+    # it whether or not the edge closing the loop starts an update.
+    foreach (_g2o_UPDATE IN ITEMS 1 10)
+      add_test (NAME g2o_incremental_last_edges_${_g2o_UPDATE}
+        COMMAND g2o_cli_application -v -inc -update ${_g2o_UPDATE} -i 5
+          ${g2o_SOURCE_DIR}/unit_test/cli/loop.g2o
+      )
+      set_tests_properties (g2o_incremental_last_edges_${_g2o_UPDATE}
+        PROPERTIES
+          FAIL_REGULAR_EXPRESSION "vertices to optimize"
+          PASS_REGULAR_EXPRESSION "nodes= 3\t edges= 3\t chi2= 0\\.12"
+      )
+    endforeach (_g2o_UPDATE)
+
+    # The search for plugins loads the libraries of g2o in the configuration
+    # of the program, but neither those of another configuration nor foreign
+    # libraries in the same directory, which announce when they load.
+    set (_g2o_PLUGIN_DIR ${g2o_BINARY_DIR}/plugins)
+    foreach (_g2o_MARKER IN ITEMS foreign debug)
+      add_library (g2o_marker_${_g2o_MARKER} MODULE
+        unit_test/cli/marker_plugin.cpp)
+      target_compile_definitions (g2o_marker_${_g2o_MARKER} PRIVATE
+        G2O_PLUGIN_MARKER="${_g2o_MARKER}")
+      set_target_properties (g2o_marker_${_g2o_MARKER} PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY ${_g2o_PLUGIN_DIR}
+        PREFIX ${CMAKE_SHARED_LIBRARY_PREFIX}
+        SUFFIX ${CMAKE_SHARED_LIBRARY_SUFFIX}
+      )
+    endforeach (_g2o_MARKER)
+    set_target_properties (g2o_marker_foreign PROPERTIES
+      OUTPUT_NAME unrelated_types_marker)
+    # The library of g2o in the other configuration, which in a debug build
+    # lacks the postfix that it carries otherwise.
+    set_target_properties (g2o_marker_debug PROPERTIES
+      OUTPUT_NAME
+        g2o_types_marker$<$<NOT:$<CONFIG:Debug>>:${_g2o_DEBUG_POSTFIX}>)
+    add_test (NAME g2o_plugins_of_the_configuration
+      COMMAND g2o_cli_application -listTypes
+    )
+    set_tests_properties (g2o_plugins_of_the_configuration PROPERTIES
+      ENVIRONMENT "G2O_TYPES_DIR=${_g2o_PLUGIN_DIR}"
+      FAIL_REGULAR_EXPRESSION "LOADED"
+      REQUIRED_FILES "$<TARGET_FILE:g2o_marker_foreign>;$<TARGET_FILE:g2o_marker_debug>"
+    )
+
+    # Each type library registers only the types and actions it defines,
+    # which loading all of them shows by registering each exactly once.
+    add_test (NAME g2o_registers_each_type_once
+      COMMAND g2o_cli_application -listTypes
+    )
+    set_tests_properties (g2o_registers_each_type_once PROPERTIES
+      FAIL_REGULAR_EXPRESSION "already registered"
+    )
+
+    # The command line tool reports each failure by its exit status, which
+    # a script checks so that a crash cannot pass as a failure.
+    set (_g2o_LOOP ${g2o_SOURCE_DIR}/unit_test/cli/loop.g2o)
+    set (_g2o_EXPECT_EXIT ${CMAKE_COMMAND} -DEXPECTED=1 -P
+      ${g2o_SOURCE_DIR}/unit_test/cli/expect_exit.cmake --
+      $<TARGET_FILE:g2o_cli_application>)
+    add_test (NAME g2o_without_input COMMAND ${_g2o_EXPECT_EXIT})
+    add_test (NAME g2o_unknown_solver
+      COMMAND ${_g2o_EXPECT_EXIT} -solver unknown ${_g2o_LOOP})
+    add_test (NAME g2o_unknown_solver_property
+      COMMAND ${_g2o_EXPECT_EXIT} -solverProperties unknown=1 ${_g2o_LOOP})
+    add_test (NAME g2o_unknown_robust_kernel
+      COMMAND ${_g2o_EXPECT_EXIT} -robustKernel unknown ${_g2o_LOOP})
+    add_test (NAME g2o_missing_gauge
+      COMMAND ${_g2o_EXPECT_EXIT} -gaugeList 99 ${_g2o_LOOP})
+    # The second component of the graph has no gauge, so its system is
+    # singular.
+    add_test (NAME g2o_singular_system
+      COMMAND ${_g2o_EXPECT_EXIT}
+        ${g2o_SOURCE_DIR}/unit_test/cli/disconnected.g2o)
+    add_test (NAME g2o_unwritable_output
+      COMMAND ${_g2o_EXPECT_EXIT} -o ${g2o_BINARY_DIR}/missing/out.g2o
+        ${_g2o_LOOP})
+    add_test (NAME g2o_unwritable_summary
+      COMMAND ${_g2o_EXPECT_EXIT} -summary
+        ${g2o_BINARY_DIR}/missing/summary.csv ${_g2o_LOOP})
+    add_test (NAME g2o_unwritable_gnuplot
+      COMMAND ${_g2o_EXPECT_EXIT} -gnudump ${g2o_BINARY_DIR}/missing/plot
+        ${_g2o_LOOP})
+    add_test (NAME g2o_unwritable_statistics
+      COMMAND ${_g2o_EXPECT_EXIT} -stats ${g2o_BINARY_DIR}/missing/stats.txt
+        ${_g2o_LOOP})
+    if (TARGET g2o_hierarchical_application)
+      set (_g2o_HIERARCHICAL_EXIT ${CMAKE_COMMAND} -DEXPECTED=1 -P
+        ${g2o_SOURCE_DIR}/unit_test/cli/expect_exit.cmake --
+        $<TARGET_FILE:g2o_hierarchical_application>)
+      add_test (NAME g2o_hierarchical_without_input
+        COMMAND ${_g2o_HIERARCHICAL_EXIT})
+      add_test (NAME g2o_hierarchical_unknown_robust_kernel
+        COMMAND ${_g2o_HIERARCHICAL_EXIT} -robustKernel unknown ${_g2o_LOOP})
+      # Only debugging writes intermediate graphs, which would otherwise
+      # replace files of the working directory.
+      add_test (NAME g2o_hierarchical_keeps_the_working_directory
+        COMMAND ${CMAKE_COMMAND} -DEXPECTED=0
+          "-DABSENT=${g2o_BINARY_DIR}/stars.g2o;${g2o_BINARY_DIR}/hstars.g2o"
+          -P ${g2o_SOURCE_DIR}/unit_test/cli/expect_exit.cmake --
+          $<TARGET_FILE:g2o_hierarchical_application> ${_g2o_LOOP}
+        WORKING_DIRECTORY ${g2o_BINARY_DIR}
+      )
+    endif (TARGET g2o_hierarchical_application)
+
+    # A point on a segment of the points (1, 1) and (1, 3) measured as its
+    # first point becomes the first point of the line, at (1, 1).
+    if (TARGET convertSegmentLine_application)
+      add_test (NAME g2o_convert_segment_first_point
+        COMMAND convertSegmentLine_application -o -
+          ${g2o_SOURCE_DIR}/unit_test/cli/segment_point_line.g2o
+      )
+      set_tests_properties (g2o_convert_segment_first_point PROPERTIES
+        PASS_REGULAR_EXPRESSION "VERTEX_XY [0-9]+ 1 1\n"
+      )
+    endif (TARGET convertSegmentLine_application)
+
+    # Iterations without a limit end by the gain, and the statistics hold
+    # only the iterations that ran.
+    add_test (NAME g2o_statistics_without_limit
+      COMMAND g2o_cli_application -i -1 -stats ${g2o_BINARY_DIR}/stats.txt
+        ${_g2o_LOOP})
+  endif (BUILD_APPS)
 endif (BUILD_TESTING)
 
 # A directory that is not part of the repository may hold experiments.

@@ -55,12 +55,14 @@ HMODULE getMyInstance() {
 }
 #endif
 
-static const string TYPES_PATTERN = string("*_types_*") +
-                                    string(G2O_LIBRARY_POSTFIX) + string(".") +
-                                    string(SO_EXT);
-static const string SOLVERS_PATTERN = string("*_solver_*") +
-                                      string(G2O_LIBRARY_POSTFIX) +
-                                      string(".") + string(SO_EXT);
+// The patterns match only the libraries of g2o, whose constructors register
+// the types and solvers.
+static const string TYPES_PATTERN =
+    string(G2O_LIBRARY_PREFIX) + string("g2o_types_*") +
+    string(G2O_LIBRARY_POSTFIX) + string(".") + string(SO_EXT);
+static const string SOLVERS_PATTERN =
+    string(G2O_LIBRARY_PREFIX) + string("g2o_solver_*") +
+    string(G2O_LIBRARY_POSTFIX) + string(".") + string(SO_EXT);
 
 G2O_START_NAMESPACE
 

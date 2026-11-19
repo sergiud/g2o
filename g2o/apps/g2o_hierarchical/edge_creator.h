@@ -63,12 +63,12 @@ struct G2O_HIERARCHICAL_API EdgeCreator {
                       const std::vector<int>& parameterIds);
 
   //! Removes an association to the association map.
-  //! @params vertexTypes: the string of the vertex ids connected by the edge
+  //! @param vertexTypes the string of the vertex ids connected by the edge
   bool removeAssociation(std::string vertexTypes);
 
   //! constructs an edge based on the verticesVector given as argument
   //! The vertices of the newly created edge are set to the parameter
-  //! @params vertices: the vertices to be connected by the new edge
+  //! @param vertices the vertices to be connected by the new edge
   //! @returns the new edge on succes, nullptr on failure (no edge association
   //! in the map compatible with the vertices in the parameter)
   std::unique_ptr<OptimizableGraph::Edge> createEdge(

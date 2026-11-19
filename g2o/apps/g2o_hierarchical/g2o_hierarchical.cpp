@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <cassert>
 #include <csignal>
+#include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -191,6 +192,10 @@ int main(int argc, char** argv) {
   AbstractRobustKernelCreator* kernelCreator = nullptr;
   if (!robustKernel.empty()) {
     kernelCreator = RobustKernelFactory::instance()->creator(robustKernel);
+    if (kernelCreator == nullptr) {
+      ngx::Log(ngx::Error, "Unknown Robust Kernel: {}", robustKernel);
+      return EXIT_FAILURE;
+    }
   }
 
   SparseOptimizer optimizer;
@@ -203,7 +208,7 @@ int main(int argc, char** argv) {
   }
   if (inputFilename.empty()) {
     ngx::Log(ngx::Error, "No input data specified");
-    return 0;
+    return EXIT_FAILURE;
   } else if (inputFilename == "-") {
     ngx::Log("Read input from stdin");
     if (!optimizer.load(cin)) {
@@ -214,7 +219,7 @@ int main(int argc, char** argv) {
     ngx::Log("Read input from {}", inputFilename);
     ifstream ifs(inputFilename.c_str());
     if (!ifs) {
-      ngx::Log(ngx::Error, "Failed to open file");
+      ngx::Log(ngx::Error, "Failed to open file {}", inputFilename);
       return 1;
     }
     if (!optimizer.load(ifs)) {
@@ -273,12 +278,12 @@ int main(int argc, char** argv) {
   if (solver == nullptr) {
     ngx::Log(ngx::Error, "Error allocating solver. Allocating \"{}\" failed!",
              strSolver);
-    return 0;
+    return EXIT_FAILURE;
   }
   if (hsolver == nullptr) {
     ngx::Log(ngx::Error, "Error allocating hsolver. Allocating \"{}\" failed!",
              strHSolver);
-    return 0;
+    return EXIT_FAILURE;
   }
 
   set<int> vertexDimensions = optimizer.dimensions();
@@ -327,7 +332,7 @@ int main(int argc, char** argv) {
                "unknown backbone type. The largest vertex dimension is: "
                "{}.\nExiting.",
                poseDim);
-      return -1;
+      return EXIT_FAILURE;
   }
 
   // here we need to chop the graph into many lil pieces
@@ -432,13 +437,12 @@ int main(int argc, char** argv) {
   ngx::Log("eset.size()= {}", eset.size());
   ngx::Log("heset.size()= {}", heset.size());
 
-  ofstream starStream("stars.g2o");
-  optimizer.saveSubset(starStream, eset);
-  starStream.close();
-
-  ofstream hstarStream("hstars.g2o");
-  optimizer.saveSubset(hstarStream, heset);
-  hstarStream.close();
+  if (debug) {
+    ofstream starStream("stars.g2o");
+    optimizer.saveSubset(starStream, eset);
+    ofstream hstarStream("hstars.g2o");
+    optimizer.saveSubset(hstarStream, heset);
+  }
 
   ngx::Log("stars done!");
 
@@ -515,8 +519,12 @@ int main(int argc, char** argv) {
     g->setFixed(true);
   }
   optimizer.initializeOptimization(0);
+  // The optimizer returns the iterations it ran, none after a failure.
   int result = optimizer.optimize(lowIterations);
-  if (result < 0) ngx::Log(ngx::Error, "failure in low level optimization");
+  if (lowIterations > 0 && result <= 0) {
+    ngx::Log(ngx::Error, "failure in low level optimization");
+    return EXIT_FAILURE;
+  }
 
   optimizer.computeActiveErrors();
   double finalChi = optimizer.activeChi2();
@@ -574,16 +582,25 @@ int main(int argc, char** argv) {
     ofstream os;
     os.open(summaryFile.c_str(), ios::app);
     summary.writeToCSV(os);
+    if (!os.flush()) {
+      ngx::Log(ngx::Error, "Unable to write the summary to {}", summaryFile);
+      return EXIT_FAILURE;
+    }
   }
 
   if (!outputfilename.empty()) {
+    bool saved = false;
     if (outputfilename == "-") {
       ngx::Log("saving to stdout");
-      optimizer.saveSubset(cout, originalEdges);
+      saved = optimizer.saveSubset(cout, originalEdges) && cout.flush();
     } else {
       ngx::Log("saving {}", outputfilename);
       ofstream os(outputfilename.c_str());
-      optimizer.saveSubset(os, originalEdges);
+      saved = optimizer.saveSubset(os, originalEdges) && os.flush();
+    }
+    if (!saved) {
+      ngx::Log(ngx::Error, "Unable to save the graph to {}", outputfilename);
+      return EXIT_FAILURE;
     }
     ngx::Log("done.");
   }

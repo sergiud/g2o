@@ -16,6 +16,7 @@
 #include <g2o/stuff/filesys_tools.h>
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
+#include <g2o/stuff/streamed.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>
 #include <g2o/stuff/unscented.h>
@@ -67,7 +68,7 @@ void testMarginals(SparseOptimizer& optimizer) {
         v->getMinimalEstimateData(&oldMean[0]);
         MatrixXd& cov = *(spinv.block(v->hessianIndex(), v->hessianIndex()));
         std::vector<MySigmaPoint, Eigen::aligned_allocator<MySigmaPoint> > spts;
-        ngx::Log("{}", cov);
+        ngx::Log("{}", Streamed(cov));
         if (!sampleUnscented(spts, mean, cov)) continue;
 
         // now apply the oplus operator to the sigma points,
@@ -93,11 +94,11 @@ void testMarginals(SparseOptimizer& optimizer) {
         reconstructGaussian(mean, cov2, tspts);
         ngx::Log("global block :{}, {}", v->hessianIndex(), v->hessianIndex());
         ngx::Log("mean: ");
-        ngx::Log("{}", mean);
+        ngx::Log("{}", Streamed(mean));
         ngx::Log("oldMean: ");
-        ngx::Log("{}", oldMean);
+        ngx::Log("{}", Streamed(oldMean));
         ngx::Log("cov: ");
-        ngx::Log("{}", cov2);
+        ngx::Log("{}", Streamed(cov2));
       }
       // if (v->hessianIndex()>0){
       //   cerr << "inv block :" << v->hessianIndex()-1 << ", " <<
@@ -116,7 +117,7 @@ int unscentedTest() {
     }
   }
   m += MatrixXd::Identity(6, 6);
-  ngx::Log("{}", Streamed{m});
+  ngx::Log("{}", Streamed(m));
   VectorXd mean(6);
   mean.fill(1);
 
@@ -124,7 +125,7 @@ int unscentedTest() {
   sampleUnscented(spts, mean, m);
   for (size_t i = 0; i < spts.size(); i++) {
     ngx::Log("Point {} \nwi={} wp={} ", i, spts[i]._wi, spts[i]._wp);
-    ngx::Log("{}", spts[i]._sample);
+    ngx::Log("{}", Streamed(spts[i]._sample));
   }
 
   VectorXd recMean(6);
@@ -133,10 +134,10 @@ int unscentedTest() {
   reconstructGaussian(recMean, recCov, spts);
 
   ngx::Log("recMean");
-  ngx::Log("{}", recMean);
+  ngx::Log("{}", Streamed(recMean));
 
   ngx::Log("recCov");
-  ngx::Log("{}", recCov);
+  ngx::Log("{}", Streamed(recCov));
 
   return 0;
 }

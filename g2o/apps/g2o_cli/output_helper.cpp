@@ -81,7 +81,7 @@ bool saveGnuplot(const std::string& gnudump,
     ngx::Log("# saving {}", odomFilename);
     ofstream fout(odomFilename.c_str());
     if (!fout) {
-      ngx::Log(ngx::Error, "Unable to open file");
+      ngx::Log(ngx::Error, "Unable to open file {}", odomFilename);
       return false;
     }
     params.os = &fout;
@@ -101,7 +101,7 @@ bool saveGnuplot(const std::string& gnudump,
     ngx::Log("# saving {}", filename);
     ofstream fout(filename.c_str());
     if (!fout) {
-      ngx::Log(ngx::Error, "Unable to open file");
+      ngx::Log(ngx::Error, "Unable to open file {}", filename);
       return false;
     }
     params.os = &fout;
@@ -120,7 +120,7 @@ bool saveGnuplot(const std::string& gnudump,
     ngx::Log("# saving {}", filename);
     ofstream fout(filename.c_str());
     if (!fout) {
-      ngx::Log(ngx::Error, "Unable to open file");
+      ngx::Log(ngx::Error, "Unable to open file {}", filename);
       return false;
     }
     params.os = &fout;
@@ -138,7 +138,7 @@ bool saveGnuplot(const std::string& gnudump,
     ngx::Log("# saving {}", filename);
     ofstream fout(filename.c_str());
     if (!fout) {
-      ngx::Log(ngx::Error, "Unable to open file");
+      ngx::Log(ngx::Error, "Unable to open file {}", filename);
       return false;
     }
     params.os = &fout;

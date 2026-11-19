@@ -238,7 +238,7 @@ int main(int argc, char** argv) {
           outGraph.addVertex(std::move(pXOwner));
 
           Vector2d estPx;
-          if (espl->pointNum() != 0) {
+          if (espl->pointNum() == 0) {
             estPx = segment->estimateP1();
             line->p1Id = pX->id();
           } else {

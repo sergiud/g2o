@@ -137,10 +137,8 @@ void MainWindow::on_btnSetZero_clicked() {
 void MainWindow::on_btnReload_clicked() {
   if (_filename.length() > 0) {
     ngx::Log("reloading {}", _filename);
-    viewer->graph->clear();
-    viewer->graph->load(_filename.c_str());
+    loadFromFile(QString::fromStdString(_filename));
     viewer->setUpdateDisplay(true);
-    viewer->updateDisplay();
   }
 }
 
@@ -274,6 +272,13 @@ bool MainWindow::allocateSolver(bool& allocatedNewSolver) {
   viewer->graph->setAlgorithm(solverFactory->construct(
       strSolver.toStdString(), _currentOptimizationAlgorithmProperty));
   _currentSolver = viewer->graph->solver();
+  // An open dialog must not keep the properties of the freed solver.
+  if (_optimizerPropertiesWidget != nullptr) {
+    _optimizerPropertiesWidget->setProperties(
+        _currentSolver != nullptr
+            ? const_cast<g2o::PropertyMap*>(&_currentSolver->properties())
+            : nullptr);
+  }
 
   _lastSolver = currentIndex;
   return true;

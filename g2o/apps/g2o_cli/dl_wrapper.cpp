@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <string_view>
 
 #if defined(G2O_HAVE_DLFCN_H)
 #include <dlfcn.h>
@@ -53,20 +54,14 @@ int DlWrapper::openLibraries(const std::string& directory,
         _filenames.end())
       continue;
 
-    // If we are doing a release build, the wildcards will pick up the
-    // suffixes; unfortunately the "_rd" extension means that we
-    // don't seem to be able to filter out the incompatible files using a
-    // wildcard expansion to wordexp.
-
-#ifndef G2O_LIBRARY_POSTFIX
-    if ((filename.rfind(string("_d.") + SO_EXT) ==
-         filename.length() - 3 - SO_EXT_LEN) ||
-        (filename.rfind(string("_rd.") + SO_EXT) ==
-         filename.length() - 4 - SO_EXT_LEN) ||
-        (filename.rfind(string("_s.") + SO_EXT) ==
-         filename.length() - 3 - SO_EXT_LEN))
+    // The pattern of a configuration without a postfix also matches the
+    // libraries of the debug configuration, which link another copy of g2o.
+    const string debugSuffix =
+        string(G2O_DEBUG_LIBRARY_POSTFIX) + string(".") + string(SO_EXT);
+    if (string_view{G2O_LIBRARY_POSTFIX} != G2O_DEBUG_LIBRARY_POSTFIX &&
+        filename.ends_with(debugSuffix)) {
       continue;
-#endif
+    }
 
     // open the lib
     // cerr << "loading " << filename << endl;

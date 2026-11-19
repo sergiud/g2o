@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <cassert>
 #include <csignal>
+#include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -44,29 +45,35 @@ using namespace std;
 using namespace g2o;
 using namespace Eigen;
 
-// sort according to max id, dimension
-struct IncrementalEdgesCompare {
-  bool operator()(SparseOptimizer::Edge* const& e1,
-                  SparseOptimizer::Edge* const& e2) {
-    const SparseOptimizer::Vertex* to1 =
-        dynamic_cast<const SparseOptimizer::Vertex*>(e1->vertices()[1]);
-    const SparseOptimizer::Vertex* to2 =
-        dynamic_cast<const SparseOptimizer::Vertex*>(e2->vertices()[1]);
+namespace {
 
-    int i11 = e1->vertices()[0]->id(), i12 = e1->vertices()[1]->id();
-    if (i11 > i12) {
-      swap(i11, i12);
-    }
-    int i21 = e2->vertices()[0]->id(), i22 = e2->vertices()[1]->id();
-    if (i21 > i22) {
-      swap(i21, i22);
-    }
-    if (i12 < i22) return true;
-    if (i12 > i22) return false;
-    // push the odometry to be the first
-    return to1->dimension() > to2->dimension();
+//! Vertex of an edge with the largest id.
+const SparseOptimizer::Vertex* lastVertex(const SparseOptimizer::Edge& e) {
+  const auto it = std::ranges::max_element(
+      e.vertices(), {}, [](const HyperGraph::Vertex* v) { return v->id(); });
+  return static_cast<const SparseOptimizer::Vertex*>(*it);
+}
+
+/**
+ * Orders the edges by the largest id of their vertices. Among edges that
+ * share it, the edges whose last vertex has the larger dimension, such as
+ * odometry, come first, followed by the edges with more vertices, so that an
+ * edge introduces its vertex before a unary edge constrains it.
+ */
+bool incrementalEdgesCompare(const SparseOptimizer::Edge& e1,
+                             const SparseOptimizer::Edge& e2) {
+  const SparseOptimizer::Vertex* last1 = lastVertex(e1);
+  const SparseOptimizer::Vertex* last2 = lastVertex(e2);
+  if (last1->id() != last2->id()) {
+    return last1->id() < last2->id();
   }
-};
+  if (last1->dimension() != last2->dimension()) {
+    return last1->dimension() > last2->dimension();
+  }
+  return e1.vertices().size() > e2.vertices().size();
+}
+
+}  // namespace
 
 void sigquit_handler(int sig) {
   if (sig == SIGINT) {
@@ -207,6 +214,12 @@ int main(int argc, char** argv) {
     }
   }
 
+  // A listing without a graph to optimize is the whole task.
+  if ((listSolvers || listTypes || listRobustKernels) &&
+      inputFilename.empty()) {
+    return EXIT_SUCCESS;
+  }
+
   SparseOptimizer optimizer;
   optimizer.setVerbose(verbose);
   optimizer.setForceStopFlag(&hasToStop);
@@ -229,7 +242,7 @@ int main(int argc, char** argv) {
   if (optimizer.solver() == nullptr) {
     ngx::Log(ngx::Error, "Error allocating solver. Allocating \"{}\" failed!",
              strSolver);
-    return 0;
+    return EXIT_FAILURE;
   }
 
   if (!solverProperties.empty()) {
@@ -239,6 +252,7 @@ int main(int argc, char** argv) {
       ngx::Log(
           ngx::Error,
           "Failure while updating the solver properties from the given string");
+      return EXIT_FAILURE;
     }
   }
   if (!solverProperties.empty() || printSolverProperties) {
@@ -251,7 +265,7 @@ int main(int argc, char** argv) {
   }
   if (inputFilename.empty()) {
     ngx::Log(ngx::Error, "No input data specified");
-    return 0;
+    return EXIT_FAILURE;
   } else if (inputFilename == "-") {
     ngx::Log("Read input from stdin");
     if (!optimizer.load(cin)) {
@@ -262,7 +276,7 @@ int main(int argc, char** argv) {
     ngx::Log("Read input from {}", inputFilename);
     ifstream ifs(inputFilename.c_str());
     if (!ifs) {
-      ngx::Log(ngx::Error, "Failed to open file");
+      ngx::Log(ngx::Error, "Failed to open file {}", inputFilename);
       return 1;
     }
     if (!optimizer.load(ifs)) {
@@ -301,7 +315,7 @@ int main(int argc, char** argv) {
         ngx::Log(ngx::Error,
                  "not found the vertex of id {} in the gaugeList. Aborting",
                  id);
-        return -1;
+        return EXIT_FAILURE;
       } else {
         if (i == 0) gauge = v;
         std::format_to(std::back_inserter(fixedGauges), " {}", v->id());
@@ -368,6 +382,7 @@ int main(int argc, char** argv) {
       ngx::Log("done.");
     } else {
       ngx::Log(ngx::Error, "Unknown Robust Kernel: {}", robustKernel);
+      return EXIT_FAILURE;
     }
   }
 
@@ -423,7 +438,7 @@ int main(int argc, char** argv) {
     sort(edges.begin(), edges.end(),
          [](const std::unique_ptr<SparseOptimizer::Edge>& e1,
             const std::unique_ptr<SparseOptimizer::Edge>& e2) {
-           return IncrementalEdgesCompare()(e1.get(), e2.get());
+           return incrementalEdgesCompare(*e1, *e2);
          });
 
     // The run adds the vertices in the order of the edges, so a gauge added
@@ -451,90 +466,44 @@ int main(int argc, char** argv) {
     HyperGraph::EdgeSet edgesAdded;
     for (auto& edge : edges) {
       SparseOptimizer::Edge* e = edge.get();
-      int doInit = 0;
-      SparseOptimizer::Vertex* v1 = optimizer.vertex(e->vertices()[0]->id());
-      SparseOptimizer::Vertex* v2 = optimizer.vertex(e->vertices()[1]->id());
-
-      if (v1 == nullptr) {
-        SparseOptimizer::Vertex* v = v1 =
-            dynamic_cast<SparseOptimizer::Vertex*>(e->vertices()[0]);
-        bool v1Added =
-            optimizer.addVertex(std::move(removedVertices.at(v->id())));
-        // cerr << "adding" << v->id() << "(" << v->dimension() << ")" << endl;
-        assert(v1Added);
-        if (!v1Added)
-          ngx::Log(ngx::Error, "Error adding vertex {}", v->id());
-        else
+      // The last vertex of the edge that the graph does not contain yet is
+      // initialized from the other vertices of the edge.
+      SparseOptimizer::Vertex* initialized = nullptr;
+      for (HyperGraph::Vertex* vertex : e->vertices()) {
+        if (optimizer.vertex(vertex->id()) != nullptr) {
+          continue;
+        }
+        auto* v = static_cast<SparseOptimizer::Vertex*>(vertex);
+        if (optimizer.addVertex(std::move(removedVertices.at(v->id())))) {
           verticesAdded.insert(v);
-        doInit = 1;
-        if (v->dimension() == maxDim) vertexCount++;
-      }
-
-      if (v2 == nullptr) {
-        SparseOptimizer::Vertex* v = v2 =
-            dynamic_cast<SparseOptimizer::Vertex*>(e->vertices()[1]);
-        bool v2Added =
-            optimizer.addVertex(std::move(removedVertices.at(v->id())));
-        // cerr << "adding" << v->id() << "(" << v->dimension() << ")" << endl;
-        assert(v2Added);
-        if (!v2Added)
+        } else {
           ngx::Log(ngx::Error, "Error adding vertex {}", v->id());
-        else
-          verticesAdded.insert(v);
-        doInit = 2;
-        if (v->dimension() == maxDim) vertexCount++;
+        }
+        initialized = v;
+        if (v->dimension() == maxDim) {
+          ++vertexCount;
+        }
       }
 
       // adding the edge and initialization of the vertices
-      {
-        // cerr << " adding edge " << e->vertices()[0]->id() <<  " " <<
-        // e->vertices()[1]->id() << endl;
-        const int fromId = e->vertices()[0]->id();
-        const int toId = e->vertices()[1]->id();
-        if (!optimizer.addEdge(std::move(edge))) {
-          ngx::Log(ngx::Error, "Unable to add edge {} -> {}", fromId, toId);
-          // The graph freed the edge, which therefore initializes no vertex.
-          doInit = 0;
-        } else {
-          edgesAdded.insert(e);
-        }
+      const int lastId = lastVertex(*e)->id();
+      if (!optimizer.addEdge(std::move(edge))) {
+        ngx::Log(ngx::Error, "Unable to add edge of vertex {}", lastId);
+        // The graph freed the edge, which therefore initializes no vertex.
+        initialized = nullptr;
+      } else {
+        edgesAdded.insert(e);
+      }
 
-        if (doInit != 0) {
-          OptimizableGraph::Vertex* from =
-              dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[0]);
-          OptimizableGraph::Vertex* to =
-              dynamic_cast<OptimizableGraph::Vertex*>(e->vertices()[1]);
-          switch (doInit) {
-            case 1:  // initialize v1 from v2
-            {
-              HyperGraph::VertexSet toSet;
-              toSet.insert(to);
-              if (e->initialEstimatePossible(toSet, from) > 0.) {
-                // cerr << "init: "
-                //<< to->id() << "(" << to->dimension() << ") -> "
-                //<< from->id() << "(" << from->dimension() << ") " << endl;
-                e->initialEstimate(toSet, from);
-              } else {
-                assert(0 && "Added unitialized variable to the graph");
-              }
-              break;
-            }
-            case 2: {
-              HyperGraph::VertexSet fromSet;
-              fromSet.insert(from);
-              if (e->initialEstimatePossible(fromSet, to) > 0.) {
-                // cerr << "init: "
-                //<< from->id() << "(" << from->dimension() << ") -> "
-                //<< to->id() << "(" << to->dimension() << ") " << endl;
-                e->initialEstimate(fromSet, to);
-              } else {
-                assert(0 && "Added unitialized variable to the graph");
-              }
-              break;
-            }
-            default:
-              ngx::Log(ngx::Error, "doInit wrong value");
+      if (initialized != nullptr) {
+        HyperGraph::VertexSet others;
+        for (HyperGraph::Vertex* vertex : e->vertices()) {
+          if (vertex != initialized) {
+            others.insert(vertex);
           }
+        }
+        if (e->initialEstimatePossible(others, initialized) > 0.) {
+          e->initialEstimate(others, initialized);
         }
       }
 
@@ -584,6 +553,17 @@ int main(int argc, char** argv) {
     }  // for all edges
 
     if (!freshlyOptimized) {
+      // The vertices and edges added since the last update join the
+      // optimization before the final step.
+      if (firstRound) {
+        if (!optimizer.initializeOptimization()) {
+          ngx::Log(ngx::Error, "initialization failed");
+          return 0;
+        }
+      } else if (!optimizer.updateInitialization(verticesAdded, edgesAdded)) {
+        ngx::Log(ngx::Error, "updating initialization failed");
+        return 0;
+      }
       double ts = get_monotonic_time();
       int currentIt = optimizer.optimize(incIterations, !firstRound);
       double dts = get_monotonic_time() - ts;
@@ -620,10 +600,13 @@ int main(int argc, char** argv) {
     double initChi = optimizer.chi2();
 
     signal(SIGINT, sigquit_handler);
+    // The optimizer returns the iterations it ran, none after a failure.
     int result = optimizer.optimize(maxIterations);
-    if (maxIterations > 0 && result == OptimizationAlgorithm::Fail) {
-      ngx::Log(ngx::Error, "Cholesky failed, result might be invalid");
-    } else if (computeMarginals) {
+    if (maxIterations > 0 && result <= 0) {
+      ngx::Log(ngx::Error, "Optimization failed, result might be invalid");
+      return EXIT_FAILURE;
+    }
+    if (computeMarginals) {
       std::vector<std::pair<int, int>> blockIndices;
       for (auto v : optimizer.activeVertices()) {
         if (v->hessianIndex() >= 0) {
@@ -697,6 +680,10 @@ int main(int argc, char** argv) {
       ofstream os;
       os.open(summaryFile.c_str(), ios::app);
       summary.writeToCSV(os);
+      if (!os.flush()) {
+        ngx::Log(ngx::Error, "Unable to write the summary to {}", summaryFile);
+        return EXIT_FAILURE;
+      }
     }
 
     if (statsFile != "") {
@@ -704,8 +691,12 @@ int main(int argc, char** argv) {
       ofstream os(statsFile.c_str());
       const BatchStatisticsContainer& bsc = optimizer.batchStatistics();
 
-      for (int i = 0; i < maxIterations; i++) {
-        os << bsc[i] << endl;
+      for (const G2OBatchStatistics& statistics : bsc) {
+        os << statistics << '\n';
+      }
+      if (!os.flush()) {
+        ngx::Log(ngx::Error, "Unable to write the statistics to {}", statsFile);
+        return EXIT_FAILURE;
       }
       ngx::Log("done.");
     }
@@ -716,16 +707,22 @@ int main(int argc, char** argv) {
     bool gnuPlotStatus = saveGnuplot(gnudump, optimizer);
     if (!gnuPlotStatus) {
       ngx::Log(ngx::Error, "Error while writing gnuplot files");
+      return EXIT_FAILURE;
     }
   }
 
   if (!outputfilename.empty()) {
+    bool saved = false;
     if (outputfilename == "-") {
       ngx::Log("saving to stdout");
-      optimizer.save(cout);
+      saved = optimizer.save(cout) && cout.flush();
     } else {
       ngx::Log("saving {}", outputfilename);
-      optimizer.save(outputfilename.c_str());
+      saved = optimizer.save(outputfilename.c_str());
+    }
+    if (!saved) {
+      ngx::Log(ngx::Error, "Unable to save the graph to {}", outputfilename);
+      return EXIT_FAILURE;
     }
     ngx::Log("done.");
   }

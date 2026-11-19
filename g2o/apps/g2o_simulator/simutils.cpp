@@ -39,7 +39,7 @@ int clipSegmentCircle(Eigen::Vector2d& p1, Eigen::Vector2d& p2, double r) {
     clip1 = true;
   }
   if (t2 < length) {
-    p2 = pBase + dp * t1;
+    p2 = pBase + dp * t2;
     clip2 = true;
   }
   if (clip1)

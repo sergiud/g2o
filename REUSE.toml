@@ -166,3 +166,9 @@ SPDX-FileCopyrightText = [
   "2011-2014 Andrey Kamaev",
 ]
 SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = "unit_test/cli/**.g2o"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Sergiu Deitsch"
+SPDX-License-Identifier = "BSD-2-Clause"
