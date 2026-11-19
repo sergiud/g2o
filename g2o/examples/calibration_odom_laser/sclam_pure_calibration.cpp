@@ -12,6 +12,7 @@
 #include <g2o/stuff/filesys_tools.h>
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
+#include <g2o/stuff/streamed.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>
 #include <g2o/types/data/data_queue.h>
@@ -21,6 +22,7 @@
 #include <g2o/types/slam2d/vertex_se2.h>
 
 #include <csignal>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -119,8 +121,8 @@ int main(int argc, char** argv) {
   DataQueue odometryQueue;
   int numLaserOdom = Gm2dlIO::readRobotLaser(rawFilename, odometryQueue);
   if (numLaserOdom == 0) {
-    ngx::Log(ngx::Warning, "No raw information read");
-    return 0;
+    ngx::Log(ngx::Error, "No raw information read from {}", rawFilename);
+    return EXIT_FAILURE;
   }
   ngx::Log("Read {} laser readings from file", numLaserOdom);
 
@@ -129,8 +131,8 @@ int main(int argc, char** argv) {
   DataQueue robotLaserQueue;
   int numRobotLaser = Gm2dlIO::readRobotLaser(inputFilename, robotLaserQueue);
   if (numRobotLaser == 0) {
-    ngx::Log(ngx::Warning, "No robot laser read");
-    return 0;
+    ngx::Log(ngx::Error, "No robot laser read from {}", inputFilename);
+    return EXIT_FAILURE;
   } else {
     RobotLaser* rl = dynamic_cast<RobotLaser*>(
         robotLaserQueue.buffer().begin()->second.get());
@@ -206,10 +208,10 @@ int main(int argc, char** argv) {
     optimizer.computeActiveErrors();
     optimizer.optimize(maxIterations);
     ngx::Log("Calibrated laser offset (x, y, theta):{}",
-             laserOffset->estimate().toVector().transpose());
+             Streamed(laserOffset->estimate().toVector().transpose()));
     odomCalib = odomParamsVertex->estimate();
     ngx::Log("Odometry parameters (scaling factors (v_l, v_r, b)): {}",
-             odomParamsVertex->estimate().transpose());
+             Streamed(odomParamsVertex->estimate().transpose()));
     optimizer.clear();
   }
 
@@ -277,12 +279,12 @@ int main(int argc, char** argv) {
   optimizer.computeActiveErrors();
   optimizer.optimize(maxIterations);
   ngx::Log("Calibrated laser offset (x, y, theta):{}",
-           laserOffset->estimate().toVector().transpose());
+           Streamed(laserOffset->estimate().toVector().transpose()));
   odomCalib(0) = -1. * linearSolution(0) * odomParamsVertex->estimate();
   odomCalib(1) = linearSolution(1) * odomParamsVertex->estimate();
   odomCalib(2) = odomParamsVertex->estimate();
   ngx::Log("Odometry parameters (scaling factors (v_l, v_r, b)): {}",
-           odomCalib.transpose());
+           Streamed(odomCalib.transpose()));
 
   {
     SE2 closedFormLaser;
@@ -290,9 +292,9 @@ int main(int argc, char** argv) {
     ClosedFormCalibration::calibrate(motions, closedFormLaser, closedFormOdom);
     ngx::Log("\nObtaining closed form solution");
     ngx::Log("Calibrated laser offset (x, y, theta):{}",
-             closedFormLaser.toVector().transpose());
+             Streamed(closedFormLaser.toVector().transpose()));
     ngx::Log("Odometry parameters (scaling factors (v_l, v_r, b)): {}",
-             closedFormOdom.transpose());
+             Streamed(closedFormOdom.transpose()));
   }
 
   if (!dumpGraphFilename.empty()) {

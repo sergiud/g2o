@@ -938,13 +938,14 @@ namespace SlamParser {
   case 10: // add_se3: "ADD" "Vertex SE3" "integer" NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
 #line 147 "parser.yy"
            {
-	       yylhs.value.as < std::unique_ptr<CommandNode> > () = std::make_unique<AddNode>(yystack_[7].value.as < std::string > (), yystack_[6].value.as < int > (), 6);
+              std::vector<double> values{yystack_[5].value.as < double > (), yystack_[4].value.as < double > (), yystack_[3].value.as < double > (), yystack_[2].value.as < double > (), yystack_[1].value.as < double > (), yystack_[0].value.as < double > ()};
+	      yylhs.value.as < std::unique_ptr<CommandNode> > () = std::make_unique<AddNode>(yystack_[7].value.as < std::string > (), yystack_[6].value.as < int > (), 6, values);
 	   }
-#line 944 "bison_parser.cpp"
+#line 945 "bison_parser.cpp"
     break;
 
   case 11: // add_se3: "ADD" "Edge SE3" "integer" "integer" "integer" NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
-#line 151 "parser.yy"
+#line 152 "parser.yy"
            {
               std::vector<double> values;
               values.push_back(yystack_[26].value.as < double > ());
@@ -977,93 +978,93 @@ namespace SlamParser {
               information.push_back(yystack_[0].value.as < double > ());
               yylhs.value.as < std::unique_ptr<CommandNode> > () = std::make_unique<AddEdge>(yystack_[30].value.as < std::string > (), yystack_[29].value.as < int > (), values.size(), yystack_[28].value.as < int > (), yystack_[27].value.as < int > (), values, information);
 	   }
-#line 981 "bison_parser.cpp"
+#line 982 "bison_parser.cpp"
     break;
 
   case 12: // fix_node: "Fix" "integer"
-#line 185 "parser.yy"
+#line 186 "parser.yy"
            {
               std::vector<int> values;
               values.push_back(yystack_[0].value.as < int > ());
               yylhs.value.as < std::unique_ptr<CommandNode> > () = std::make_unique<FixNode>("FIX", values);
            }
-#line 991 "bison_parser.cpp"
+#line 992 "bison_parser.cpp"
     break;
 
   case 13: // solve_state: "Solve State"
-#line 192 "parser.yy"
+#line 193 "parser.yy"
             {
               yylhs.value.as < std::unique_ptr<CommandNode> > () = std::make_unique<SolveSate>("SOLVE_STATE");
             }
-#line 999 "bison_parser.cpp"
+#line 1000 "bison_parser.cpp"
     break;
 
   case 14: // query_state: "Query State"
-#line 197 "parser.yy"
+#line 198 "parser.yy"
             {
               yylhs.value.as < std::unique_ptr<CommandNode> > () = std::make_unique<QueryState>("QUERY_STATE");
             }
-#line 1007 "bison_parser.cpp"
+#line 1008 "bison_parser.cpp"
     break;
 
   case 15: // query_state: "Query State" int_list
-#line 201 "parser.yy"
+#line 202 "parser.yy"
             {
               yylhs.value.as < std::unique_ptr<CommandNode> > () = std::make_unique<QueryState>("QUERY_STATE", yystack_[0].value.as < std::vector<int> > ());
             }
-#line 1015 "bison_parser.cpp"
+#line 1016 "bison_parser.cpp"
     break;
 
   case 16: // command: add_se2
-#line 206 "parser.yy"
+#line 207 "parser.yy"
         {
           yylhs.value.as < std::unique_ptr<CommandNode> > () = std::move(yystack_[0].value.as < std::unique_ptr<CommandNode> > ());
         }
-#line 1023 "bison_parser.cpp"
+#line 1024 "bison_parser.cpp"
     break;
 
   case 17: // command: add_se3
-#line 210 "parser.yy"
+#line 211 "parser.yy"
         {
           yylhs.value.as < std::unique_ptr<CommandNode> > () = std::move(yystack_[0].value.as < std::unique_ptr<CommandNode> > ());
         }
-#line 1031 "bison_parser.cpp"
+#line 1032 "bison_parser.cpp"
     break;
 
   case 18: // command: fix_node
-#line 214 "parser.yy"
+#line 215 "parser.yy"
         {
           yylhs.value.as < std::unique_ptr<CommandNode> > () = std::move(yystack_[0].value.as < std::unique_ptr<CommandNode> > ());
         }
-#line 1039 "bison_parser.cpp"
+#line 1040 "bison_parser.cpp"
     break;
 
   case 19: // command: solve_state
-#line 218 "parser.yy"
+#line 219 "parser.yy"
         {
           yylhs.value.as < std::unique_ptr<CommandNode> > () = std::move(yystack_[0].value.as < std::unique_ptr<CommandNode> > ());
         }
-#line 1047 "bison_parser.cpp"
+#line 1048 "bison_parser.cpp"
     break;
 
   case 20: // command: query_state
-#line 222 "parser.yy"
+#line 223 "parser.yy"
         {
           yylhs.value.as < std::unique_ptr<CommandNode> > () = std::move(yystack_[0].value.as < std::unique_ptr<CommandNode> > ());
         }
-#line 1055 "bison_parser.cpp"
+#line 1056 "bison_parser.cpp"
     break;
 
   case 23: // start: start command ';'
-#line 229 "parser.yy"
+#line 230 "parser.yy"
           {
             driver.slamContext.process(yystack_[1].value.as < std::unique_ptr<CommandNode> > ().get());
 	  }
-#line 1063 "bison_parser.cpp"
+#line 1064 "bison_parser.cpp"
     break;
 
 
-#line 1067 "bison_parser.cpp"
+#line 1068 "bison_parser.cpp"
 
             default:
               break;
@@ -1532,8 +1533,8 @@ namespace SlamParser {
   Parser::yyrline_[] =
   {
        0,    95,    95,    99,   105,   109,   114,   118,   126,   142,
-     146,   150,   184,   191,   196,   200,   205,   209,   213,   217,
-     221,   226,   227,   228
+     146,   151,   185,   192,   197,   201,   206,   210,   214,   218,
+     222,   227,   228,   229
   };
 
   void
@@ -1613,9 +1614,9 @@ namespace SlamParser {
 
 #line 30 "parser.yy"
 } // SlamParser
-#line 1617 "bison_parser.cpp"
+#line 1618 "bison_parser.cpp"
 
-#line 235 "parser.yy"
+#line 236 "parser.yy"
  /*** Additional Code ***/
 
 void SlamParser::Parser::error(const Parser::location_type& l, const std::string& m)

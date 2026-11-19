@@ -172,3 +172,15 @@ path = "unit_test/cli/**.g2o"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Sergiu Deitsch"
 SPDX-License-Identifier = "BSD-2-Clause"
+
+[[annotations]]
+path = "unit_test/calibration_odom_laser/**.gm2dl"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Sergiu Deitsch"
+SPDX-License-Identifier = "BSD-2-Clause"
+
+[[annotations]]
+path = "unit_test/bal/**.bal"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Sergiu Deitsch"
+SPDX-License-Identifier = "BSD-2-Clause"

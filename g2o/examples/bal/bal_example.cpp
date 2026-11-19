@@ -242,18 +242,15 @@ class EdgeObservationBAL
                             const_cast<double*>(point->estimate().data())};
     double* jacobians[] = {dError_dCamera.data(), dError_dPoint.data()};
     double value[Dimension];
-    bool diffState = BalAutoDiff::Differentiate(*this, parameters, Dimension,
-                                                value, jacobians);
+    // The projection has a value for every camera and point, so the
+    // differentiation succeeds.
+    [[maybe_unused]] const bool differentiated = BalAutoDiff::Differentiate(
+        *this, parameters, Dimension, value, jacobians);
+    assert(differentiated);
 
     // copy over the Jacobians (convert row-major -> column-major)
-    if (diffState) {
-      _jacobianOplusXi = dError_dCamera;
-      _jacobianOplusXj = dError_dPoint;
-    } else {
-      assert(0 && "Error while differentiating");
-      _jacobianOplusXi.setZero();
-      _jacobianOplusXi.setZero();
-    }
+    _jacobianOplusXi = dError_dCamera;
+    _jacobianOplusXj = dError_dPoint;
   }
 };
 
@@ -324,14 +321,24 @@ int main(int argc, char** argv) {
       ngx::Log(ngx::Error, "failed to open the dataset");
       return EXIT_FAILURE;
     }
-    int numCameras{}, numPoints{}, numObservations{};
-    ifs >> numCameras >> numPoints >> numObservations;
+    int numCameras{};
+    int numPoints{};
+    int numObservations{};
+    if (!(ifs >> numCameras >> numPoints >> numObservations) ||
+        numCameras < 0 || numPoints < 0 || numObservations < 0) {
+      ngx::Log(ngx::Error,
+               "the header of {} needs three counts of at least 0, got {} {} "
+               "{}",
+               inputFilename, numCameras, numPoints, numObservations);
+      return EXIT_FAILURE;
+    }
 
     ngx::Log("numCameras = {} numPoints = {} numObservations = {}", numCameras,
              numPoints, numObservations);
 
+    // The counts come from the file, so the vertices grow with the elements
+    // that the file actually holds.
     int id = 0;
-    cameras.reserve(numCameras);
     for (int i = 0; i < numCameras; ++i, ++id) {
       auto camOwner = std::make_unique<VertexCameraBAL>();
       auto* cam = camOwner.get();
@@ -340,7 +347,6 @@ int main(int argc, char** argv) {
       cameras.push_back(cam);
     }
 
-    points.reserve(numPoints);
     for (int i = 0; i < numPoints; ++i, ++id) {
       auto pOwner = std::make_unique<VertexPointBAL>();
       auto* p = pOwner.get();
@@ -355,15 +361,24 @@ int main(int argc, char** argv) {
 
     // read in the observation
     for (int i = 0; i < numObservations; ++i) {
-      int camIndex, pointIndex;
-      double obsX, obsY;
-      ifs >> camIndex >> pointIndex >> obsX >> obsY;
-
-      assert(camIndex >= 0 && (size_t)camIndex < cameras.size() &&
-             "Index out of bounds");
+      int camIndex;
+      int pointIndex;
+      double obsX;
+      double obsY;
+      if (!(ifs >> camIndex >> pointIndex >> obsX >> obsY)) {
+        ngx::Log(ngx::Error, "{} ends in observation {} of {}", inputFilename,
+                 i, numObservations);
+        return EXIT_FAILURE;
+      }
+      if (camIndex < 0 || camIndex >= numCameras || pointIndex < 0 ||
+          pointIndex >= numPoints) {
+        ngx::Log(ngx::Error,
+                 "observation {} of {} refers to camera {} and point {}, "
+                 "expected [0, {}) and [0, {})",
+                 i, inputFilename, camIndex, pointIndex, numCameras, numPoints);
+        return EXIT_FAILURE;
+      }
       VertexCameraBAL* cam = cameras[camIndex];
-      assert(pointIndex >= 0 && (size_t)pointIndex < points.size() &&
-             "Index out of bounds");
       VertexPointBAL* point = points[pointIndex];
 
       auto e = std::make_unique<EdgeObservationBAL>();
@@ -381,6 +396,11 @@ int main(int argc, char** argv) {
     Eigen::VectorXd cameraParameter(9);
     for (int i = 0; i < numCameras; ++i) {
       for (int j = 0; j < 9; ++j) ifs >> cameraParameter(j);
+      if (!ifs) {
+        ngx::Log(ngx::Error, "{} ends in the parameters of camera {} of {}",
+                 inputFilename, i, numCameras);
+        return EXIT_FAILURE;
+      }
       VertexCameraBAL* cam = cameras[i];
       cam->setEstimate(cameraParameter);
     }
@@ -388,7 +408,11 @@ int main(int argc, char** argv) {
     // read in the points
     Eigen::Vector3d p;
     for (int i = 0; i < numPoints; ++i) {
-      ifs >> p(0) >> p(1) >> p(2);
+      if (!(ifs >> p(0) >> p(1) >> p(2))) {
+        ngx::Log(ngx::Error, "{} ends in point {} of {}", inputFilename, i,
+                 numPoints);
+        return EXIT_FAILURE;
+      }
 
       VertexPointBAL* point = points[i];
       point->setEstimate(p);

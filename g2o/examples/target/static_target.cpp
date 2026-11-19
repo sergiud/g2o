@@ -14,9 +14,11 @@
 #include <g2o/solvers/cholmod/linear_solver_cholmod.h>
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/sampler.h>
+#include <g2o/stuff/streamed.h>
 
 #include <Eigen/StdVector>
 #include <cstdint>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <utility>
@@ -81,9 +83,9 @@ int main() {
   cout << "truePoint=\n" << truePoint << endl;
 
   ngx::Log("computed estimate=\n{}",
-           dynamic_cast<VertexPosition3D*>(
-               optimizer.vertices().find(0)->second.get())
-               ->estimate());
+           Streamed(dynamic_cast<VertexPosition3D*>(
+                        optimizer.vertices().find(0)->second.get())
+                        ->estimate()));
 
   // position->setMarginalized(true);
 
@@ -97,5 +99,10 @@ int main() {
   //
   cout << "covariance\n" << spinv << endl;
 
-  cout << spinv.block(0, 0) << endl;
+  const MatrixXd* covariance = spinv.block(0, 0);
+  if (covariance == nullptr) {
+    ngx::Log(ngx::Error, "no covariance computed for the target");
+    return EXIT_FAILURE;
+  }
+  cout << *covariance << endl;
 }

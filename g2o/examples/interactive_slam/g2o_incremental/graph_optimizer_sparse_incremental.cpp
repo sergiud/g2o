@@ -221,6 +221,11 @@ bool SparseOptimizerIncremental::updateInitialization(
   }
   // cerr << "updating index mapping done." << endl;
 
+  // Edges between fixed vertices add no block to the factorization.
+  if (_touchedVertices.empty()) {
+    return true;
+  }
+
   // backup the tempindex and prepare sorting structure
   std::vector<VertexBackup> backupIdx(_touchedVertices.size());
   int idx = 0;

@@ -10,6 +10,7 @@
 #include <cmath>
 #include <map>
 #include <memory>
+#include <unordered_map>
 #include <utility>
 
 #include "rand.h"
@@ -257,6 +258,18 @@ void Simulator::simulate(int numNodes, const SE2& sensorOffset) {
       }
     }
     ngx::Log("done.");
+  }
+
+  // The grid frees its landmarks at the end of the simulation, so the poses
+  // refer to the copies that the simulator keeps.
+  std::unordered_map<int, Landmark*> kept;
+  for (Landmark& l : _landmarks) {
+    kept[l.id] = &l;
+  }
+  for (GridPose& p : poses) {
+    for (Landmark*& l : p.landmarks) {
+      l = kept.at(l->id);
+    }
   }
 }
 

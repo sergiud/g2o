@@ -12,6 +12,7 @@
 #include <g2o/stuff/filesys_tools.h>
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
+#include <g2o/stuff/streamed.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>
 #include <g2o/types/data/types_data.h>
@@ -20,6 +21,7 @@
 #include <ng-log/experimental/signal_safe_log.h>
 
 #include <csignal>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -82,6 +84,7 @@ int main(int argc, char** argv) {
   // loading
   if (!Gm2dlIO::readGm2dl(inputFilename, optimizer, false)) {
     ngx::Log(ngx::Error, "Error while loading gm2dl file");
+    return EXIT_FAILURE;
   }
 
   VertexSE2* laserOffset =
@@ -89,7 +92,7 @@ int main(int argc, char** argv) {
   // laserOffset->setEstimate(SE2()); // set to Identity
   if (laserOffset != nullptr) {
     ngx::Log("Initial laser offset {}",
-             laserOffset->estimate().toVector().transpose());
+             Streamed(laserOffset->estimate().toVector().transpose()));
   }
   bool gaugeFreedom = optimizer.gaugeFreedom();
 
@@ -141,11 +144,12 @@ int main(int argc, char** argv) {
   int i = optimizer.optimize(maxIterations);
   if (maxIterations > 0 && (i == 0)) {
     ngx::Log(ngx::Error, "optimize failed, result might be invalid");
+    return EXIT_FAILURE;
   }
 
   if (laserOffset != nullptr) {
     ngx::Log("Calibrated laser offset {}",
-             laserOffset->estimate().toVector().transpose());
+             Streamed(laserOffset->estimate().toVector().transpose()));
   }
 
   if (!outputfilename.empty()) {
@@ -156,6 +160,7 @@ int main(int argc, char** argv) {
       ngx::Log("done.");
     } else {
       ngx::Log(ngx::Error, "failed");
+      return EXIT_FAILURE;
     }
   }
 
@@ -169,5 +174,5 @@ int main(int argc, char** argv) {
     }
   }
 
-  return 1;
+  return EXIT_SUCCESS;
 }

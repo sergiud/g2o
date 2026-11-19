@@ -9,6 +9,7 @@
 #include <g2o/core/sparse_optimizer.h>
 #include <g2o/solvers/csparse/linear_solver_csparse.h>
 #include <g2o/stuff/logger.h>
+#include <g2o/stuff/streamed.h>
 #include <g2o/types/icp/types_icp.h>
 
 #include <Eigen/StdVector>
@@ -117,7 +118,8 @@ int main(int argc, char** argv) {
     vc->setEstimate(cam);
     vc->setId(vertex_id);  // vertex id
 
-    ngx::Log("{} | {}", t.transpose(), q.coeffs().transpose());
+    ngx::Log("{} | {}", Streamed(t.transpose()),
+             Streamed(q.coeffs().transpose()));
 
     // set first cam pose fixed
     if (i == 0) vc->setFixed(true);

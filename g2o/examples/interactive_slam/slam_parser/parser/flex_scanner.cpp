@@ -577,6 +577,8 @@ static const flex_int16_t yy_chk[220] = { 0,
 #line 1 "scanner.l"
 #line 2 "scanner.l"
 
+#include <charconv>
+#include <system_error>
 #include <vector>
 #include <string>
 
@@ -879,7 +881,13 @@ YY_RULE_SETUP
 
 #line 60 "scanner.l"
 {
-  yylval->emplace<int>(atoi(yytext));
+  // An integer beyond the range of an int is no valid token, which the
+  // parser reports as a syntax error.
+  const char* first = yytext + (*yytext == '+' ? 1 : 0);
+  int value = 0;
+  const auto [end, error] = std::from_chars(first, yytext + yyleng, value);
+  if (error != std::errc{}) return token::YYUNDEF;
+  yylval->emplace<int>(value);
   return token::INTEGER;
 }
 	YY_BREAK
@@ -995,7 +1003,9 @@ YY_RULE_SETUP
 
 #line 123 "scanner.l"
 {
-    return static_cast<token_type>(*yytext);
+    // A byte above 0x7f of a signed char would be a negative token, which
+    // the parser takes for the end of the input.
+    return static_cast<token_type>(static_cast<unsigned char>(*yytext));
 }
 	YY_BREAK
 /*** END EXAMPLE - Change the example lexer rules above ***/

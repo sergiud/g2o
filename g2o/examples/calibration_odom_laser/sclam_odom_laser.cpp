@@ -10,6 +10,7 @@
 #include <g2o/stuff/filesys_tools.h>
 #include <g2o/stuff/logger.h>
 #include <g2o/stuff/macros.h>
+#include <g2o/stuff/streamed.h>
 #include <g2o/stuff/string_tools.h>
 #include <g2o/stuff/timeutil.h>
 #include <g2o/types/data/data_queue.h>
@@ -20,6 +21,7 @@
 #include <ng-log/experimental/signal_safe_log.h>
 
 #include <csignal>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -83,12 +85,13 @@ int main(int argc, char** argv) {
   // loading
   if (!Gm2dlIO::readGm2dl(inputFilename, optimizer, false)) {
     ngx::Log(ngx::Error, "Error while loading gm2dl file");
+    return EXIT_FAILURE;
   }
   DataQueue robotLaserQueue;
   int numLaserOdom = Gm2dlIO::readRobotLaser(rawFilename, robotLaserQueue);
   if (numLaserOdom == 0) {
-    ngx::Log(ngx::Warning, "No raw information read");
-    return 0;
+    ngx::Log(ngx::Error, "No raw information read from {}", rawFilename);
+    return EXIT_FAILURE;
   }
   ngx::Log("Read {} laser readings from file", numLaserOdom);
 
@@ -162,16 +165,17 @@ int main(int argc, char** argv) {
   int i = optimizer.optimize(maxIterations);
   if (maxIterations > 0 && (i == 0)) {
     ngx::Log(ngx::Error, "optimize failed, result might be invalid");
+    return EXIT_FAILURE;
   }
 
   if (laserOffset != nullptr) {
     ngx::Log("Calibrated laser offset (x, y, theta):{}",
-             laserOffset->estimate().toVector().transpose());
+             Streamed(laserOffset->estimate().toVector().transpose()));
   }
 
   if (odomParamsVertex != nullptr) {
     ngx::Log("Odometry parameters (scaling factors (v_l, v_r, b)): {}",
-             odomParamsVertex->estimate().transpose());
+             Streamed(odomParamsVertex->estimate().transpose()));
   }
 
   ngx::Log("vertices: {}", optimizer.vertices().size());

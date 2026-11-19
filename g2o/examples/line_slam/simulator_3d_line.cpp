@@ -7,6 +7,7 @@
 #include <g2o/core/linear_solver.h>
 #include <g2o/core/optimization_algorithm_factory.h>
 #include <g2o/core/sparse_optimizer.h>
+#include <g2o/examples/sample_noise.h>
 #include <g2o/solvers/pcg/linear_solver_pcg.h>
 #include <g2o/stuff/command_args.h>
 #include <g2o/stuff/logger.h>
@@ -17,6 +18,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <random>
 #include <utility>
 
 using namespace g2o;
@@ -25,44 +27,18 @@ using namespace Eigen;
 
 G2O_USE_OPTIMIZATION_LIBRARY(csparse)
 
-double uniform_rand(double lowerBndr, double upperBndr) {
-  return lowerBndr +
-         ((double)std::rand() / (RAND_MAX + 1.0)) * (upperBndr - lowerBndr);
+namespace {
+
+/**
+ * Engine of the noise, whose default seed reproduces the same simulation in
+ * every run.
+ */
+std::mt19937& randomEngine() {
+  static std::mt19937 engine;
+  return engine;
 }
 
-double gauss_rand(double sigma) {
-  double x, y, r2;
-  do {
-    x = -1.0 + 2.0 * uniform_rand(0.0, 1.0);
-    y = -1.0 + 2.0 * uniform_rand(0.0, 1.0);
-    r2 = x * x + y * y;
-  } while (r2 > 1.0 || r2 == 0.0);
-  return sigma * y * std::sqrt(-2.0 * log(r2) / r2);
-}
-
-Eigen::Isometry3d sample_noise_from_se3(const Vector6d& cov) {
-  double nx = gauss_rand(cov(0));
-  double ny = gauss_rand(cov(1));
-  double nz = gauss_rand(cov(2));
-
-  double nroll = gauss_rand(cov(3));
-  double npitch = gauss_rand(cov(4));
-  double nyaw = gauss_rand(cov(5));
-
-  AngleAxisd aa(AngleAxisd(nyaw, Vector3d::UnitZ()) *
-                AngleAxisd(nroll, Vector3d::UnitX()) *
-                AngleAxisd(npitch, Vector3d::UnitY()));
-
-  Eigen::Isometry3d retval = Isometry3d::Identity();
-  retval.matrix().block<3, 3>(0, 0) = aa.toRotationMatrix();
-  retval.translation() = Vector3d(nx, ny, nz);
-  return retval;
-}
-
-Vector4d sample_noise_from_line(const Vector4d& cov) {
-  return Vector4d(gauss_rand(cov(0)), gauss_rand(cov(1)), gauss_rand(cov(2)),
-                  gauss_rand(cov(3)));
-}
+}  // namespace
 
 struct SimulatorItem {
   SimulatorItem(OptimizableGraph* graph_) : _graph(graph_) {}
@@ -135,7 +111,7 @@ struct Robot : public WorldItem {
       VertexSE3* oldV = dynamic_cast<VertexSE3*>(vertex());
       auto eOwner = std::make_unique<EdgeSE3>();
       auto* e = eOwner.get();
-      Isometry3d noise = sample_noise_from_se3(_nmovecov);
+      Isometry3d noise = examples::samplePoseNoise(_nmovecov, randomEngine());
       e->setMeasurement(delta * noise);
       Matrix6d m = Matrix6d::Identity();
       for (int i = 0; i < 6; ++i) {
@@ -254,7 +230,7 @@ struct LineSensor : public Sensor {
     auto e = std::make_unique<EdgeSE3Line3D>();
     e->vertices()[0] = robotVertex;
     e->vertices()[1] = lineVertex;
-    Vector4d noise = sample_noise_from_line(_nline);
+    Vector4d noise = examples::sampleNoise(_nline, randomEngine());
     measuredLine.oplus(noise);
     e->setMeasurement(measuredLine);
     Matrix4d m = Matrix4d::Zero();

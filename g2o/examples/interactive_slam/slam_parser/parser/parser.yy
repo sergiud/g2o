@@ -145,7 +145,8 @@ add_se3 : ADD V_SE3 INTEGER
 	   }
          | ADD V_SE3 INTEGER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
            {
-	       $$ = std::make_unique<AddNode>($2, $3, 6);
+              std::vector<double> values{$4, $5, $6, $7, $8, $9};
+	      $$ = std::make_unique<AddNode>($2, $3, 6, values);
 	   }
          | ADD E_SE3 INTEGER INTEGER INTEGER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
            {

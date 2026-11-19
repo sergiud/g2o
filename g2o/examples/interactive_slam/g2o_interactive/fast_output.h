@@ -65,7 +65,6 @@ inline int modp_dtoa(double value, char* str, int prec) {
     str[1] = 'a';
     str[2] = 'n';
     str[3] = '\0';
-    assert(0);
     return 3;
   }
   /* if input is larger than thres_max, revert to exponential */
@@ -89,6 +88,12 @@ inline int modp_dtoa(double value, char* str, int prec) {
     value = -value;
   }
 
+  /* for very large numbers switch back to native sprintf for exponentials,
+     before the whole part overflows the int that holds it */
+  if (value > thres_max) {
+    return sprintf(str, "%e", neg != 0 ? -value : value);
+  }
+
   int whole = (int)value;
   double tmp = (value - whole) * pow10[prec];
   uint32_t frac = (uint32_t)(tmp);
@@ -96,25 +101,15 @@ inline int modp_dtoa(double value, char* str, int prec) {
 
   if (diff > 0.5) {
     ++frac;
-    /* handle rollover, e.g.  case 0.99 with prec 1 is 1.0  */
-    if (frac >= pow10[prec]) {
-      frac = 0;
-      ++whole;
-    }
   } else if (diff == 0.5 && ((frac == 0) || ((frac & 1) != 0u))) {
     /* if halfway, round up if odd, OR
        if last digit is 0.  That last part is strange */
     ++frac;
   }
-
-  /* for very large numbers switch back to native sprintf for exponentials.
-     anyone want to write code to replace this? */
-  /*
-     normal printf behavior is to print EVERY whole number digit
-     which can be 100s of characters overflowing your buffers == bad
-     */
-  if (value > thres_max) {
-    return sprintf(str, "%e", neg != 0 ? -value : value);
+  /* handle rollover of either rounding, e.g. case 0.99 with prec 1 is 1.0 */
+  if (frac >= pow10[prec]) {
+    frac = 0;
+    ++whole;
   }
 
   if (prec == 0) {

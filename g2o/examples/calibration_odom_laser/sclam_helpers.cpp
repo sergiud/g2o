@@ -51,10 +51,20 @@ void addOdometryCalibLinksDifferential(SparseOptimizer& optimizer,
 
     RobotLaser* rl1 = dynamic_cast<RobotLaser*>(r1->userData());
     RobotLaser* rl2 = dynamic_cast<RobotLaser*>(r2->userData());
+    if (rl1 == nullptr || rl2 == nullptr) {
+      ngx::Log(ngx::Warning, "no laser data for the edge {} <-> {}", r1->id(),
+               r2->id());
+      continue;
+    }
     RobotLaser* odom1 =
         dynamic_cast<RobotLaser*>(odomData.findClosestData(rl1->timestamp()));
     RobotLaser* odom2 =
         dynamic_cast<RobotLaser*>(odomData.findClosestData(rl2->timestamp()));
+    if (odom1 == nullptr || odom2 == nullptr) {
+      ngx::Log(ngx::Warning, "no odometry for the edge {} <-> {}", r1->id(),
+               r2->id());
+      continue;
+    }
 
     if (fabs(rl1->timestamp() - rl2->timestamp()) < 1e-7) {
       ngx::Log("strange egde {} <-> {}", r1->id(), r2->id());

@@ -55,8 +55,10 @@ class G2O_INTERACTIVE_API OnlineEdgeSE3 : public EdgeSE3 {
   double chi2() const {
     OnlineVertexSE3* from = dynamic_cast<OnlineVertexSE3*>(_vertices[0]);
     OnlineVertexSE3* to = dynamic_cast<OnlineVertexSE3*>(_vertices[1]);
-    Eigen::Isometry3d delta =
-        _inverseMeasurement * from->estimate().inverse() * to->estimate();
+    // The online optimization keeps its result in the updated estimates.
+    Eigen::Isometry3d delta = _inverseMeasurement *
+                              from->updatedEstimate.inverse() *
+                              to->updatedEstimate;
     Vector6d error = internal::toVectorMQT(delta);
     return error.dot(information() * error);
   }

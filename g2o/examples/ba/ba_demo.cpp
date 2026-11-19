@@ -65,11 +65,11 @@ int main(int argc, const char* argv[]) {
          << endl;
     cout << endl;
     cout << "PIXEL_NOISE: noise in image space (E.g.: 1)" << endl;
-    cout << "OUTLIER_RATIO: probability of spuroius observation  (default: 0.0)"
+    cout << "OUTLIER_RATIO: probability of spurious observation  (default: 0.0)"
          << endl;
     cout << "ROBUST_KERNEL: use robust kernel (0 or 1; default: 0==false)"
          << endl;
-    cout << "STRUCTURE_ONLY: performe structure-only BA to get better point "
+    cout << "STRUCTURE_ONLY: perform structure-only BA to get better point "
             "initializations (0 or 1; default: 0==false)"
          << endl;
     cout << "DENSE: Use dense solver (0 or 1; default: 0==false)" << endl;
@@ -242,7 +242,7 @@ int main(int argc, const char* argv[]) {
   g2o::ngx::Log("Performing full BA:");
   optimizer.optimize(10);
   cout << "Point error before optimisation (inliers only): "
-       << sqrt(sum_diff2 / point_num) << endl;
+       << sqrt(sum_diff2 / inliers.size()) << endl;
   point_num = 0;
   sum_diff2 = 0;
   for (auto& it : pointid_2_trueid) {

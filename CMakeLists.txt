@@ -1766,17 +1766,74 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
     gtest_discover_tests (unittest_simulator)
   endif (TARGET g2o_simulator_library)
 
+  if (TARGET tutorial_slam2d_library)
+    g2o_add_executable (unittest_tutorial_slam2d
+      SOURCES unit_test/tutorial_slam2d/simulator.cpp
+      LINK GTest::gmock GTest::gtest_main tutorial_slam2d_library
+    )
+    target_include_directories (unittest_tutorial_slam2d PRIVATE
+      ${g2o_SOURCE_DIR}/g2o/examples/tutorial_slam2d
+    )
+
+    gtest_discover_tests (unittest_tutorial_slam2d)
+  endif (TARGET tutorial_slam2d_library)
+
+  if (TARGET calibration_odom_laser_library)
+    g2o_add_executable (unittest_calibration_odom_laser
+      SOURCES unit_test/calibration_odom_laser/gm2dl_io.cpp
+      LINK GTest::gmock GTest::gtest_main calibration_odom_laser_library
+    )
+    target_include_directories (unittest_calibration_odom_laser PRIVATE
+      ${g2o_SOURCE_DIR}/g2o/examples/calibration_odom_laser
+    )
+    target_compile_definitions (unittest_calibration_odom_laser PRIVATE
+      G2O_TEST_GM2DL="${g2o_SOURCE_DIR}/unit_test/calibration_odom_laser/laser_offset.gm2dl"
+    )
+
+    gtest_discover_tests (unittest_calibration_odom_laser)
+  endif (TARGET calibration_odom_laser_library)
+
   g2o_add_executable (unittest_stuff
     SOURCES
       unit_test/stuff/command_args.cpp
       unit_test/stuff/filesys_tools.cpp
       unit_test/stuff/property.cpp
       unit_test/stuff/read_values.cpp
+      unit_test/stuff/sample_noise.cpp
       unit_test/stuff/sampler.cpp
     LINK GTest::gmock GTest::gtest_main stuff
   )
 
   gtest_discover_tests (unittest_stuff)
+
+  g2o_add_executable (unittest_slam_parser
+    SOURCES unit_test/interactive_slam/parser_interface.cpp
+    LINK GTest::gmock GTest::gtest_main interface_library
+      ng-log::experimental
+  )
+
+  gtest_discover_tests (unittest_slam_parser)
+
+  if (TARGET g2o_interactive_library)
+    g2o_add_executable (unittest_interactive_slam
+      SOURCES
+        unit_test/interactive_slam/fast_output.cpp
+        unit_test/interactive_slam/g2o_slam_interface.cpp
+      LINK GTest::gmock GTest::gtest_main g2o_interactive_library
+    )
+
+    gtest_discover_tests (unittest_interactive_slam)
+  endif (TARGET g2o_interactive_library)
+
+  if (TARGET g2o_incremental_library)
+    g2o_add_executable (unittest_incremental_slam
+      LICENSE GPL-3.0-or-later
+      SOURCES unit_test/interactive_slam/incremental.cpp
+      LINK GTest::gtest_main g2o_incremental_library
+    )
+
+    gtest_discover_tests (unittest_incremental_slam)
+  endif (TARGET g2o_incremental_library)
 endif (BUILD_TESTING AND TARGET GTest::gtest_main)
 
 # The installed package is tested the way consumers use it: a prefix inside
@@ -2144,6 +2201,78 @@ if (BUILD_TESTING)
         PASS_REGULAR_EXPRESSION "VERTEX_XY [0-9]+ 1 1\n"
       )
     endif (TARGET convertSegmentLine_application)
+
+    if (TARGET sclam_laser_calib)
+      set (_g2o_EXPECT_SCRIPT ${g2o_SOURCE_DIR}/unit_test/cli/expect_exit.cmake)
+      set (_g2o_GM2DL
+        ${g2o_SOURCE_DIR}/unit_test/calibration_odom_laser/laser_offset.gm2dl)
+      set (_g2o_MISSING ${g2o_BINARY_DIR}/missing/input)
+      add_test (NAME sclam_laser_calib_missing_input
+        COMMAND ${CMAKE_COMMAND} -DEXPECTED=1 -P ${_g2o_EXPECT_SCRIPT} --
+          $<TARGET_FILE:sclam_laser_calib> ${_g2o_MISSING})
+      add_test (NAME sclam_laser_calib_succeeds
+        COMMAND ${CMAKE_COMMAND} -DEXPECTED=0 -P ${_g2o_EXPECT_SCRIPT} --
+          $<TARGET_FILE:sclam_laser_calib> -i 1
+          -o ${g2o_BINARY_DIR}/calibrated.gm2dl ${_g2o_GM2DL})
+      add_test (NAME sclam_odom_laser_missing_input
+        COMMAND ${CMAKE_COMMAND} -DEXPECTED=1 -P ${_g2o_EXPECT_SCRIPT} --
+          $<TARGET_FILE:sclam_odom_laser> ${_g2o_MISSING} ${_g2o_GM2DL})
+      add_test (NAME sclam_odom_laser_missing_log
+        COMMAND ${CMAKE_COMMAND} -DEXPECTED=1 -P ${_g2o_EXPECT_SCRIPT} --
+          $<TARGET_FILE:sclam_odom_laser> ${_g2o_GM2DL} ${_g2o_MISSING})
+      # The poses without laser data cannot calibrate the odometry, which
+      # leaves it unconstrained, so the program fails rather than crashes.
+      add_test (NAME sclam_odom_laser_pose_without_laser
+        COMMAND ${CMAKE_COMMAND} -DEXPECTED=1 -P ${_g2o_EXPECT_SCRIPT} --
+          $<TARGET_FILE:sclam_odom_laser>
+          ${g2o_SOURCE_DIR}/unit_test/calibration_odom_laser/without_laser.gm2dl
+          ${_g2o_GM2DL})
+      add_test (NAME sclam_pure_calibration_missing_log
+        COMMAND ${CMAKE_COMMAND} -DEXPECTED=1 -P ${_g2o_EXPECT_SCRIPT} --
+          $<TARGET_FILE:sclam_pure_calibration> ${_g2o_GM2DL} ${_g2o_MISSING})
+    endif (TARGET sclam_laser_calib)
+
+    # The example prints the covariance of the target, not its address.
+    if (TARGET static_target)
+      add_test (NAME static_target_prints_the_covariance COMMAND static_target)
+      set_tests_properties (static_target_prints_the_covariance PROPERTIES
+        FAIL_REGULAR_EXPRESSION "0x[0-9a-f]+"
+      )
+    endif (TARGET static_target)
+
+    # The sphere needs three noise values per option, a lap and an edge.
+    if (TARGET create_sphere)
+      set (_g2o_SPHERE_EXIT ${CMAKE_COMMAND} -DEXPECTED=1
+        -P ${g2o_SOURCE_DIR}/unit_test/cli/expect_exit.cmake --
+        $<TARGET_FILE:create_sphere>)
+      add_test (NAME create_sphere_one_translation_noise
+        COMMAND ${_g2o_SPHERE_EXIT} -noiseTranslation 0.1
+          -o ${g2o_BINARY_DIR}/sphere_noise.g2o)
+      add_test (NAME create_sphere_one_rotation_noise
+        COMMAND ${_g2o_SPHERE_EXIT} -noiseRotation 0.1
+          -o ${g2o_BINARY_DIR}/sphere_noise.g2o)
+      add_test (NAME create_sphere_without_laps
+        COMMAND ${_g2o_SPHERE_EXIT} -laps 0 -o ${g2o_BINARY_DIR}/sphere_laps.g2o)
+      add_test (NAME create_sphere_unwritable_output
+        COMMAND ${_g2o_SPHERE_EXIT} -o ${g2o_BINARY_DIR}/missing/sphere.g2o)
+    endif (TARGET create_sphere)
+
+    # The example rejects a dataset it cannot read completely.
+    if (TARGET bal_example)
+      foreach (_g2o_BAL IN ITEMS index_out_of_range negative_count not_bal
+          truncated)
+        add_test (NAME bal_example_${_g2o_BAL}
+          COMMAND ${CMAKE_COMMAND} -DEXPECTED=1
+            -P ${g2o_SOURCE_DIR}/unit_test/cli/expect_exit.cmake --
+            $<TARGET_FILE:bal_example>
+            ${g2o_SOURCE_DIR}/unit_test/bal/${_g2o_BAL}.bal)
+      endforeach (_g2o_BAL)
+      add_test (NAME bal_example_valid
+        COMMAND ${CMAKE_COMMAND} -DEXPECTED=0
+          -P ${g2o_SOURCE_DIR}/unit_test/cli/expect_exit.cmake --
+          $<TARGET_FILE:bal_example> -i 1
+          ${g2o_SOURCE_DIR}/unit_test/bal/valid.bal)
+    endif (TARGET bal_example)
 
     # Iterations without a limit end by the gain, and the statistics hold
     # only the iterations that ran.

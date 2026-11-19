@@ -189,7 +189,13 @@ bool Gm2dlIO::writeGm2dl(const std::string& filename,
       // write back in the gm2dl format
       fout << "EDGE2 " << calibEdge->vertex(0)->id() << " "
            << calibEdge->vertex(1)->id();
-      Eigen::Vector3d meas = calibEdge->measurement().toVector();
+      // The file holds the odometry of the robot, which reading moved into
+      // the frame of the laser.
+      const SE2& laserOffset =
+          static_cast<const VertexSE2*>(calibEdge->vertex(2))->estimate();
+      Eigen::Vector3d meas =
+          (laserOffset * calibEdge->measurement() * laserOffset.inverse())
+              .toVector();
       fout << " " << meas.x() << " " << meas.y() << " " << meas.z();
       const Eigen::Matrix3d& m = calibEdge->information();
       fout << " " << m(0, 0) << " " << m(0, 1) << " " << m(1, 1) << " "

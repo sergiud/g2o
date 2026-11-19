@@ -1,5 +1,7 @@
 %{ /*** C/C++ Declarations ***/
 
+#include <charconv>
+#include <system_error>
 #include <vector>
 #include <string>
 
@@ -58,7 +60,13 @@ typedef SlamParser::Parser::token_type token_type;
  /*** BEGIN EXAMPLE - Change the example lexer rules below ***/
 
 ("+"|"-")?[0-9]+ {
-  yylval->emplace<int>(atoi(yytext));
+  // An integer beyond the range of an int is no valid token, which the
+  // parser reports as a syntax error.
+  const char* first = yytext + (*yytext == '+' ? 1 : 0);
+  int value = 0;
+  const auto [end, error] = std::from_chars(first, yytext + yyleng, value);
+  if (error != std::errc{}) return token::YYUNDEF;
+  yylval->emplace<int>(value);
   return token::INTEGER;
 }
 
@@ -121,7 +129,9 @@ typedef SlamParser::Parser::token_type token_type;
 
  /* pass all other characters up to bison */
 . {
-    return static_cast<token_type>(*yytext);
+    // A byte above 0x7f of a signed char would be a negative token, which
+    // the parser takes for the end of the input.
+    return static_cast<token_type>(static_cast<unsigned char>(*yytext));
 }
 
  /*** END EXAMPLE - Change the example lexer rules above ***/

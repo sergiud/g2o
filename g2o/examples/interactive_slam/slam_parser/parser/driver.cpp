@@ -7,6 +7,7 @@
 
 #include <g2o/slam_parser/g2o_slam_parser_api.h>
 #include <g2o/stuff/logger.h>
+#include <g2o/stuff/streamed.h>
 
 #include <fstream>
 #include <sstream>
@@ -44,9 +45,11 @@ bool Driver::parse_string(const std::string& input, const std::string& sname) {
 }
 
 void Driver::error(const class location& l, const std::string& m) {
-  g2o::ngx::Log("{}: {}", l, m);
+  g2o::ngx::Log(g2o::ngx::Error, "{}: {}", g2o::Streamed(l), m);
 }
 
-void Driver::error(const std::string& m) { g2o::ngx::Log("{}", m); }
+void Driver::error(const std::string& m) {
+  g2o::ngx::Log(g2o::ngx::Error, "{}", m);
+}
 
 }  // namespace SlamParser

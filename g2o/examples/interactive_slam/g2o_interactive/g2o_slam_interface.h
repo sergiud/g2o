@@ -64,6 +64,11 @@ class G2O_INTERACTIVE_API G2oSlamInterface
   HyperGraph::EdgeSet _edgesAdded;
 
   OptimizableGraph::Vertex* addVertex(int dimension, int id);
+  /**
+   * Allocates the solver for the dimension of the first pose and rejects
+   * poses of any other dimension.
+   */
+  bool initSolver(int dimension);
   bool printVertex(OptimizableGraph::Vertex* v);
 };
 

@@ -13,6 +13,8 @@
 #include <Eigen/Core>
 #include <Eigen/StdVector>
 #include <cmath>
+#include <cstddef>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -71,6 +73,24 @@ int main(int argc, char** argv) {
     std::format_to(std::back_inserter(rotationNoise), " {}", i);
   }
   ngx::Log("Noise for the rotation:{}", rotationNoise);
+
+  // One standard deviation per axis, and a sphere needs an edge between two
+  // poses.
+  constexpr std::size_t Axes = 3;
+  if (noiseTranslation.size() != Axes || noiseRotation.size() != Axes) {
+    ngx::Log(ngx::Error,
+             "the noise needs {} values for the translation and the rotation, "
+             "got {} and {}",
+             Axes, noiseTranslation.size(), noiseRotation.size());
+    return EXIT_FAILURE;
+  }
+  if (numLaps < 1 || nodesPerLevel < 2) {
+    ngx::Log(ngx::Error,
+             "the sphere needs at least 1 lap of 2 nodes, got {} laps of {} "
+             "nodes",
+             numLaps, nodesPerLevel);
+    return EXIT_FAILURE;
+  }
 
   Eigen::Matrix3d transNoise = Eigen::Matrix3d::Zero();
   for (int i = 0; i < 3; ++i)
@@ -212,5 +232,9 @@ int main(int argc, char** argv) {
     fout << endl;
   }
 
+  if (!fout.flush()) {
+    ngx::Log(ngx::Error, "Unable to write the sphere to {}", outFilename);
+    return EXIT_FAILURE;
+  }
   return 0;
 }

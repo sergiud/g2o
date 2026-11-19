@@ -23,12 +23,20 @@ ParserInterface::ParserInterface(AbstractSlamInterface* slamInterface) {
 ParserInterface::~ParserInterface() = default;
 
 bool ParserInterface::parseCommand(std::istream& input) {
-  if (input.eof()) return false;
+  if (input.eof()) {
+    return false;
+  }
   _buffer.str("");
   _buffer.clear();
   input.get(*_buffer.rdbuf(), ';');
-  if (!input.eof())  // get the ';'
-    _buffer << (char)input.get();
+  // get() fails when it extracts nothing, which an empty command between two
+  // separators does, so the separator must still be consumed.
+  if (input.fail() && !input.eof()) {
+    input.clear();
+  }
+  if (!input.eof()) {  // get the ';'
+    _buffer << static_cast<char>(input.get());
+  }
   _driver->parse_stream(_buffer);
   return true;
 }

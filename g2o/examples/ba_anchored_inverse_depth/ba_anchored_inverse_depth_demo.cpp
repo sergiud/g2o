@@ -79,16 +79,16 @@ int main(int argc, const char* argv[]) {
   if (argc < 2) {
     cout << endl;
     cout << "Please type: " << endl;
-    cout
-        << "ba_demo [PIXEL_NOISE] [OUTLIER RATIO] [ROBUST_KERNEL] [SCHUR-TRICK]"
-        << endl;
+    cout << "ba_anchored_inverse_depth_demo [PIXEL_NOISE] [OUTLIER RATIO] "
+            "[ROBUST_KERNEL] [SCHUR-TRICK]"
+         << endl;
     cout << endl;
     cout << "PIXEL_NOISE: noise in image space (E.g.: 1)" << endl;
-    cout << "OUTLIER_RATIO: probability of spuroius observation  (default: 0.0)"
+    cout << "OUTLIER_RATIO: probability of spurious observation  (default: 0.0)"
          << endl;
     cout << "ROBUST_KERNEL: use robust kernel (0 or 1; default: 0==false)"
          << endl;
-    cout << "SCHUR-TRICK: Use Schur-complement trick (0 or 1; default: 0==true)"
+    cout << "SCHUR-TRICK: Use Schur-complement trick (0 or 1; default: 1==true)"
          << endl;
     cout << endl;
     cout << "Note, if OUTLIER_RATIO is above 0, ROBUST_KERNEL should be set to "
@@ -276,7 +276,7 @@ int main(int argc, const char* argv[]) {
   optimizer.optimize(10);
 
   cout << "Point error before optimisation (inliers only): "
-       << sqrt(sum_diff2 / point_num) << endl;
+       << sqrt(sum_diff2 / inliers.size()) << endl;
   point_num = 0;
   sum_diff2 = 0;
   for (auto& it : pointid_2_trueid) {

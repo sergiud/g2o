@@ -7,6 +7,7 @@
 #include <g2o/core/linear_solver.h>
 #include <g2o/core/optimization_algorithm_factory.h>
 #include <g2o/core/sparse_optimizer.h>
+#include <g2o/examples/sample_noise.h>
 #include <g2o/solvers/pcg/linear_solver_pcg.h>
 #include <g2o/stuff/command_args.h>
 #include <g2o/stuff/logger.h>
@@ -17,6 +18,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <random>
 #include <utility>
 
 using namespace g2o;
@@ -27,43 +29,18 @@ G2O_USE_OPTIMIZATION_LIBRARY(csparse)
 
 // typedef Eigen::Matrix<double, 6,6> Matrix6d; //Avoid ambiguous symbol
 
-double uniform_rand(double lowerBndr, double upperBndr) {
-  return lowerBndr +
-         ((double)std::rand() / (RAND_MAX + 1.0)) * (upperBndr - lowerBndr);
+namespace {
+
+/**
+ * Engine of the noise, whose default seed reproduces the same simulation in
+ * every run.
+ */
+std::mt19937& randomEngine() {
+  static std::mt19937 engine;
+  return engine;
 }
 
-double gauss_rand(double sigma) {
-  double x, y, r2;
-  do {
-    x = -1.0 + 2.0 * uniform_rand(0.0, 1.0);
-    y = -1.0 + 2.0 * uniform_rand(0.0, 1.0);
-    r2 = x * x + y * y;
-  } while (r2 > 1.0 || r2 == 0.0);
-  return sigma * y * std::sqrt(-2.0 * log(r2) / r2);
-}
-
-Eigen::Isometry3d sample_noise_from_se3(const Vector6d& cov) {
-  double nx = gauss_rand(cov(0));
-  double ny = gauss_rand(cov(1));
-  double nz = gauss_rand(cov(2));
-
-  double nroll = gauss_rand(cov(3));
-  double npitch = gauss_rand(cov(4));
-  double nyaw = gauss_rand(cov(5));
-
-  AngleAxisd aa(AngleAxisd(nyaw, Vector3d::UnitZ()) *
-                AngleAxisd(nroll, Vector3d::UnitX()) *
-                AngleAxisd(npitch, Vector3d::UnitY()));
-
-  Eigen::Isometry3d retval = Isometry3d::Identity();
-  retval.matrix().block<3, 3>(0, 0) = aa.toRotationMatrix();
-  retval.translation() = Vector3d(nx, ny, nz);
-  return retval;
-}
-
-Vector3d sample_noise_from_plane(const Vector3d& cov) {
-  return Vector3d(gauss_rand(cov(0)), gauss_rand(cov(1)), gauss_rand(cov(2)));
-}
+}  // namespace
 
 struct SimulatorItem {
   SimulatorItem(OptimizableGraph* graph_) : _graph(graph_) {}
@@ -135,7 +112,7 @@ struct Robot : public WorldItem {
       VertexSE3* oldV = dynamic_cast<VertexSE3*>(vertex());
       auto eOwner = std::make_unique<EdgeSE3>();
       auto* e = eOwner.get();
-      Isometry3d noise = sample_noise_from_se3(_nmovecov);
+      Isometry3d noise = examples::samplePoseNoise(_nmovecov, randomEngine());
       e->setMeasurement(delta * noise);
       Matrix6d m = Matrix6d::Identity();
       for (int i = 0; i < 6; i++) {
@@ -246,7 +223,7 @@ struct PlaneSensor : public Sensor {
     e->vertices()[0] = robotVertex;
     e->vertices()[1] = planeVertex;
     e->vertices()[2] = _offsetVertex;
-    Vector3d noise = sample_noise_from_plane(_nplane);
+    Vector3d noise = examples::sampleNoise(_nplane, randomEngine());
     measuredPlane.oplus(noise);
     e->setMeasurement(measuredPlane);
     Matrix3d m = Matrix3d::Zero();
@@ -436,8 +413,9 @@ int main(int argc, char** argv) {
   } else {
     Vector6d noffcov;
     noffcov << 0.1, 0.1, 0.1, 0.5, 0.5, 0.5;
-    ps->_offsetVertex->setEstimate(ps->_offsetVertex->estimate() *
-                                   sample_noise_from_se3(noffcov));
+    ps->_offsetVertex->setEstimate(
+        ps->_offsetVertex->estimate() *
+        examples::samplePoseNoise(noffcov, randomEngine()));
     ps->_offsetVertex->setFixed(false);
   }
 
@@ -483,8 +461,8 @@ int main(int argc, char** argv) {
       std::ostringstream offset;
       ps->_offsetVertex->write(offset);
       ngx::Log("OffsetVertex: {}", offset.view());
-      ngx::Log("rotationDeterminant: {}", m.block<3, 3>(0, 0).determinant());
-      ngx::Log("translationDeterminant: {}", m.block<3, 3>(3, 3).determinant());
+      ngx::Log("translationDeterminant: {}", m.block<3, 3>(0, 0).determinant());
+      ngx::Log("rotationDeterminant: {}", m.block<3, 3>(3, 3).determinant());
     }
   }
   ofstream os1("test_postOpt.g2o");
