@@ -64,18 +64,21 @@ foreach (_consumer_COMPONENT IN LISTS _consumer_COMPONENTS)
   target_link_libraries (consumer PRIVATE g2o::${_consumer_COMPONENT})
   message (STATUS "Consuming g2o::${_consumer_COMPONENT}")
 
-  # Each header compiles with the usage requirements of its library alone.
-  set (_consumer_SOURCE
-    ${CMAKE_CURRENT_BINARY_DIR}/headers_${_consumer_COMPONENT}.cpp
-  )
-  set (_consumer_CONTENT)
+  # Each header compiles on its own with the usage requirements of its library
+  # alone, since a header included before it would supply what it misses.
+  set (_consumer_SOURCES)
 
   foreach (_consumer_HEADER IN LISTS _consumer_HEADERS_${_consumer_COMPONENT})
-    string (APPEND _consumer_CONTENT "#include <${_consumer_HEADER}>\n")
+    string (MAKE_C_IDENTIFIER ${_consumer_HEADER} _consumer_NAME)
+    set (_consumer_SOURCE
+      ${CMAKE_CURRENT_BINARY_DIR}/headers_${_consumer_COMPONENT}/${_consumer_NAME}.cpp
+    )
+    file (CONFIGURE OUTPUT ${_consumer_SOURCE}
+      CONTENT "#include <${_consumer_HEADER}>\n")
+    list (APPEND _consumer_SOURCES ${_consumer_SOURCE})
   endforeach (_consumer_HEADER IN LISTS _consumer_HEADERS_${_consumer_COMPONENT})
 
-  file (CONFIGURE OUTPUT ${_consumer_SOURCE} CONTENT "${_consumer_CONTENT}")
-  add_library (headers_${_consumer_COMPONENT} OBJECT ${_consumer_SOURCE})
+  add_library (headers_${_consumer_COMPONENT} OBJECT ${_consumer_SOURCES})
   target_link_libraries (headers_${_consumer_COMPONENT} PRIVATE
     g2o::${_consumer_COMPONENT}
   )

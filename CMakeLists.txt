@@ -612,7 +612,7 @@ g2o_add_library (core
 )
 
 # The sources look up owned edges by their address and extract them.
-target_compile_features (core PUBLIC cxx_std_11 PRIVATE cxx_std_17)
+target_compile_features (core PUBLIC cxx_std_20)
 target_link_libraries (core PUBLIC Eigen3::Eigen stuff)
 
 if (G2O_OPENMP)
@@ -1642,7 +1642,8 @@ endif (BUILD_EXAMPLES)
 
 # Tests
 
-if (BUILD_TESTING AND TARGET GTest::gtest_main)
+# Only the top-level project tests g2o, not a project that includes it.
+if (PROJECT_IS_TOP_LEVEL AND BUILD_TESTING AND TARGET GTest::gtest_main)
   g2o_add_executable (unittest_general
     SOURCES
       unit_test/general/clear_and_redo.cpp
@@ -1837,12 +1838,12 @@ if (BUILD_TESTING AND TARGET GTest::gtest_main)
 
     gtest_discover_tests (unittest_incremental_slam)
   endif (TARGET g2o_incremental_library)
-endif (BUILD_TESTING AND TARGET GTest::gtest_main)
+endif (PROJECT_IS_TOP_LEVEL AND BUILD_TESTING AND TARGET GTest::gtest_main)
 
 # The installed package is tested the way consumers use it: a prefix inside
 # the build tree receives the installation, and a project of its own finds
 # the package there and links to every library it exports.
-if (BUILD_TESTING)
+if (PROJECT_IS_TOP_LEVEL AND BUILD_TESTING)
   set (_g2o_CONSUMER_PREFIX ${g2o_BINARY_DIR}/consumer-prefix)
   set (_g2o_CONSUMER_BINARY_DIR ${g2o_BINARY_DIR}/consumer)
   set (_g2o_CONSUMER_PREFIX_PATH ${_g2o_CONSUMER_PREFIX} ${CMAKE_PREFIX_PATH})
@@ -2142,6 +2143,34 @@ if (BUILD_TESTING)
       FAIL_REGULAR_EXPRESSION "already registered"
     )
 
+    # A project that includes g2o tests itself, not g2o.
+    set (_g2o_SUBPROJECT_DIR ${g2o_BINARY_DIR}/subproject)
+    add_test (NAME g2o_subproject_clean
+      COMMAND ${CMAKE_COMMAND} -E rm -rf ${_g2o_SUBPROJECT_DIR}
+    )
+    add_test (NAME g2o_subproject_configure
+      COMMAND ${CMAKE_COMMAND}
+        -S ${g2o_SOURCE_DIR}/unit_test/cmake/subproject
+        -B ${_g2o_SUBPROJECT_DIR}
+        -G ${CMAKE_GENERATOR}
+        -DG2O_SOURCE_DIR=${g2o_SOURCE_DIR}
+        "-DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
+    )
+    add_test (NAME g2o_subproject_without_tests
+      COMMAND ${CMAKE_CTEST_COMMAND} --test-dir ${_g2o_SUBPROJECT_DIR} -N
+    )
+    set_tests_properties (g2o_subproject_clean PROPERTIES
+      FIXTURES_SETUP g2o_subproject_clean
+    )
+    set_tests_properties (g2o_subproject_configure PROPERTIES
+      FIXTURES_REQUIRED g2o_subproject_clean
+      FIXTURES_SETUP g2o_subproject
+    )
+    set_tests_properties (g2o_subproject_without_tests PROPERTIES
+      FIXTURES_REQUIRED g2o_subproject
+      PASS_REGULAR_EXPRESSION "Total Tests: 0"
+    )
+
     # The command line tool reports each failure by its exit status, which
     # a script checks so that a crash cannot pass as a failure.
     set (_g2o_LOOP ${g2o_SOURCE_DIR}/unit_test/cli/loop.g2o)
@@ -2283,7 +2312,7 @@ if (BUILD_TESTING)
       COMMAND g2o_cli_application -i -1 -stats ${g2o_BINARY_DIR}/stats.txt
         ${_g2o_LOOP})
   endif (BUILD_APPS)
-endif (BUILD_TESTING)
+endif (PROJECT_IS_TOP_LEVEL AND BUILD_TESTING)
 
 # A directory that is not part of the repository may hold experiments.
 if (IS_DIRECTORY ${g2o_SOURCE_DIR}/g2o/playground)
